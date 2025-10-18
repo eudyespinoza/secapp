@@ -63,6 +63,36 @@ fi
 log_info "Verificando dependencias..."
 log_success "Docker y Docker Compose encontrados"
 
+# Check if user can run Docker commands (permissions)
+log_info "Verificando permisos de Docker..."
+if ! docker ps &> /dev/null; then
+    log_error "No tienes permisos para ejecutar Docker"
+    log_info "Soluciones posibles:"
+    log_info "1. Agrega tu usuario al grupo docker: sudo usermod -aG docker \$USER"
+    log_info "2. Reinicia sesión después de agregarte al grupo"
+    log_info "3. O ejecuta: newgrp docker"
+    exit 1
+fi
+log_success "Permisos de Docker verificados"
+
+# Verify Traefik network exists
+log_info "Verificando red de Traefik..."
+if ! docker network ls | grep -q "traefik_proxy"; then
+    log_error "La red traefik_proxy no existe!"
+    log_info "Por favor créala primero: docker network create traefik_proxy"
+    exit 1
+fi
+log_success "Red traefik_proxy encontrada"
+
+# Verify .env file has required variables
+log_info "Verificando variables de entorno..."
+if [ -z "${MONGODB_PASSWORD:-}" ]; then
+    log_warning "Variables de entorno no configuradas correctamente"
+    log_info "Asegúrate de haber generado y configurado todos los secretos"
+fi
+
+# Create data directories
+
 # Create data directories
 log_info "Creando directorios de datos..."
 mkdir -p ./data/mongodb/data
@@ -164,6 +194,8 @@ echo "   • Ver logs: docker compose logs -f [servicio]"
 echo "   • Reiniciar: docker compose restart [servicio]"
 echo "   • Detener: docker compose down"
 echo "   • Estado: docker compose ps"
+echo "   • Ver todos los logs: docker compose logs -f"
+echo "   • Verificar red: docker network inspect traefik_proxy"
 echo ""
 log_warning "Recuerda configurar tu proxy Traefik para que apunte a estos servicios"
 echo ""
