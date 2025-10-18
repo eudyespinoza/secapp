@@ -55,7 +55,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose &> /dev/null; then
     log_error "Docker Compose no está instalado"
     exit 1
 fi
@@ -98,19 +98,19 @@ fi
 
 # Stop any existing containers
 log_info "Deteniendo contenedores existentes..."
-docker-compose down --remove-orphans 2>/dev/null || true
+docker compose down --remove-orphans 2>/dev/null || true
 
 # Pull latest images
 log_info "Descargando imágenes más recientes..."
-docker-compose pull
+docker compose pull
 
 # Build custom images
 log_info "Construyendo imágenes personalizadas..."
-docker-compose build --no-cache
+docker compose build --no-cache
 
 # Start services
 log_info "Iniciando servicios en modo producción..."
-docker-compose up -d
+docker compose up -d
 
 # Wait for services to be ready
 log_info "Esperando que los servicios estén listos..."
@@ -149,13 +149,13 @@ done
 
 # Show status
 log_info "Verificando estado de los servicios..."
-docker-compose ps
+docker compose ps
 
 # Show logs summary
 log_info "Últimos logs de los servicios:"
 echo "================================"
-docker-compose logs --tail=10 api
-docker-compose logs --tail=10 frontend
+docker compose logs --tail=10 api
+docker compose logs --tail=10 frontend
 
 echo ""
 echo "🎉 DEPLOYMENT COMPLETADO EXITOSAMENTE!"
@@ -170,10 +170,10 @@ echo "   • Grafana: http://localhost:3002"
 echo "   • Prometheus: http://localhost:9091"
 echo ""
 echo "🔍 COMANDOS ÚTILES:"
-echo "   • Ver logs: docker-compose logs -f [servicio]"
-echo "   • Reiniciar: docker-compose restart [servicio]"
-echo "   • Detener: docker-compose down"
-echo "   • Estado: docker-compose ps"
+echo "   • Ver logs: docker compose logs -f [servicio]"
+echo "   • Reiniciar: docker compose restart [servicio]"
+echo "   • Detener: docker compose down"
+echo "   • Estado: docker compose ps"
 echo ""
 log_warning "Recuerda configurar tu proxy Traefik para que apunte a estos servicios"
 echo ""
