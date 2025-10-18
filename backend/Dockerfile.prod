@@ -1,0 +1,49 @@
+# ==================================
+# Stage 1: Build
+# ==================================
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
+
+# Install dependencies
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+# Copy source code
+COPY src ./src
+
+# Build application
+RUN npm run build
+
+# ==================================
+# Stage 2: Production
+# ==================================
+FROM gcr.io/distroless/nodejs18-debian12:nonroot AS production
+
+WORKDIR /app
+
+# Copy from builder
+COPY --from=builder --chown=nonroot:nonroot /app/node_modules ./node_modules
+COPY --from=builder --chown=nonroot:nonroot /app/dist ./dist
+COPY --from=builder --chown=nonroot:nonroot /app/package*.json ./
+
+# Copy healthcheck script
+COPY --chown=nonroot:nonroot healthcheck.js ./
+
+# Security: Run as non-root user
+USER nonroot
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD ["node", "healthcheck.js"]
+
+# Start application
+CMD ["dist/main.js"]

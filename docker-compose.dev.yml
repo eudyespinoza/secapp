@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  # MongoDB para desarrollo
+  mongodb-dev:
+    image: mongo:6.0
+    container_name: secureapprove-mongodb-dev
+    ports:
+      - "27019:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=devpassword123
+      - MONGO_INITDB_DATABASE=secureapprove
+    volumes:
+      - mongodb-dev-data:/data/db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis para desarrollo
+  redis-dev:
+    image: redis:7-alpine
+    container_name: secureapprove-redis-dev
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes --requirepass devredis123
+    volumes:
+      - redis-dev-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend NestJS en modo desarrollo
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: secureapprove-backend-dev
+    expose:
+      - "3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - API_PORT=3000
+      - MONGODB_URI=mongodb://root:devpassword123@mongodb-dev:27017/secureapprove?authSource=admin
+      - REDIS_HOST=redis-dev
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=devredis123
+      - JWT_ACCESS_SECRET=dev-jwt-access-secret-key-change-in-production
+      - JWT_REFRESH_SECRET=dev-jwt-refresh-secret-key-change-in-production
+      - JWT_ACCESS_EXPIRATION=15m
+      - JWT_REFRESH_EXPIRATION=7d
+      - ENCRYPTION_KEY=dev-encryption-key-32-chars-min
+      - WEBAUTHN_RP_NAME="SecureApprove Dev"
+      - WEBAUTHN_RP_ID=secureapprove.com
+      - WEBAUTHN_ORIGIN=https://api-dev.secureapprove.com
+    depends_on:
+      mongodb-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+    command: npm run start:dev
+    restart: unless-stopped
+    networks:
+      - default
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.secureapprove-api-dev.rule=Host(`api-dev.secureapprove.com`)"
+      - "traefik.http.routers.secureapprove-api-dev.entrypoints=websecure"
+      - "traefik.http.routers.secureapprove-api-dev.tls=true"
+      - "traefik.http.routers.secureapprove-api-dev.middlewares=cors-headers"
+      - "traefik.http.services.secureapprove-api-dev.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Frontend Next.js en modo desarrollo
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: secureapprove-frontend-dev
+    expose:
+      - "3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - WATCHPACK_POLLING_INTERVAL=1000
+      - NEXT_PUBLIC_API_URL=https://api-dev.secureapprove.com/api
+      - NEXT_TELEMETRY_DISABLED=1
+    depends_on:
+      - backend-dev
+    command: npm run dev
+    restart: unless-stopped
+    networks:
+      - default
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.secureapprove-dev.rule=Host(`dev.secureapprove.com`)"
+      - "traefik.http.routers.secureapprove-dev.entrypoints=websecure"
+      - "traefik.http.routers.secureapprove-dev.tls=true"
+      - "traefik.http.routers.secureapprove-dev.middlewares=default-sec-headers"
+      - "traefik.http.services.secureapprove-dev.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mongodb-dev-data:
+  redis-dev-data:
+
+networks:
+  default:
+    name: secureapprove-dev
+  traefik_proxy:
+    external: true

@@ -1,0 +1,348 @@
+{
+  "common": {
+    "appName": "SecureApprove",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar"
+  },
+  "nav": {
+    "home": "Início",
+    "dashboard": "Painel",
+    "requests": "Solicitações",
+    "approvals": "Aprovações",
+    "users": "Usuários",
+    "tenants": "Tenants",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "logout": "Sair"
+  },
+  "home": {
+    "hero": {
+      "title": "Autenticação Sem Senhas",
+      "subtitle": "Sistema empresarial de aprovações com autenticação biométrica. Seguro, rápido e fácil de usar.",
+      "cta": {
+        "getStarted": "Começar",
+        "learnMore": "Saiba Mais",
+        "viewDemo": "Ver Demo"
+      }
+    },
+    "features": {
+      "title": "Características Principais",
+      "subtitle": "Tudo que você precisa para gerenciar aprovações de forma segura",
+      "biometric": {
+        "title": "Autenticação Biométrica",
+        "description": "Faça login com sua impressão digital, Face ID ou chave de segurança. Sem senhas para lembrar."
+      },
+      "realtime": {
+        "title": "Aprovações em Tempo Real",
+        "description": "Receba notificações instantâneas e aprove solicitações de qualquer dispositivo."
+      },
+      "security": {
+        "title": "Segurança de Nível Empresarial",
+        "description": "Criptografia end-to-end, auditoria completa e conformidade com padrões internacionais."
+      },
+      "audit": {
+        "title": "Rastreabilidade Completa",
+        "description": "Registros detalhados de todas as ações com timestamps e dados do usuário."
+      }
+    },
+    "stats": {
+      "users": "Usuários Ativos",
+      "requests": "Solicitações Processadas",
+      "uptime": "Disponibilidade",
+      "response": "Tempo de Resposta"
+    },
+    "cta": {
+      "title": "Pronto para começar?",
+      "subtitle": "Junte-se a milhares de empresas que confiam no SecureApprove",
+  "button": "Ver Planos"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Fazer Login",
+      "subtitle": "Bem-vindo de volta",
+      "email": "E-mail",
+      "emailPlaceholder": "seu@email.com",
+      "button": "Fazer Login",
+      "biometric": "Usar Autenticação Biométrica",
+      "noAccount": "Não tem uma conta?",
+      "registerLink": "Cadastre-se",
+      "forgotPassword": "Esqueceu sua senha?",
+      "webauthnInfo": "Autenticação segura com WebAuthn",
+      "errors": {
+        "invalidEmail": "E-mail inválido",
+        "biometricFailed": "Autenticação biométrica falhou",
+        "userNotFound": "Usuário não encontrado"
+      }
+    },
+    "register": {
+      "title": "Criar Conta",
+      "subtitle": "Comece grátis hoje",
+      "name": "Nome Completo",
+      "namePlaceholder": "João Silva",
+      "email": "E-mail",
+      "emailPlaceholder": "seu@email.com",
+      "button": "Criar Conta",
+      "company": "Empresa",
+      "companyPlaceholder": "Minha Empresa Ltda.",
+      "setupBiometric": "Configurar Autenticação Biométrica",
+      "terms": "Aceito os termos e condições",
+      "hasAccount": "Já tem uma conta?",
+      "loginLink": "Fazer Login",
+      "webauthnInfo": "Autenticação segura com WebAuthn",
+      "errors": {
+        "emailExists": "O e-mail já está cadastrado",
+        "biometricNotSupported": "Seu dispositivo não suporta autenticação biométrica",
+        "termsRequired": "Você deve aceitar os termos e condições"
+      }
+    },
+    "biometric": {
+      "setup": "Configurar Biometria",
+      "setupDescription": "Configure sua autenticação biométrica para acessar de forma segura",
+      "useFingerprint": "Usar Impressão Digital",
+      "useFaceId": "Usar Face ID",
+      "useSecurityKey": "Usar Chave de Segurança",
+      "detecting": "Detectando dispositivo...",
+      "authenticating": "Autenticando...",
+      "success": "Autenticação bem-sucedida",
+      "failed": "Autenticação falhou"
+    }
+  },
+  "dashboard": {
+    "title": "Painel de Controle",
+    "welcome": "Bem-vindo, {name}",
+    "overview": "Resumo",
+    "backToHome": "Voltar ao Início",
+    "stats": {
+      "total": "Total de Solicitações",
+      "pending": "Pendentes",
+      "approved": "Aprovadas",
+      "rejected": "Rejeitadas",
+      "pendingRequests": "Solicitações Pendentes",
+      "approvedToday": "Aprovadas Hoje",
+      "totalAmount": "Valor Total",
+      "avgResponseTime": "Tempo de Resposta Médio"
+    },
+    "recentActivity": "Atividade Recente",
+    "noActivity": "Sem atividade",
+    "noActivityDescription": "Não há solicitações para mostrar",
+    "createRequest": "Criar Nova Solicitação",
+    "quickActions": {
+      "title": "Ações Rápidas",
+      "newRequest": "Nova Solicitação",
+      "viewPending": "Ver Pendentes",
+      "reports": "Relatórios",
+      "settings": "Configurações"
+    }
+  },
+  "requests": {
+    "title": "Solicitações",
+    "noRequests": "Não há solicitações",
+    "backToList": "Voltar às solicitações",
+    "new": {
+      "title": "Nova Solicitação",
+      "backToDashboard": "Voltar ao Painel",
+      "fields": {
+        "title": "Título",
+        "description": "Descrição",
+        "category": "Tipo",
+        "amount": "Valor",
+        "priority": "Prioridade",
+        "extra": {
+          "vendor": "Fornecedor",
+          "costCenter": "Centro de custo",
+          "expenseCategory": "Categoria de despesa",
+          "receiptRef": "Referência do recibo",
+          "destination": "Destino",
+          "startDate": "Data de início",
+          "endDate": "Data de término",
+          "documentId": "ID do documento",
+          "reason": "Motivo"
+        }
+      },
+      "placeholders": {
+        "title": "Ex: Aprovação de compra de equipamentos",
+        "description": "Descreva os detalhes da solicitação..."
+      },
+      "categories": {
+        "expense": "Reembolso de despesas",
+        "purchase": "Compra",
+        "travel": "Viagem",
+        "contract": "Contrato",
+        "document": "Retirada de documento",
+        "other": "Outro"
+      },
+      "priorities": {
+        "low": "Baixa",
+        "medium": "Média",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Criar Solicitação",
+        "creating": "Criando..."
+      }
+    },
+    "myRequests": "Minhas Solicitações",
+    "pending": "Pendentes",
+    "approved": "Aprovadas",
+    "rejected": "Rejeitadas",
+    "filters": {
+      "all": "Todas",
+      "status": "Status",
+      "date": "Data",
+      "amount": "Valor"
+    },
+    "form": {
+      "title": "Título",
+      "titlePlaceholder": "Ex: Aprovação de compra de equipamentos",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Descreva os detalhes da solicitação...",
+      "amount": "Valor",
+      "amountPlaceholder": "0,00",
+      "currency": "Moeda",
+      "approvers": "Aprovadores",
+      "selectApprovers": "Selecionar aprovadores",
+      "attachments": "Arquivos Anexos",
+      "submit": "Enviar Solicitação"
+    },
+    "details": {
+      "title": "Detalhe da Solicitação",
+      "requestedBy": "Solicitado por",
+      "requestedAt": "Data da solicitação",
+      "status": "Status",
+      "amount": "Valor",
+      "approvers": "Aprovadores",
+      "approvedBy": "Aprovado por",
+      "rejectedBy": "Rejeitado por",
+      "reason": "Motivo",
+      "actions": {
+        "approve": "Aprovar",
+        "reject": "Rejeitar",
+        "cancel": "Cancelar",
+        "edit": "Editar"
+      }
+    },
+    "status": {
+      "pending": "Pendente",
+      "approved": "Aprovada",
+      "rejected": "Rejeitada",
+      "cancelled": "Cancelada"
+    }
+  },
+  "users": {
+    "title": "Usuários",
+    "addUser": "Adicionar Usuário",
+    "invite": "Convidar",
+    "active": "Ativos",
+    "inactive": "Inativos",
+    "roles": {
+      "requester": "Solicitante",
+      "approver": "Aprovador",
+      "auditor": "Auditor",
+      "tenant_admin": "Administrador do Tenant",
+      "superadmin": "Superadministrador"
+    },
+    "table": {
+      "name": "Nome",
+      "email": "E-mail",
+      "role": "Função",
+      "status": "Status",
+      "lastActive": "Última Atividade",
+      "actions": "Ações"
+    }
+  },
+  "tenants": {
+    "title": "Tenants",
+    "list": "Lista de tenants",
+    "empty": "Ainda não há tenants",
+    "create": "Criar tenant",
+    "createAction": "Criar",
+    "active": "Ativo",
+    "inactive": "Inativo"
+  },
+  "settings": {
+    "title": "Configurações",
+    "general": "Geral",
+    "tabs": {
+      "profile": "Perfil",
+      "security": "Segurança",
+      "notifications": "Notificações",
+      "appearance": "Aparência"
+    },
+    "theme": {
+      "title": "Tema",
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    },
+    "languageSettings": {
+      "title": "Idioma",
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português (Brasil)"
+    },
+    "notificationSettings": {
+      "email": "Notificações por E-mail",
+      "push": "Notificações Push",
+      "sms": "Notificações SMS",
+      "newRequest": "Novas solicitações",
+      "approved": "Solicitações aprovadas",
+      "rejected": "Solicitações rejeitadas"
+    },
+    "securitySettings": {
+      "changePassword": "Alterar Senha",
+      "twoFactor": "Autenticação de Dois Fatores",
+      "sessions": "Sessões Ativas",
+      "biometric": "Configuração Biométrica"
+    }
+  },
+  "theme": {
+    "toggle": "Alternar tema",
+    "light": "Tema claro",
+    "dark": "Tema escuro"
+  },
+  "team": {
+    "title": "Configurações da equipe",
+    "back": "Painel",
+    "plan": "Plano",
+    "seats": "Assentos",
+    "tenant": "Tenant",
+    "users": "Usuários",
+    "loading": "Carregando...",
+    "table": { "name": "Nome", "email": "E-mail", "role": "Função", "status": "Status" },
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "invite": {
+      "title": "Convidar usuário",
+      "email": "E-mail",
+      "role": "Função",
+      "send": "Enviar convite",
+      "sending": "Enviando...",
+      "full": "Assentos completos"
+    },
+    "pending": "Convites pendentes",
+    "none": "Nenhum convite pendente",
+    "link": "Link",
+    "expires": "Expira",
+    "revoke": "Revogar",
+    "roles": {
+      "requester": "Solicitante",
+      "approver": "Aprovador",
+      "auditor": "Auditor",
+      "tenant_admin": "Administrador do Tenant"
+    }
+  }
+}

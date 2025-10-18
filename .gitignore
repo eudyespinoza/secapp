@@ -1,0 +1,96 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+
+# Credentials documentation (contains sensitive info)
+CREDENTIALS.md
+.secrets.temp
+
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Testing
+/coverage
+*.lcov
+.nyc_output
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Production
+dist/
+/build
+/.next/
+/out/
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+*.pem
+Thumbs.db
+
+# IDEs
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.swp
+*.swo
+*~
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# MongoDB
+data/
+mongodb-data/
+
+# SSL Certificates (generate locally)
+certs/*.key
+certs/*.crt
+certs/*.pem
+!certs/.gitkeep
+
+# Secrets
+secrets/
+infra/mongodb/keyfile
+*.keyfile
+
+# Backup files
+backups/
+*.backup
+*.dump
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Mobile specific
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+ios/Pods/
+ios/build/
+android/app/build/
+android/.gradle/
+
+# Sentry
+.sentryclirc

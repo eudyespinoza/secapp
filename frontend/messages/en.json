@@ -1,0 +1,348 @@
+{
+  "common": {
+    "appName": "SecureApprove",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "requests": "Requests",
+    "approvals": "Approvals",
+    "users": "Users",
+    "tenants": "Tenants",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "home": {
+    "hero": {
+      "title": "Passwordless Authentication",
+      "subtitle": "Enterprise approval system with biometric authentication. Secure, fast and easy to use.",
+      "cta": {
+        "getStarted": "Get Started",
+        "learnMore": "Learn More",
+        "viewDemo": "View Demo"
+      }
+    },
+    "features": {
+      "title": "Key Features",
+      "subtitle": "Everything you need to manage approvals securely",
+      "biometric": {
+        "title": "Biometric Authentication",
+        "description": "Sign in with your fingerprint, Face ID or security key. No passwords to remember."
+      },
+      "realtime": {
+        "title": "Real-time Approvals",
+        "description": "Get instant notifications and approve requests from any device."
+      },
+      "security": {
+        "title": "Enterprise-grade Security",
+        "description": "End-to-end encryption, complete audit trails and international standards compliance."
+      },
+      "audit": {
+        "title": "Complete Traceability",
+        "description": "Detailed logs of all actions with timestamps and user data."
+      }
+    },
+    "stats": {
+      "users": "Active Users",
+      "requests": "Requests Processed",
+      "uptime": "Uptime",
+      "response": "Response Time"
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Join thousands of companies that trust SecureApprove",
+  "button": "See Plans"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back",
+      "email": "Email Address",
+      "emailPlaceholder": "you@email.com",
+      "button": "Sign In",
+      "biometric": "Use Biometric Authentication",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign Up",
+      "forgotPassword": "Forgot your password?",
+      "webauthnInfo": "Secure authentication with WebAuthn",
+      "errors": {
+        "invalidEmail": "Invalid email",
+        "biometricFailed": "Biometric authentication failed",
+        "userNotFound": "User not found"
+      }
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Get started for free today",
+      "name": "Full Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email Address",
+      "emailPlaceholder": "you@email.com",
+      "button": "Create Account",
+      "company": "Company",
+      "companyPlaceholder": "My Company Inc.",
+      "setupBiometric": "Setup Biometric Authentication",
+      "terms": "I agree to the terms and conditions",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign In",
+      "webauthnInfo": "Secure authentication with WebAuthn",
+      "errors": {
+        "emailExists": "Email is already registered",
+        "biometricNotSupported": "Your device doesn't support biometric authentication",
+        "termsRequired": "You must accept the terms and conditions"
+      }
+    },
+    "biometric": {
+      "setup": "Setup Biometrics",
+      "setupDescription": "Configure your biometric authentication for secure access",
+      "useFingerprint": "Use Fingerprint",
+      "useFaceId": "Use Face ID",
+      "useSecurityKey": "Use Security Key",
+      "detecting": "Detecting device...",
+      "authenticating": "Authenticating...",
+      "success": "Authentication successful",
+      "failed": "Authentication failed"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {name}",
+    "overview": "Overview",
+    "backToHome": "Back to Home",
+    "stats": {
+      "total": "Total Requests",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pendingRequests": "Pending Requests",
+      "approvedToday": "Approved Today",
+      "totalAmount": "Total Amount",
+      "avgResponseTime": "Avg Response Time"
+    },
+    "recentActivity": "Recent Activity",
+    "noActivity": "No activity",
+    "noActivityDescription": "No requests to display",
+    "createRequest": "Create New Request",
+    "quickActions": {
+      "title": "Quick Actions",
+      "newRequest": "New Request",
+      "viewPending": "View Pending",
+      "reports": "Reports",
+      "settings": "Settings"
+    }
+  },
+  "requests": {
+    "title": "Requests",
+    "noRequests": "No requests found",
+    "backToList": "Back to requests",
+    "new": {
+      "title": "New Request",
+      "backToDashboard": "Back to Dashboard",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "category": "Type",
+        "amount": "Amount",
+        "priority": "Priority",
+        "extra": {
+          "vendor": "Vendor",
+          "costCenter": "Cost center",
+          "expenseCategory": "Expense category",
+          "receiptRef": "Receipt reference",
+          "destination": "Destination",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "documentId": "Document ID",
+          "reason": "Reason"
+        }
+      },
+      "placeholders": {
+        "title": "e.g: Equipment purchase approval",
+        "description": "Describe the request details..."
+      },
+      "categories": {
+        "expense": "Expense reimbursement",
+        "purchase": "Purchase",
+        "travel": "Travel",
+        "contract": "Contract",
+        "document": "Document withdrawal",
+        "other": "Other"
+      },
+      "priorities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create Request",
+        "creating": "Creating..."
+      }
+    },
+    "myRequests": "My Requests",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "filters": {
+      "all": "All",
+      "status": "Status",
+      "date": "Date",
+      "amount": "Amount"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "e.g: Equipment purchase approval",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the request details...",
+      "amount": "Amount",
+      "amountPlaceholder": "0.00",
+      "currency": "Currency",
+      "approvers": "Approvers",
+      "selectApprovers": "Select approvers",
+      "attachments": "Attachments",
+      "submit": "Submit Request"
+    },
+    "details": {
+      "title": "Request Details",
+      "requestedBy": "Requested by",
+      "requestedAt": "Request date",
+      "status": "Status",
+      "amount": "Amount",
+      "approvers": "Approvers",
+      "approvedBy": "Approved by",
+      "rejectedBy": "Rejected by",
+      "reason": "Reason",
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "cancel": "Cancel",
+        "edit": "Edit"
+      }
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "addUser": "Add User",
+    "invite": "Invite",
+    "active": "Active",
+    "inactive": "Inactive",
+    "roles": {
+      "requester": "Requester",
+      "approver": "Approver",
+      "auditor": "Auditor",
+      "tenant_admin": "Tenant Admin",
+      "superadmin": "Superadmin"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "lastActive": "Last Active",
+      "actions": "Actions"
+    }
+  },
+  "tenants": {
+    "title": "Tenants",
+    "list": "Tenants list",
+    "empty": "No tenants yet",
+    "create": "Create tenant",
+    "createAction": "Create",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "notifications": "Notifications",
+      "appearance": "Appearance"
+    },
+    "theme": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "languageSettings": {
+      "title": "Language",
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português (Brasil)"
+    },
+    "notificationSettings": {
+      "email": "Email Notifications",
+      "push": "Push Notifications",
+      "sms": "SMS Notifications",
+      "newRequest": "New requests",
+      "approved": "Approved requests",
+      "rejected": "Rejected requests"
+    },
+    "securitySettings": {
+      "changePassword": "Change Password",
+      "twoFactor": "Two-Factor Authentication",
+      "sessions": "Active Sessions",
+      "biometric": "Biometric Settings"
+    }
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light theme",
+    "dark": "Dark theme"
+  },
+  "team": {
+    "title": "Team settings",
+    "back": "Dashboard",
+    "plan": "Plan",
+    "seats": "Seats",
+    "tenant": "Tenant",
+    "users": "Users",
+    "loading": "Loading...",
+    "table": { "name": "Name", "email": "Email", "role": "Role", "status": "Status" },
+    "active": "Active",
+    "inactive": "Inactive",
+    "invite": {
+      "title": "Invite user",
+      "email": "Email",
+      "role": "Role",
+      "send": "Send invite",
+      "sending": "Sending...",
+      "full": "Seats full"
+    },
+    "pending": "Pending invites",
+    "none": "No pending invites",
+    "link": "Link",
+    "expires": "Expires",
+    "revoke": "Revoke",
+    "roles": {
+      "requester": "Requester",
+      "approver": "Approver",
+      "auditor": "Auditor",
+      "tenant_admin": "Tenant Admin"
+    }
+  }
+}

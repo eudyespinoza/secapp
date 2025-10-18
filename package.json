@@ -1,0 +1,94 @@
+{
+  "name": "secureapprove",
+  "version": "1.0.0",
+  "description": "SecureApprove - Enterprise-grade passwordless approval system with WebAuthn",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "mobile"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm install --workspace=backend && npm install --workspace=frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:docker": "docker-compose -f docker-compose.dev.yml up --build",
+    "dev:docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "dev:docker:logs": "docker-compose -f docker-compose.dev.yml logs -f",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "start": "npm run start --workspace=backend",
+    "start:frontend": "npm run start --workspace=frontend",
+    "test": "npm run test --workspaces",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:staging": "cross-env TEST_ENV=staging playwright test",
+    "test:smoke:production": "cross-env TEST_ENV=production playwright test tests/e2e/smoke",
+    "test:perf": "playwright test tests/e2e/performance",
+    "lint": "npm run lint --workspaces",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
+    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker-compose down -v --remove-orphans",
+    "infra:up": "cd infra && docker-compose up -d",
+    "infra:down": "cd infra && docker-compose down",
+    "backup:create": "node scripts/backup.js create",
+    "backup:restore": "node scripts/backup.js restore",
+    "backup:list": "node scripts/backup.js list",
+    "security:audit": "npm audit --workspaces && npm run security:scan",
+    "security:scan": "snyk test",
+    "db:seed": "npm run seed --workspace=backend",
+    "db:migrate": "npm run migrate --workspace=backend",
+    "generate:ssl": "node scripts/generate-ssl-certs.js",
+    "generate:secrets": "node scripts/generate-secrets.js",
+    "health:check": "node scripts/health-check.js",
+  "monitor:dashboard": "open http://localhost:3001",
+  "admin:make-super": "node backend/scripts/make-superadmin.js",
+    "logs:api": "docker logs -f secureapprove-api-1",
+    "logs:mongodb": "docker logs -f secureapprove-mongodb-primary",
+    "logs:redis": "docker logs -f secureapprove-redis-master"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "keywords": [
+    "webauthn",
+    "biometric",
+    "passwordless",
+    "authentication",
+    "approval-system",
+    "security",
+    "nestjs",
+    "nextjs",
+    "react-native"
+  ],
+  "author": "SecureApprove Team",
+  "license": "PROPRIETARY"
+}
