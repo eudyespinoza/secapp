@@ -63,16 +63,6 @@ fi
 log_info "Verificando dependencias..."
 log_success "Docker y Docker Compose encontrados"
 
-# Create external Traefik network if it doesn't exist
-log_info "Verificando red de Traefik..."
-if ! docker network ls | grep -q "traefik_proxy"; then
-    log_info "Creando red traefik_proxy..."
-    docker network create traefik_proxy
-    log_success "Red traefik_proxy creada"
-else
-    log_success "Red traefik_proxy ya existe"
-fi
-
 # Create data directories
 log_info "Creando directorios de datos..."
 mkdir -p ./data/mongodb/data
