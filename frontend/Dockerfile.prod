@@ -37,7 +37,9 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Copy from builder
 COPY --from=builder --chown=nonroot:nonroot /app/.next/standalone ./
 COPY --from=builder --chown=nonroot:nonroot /app/.next/static ./.next/static
-COPY --from=builder --chown=nonroot:nonroot /app/public ./public
+
+# Create empty public directory (Next.js standalone doesn't need it)
+RUN mkdir -p ./public
 
 USER nonroot
 
