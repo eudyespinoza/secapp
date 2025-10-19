@@ -18,6 +18,43 @@ source .env
 set +a
 ```
 
+## Problema 2: Frontend - package-lock.json faltante
+
+**Error**: `npm ci command can only install with an existing package-lock.json`
+
+**Solución**:
+```bash
+# Generar package-lock.json para frontend
+cd frontend
+npm install --package-lock-only
+cd ..
+
+# O usar el script automatizado
+chmod +x fix-and-deploy.sh
+./fix-and-deploy.sh
+```
+
+## Problema 3: Backend - Conflicto de dependencias
+
+**Error**: `ERESOLVE could not resolve` con cache-manager
+
+**Solución**: Ya está corregido en Dockerfile.prod del backend con `--legacy-peer-deps`
+
+## Solución RÁPIDA - Script Automatizado
+
+```bash
+# Script que arregla todos los problemas automáticamente:
+chmod +x fix-and-deploy.sh
+./fix-and-deploy.sh
+
+# Este script:
+# 1. Genera .env si no existe
+# 2. Crea package-lock.json del frontend
+# 3. Limpia builds anteriores
+# 4. Construye imágenes una por una
+# 5. Despliega todos los servicios
+```
+
 ## Problema 2: Permisos de Docker
 
 **Error**: `permission denied while trying to connect to the Docker daemon socket`
