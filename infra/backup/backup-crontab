@@ -1,0 +1,13 @@
+# SecureApprove MongoDB Backup Cron Jobs
+# Format: minute hour day month weekday command
+
+# Daily backup at 2 AM (or custom schedule from BACKUP_SCHEDULE)
+0 2 * * * /scripts/backup-mongodb.sh >> /backups/backup.log 2>&1
+
+# Daily cleanup at 3 AM (delete backups older than retention period)
+0 3 * * * /scripts/backup-cleanup.sh >> /backups/cleanup.log 2>&1
+
+# Weekly log rotation at 4 AM on Sundays
+0 4 * * 0 find /backups -name "*.log" -type f -mtime +7 -delete
+
+# Empty line required at end of crontab

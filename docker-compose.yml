@@ -1,5 +1,3 @@
-version: '3.8'
-
 # ==============================================
 # SecureApprove - Production Docker Compose
 # High Availability Setup with Load Balancing

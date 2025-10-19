@@ -48,6 +48,18 @@ grep -n "version:" docker-compose.yml
 # Si aparece, eliminar esa línea manualmente
 ```
 
+## Solución RÁPIDA - Script Automatizado
+
+```bash
+# Si tienes problemas, usa el script de setup rápido:
+chmod +x quick-start.sh
+./quick-start.sh
+
+# Este script hace todo automáticamente:
+# 1. Genera .env con secretos seguros
+# 2. Ejecuta el deployment completo
+```
+
 ## Comandos de diagnóstico
 
 ```bash
