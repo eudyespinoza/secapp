@@ -519,30 +519,4 @@ services:
           cpus: '0.25'
           memory: 256M
 
-  # ==============================================
-  # BACKUP SERVICE
-  # ==============================================
-  backup:
-    build:
-      context: ./infra/backup
-      dockerfile: Dockerfile
-    container_name: secureapprove-backup
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      - BACKUP_SCHEDULE=${BACKUP_SCHEDULE}
-      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS}
-    volumes:
-      - ./backups:/backups
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - backend
-    depends_on:
-      - mongodb-primary
-      - redis-master
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 256M
+  # BACKUP SERVICE TEMPORARILY DISABLED - MongoDB download issues from Docker Hub
