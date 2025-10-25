@@ -1,0 +1,502 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Sign In - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+        /* Landing-style unified theme */
+        :root {
+            --indigo-50: #eef2ff;
+            --purple-50: #faf5ff;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--indigo-50) 0%, var(--bg-color) 50%, var(--purple-50) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+        }
+
+.webauthn-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--card-shadow);
+    border: 1px solid var(--border-color);
+}
+
+.webauthn-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.biometric-steps {
+    display: none;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.step {
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fingerprint-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.btn-webauthn {
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-webauthn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+    color: white;
+}
+
+.form-control {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    background-color: var(--input-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+    color: var(--text-color);
+}
+
+.error-alert {
+    background: var(--bg-color);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.success-alert {
+    background: var(--bg-color);
+    border: 1px solid var(--success-color);
+    color: var(--success-color);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.user-info {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.text-muted-custom {
+    color: var(--text-muted) !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="webauthn-container">
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <div class="webauthn-icon">
+                            <i class="bi bi-fingerprint text-white" style="font-size: 24px;"></i>
+                        </div>
+                        <h2 class="fw-bold">{% trans "Sign In" %}</h2>
+                        <p class="text-muted-custom">{% trans "Secure passwordless authentication with biometrics" %}</p>
+                    </div>
+
+        <!-- Error/Success Messages -->
+        <div id="errorAlert" class="error-alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                <span id="errorMessage"></span>
+            </div>
+        </div>
+
+        <div id="successAlert" class="success-alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle me-2"></i>
+                <span id="successMessage"></span>
+            </div>
+        </div>
+
+        <!-- User Info (shown when user is found) -->
+        <div id="userInfo" class="user-info">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary rounded-circle p-2 me-3" style="width: 40px; height: 40px;">
+                    <i class="bi bi-person-fill text-white" style="font-size: 16px;"></i>
+                </div>
+                <div>
+                    <div class="fw-semibold" id="userName"></div>
+                    <small class="text-muted" id="userEmail"></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm">
+            <form id="webauthnLoginForm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-semibold">{% trans "Email Address" %}</label>
+                    <input type="email" class="form-control" id="email" name="email" required
+                           placeholder="{% trans 'Enter your email address' %}">
+                </div>
+
+                <button type="submit" class="btn btn-webauthn w-100 mb-3" id="loginBtn">
+                    <i class="bi bi-fingerprint me-2"></i>
+                    {% trans "Sign In with Biometrics" %}
+                </button>
+
+                <button type="button" class="btn btn-outline-secondary w-100" id="checkUserBtn" style="display: none;">
+                    <i class="bi bi-search me-2"></i>
+                    {% trans "Check Account" %}
+                </button>
+            </form>
+        </div>
+
+        <!-- Biometric Login Steps -->
+        <div id="biometricSteps" class="biometric-steps">
+            <!-- Step 1: Preparing -->
+            <div class="step" id="step1">
+                <div class="fingerprint-icon">
+                    <i class="bi bi-gear-fill text-primary" style="font-size: 24px; animation: spin 1s linear infinite;"></i>
+                </div>
+                <h4>{% trans "Preparing Authentication" %}</h4>
+                <p class="text-muted">{% trans "Setting up your biometric login..." %}</p>
+            </div>
+
+            <!-- Step 2: Touch Sensor -->
+            <div class="step" id="step2">
+                <div class="fingerprint-icon">
+                    <i class="bi bi-fingerprint text-primary" style="font-size: 24px;"></i>
+                </div>
+                <h4>{% trans "Touch Your Sensor" %}</h4>
+                <p class="text-muted">{% trans "Please use your fingerprint, Face ID, or security key to sign in" %}</p>
+            </div>
+
+            <!-- Step 3: Verifying -->
+            <div class="step" id="step3">
+                <div class="fingerprint-icon">
+                    <i class="bi bi-shield-check text-success" style="font-size: 24px;"></i>
+                </div>
+                <h4>{% trans "Verifying..." %}</h4>
+                <p class="text-muted">{% trans "Authenticating your identity" %}</p>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div class="step" id="step4">
+                <div class="fingerprint-icon">
+                    <i class="bi bi-check-circle text-success" style="font-size: 24px;"></i>
+                </div>
+                <h4 class="text-success">{% trans "Authentication Successful!" %}</h4>
+                <p class="text-muted">{% trans "Welcome back! Redirecting..." %}</p>
+            </div>
+        </div>
+
+        <!-- Register Link -->
+        <div class="text-center mt-4">
+            <p class="text-muted">
+                {% trans "Don't have an account?" %}
+                <a href="{% url 'authentication:webauthn_register' %}" class="text-decoration-none fw-semibold">
+                    {% trans "Create Account" %}
+                </a>
+            </p>
+        </div>
+
+        <!-- WebAuthn Info -->
+        <div class="mt-4 p-3 bg-secondary-custom rounded-3">
+            <h6 class="fw-semibold mb-2">
+                <i class="bi bi-info-circle text-primary me-2"></i>
+                {% trans "About Biometric Authentication" %}
+            </h6>
+            <small class="text-muted-custom">
+                {% trans "We use WebAuthn for secure, passwordless authentication. Your biometric data stays on your device and is never shared." %}
+            </small>
+        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('webauthnLoginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const checkUserBtn = document.getElementById('checkUserBtn');
+    const formContainer = document.getElementById('loginForm');
+    const stepsContainer = document.getElementById('biometricSteps');
+    const userInfo = document.getElementById('userInfo');
+    
+    let currentUser = null;
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        
+        if (!email) {
+            showError('{% trans "Please enter your email address" %}');
+            return;
+        }
+        
+        try {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="bi bi-gear-fill me-2" style="animation: spin 1s linear infinite;"></i>{% trans "Checking Account..." %}';
+            
+            // Step 1: Check if user exists and has credentials
+            const userCheck = await fetch(`/auth/webauthn/user-check/?email=${encodeURIComponent(email)}`);
+            const userCheckResult = await userCheck.json();
+            
+            if (!userCheckResult.exists) {
+                throw new Error('{% trans "No account found with this email address. Please register first." %}');
+            }
+            
+            if (!userCheckResult.hasCredentials) {
+                throw new Error('{% trans "No biometric authentication set up for this account. Please contact support." %}');
+            }
+            
+            // Step 2: Get login options
+            showBiometricStep(1);
+            
+            const optionsResponse = await fetch('/auth/webauthn/login/options/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ email })
+            });
+            
+            const optionsResult = await optionsResponse.json();
+            
+            if (!optionsResponse.ok) {
+                throw new Error(optionsResult.error || 'Failed to get login options');
+            }
+            
+            const { options, userId } = optionsResult;
+            
+            // Step 3: Show touch sensor prompt
+            showBiometricStep(2);
+            
+            // Convert challenge from base64
+            options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+            
+            if (options.allowCredentials) {
+                options.allowCredentials = options.allowCredentials.map(cred => ({
+                    ...cred,
+                    id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0))
+                }));
+            }
+            
+            // Start WebAuthn authentication
+            const assertion = await navigator.credentials.get({ publicKey: options });
+            
+            if (!assertion) {
+                throw new Error('{% trans "WebAuthn authentication was cancelled" %}');
+            }
+            
+            // Step 4: Show verifying
+            showBiometricStep(3);
+            
+            // Prepare assertion for server
+            const assertionData = {
+                id: assertion.id,
+                rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.rawId))),
+                response: {
+                    clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.clientDataJSON))),
+                    authenticatorData: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.authenticatorData))),
+                    signature: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.signature))),
+                    userHandle: assertion.response.userHandle ? btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.userHandle))) : null,
+                },
+                type: assertion.type
+            };
+            
+            // Step 5: Verify authentication
+            const verifyResponse = await fetch('/auth/webauthn/login/verify/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    response: assertionData
+                })
+            });
+            
+            const verifyResult = await verifyResponse.json();
+            
+            if (!verifyResponse.ok) {
+                throw new Error(verifyResult.error || 'Authentication verification failed');
+            }
+            
+            // Step 6: Success
+            showBiometricStep(4);
+            showSuccess('{% trans "Authentication successful! Welcome back." %}');
+            
+            // Redirect to dashboard after success
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            showError(error.message);
+            resetForm();
+        }
+    });
+    
+    // Email input change handler for user checking
+    document.getElementById('email').addEventListener('blur', async function(e) {
+        const email = e.target.value.trim();
+        if (email && email.includes('@')) {
+            await checkUser(email);
+        }
+    });
+    
+    async function checkUser(email) {
+        try {
+            const response = await fetch(`/auth/webauthn/user-check/?email=${encodeURIComponent(email)}`);
+            const result = await response.json();
+            
+            if (result.exists) {
+                currentUser = result;
+                showUserInfo(email, result.hasCredentials);
+            } else {
+                hideUserInfo();
+            }
+        } catch (error) {
+            console.error('Error checking user:', error);
+            hideUserInfo();
+        }
+    }
+    
+    function showUserInfo(email, hasCredentials) {
+        const userName = email.split('@')[0];
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('userEmail').textContent = email;
+        
+        userInfo.style.display = 'block';
+        
+        if (!hasCredentials) {
+            showError('{% trans "No biometric authentication set up for this account." %}');
+            loginBtn.disabled = true;
+        } else {
+            document.getElementById('errorAlert').style.display = 'none';
+            loginBtn.disabled = false;
+        }
+    }
+    
+    function hideUserInfo() {
+        userInfo.style.display = 'none';
+        currentUser = null;
+    }
+    
+    function showBiometricStep(stepNumber) {
+        formContainer.style.display = 'none';
+        stepsContainer.style.display = 'block';
+        
+        // Hide all steps
+        document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+        
+        // Show current step
+        const currentStep = document.getElementById(`step${stepNumber}`);
+        if (currentStep) {
+            currentStep.classList.add('active');
+        }
+    }
+    
+    function showError(message) {
+        const errorAlert = document.getElementById('errorAlert');
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorAlert.style.display = 'block';
+        document.getElementById('successAlert').style.display = 'none';
+    }
+    
+    function showSuccess(message) {
+        const successAlert = document.getElementById('successAlert');
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        successAlert.style.display = 'block';
+        document.getElementById('errorAlert').style.display = 'none';
+    }
+    
+    function resetForm() {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="bi bi-fingerprint me-2"></i>{% trans "Sign In with Biometrics" %}';
+        formContainer.style.display = 'block';
+        stepsContainer.style.display = 'none';
+    }
+    
+    // Check WebAuthn support
+    if (!navigator.credentials || !navigator.credentials.get) {
+        showError('{% trans "WebAuthn is not supported in your browser. Please use Chrome, Firefox, Safari, or Edge." %}');
+        loginBtn.disabled = true;
+    }
+});
+</script>
+{% endblock %}

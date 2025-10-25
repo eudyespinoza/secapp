@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Choose Your Plan - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+        /* Landing-style unified theme */
+        :root {
+            --indigo-50: #eef2ff;
+            --purple-50: #faf5ff;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--indigo-50) 0%, var(--bg-color) 50%, var(--purple-50) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+        }
+
+        .plan-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px var(--card-shadow);
+        }
+
+        .plan-card.featured {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .plan-card.featured::before {
+            content: "{% trans 'Most Popular' %}";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .plan-card.featured .plan-header {
+            padding-top: 3rem;
+        }
+
+        .plan-header {
+            padding: 2rem 2rem 1rem;
+            text-align: center;
+        }
+
+        .plan-body {
+            padding: 0 2rem 2rem;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .plan-price-currency {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .plan-features li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .plan-features li::before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-plan-primary {
+            background: var(--primary-color);
+            color: white;
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-plan-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-plan-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-plan-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+        }
+
+        .text-muted-custom {
+            color: var(--text-muted) !important;
+        }
+
+        .badge-popular {
+            background: var(--warning-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold mb-3">{% trans "Choose Your Plan" %}</h1>
+            <p class="lead text-muted-custom">{% trans "Select the perfect plan for your organization's approval needs" %}</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Starter Plan -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="fw-bold mb-2">{% trans "Starter" %}</h3>
+                        <div class="plan-price">$25<span class="plan-price-currency">/{% trans "month" %}</span></div>
+                        <p class="text-muted-custom mt-2">{% trans "Perfect for small teams" %}</p>
+                    </div>
+                    <div class="plan-body">
+                        <ul class="plan-features">
+                            <li>{% trans "Up to 2 approvers" %}</li>
+                            <li>{% trans "10 team members" %}</li>
+                            <li>{% trans "Basic workflow templates" %}</li>
+                            <li>{% trans "Email notifications" %}</li>
+                            <li>{% trans "Basic reporting" %}</li>
+                            <li>{% trans "WebAuthn security" %}</li>
+                        </ul>
+                        <a href="{% url 'billing:subscribe' 'starter' %}" class="btn-plan btn-plan-secondary">
+                            {% trans "Start Free Trial" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Growth Plan (Featured) -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="plan-card featured">
+                    <div class="plan-header">
+                        <h3 class="fw-bold mb-2">{% trans "Growth" %}</h3>
+                        <div class="plan-price">$45<span class="plan-price-currency">/{% trans "month" %}</span></div>
+                        <p class="text-muted-custom mt-2">{% trans "Ideal for growing companies" %}</p>
+                    </div>
+                    <div class="plan-body">
+                        <ul class="plan-features">
+                            <li>{% trans "Up to 6 approvers" %}</li>
+                            <li>{% trans "25 team members" %}</li>
+                            <li>{% trans "Advanced workflow automation" %}</li>
+                            <li>{% trans "Slack & Teams integration" %}</li>
+                            <li>{% trans "Advanced analytics" %}</li>
+                            <li>{% trans "API access" %}</li>
+                            <li>{% trans "Priority support" %}</li>
+                        </ul>
+                        <a href="{% url 'billing:subscribe' 'growth' %}" class="btn-plan btn-plan-primary">
+                            {% trans "Start Free Trial" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scale Plan -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="fw-bold mb-2">{% trans "Scale" %}</h3>
+                        <div class="plan-price">$65<span class="plan-price-currency">/{% trans "month" %}</span></div>
+                        <p class="text-muted-custom mt-2">{% trans "For enterprise organizations" %}</p>
+                    </div>
+                    <div class="plan-body">
+                        <ul class="plan-features">
+                            <li>{% trans "Unlimited approvers" %}</li>
+                            <li>{% trans "Unlimited team members" %}</li>
+                            <li>{% trans "Custom workflow builder" %}</li>
+                            <li>{% trans "Advanced integrations" %}</li>
+                            <li>{% trans "Enterprise analytics" %}</li>
+                            <li>{% trans "Dedicated support" %}</li>
+                            <li>{% trans "SLA guarantee" %}</li>
+                        </ul>
+                        <a href="{% url 'billing:subscribe' 'scale' %}" class="btn-plan btn-plan-secondary">
+                            {% trans "Contact Sales" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Comparison -->
+        <div class="mt-5 text-center">
+            <h3 class="fw-bold mb-4">{% trans "All plans include" %}</h3>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <i class="bi bi-shield-check text-primary" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">{% trans "WebAuthn Security" %}</h6>
+                    <small class="text-muted-custom">{% trans "Passwordless biometric authentication" %}</small>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <i class="bi bi-cloud-check text-primary" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">{% trans "Cloud Hosting" %}</h6>
+                    <small class="text-muted-custom">{% trans "Secure, reliable cloud infrastructure" %}</small>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <i class="bi bi-phone text-primary" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">{% trans "Mobile Ready" %}</h6>
+                    <small class="text-muted-custom">{% trans "Works perfectly on any device" %}</small>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <i class="bi bi-headset text-primary" style="font-size: 2rem;"></i>
+                    <h6 class="mt-2">{% trans "24/7 Support" %}</h6>
+                    <small class="text-muted-custom">{% trans "Get help whenever you need it" %}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mt-5">
+            <h3 class="text-center fw-bold mb-4">{% trans "Frequently Asked Questions" %}</h3>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    {% trans "Can I change my plan later?" %}
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    {% trans "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately." %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    {% trans "Is there a free trial?" %}
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    {% trans "Yes, we offer a 14-day free trial for all plans. No credit card required to start." %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    {% trans "What payment methods do you accept?" %}
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    {% trans "We accept all major credit cards, PayPal, and bank transfers through MercadoPago." %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <p class="text-muted-custom">
+                {% trans "Questions about our plans?" %} 
+                <a href="mailto:support@secureapprove.com" class="text-primary">{% trans "Contact our sales team" %}</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

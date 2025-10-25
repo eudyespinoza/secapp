@@ -1,0 +1,455 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Profile - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+        /* Landing-style unified theme */
+        :root {
+            --indigo-50: #eef2ff;
+            --purple-50: #faf5ff;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--indigo-50) 0%, var(--bg-color) 50%, var(--purple-50) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px var(--card-shadow);
+        }
+
+        .profile-header {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .credential-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .credential-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .credential-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .btn-danger-outline {
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            background: transparent;
+        }
+
+        .btn-danger-outline:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .text-muted-custom {
+            color: var(--text-muted) !important;
+        }
+
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
+            padding: 1rem;
+        }
+
+        .alert-info-custom {
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            border-left: 4px solid var(--info-color);
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="fw-bold mb-2">{{ user.get_full_name|default:user.email }}</h2>
+                    <p class="opacity-75 mb-0">
+                        {% if user.is_superuser %}
+                            {% trans "Administrator" %}
+                        {% elif user.is_staff %}
+                            {% trans "Staff Member" %}
+                        {% else %}
+                            {% trans "User" %}
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Profile Details -->
+                <div class="p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-semibold text-muted-custom mb-1">{% trans "Full Name" %}</h6>
+                            <p class="mb-0">{{ user.first_name }} {{ user.last_name|default:user.email }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-semibold text-muted-custom mb-1">{% trans "Email Address" %}</h6>
+                            <p class="mb-0">{{ user.email }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-semibold text-muted-custom mb-1">{% trans "Company" %}</h6>
+                            <p class="mb-0">{{ user.company|default:"—" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-semibold text-muted-custom mb-1">{% trans "Member Since" %}</h6>
+                            <p class="mb-0">{{ user.date_joined|date:"F Y" }}</p>
+                        </div>
+                    </div>
+                    <!-- WebAuthn Credentials Section -->
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">
+                            <i class="bi bi-fingerprint text-primary me-2"></i>
+                            {% trans "Biometric Authentication" %}
+                        </h5>
+                        <button class="btn btn-primary-custom btn-sm" onclick="addNewCredential()">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            {% trans "Add Device" %}
+                        </button>
+                    </div>
+
+                    {% if webauthn_credentials %}
+                        <div id="credentialsList">
+                            {% for credential in webauthn_credentials %}
+                            <div class="credential-item" data-credential-id="{{ credential.credential_id|default:forloop.counter }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="credential-icon me-3">
+                                        <i class="bi bi-shield-check" style="font-size: 1rem;"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-semibold mb-1">{% trans "Authentication Device" %} #{{ forloop.counter }}</h6>
+                                        <small class="text-muted-custom">
+                                            {% if credential.created_at %}
+                                                {% trans "Registered on" %} {{ credential.created_at|date:"M j, Y" }}
+                                            {% else %}
+                                                {% trans "Registered device" %}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <button class="btn btn-danger-outline btn-sm" onclick="removeCredential('{{ credential.credential_id|default:forloop.counter }}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info-custom">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <div>
+                                    <strong>{% trans "No biometric devices registered" %}</strong><br>
+                                    <small>{% trans "Add a biometric device to enhance your account security" %}</small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Security Information -->
+                    <div class="mt-4 p-3 bg-secondary-custom rounded-3">
+                        <h6 class="fw-semibold mb-2">
+                            <i class="bi bi-shield-lock text-success me-2"></i>
+                            {% trans "Security Information" %}
+                        </h6>
+                        <small class="text-muted-custom">
+                            {% trans "Your biometric data is stored securely on your devices and never transmitted to our servers. Each device creates a unique cryptographic key for authentication." %}
+                        </small>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4 d-flex gap-2 flex-wrap">
+                        <a href="{% url 'authentication:profile_edit' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-pencil me-1"></i>
+                            {% trans "Edit Profile" %}
+                        </a>
+                        <a href="{% url 'authentication:logout' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-box-arrow-right me-1"></i>
+                            {% trans "Sign Out" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add Credential Modal -->
+<div class="modal fade" id="addCredentialModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-fingerprint me-2"></i>
+                    {% trans "Add Biometric Device" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="credentialSteps">
+                    <div class="step active" id="credStep1">
+                        <div class="mb-3">
+                            <i class="bi bi-fingerprint text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h6>{% trans "Preparing Device Registration" %}</h6>
+                        <p class="text-muted-custom">{% trans "Get ready to use your biometric sensor" %}</p>
+                    </div>
+                    <div class="step" id="credStep2" style="display: none;">
+                        <div class="mb-3">
+                            <i class="bi bi-hand-index text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h6>{% trans "Touch Your Sensor" %}</h6>
+                        <p class="text-muted-custom">{% trans "Use your fingerprint, Face ID, or security key" %}</p>
+                    </div>
+                    <div class="step" id="credStep3" style="display: none;">
+                        <div class="mb-3">
+                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h6 class="text-success">{% trans "Device Added Successfully!" %}</h6>
+                        <p class="text-muted-custom">{% trans "Your new device has been registered" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" id="startCredentialRegistration">
+                    {% trans "Start Registration" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize modal
+    window.addCredentialModal = new bootstrap.Modal(document.getElementById('addCredentialModal'));
+    
+    // Add new credential function
+    window.addNewCredential = function() {
+        resetCredentialModal();
+        window.addCredentialModal.show();
+    };
+    
+    // Remove credential function
+    window.removeCredential = function(credentialId) {
+        if (confirm('{% trans "Are you sure you want to remove this device?" %}')) {
+            fetch('/webauthn/delete/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    credential_id: credentialId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const credentialElement = document.querySelector(`[data-credential-id="${credentialId}"]`);
+                    if (credentialElement) {
+                        credentialElement.remove();
+                    }
+                    
+                    // Check if no credentials left
+                    const credentialsList = document.getElementById('credentialsList');
+                    if (credentialsList && credentialsList.children.length === 0) {
+                        location.reload(); // Reload to show the "no devices" message
+                    }
+                } else {
+                    alert('{% trans "Failed to remove device" %}');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{% trans "Failed to remove device" %}');
+            });
+        }
+    };
+    
+    // Start credential registration
+    document.getElementById('startCredentialRegistration').addEventListener('click', async function() {
+        try {
+            showCredentialStep(2);
+            
+            // Get registration options from server
+            const optionsResponse = await fetch('/webauthn/register/begin/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+            const options = await optionsResponse.json();
+            
+            if (!options.success) {
+                throw new Error(options.error || 'Failed to get registration options');
+            }
+            
+            // Start WebAuthn registration
+            const credential = await navigator.credentials.create({
+                publicKey: {
+                    ...options.publicKey,
+                    challenge: base64urlToBuffer(options.publicKey.challenge),
+                    user: {
+                        ...options.publicKey.user,
+                        id: base64urlToBuffer(options.publicKey.user.id)
+                    }
+                }
+            });
+            
+            // Verify registration with server
+            const verifyResponse = await fetch('/webauthn/register/complete/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    credential: {
+                        id: credential.id,
+                        rawId: bufferToBase64url(credential.rawId),
+                        response: {
+                            attestationObject: bufferToBase64url(credential.response.attestationObject),
+                            clientDataJSON: bufferToBase64url(credential.response.clientDataJSON)
+                        },
+                        type: credential.type
+                    }
+                })
+            });
+            
+            const verifyResult = await verifyResponse.json();
+            
+            if (verifyResult.success) {
+                showCredentialStep(3);
+                
+                // Automatically close modal and refresh after success
+                setTimeout(() => {
+                    window.addCredentialModal.hide();
+                    location.reload();
+                }, 2000);
+            } else {
+                throw new Error(verifyResult.error || 'Registration verification failed');
+            }
+            
+        } catch (error) {
+            console.error('WebAuthn registration error:', error);
+            alert('{% trans "Failed to add device" %}: ' + error.message);
+            resetCredentialModal();
+        }
+    });
+    
+    function showCredentialStep(stepNumber) {
+        document.querySelectorAll('#credentialSteps .step').forEach(step => {
+            step.classList.remove('active');
+            step.style.display = 'none';
+        });
+        
+        const currentStep = document.getElementById(`credStep${stepNumber}`);
+        if (currentStep) {
+            currentStep.classList.add('active');
+            currentStep.style.display = 'block';
+        }
+        
+        // Hide/show footer buttons based on step
+        const footer = document.querySelector('.modal-footer');
+        if (stepNumber === 2) {
+            footer.style.display = 'none';
+        } else if (stepNumber === 3) {
+            footer.style.display = 'none';
+        } else {
+            footer.style.display = 'flex';
+        }
+    }
+    
+    function resetCredentialModal() {
+        showCredentialStep(1);
+        document.querySelector('.modal-footer').style.display = 'flex';
+    }
+    
+    // Base64url encoding/decoding functions
+    function base64urlToBuffer(base64url) {
+        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+        const binary = atob(padded);
+        const buffer = new ArrayBuffer(binary.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < binary.length; i++) {
+            view[i] = binary.charCodeAt(i);
+        }
+        return buffer;
+    }
+    
+    function bufferToBase64url(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+});
+</script>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}

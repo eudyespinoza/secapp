@@ -1,0 +1,544 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: SecureApprove 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-19 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ================================================
+# Common Terms
+# ================================================
+
+msgid "SecureApprove"
+msgstr "SecureApprove"
+
+msgid "Dashboard"
+msgstr "Painel"
+
+msgid "Requests"
+msgstr "Solicitações"
+
+msgid "New Request"
+msgstr "Nova Solicitação"
+
+msgid "All Requests"
+msgstr "Todas as Solicitações"
+
+msgid "My Requests"
+msgstr "Minhas Solicitações"
+
+msgid "Pending"
+msgstr "Pendente"
+
+msgid "Approved"
+msgstr "Aprovado"
+
+msgid "Rejected"
+msgstr "Rejeitado"
+
+msgid "Submit"
+msgstr "Enviar"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Save"
+msgstr "Salvar"
+
+msgid "Delete"
+msgstr "Excluir"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "View"
+msgstr "Visualizar"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Filter"
+msgstr "Filtrar"
+
+msgid "Export"
+msgstr "Exportar"
+
+msgid "Print"
+msgstr "Imprimir"
+
+msgid "Loading..."
+msgstr "Carregando..."
+
+msgid "Error"
+msgstr "Erro"
+
+msgid "Success"
+msgstr "Sucesso"
+
+msgid "Warning"
+msgstr "Aviso"
+
+msgid "Information"
+msgstr "Informação"
+
+# ================================================
+# Authentication
+# ================================================
+
+msgid "Login"
+msgstr "Entrar"
+
+msgid "Logout"
+msgstr "Sair"
+
+msgid "Register"
+msgstr "Registrar"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Password"
+msgstr "Senha"
+
+msgid "Confirm Password"
+msgstr "Confirmar Senha"
+
+msgid "First Name"
+msgstr "Nome"
+
+msgid "Last Name"
+msgstr "Sobrenome"
+
+msgid "Username"
+msgstr "Usuário"
+
+msgid "Remember me"
+msgstr "Lembrar-me"
+
+msgid "Forgot password?"
+msgstr "Esqueceu a senha?"
+
+msgid "Sign in with fingerprint"
+msgstr "Entrar com impressão digital"
+
+msgid "Use WebAuthn"
+msgstr "Usar WebAuthn"
+
+# ================================================
+# Request Categories
+# ================================================
+
+msgid "Expense"
+msgstr "Despesas"
+
+msgid "Purchase"
+msgstr "Compras"
+
+msgid "Travel"
+msgstr "Viagens"
+
+msgid "Contract"
+msgstr "Contratos"
+
+msgid "Document"
+msgstr "Documentos"
+
+msgid "Other"
+msgstr "Outros"
+
+# ================================================
+# Request Fields
+# ================================================
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Description"
+msgstr "Descrição"
+
+msgid "Category"
+msgstr "Categoria"
+
+msgid "Priority"
+msgstr "Prioridade"
+
+msgid "Amount"
+msgstr "Valor"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created"
+msgstr "Criado"
+
+msgid "Approved by"
+msgstr "Aprovado por"
+
+msgid "Rejected by"
+msgstr "Rejeitado por"
+
+msgid "High"
+msgstr "Alta"
+
+msgid "Medium"
+msgstr "Média"
+
+msgid "Low"
+msgstr "Baixa"
+
+msgid "Vendor"
+msgstr "Fornecedor"
+
+msgid "Cost Center"
+msgstr "Centro de Custo"
+
+msgid "Expense Category"
+msgstr "Categoria de Despesas"
+
+msgid "Receipt Reference"
+msgstr "Referência do Recibo"
+
+msgid "Destination"
+msgstr "Destino"
+
+msgid "Start Date"
+msgstr "Data de Início"
+
+msgid "End Date"
+msgstr "Data de Fim"
+
+msgid "Document ID"
+msgstr "ID do Documento"
+
+msgid "Reason"
+msgstr "Motivo"
+
+# ================================================
+# Request Actions
+# ================================================
+
+msgid "Submit Request"
+msgstr "Enviar Solicitação"
+
+msgid "Approve Request"
+msgstr "Aprovar Solicitação"
+
+msgid "Reject Request"
+msgstr "Rejeitar Solicitação"
+
+msgid "Review Pending"
+msgstr "Revisar Pendentes"
+
+msgid "View Approved"
+msgstr "Ver Aprovados"
+
+msgid "Back to Requests"
+msgstr "Voltar às Solicitações"
+
+msgid "Request Information"
+msgstr "Informações da Solicitação"
+
+msgid "Request Details"
+msgstr "Detalhes da Solicitação"
+
+msgid "Additional Information"
+msgstr "Informações Adicionais"
+
+msgid "Timeline"
+msgstr "Cronologia"
+
+msgid "Request Created"
+msgstr "Solicitação Criada"
+
+msgid "Request Approved"
+msgstr "Solicitação Aprovada"
+
+msgid "Request Rejected"
+msgstr "Solicitação Rejeitada"
+
+# ================================================
+# Dashboard
+# ================================================
+
+msgid "Welcome back"
+msgstr "Bem-vindo de volta"
+
+msgid "Here's what's happening with your requests."
+msgstr "Aqui está o que está acontecendo com suas solicitações."
+
+msgid "Total Requests"
+msgstr "Total de Solicitações"
+
+msgid "Pending Approvals"
+msgstr "Aprovações Pendentes"
+
+msgid "Quick Actions"
+msgstr "Ações Rápidas"
+
+msgid "Recent Requests"
+msgstr "Solicitações Recentes"
+
+msgid "Activity Timeline"
+msgstr "Linha do Tempo de Atividades"
+
+msgid "Requests by Category"
+msgstr "Solicitações por Categoria"
+
+msgid "Last 30 days"
+msgstr "Últimos 30 dias"
+
+msgid "Last 7 days"
+msgstr "Últimos 7 dias"
+
+msgid "This month"
+msgstr "Este mês"
+
+msgid "ago"
+msgstr "atrás"
+
+msgid "No requests yet"
+msgstr "Ainda não há solicitações"
+
+msgid "No requests found"
+msgstr "Nenhuma solicitação encontrada"
+
+# ================================================
+# Billing
+# ================================================
+
+msgid "Billing"
+msgstr "Faturamento"
+
+msgid "Subscription"
+msgstr "Assinatura"
+
+msgid "Plan"
+msgstr "Plano"
+
+msgid "Starter"
+msgstr "Inicial"
+
+msgid "Growth"
+msgstr "Crescimento"
+
+msgid "Scale"
+msgstr "Escala"
+
+msgid "Monthly"
+msgstr "Mensal"
+
+msgid "Yearly"
+msgstr "Anual"
+
+msgid "Current Plan"
+msgstr "Plano Atual"
+
+msgid "Upgrade Plan"
+msgstr "Atualizar Plano"
+
+msgid "Downgrade Plan"
+msgstr "Rebaixar Plano"
+
+msgid "Cancel Subscription"
+msgstr "Cancelar Assinatura"
+
+msgid "Payment"
+msgstr "Pagamento"
+
+msgid "Invoice"
+msgstr "Fatura"
+
+msgid "Usage"
+msgstr "Uso"
+
+msgid "Limits"
+msgstr "Limites"
+
+msgid "Features"
+msgstr "Recursos"
+
+# ================================================
+# Forms & Validation
+# ================================================
+
+msgid "This field is required."
+msgstr "Este campo é obrigatório."
+
+msgid "Please enter a valid email address."
+msgstr "Por favor, insira um endereço de email válido."
+
+msgid "Passwords do not match."
+msgstr "As senhas não coincidem."
+
+msgid "Please fill in all required fields."
+msgstr "Por favor, preencha todos os campos obrigatórios."
+
+msgid "Invalid data provided."
+msgstr "Dados inválidos fornecidos."
+
+msgid "Operation completed successfully."
+msgstr "Operação concluída com sucesso."
+
+msgid "An error occurred. Please try again."
+msgstr "Ocorreu um erro. Por favor, tente novamente."
+
+# ================================================
+# Navigation
+# ================================================
+
+msgid "Home"
+msgstr "Início"
+
+msgid "Profile"
+msgstr "Perfil"
+
+msgid "Settings"
+msgstr "Configurações"
+
+msgid "Help"
+msgstr "Ajuda"
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "English"
+msgstr "Inglês"
+
+msgid "Spanish"
+msgstr "Espanhol"
+
+msgid "Portuguese"
+msgstr "Português"
+
+# ================================================
+# Messages
+# ================================================
+
+msgid "Your request has been submitted successfully."
+msgstr "Sua solicitação foi enviada com sucesso."
+
+msgid "Request has been approved."
+msgstr "A solicitação foi aprovada."
+
+msgid "Request has been rejected."
+msgstr "A solicitação foi rejeitada."
+
+msgid "You do not have permission to perform this action."
+msgstr "Você não tem permissão para realizar esta ação."
+
+msgid "This request has already been processed."
+msgstr "Esta solicitação já foi processada."
+
+msgid "You cannot approve your own request."
+msgstr "Você não pode aprovar sua própria solicitação."
+
+msgid "Please provide a reason for rejection."
+msgstr "Por favor, forneça um motivo para a rejeição."
+
+# ================================================
+# Pagination
+# ================================================
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Próximo"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "of"
+msgstr "de"
+
+msgid "Showing"
+msgstr "Mostrando"
+
+msgid "to"
+msgstr "até"
+
+msgid "entries"
+msgstr "entradas"
+
+# ================================================
+# Date & Time
+# ================================================
+
+msgid "Today"
+msgstr "Hoje"
+
+msgid "Yesterday"
+msgstr "Ontem"
+
+msgid "Tomorrow"
+msgstr "Amanhã"
+
+msgid "Monday"
+msgstr "Segunda-feira"
+
+msgid "Tuesday"
+msgstr "Terça-feira"
+
+msgid "Wednesday"
+msgstr "Quarta-feira"
+
+msgid "Thursday"
+msgstr "Quinta-feira"
+
+msgid "Friday"
+msgstr "Sexta-feira"
+
+msgid "Saturday"
+msgstr "Sábado"
+
+msgid "Sunday"
+msgstr "Domingo"
+
+msgid "January"
+msgstr "Janeiro"
+
+msgid "February"
+msgstr "Fevereiro"
+
+msgid "March"
+msgstr "Março"
+
+msgid "April"
+msgstr "Abril"
+
+msgid "May"
+msgstr "Maio"
+
+msgid "June"
+msgstr "Junho"
+
+msgid "July"
+msgstr "Julho"
+
+msgid "August"
+msgstr "Agosto"
+
+msgid "September"
+msgstr "Setembro"
+
+msgid "October"
+msgstr "Outubro"
+
+msgid "November"
+msgstr "Novembro"
+
+msgid "December"
+msgstr "Dezembro"

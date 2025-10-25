@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Payment Failed - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+        .hero-section {
+            background: linear-gradient(135deg, #eef2ff 0%, var(--bg-color) 50%, #faf5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+        }
+
+        .error-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--card-shadow);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--danger-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary-custom {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-custom:hover {
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="error-card">
+            <div class="p-5">
+                <div class="error-icon">
+                    <i class="bi bi-x-lg text-white" style="font-size: 2.5rem;"></i>
+                </div>
+                
+                <h1 class="fw-bold text-danger mb-3">{% trans "Payment Failed" %}</h1>
+                
+                <p class="lead mb-4">
+                    {% trans "We're sorry, but your payment could not be processed. Please try again or contact our support team for assistance." %}
+                </p>
+                
+                <div class="alert alert-warning" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <div>
+                            <strong>{% trans "Common reasons for payment failures:" %}</strong><br>
+                            <small>
+                                • {% trans "Insufficient funds" %}<br>
+                                • {% trans "Incorrect card details" %}<br>
+                                • {% trans "Card blocked by bank" %}<br>
+                                • {% trans "Expired card" %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'billing:select_plan' %}" class="btn-primary-custom">
+                        <i class="bi bi-arrow-clockwise me-2"></i>
+                        {% trans "Try Again" %}
+                    </a>
+                    <a href="mailto:support@secureapprove.com" class="btn-secondary-custom">
+                        <i class="bi bi-envelope me-2"></i>
+                        {% trans "Contact Support" %}
+                    </a>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'landing:index' %}" class="text-muted">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        {% trans "Back to Home" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

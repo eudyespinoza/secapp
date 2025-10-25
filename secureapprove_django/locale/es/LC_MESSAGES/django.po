@@ -1,0 +1,666 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: SecureApprove 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-19 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ================================================
+# Common Terms
+# ================================================
+
+msgid "SecureApprove"
+msgstr "SecureApprove"
+
+msgid "Dashboard"
+msgstr "Panel de Control"
+
+msgid "Requests"
+msgstr "Solicitudes"
+
+msgid "New Request"
+msgstr "Nueva Solicitud"
+
+msgid "All Requests"
+msgstr "Todas las Solicitudes"
+
+msgid "My Requests"
+msgstr "Mis Solicitudes"
+
+msgid "Pending"
+msgstr "Pendiente"
+
+msgid "Approved"
+msgstr "Aprobado"
+
+msgid "Rejected"
+msgstr "Rechazado"
+
+msgid "Submit"
+msgstr "Enviar"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "View"
+msgstr "Ver"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Filter"
+msgstr "Filtrar"
+
+msgid "Export"
+msgstr "Exportar"
+
+msgid "Print"
+msgstr "Imprimir"
+
+msgid "Loading..."
+msgstr "Cargando..."
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Success"
+msgstr "Éxito"
+
+msgid "Warning"
+msgstr "Advertencia"
+
+msgid "Information"
+msgstr "Información"
+
+# ================================================
+# Authentication
+# ================================================
+
+msgid "Login"
+msgstr "Iniciar Sesión"
+
+msgid "Logout"
+msgstr "Cerrar Sesión"
+
+msgid "Register"
+msgstr "Registrarse"
+
+msgid "Email"
+msgstr "Correo Electrónico"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "Confirm Password"
+msgstr "Confirmar Contraseña"
+
+msgid "First Name"
+msgstr "Nombre"
+
+msgid "Last Name"
+msgstr "Apellido"
+
+msgid "Username"
+msgstr "Usuario"
+
+msgid "Remember me"
+msgstr "Recordarme"
+
+msgid "Forgot password?"
+msgstr "¿Olvidaste tu contraseña?"
+
+# ================================================
+# WebAuthn Authentication
+# ================================================
+
+msgid "Create Account"
+msgstr "Crear Cuenta"
+
+msgid "Sign In"
+msgstr "Iniciar Sesión"
+
+msgid "Secure passwordless registration with biometric authentication"
+msgstr "Registro seguro sin contraseñas con autenticación biométrica"
+
+msgid "Secure passwordless authentication with biometrics"
+msgstr "Autenticación segura sin contraseñas con biometría"
+
+msgid "Register with Biometrics"
+msgstr "Registrarse con Biometría"
+
+msgid "Sign In with Biometrics"
+msgstr "Iniciar Sesión con Biometría"
+
+msgid "Starting Registration..."
+msgstr "Iniciando Registro..."
+
+msgid "Checking Account..."
+msgstr "Verificando Cuenta..."
+
+msgid "Preparing Registration"
+msgstr "Preparando Registro"
+
+msgid "Preparing Authentication"
+msgstr "Preparando Autenticación"
+
+msgid "Touch Your Sensor"
+msgstr "Toca tu Sensor"
+
+msgid "Please use your fingerprint, Face ID, or security key to complete registration"
+msgstr "Por favor usa tu huella dactilar, Face ID, o llave de seguridad para completar el registro"
+
+msgid "Please use your fingerprint, Face ID, or security key to sign in"
+msgstr "Por favor usa tu huella dactilar, Face ID, o llave de seguridad para iniciar sesión"
+
+msgid "Verifying..."
+msgstr "Verificando..."
+
+msgid "Securing your account with biometric authentication"
+msgstr "Asegurando tu cuenta con autenticación biométrica"
+
+msgid "Authenticating your identity"
+msgstr "Autenticando tu identidad"
+
+msgid "Registration Complete!"
+msgstr "¡Registro Completado!"
+
+msgid "Authentication Successful!"
+msgstr "¡Autenticación Exitosa!"
+
+msgid "Your account has been created successfully"
+msgstr "Tu cuenta ha sido creada exitosamente"
+
+msgid "Welcome back! Redirecting..."
+msgstr "¡Bienvenido de vuelta! Redirigiendo..."
+
+msgid "Already have an account?"
+msgstr "¿Ya tienes una cuenta?"
+
+msgid "Don't have an account?"
+msgstr "¿No tienes una cuenta?"
+
+msgid "About Biometric Authentication"
+msgstr "Acerca de la Autenticación Biométrica"
+
+msgid "We use WebAuthn for secure, passwordless authentication. Your biometric data stays on your device and is never shared."
+msgstr "Usamos WebAuthn para autenticación segura sin contraseñas. Tus datos biométricos permanecen en tu dispositivo y nunca se comparten."
+
+msgid "Please fill in all fields"
+msgstr "Por favor completa todos los campos"
+
+msgid "Please enter your email address"
+msgstr "Por favor ingresa tu dirección de email"
+
+msgid "WebAuthn is not supported in your browser. Please use Chrome, Firefox, Safari, or Edge."
+msgstr "WebAuthn no es compatible con tu navegador. Por favor usa Chrome, Firefox, Safari, o Edge."
+
+msgid "WebAuthn registration was cancelled"
+msgstr "El registro WebAuthn fue cancelado"
+
+msgid "WebAuthn authentication was cancelled"
+msgstr "La autenticación WebAuthn fue cancelada"
+
+msgid "No account found with this email address. Please register first."
+msgstr "No se encontró una cuenta con esta dirección de email. Por favor regístrate primero."
+
+msgid "No biometric authentication set up for this account. Please contact support."
+msgstr "No hay autenticación biométrica configurada para esta cuenta. Por favor contacta al soporte."
+
+msgid "No biometric authentication set up for this account."
+msgstr "No hay autenticación biométrica configurada para esta cuenta."
+
+msgid "Registration successful! Redirecting..."
+msgstr "¡Registro exitoso! Redirigiendo..."
+
+msgid "Authentication successful! Welcome back."
+msgstr "¡Autenticación exitosa! Bienvenido de vuelta."
+
+msgid "Check Account"
+msgstr "Verificar Cuenta"
+
+msgid "Full Name"
+msgstr "Nombre Completo"
+
+msgid "Email Address"
+msgstr "Dirección de Email"
+
+msgid "Enter your full name"
+msgstr "Ingresa tu nombre completo"
+
+msgid "Enter your email address"
+msgstr "Ingresa tu dirección de email"
+
+# Existing translations
+msgid "Sign in with fingerprint"
+msgstr "Iniciar sesión con huella dactilar"
+
+msgid "Use WebAuthn"
+msgstr "Usar WebAuthn"
+
+# ================================================
+# Request Categories
+# ================================================
+
+msgid "Expense"
+msgstr "Gastos"
+
+msgid "Purchase"
+msgstr "Compras"
+
+msgid "Travel"
+msgstr "Viajes"
+
+msgid "Contract"
+msgstr "Contratos"
+
+msgid "Document"
+msgstr "Documentos"
+
+msgid "Other"
+msgstr "Otros"
+
+# ================================================
+# Request Fields
+# ================================================
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Category"
+msgstr "Categoría"
+
+msgid "Priority"
+msgstr "Prioridad"
+
+msgid "Amount"
+msgstr "Monto"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Created"
+msgstr "Creado"
+
+msgid "Approved by"
+msgstr "Aprobado por"
+
+msgid "Rejected by"
+msgstr "Rechazado por"
+
+msgid "High"
+msgstr "Alta"
+
+msgid "Medium"
+msgstr "Media"
+
+msgid "Low"
+msgstr "Baja"
+
+msgid "Vendor"
+msgstr "Proveedor"
+
+msgid "Cost Center"
+msgstr "Centro de Costos"
+
+msgid "Expense Category"
+msgstr "Categoría de Gastos"
+
+msgid "Receipt Reference"
+msgstr "Referencia de Recibo"
+
+msgid "Destination"
+msgstr "Destino"
+
+msgid "Start Date"
+msgstr "Fecha de Inicio"
+
+msgid "End Date"
+msgstr "Fecha de Fin"
+
+msgid "Document ID"
+msgstr "ID del Documento"
+
+msgid "Reason"
+msgstr "Motivo"
+
+# ================================================
+# Request Actions
+# ================================================
+
+msgid "Submit Request"
+msgstr "Enviar Solicitud"
+
+msgid "Approve Request"
+msgstr "Aprobar Solicitud"
+
+msgid "Reject Request"
+msgstr "Rechazar Solicitud"
+
+msgid "Review Pending"
+msgstr "Revisar Pendientes"
+
+msgid "View Approved"
+msgstr "Ver Aprobados"
+
+msgid "Back to Requests"
+msgstr "Volver a Solicitudes"
+
+msgid "Request Information"
+msgstr "Información de la Solicitud"
+
+msgid "Request Details"
+msgstr "Detalles de la Solicitud"
+
+msgid "Additional Information"
+msgstr "Información Adicional"
+
+msgid "Timeline"
+msgstr "Cronología"
+
+msgid "Request Created"
+msgstr "Solicitud Creada"
+
+msgid "Request Approved"
+msgstr "Solicitud Aprobada"
+
+msgid "Request Rejected"
+msgstr "Solicitud Rechazada"
+
+# ================================================
+# Dashboard
+# ================================================
+
+msgid "Welcome back"
+msgstr "Bienvenido de vuelta"
+
+msgid "Here's what's happening with your requests."
+msgstr "Esto es lo que está pasando con tus solicitudes."
+
+msgid "Total Requests"
+msgstr "Solicitudes Totales"
+
+msgid "Pending Approvals"
+msgstr "Aprobaciones Pendientes"
+
+msgid "Quick Actions"
+msgstr "Acciones Rápidas"
+
+msgid "Recent Requests"
+msgstr "Solicitudes Recientes"
+
+msgid "Activity Timeline"
+msgstr "Línea de Tiempo de Actividad"
+
+msgid "Requests by Category"
+msgstr "Solicitudes por Categoría"
+
+msgid "Last 30 days"
+msgstr "Últimos 30 días"
+
+msgid "Last 7 days"
+msgstr "Últimos 7 días"
+
+msgid "This month"
+msgstr "Este mes"
+
+msgid "ago"
+msgstr "hace"
+
+msgid "No requests yet"
+msgstr "Aún no hay solicitudes"
+
+msgid "No requests found"
+msgstr "No se encontraron solicitudes"
+
+# ================================================
+# Billing
+# ================================================
+
+msgid "Billing"
+msgstr "Facturación"
+
+msgid "Subscription"
+msgstr "Suscripción"
+
+msgid "Plan"
+msgstr "Plan"
+
+msgid "Starter"
+msgstr "Inicial"
+
+msgid "Growth"
+msgstr "Crecimiento"
+
+msgid "Scale"
+msgstr "Escala"
+
+msgid "Monthly"
+msgstr "Mensual"
+
+msgid "Yearly"
+msgstr "Anual"
+
+msgid "Current Plan"
+msgstr "Plan Actual"
+
+msgid "Upgrade Plan"
+msgstr "Actualizar Plan"
+
+msgid "Downgrade Plan"
+msgstr "Degradar Plan"
+
+msgid "Cancel Subscription"
+msgstr "Cancelar Suscripción"
+
+msgid "Payment"
+msgstr "Pago"
+
+msgid "Invoice"
+msgstr "Factura"
+
+msgid "Usage"
+msgstr "Uso"
+
+msgid "Limits"
+msgstr "Límites"
+
+msgid "Features"
+msgstr "Características"
+
+# ================================================
+# Forms & Validation
+# ================================================
+
+msgid "This field is required."
+msgstr "Este campo es obligatorio."
+
+msgid "Please enter a valid email address."
+msgstr "Por favor ingresa una dirección de correo válida."
+
+msgid "Passwords do not match."
+msgstr "Las contraseñas no coinciden."
+
+msgid "Please fill in all required fields."
+msgstr "Por favor completa todos los campos obligatorios."
+
+msgid "Invalid data provided."
+msgstr "Datos inválidos proporcionados."
+
+msgid "Operation completed successfully."
+msgstr "Operación completada exitosamente."
+
+msgid "An error occurred. Please try again."
+msgstr "Ocurrió un error. Por favor intenta nuevamente."
+
+# ================================================
+# Navigation
+# ================================================
+
+msgid "Home"
+msgstr "Inicio"
+
+msgid "Profile"
+msgstr "Perfil"
+
+msgid "Settings"
+msgstr "Configuración"
+
+msgid "Help"
+msgstr "Ayuda"
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "English"
+msgstr "Inglés"
+
+msgid "Spanish"
+msgstr "Español"
+
+msgid "Portuguese"
+msgstr "Portugués"
+
+# ================================================
+# Messages
+# ================================================
+
+msgid "Your request has been submitted successfully."
+msgstr "Tu solicitud ha sido enviada exitosamente."
+
+msgid "Request has been approved."
+msgstr "La solicitud ha sido aprobada."
+
+msgid "Request has been rejected."
+msgstr "La solicitud ha sido rechazada."
+
+msgid "You do not have permission to perform this action."
+msgstr "No tienes permisos para realizar esta acción."
+
+msgid "This request has already been processed."
+msgstr "Esta solicitud ya ha sido procesada."
+
+msgid "You cannot approve your own request."
+msgstr "No puedes aprobar tu propia solicitud."
+
+msgid "Please provide a reason for rejection."
+msgstr "Por favor proporciona un motivo para el rechazo."
+
+# ================================================
+# Pagination
+# ================================================
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "of"
+msgstr "de"
+
+msgid "Showing"
+msgstr "Mostrando"
+
+msgid "to"
+msgstr "a"
+
+msgid "entries"
+msgstr "entradas"
+
+# ================================================
+# Date & Time
+# ================================================
+
+msgid "Today"
+msgstr "Hoy"
+
+msgid "Yesterday"
+msgstr "Ayer"
+
+msgid "Tomorrow"
+msgstr "Mañana"
+
+msgid "Monday"
+msgstr "Lunes"
+
+msgid "Tuesday"
+msgstr "Martes"
+
+msgid "Wednesday"
+msgstr "Miércoles"
+
+msgid "Thursday"
+msgstr "Jueves"
+
+msgid "Friday"
+msgstr "Viernes"
+
+msgid "Saturday"
+msgstr "Sábado"
+
+msgid "Sunday"
+msgstr "Domingo"
+
+msgid "January"
+msgstr "Enero"
+
+msgid "February"
+msgstr "Febrero"
+
+msgid "March"
+msgstr "Marzo"
+
+msgid "April"
+msgstr "Abril"
+
+msgid "May"
+msgstr "Mayo"
+
+msgid "June"
+msgstr "Junio"
+
+msgid "July"
+msgstr "Julio"
+
+msgid "August"
+msgstr "Agosto"
+
+msgid "September"
+msgstr "Septiembre"
+
+msgid "October"
+msgstr "Octubre"
+
+msgid "November"
+msgstr "Noviembre"
+
+msgid "December"
+msgstr "Diciembre"

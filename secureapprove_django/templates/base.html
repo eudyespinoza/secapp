@@ -1,0 +1,577 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SecureApprove{% endblock %}</title>
+    <meta name="description" content="{% block description %}Sistema de aprobaciones seguras con autenticación biométrica{% endblock %}">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Global Theme and Common Styles -->
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary-color: #10b981;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --info-color: #0ea5e9;
+        }
+        
+        /* Theme Variables */
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-color: #111827;
+            --text-muted: #6b7280;
+            --text-secondary: #374151;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(0, 0, 0, 0.1);
+            --hover-bg: #f3f4f6;
+            --input-bg: #ffffff;
+            --input-border: #d1d5db;
+        }
+        
+        [data-theme="dark"] {
+            --bg-color: #111827;
+            --bg-secondary: #1f2937;
+            --text-color: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-secondary: #d1d5db;
+            --border-color: #374151;
+            --card-bg: #1f2937;
+            --card-shadow: rgba(0, 0, 0, 0.3);
+            --hover-bg: #374151;
+            --input-bg: #374151;
+            --input-border: #4b5563;
+        }
+        
+        /* Global Styles */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .bg-primary-custom {
+            background-color: var(--primary-color) !important;
+        }
+        
+        .text-primary-custom {
+            color: var(--primary-color) !important;
+        }
+        
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary-custom:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            color: white;
+        }
+        
+        /* Override Bootstrap defaults */
+        .bg-white {
+            background-color: var(--card-bg) !important;
+        }
+        
+        .bg-light {
+            background-color: var(--bg-secondary) !important;
+        }
+        
+        .bg-secondary-custom {
+            background-color: var(--bg-secondary) !important;
+        }
+        
+        .text-dark {
+            color: var(--text-color) !important;
+        }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .text-muted-custom {
+            color: var(--text-muted) !important;
+        }
+        
+        .border {
+            border-color: var(--border-color) !important;
+        }
+        
+        /* Card Adaptations */
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: 0 1px 3px var(--card-shadow);
+        }
+        
+        .card-header {
+            background-color: var(--bg-secondary);
+            border-bottom-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        /* Form Elements */
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--text-color);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--primary-color);
+            color: var(--text-color);
+            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        
+        /* Button Overrides */
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Dropdown Styles */
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: 0 10px 25px var(--card-shadow);
+        }
+        
+        .dropdown-item {
+            color: var(--text-color);
+        }
+        
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: var(--hover-bg);
+            color: var(--text-color);
+        }
+        
+        .dropdown-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background-color: var(--card-bg) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .navbar-brand {
+            color: var(--text-color) !important;
+        }
+        
+        .nav-link {
+            color: var(--text-color) !important;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Theme and Language Controls */
+        .theme-language-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-button {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            min-width: 80px;
+            justify-content: space-between;
+            text-decoration: none;
+        }
+        
+        .control-button:hover {
+            background-color: var(--hover-bg);
+            border-color: var(--primary-color);
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        /* Alert Adaptations */
+        .alert {
+            border-color: var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+        }
+        
+        /* Table Adaptations */
+        .table {
+            color: var(--text-color);
+        }
+        
+        .table-striped > tbody > tr:nth-of-type(odd) > td,
+        .table-striped > tbody > tr:nth-of-type(odd) > th {
+            background-color: var(--bg-secondary);
+        }
+        
+        .table th {
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .table td {
+            border-color: var(--border-color);
+        }
+        
+        /* Modal Adaptations */
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+        
+        .modal-footer {
+            border-top-color: var(--border-color);
+        }
+        
+        /* Badge Adaptations */
+        .badge {
+            color: white;
+        }
+        
+        /* List Group */
+        .list-group-item {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        /* Utilities */
+        .text-muted-custom {
+            color: var(--text-muted) !important;
+        }
+        
+        .text-secondary-custom {
+            color: var(--text-secondary) !important;
+        }
+        
+        .bg-secondary-custom {
+            background-color: var(--bg-secondary) !important;
+        }
+        
+        .border-custom {
+            border-color: var(--border-color) !important;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .theme-language-controls {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .control-button {
+                min-width: 120px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body data-theme="light">
+    {% block header %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'landing:index' %}">
+                <i class="bi bi-shield-check me-2 fs-4"></i>
+                <span class="fw-bold">SecureApprove</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    <!-- Theme Switcher -->
+                    <div class="dropdown">
+                        <button class="control-button" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-sun" id="themeIcon"></i>
+                            <span id="themeText">{% trans "Claro" %}</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="themeDropdown">
+                            <li><button class="dropdown-item" onclick="setTheme('light')" data-theme-option="light">
+                                <i class="bi bi-sun me-2"></i> {% trans "Claro" %}
+                            </button></li>
+                            <li><button class="dropdown-item" onclick="setTheme('dark')" data-theme-option="dark">
+                                <i class="bi bi-moon me-2"></i> {% trans "Oscuro" %}
+                            </button></li>
+                            <li><button class="dropdown-item" onclick="setTheme('system')" data-theme-option="system">
+                                <i class="bi bi-display me-2"></i> {% trans "Sistema" %}
+                            </button></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Language Switcher -->
+                    <div class="dropdown">
+                        <button class="control-button" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span id="currentFlag">🇪🇸</span>
+                            <span id="currentLang">ES</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% for lang_code, lang_name in LANGUAGES %}
+                            <li>
+                                <form action="{% url 'set_language' %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input name="next" type="hidden" value="{{ request.get_full_path }}" />
+                                    <input name="language" type="hidden" value="{{ lang_code }}" />
+                                    <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == lang_code %}active{% endif %}" data-lang="{{ lang_code }}">
+                                        {% if lang_code == 'es' %}<span class="me-2">�🇸</span> Español
+                                        {% elif lang_code == 'en' %}<span class="me-2">🇺🇸</span> English
+                                        {% elif lang_code == 'pt-br' %}<span class="me-2">🇧🇷</span> Português
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                        <!-- Authenticated User Menu -->
+                        <a href="{% url 'requests:dashboard' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-speedometer2 me-1"></i>{% trans "Dashboard" %}
+                        </a>
+                        <a href="{% url 'requests:list' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-list-check me-1"></i>{% trans "Solicitudes" %}
+                        </a>
+                        
+                        <!-- User Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-primary-custom dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>{{ user.email }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'authentication:profile' %}">
+                                    <i class="bi bi-person me-2"></i>{% trans "Perfil" %}
+                                </a></li>
+                                {% if user.is_staff or user.is_superuser %}
+                                <li><a class="dropdown-item" href="/admin/">
+                                    <i class="bi bi-gear me-2"></i>{% trans "Administración" %}
+                                </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'authentication:logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i>{% trans "Cerrar Sesión" %}
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <!-- Guest Menu -->
+                        <a href="{% url 'authentication:webauthn_login' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-fingerprint me-1"></i>{% trans "Iniciar Sesión" %}
+                        </a>
+                        <a href="{% url 'authentication:webauthn_register' %}" class="btn btn-primary-custom">
+                            <i class="bi bi-shield-check me-1"></i>{% trans "Registrarse" %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main content with padding for fixed navbar -->
+    <div style="padding-top: 80px;">
+    {% endblock %}
+    
+    {% block content %}
+    {% endblock %}
+    
+    {% block footer %}
+    </div>
+    {% endblock %}
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Global Theme and Language Management -->
+    <script>
+        // Theme Management
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        function applyTheme(theme) {
+            const body = document.body;
+            
+            if (theme === 'system') {
+                const systemTheme = getSystemTheme();
+                body.setAttribute('data-theme', systemTheme);
+            } else {
+                body.setAttribute('data-theme', theme);
+            }
+            
+            updateThemeUI(theme);
+        }
+        
+        function updateThemeUI(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            const dropdownItems = document.querySelectorAll('[data-theme-option]');
+            
+            if (!themeIcon || !themeText) return;
+            
+            // Remove active class from all items
+            dropdownItems.forEach(item => item.classList.remove('active'));
+            
+            // Update UI based on theme
+            switch(theme) {
+                case 'light':
+                    themeIcon.className = 'bi bi-sun';
+                    themeText.textContent = '{% trans "Claro" %}';
+                    break;
+                case 'dark':
+                    themeIcon.className = 'bi bi-moon';
+                    themeText.textContent = '{% trans "Oscuro" %}';
+                    break;
+                case 'system':
+                    themeIcon.className = 'bi bi-display';
+                    themeText.textContent = '{% trans "Sistema" %}';
+                    break;
+            }
+            
+            // Add active class to current theme
+            const currentItem = document.querySelector(`[data-theme-option="${theme}"]`);
+            if (currentItem) {
+                currentItem.classList.add('active');
+            }
+        }
+        
+        function setTheme(theme) {
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+        }
+        
+        // Language Management
+        function updateLanguageUI() {
+            const currentFlag = document.getElementById('currentFlag');
+            const currentLang = document.getElementById('currentLang');
+            const dropdownItems = document.querySelectorAll('[data-lang]');
+            
+            if (!currentFlag || !currentLang) return;
+            
+            // Remove active class from all language items
+            dropdownItems.forEach(item => item.classList.remove('active'));
+            
+            // Get current language from Django context
+            let detectedLang = '{{ LANGUAGE_CODE }}';
+            
+            // Fallback to browser language detection if not set
+            if (!detectedLang || detectedLang === 'None') {
+                const browserLang = navigator.language || navigator.userLanguage;
+                if (browserLang.startsWith('es')) {
+                    detectedLang = 'es';
+                } else if (browserLang.startsWith('en')) {
+                    detectedLang = 'en';
+                } else if (browserLang.startsWith('pt')) {
+                    detectedLang = 'pt-br';
+                } else {
+                    detectedLang = 'es'; // Default fallback
+                }
+            }
+            
+            switch(detectedLang) {
+                case 'en':
+                    currentFlag.textContent = '🇺🇸';
+                    currentLang.textContent = 'EN';
+                    break;
+                case 'pt-br':
+                    currentFlag.textContent = '🇧🇷';
+                    currentLang.textContent = 'PT';
+                    break;
+                default: // 'es'
+                    currentFlag.textContent = '🇪🇸';
+                    currentLang.textContent = 'ES';
+            }
+            
+            // Mark active language
+            const activeItem = document.querySelector(`[data-lang="${detectedLang}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme') || 'system';
+            applyTheme(savedTheme);
+            
+            // Initialize language UI
+            updateLanguageUI();
+            
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+                const currentTheme = localStorage.getItem('theme') || 'system';
+                if (currentTheme === 'system') {
+                    applyTheme('system');
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

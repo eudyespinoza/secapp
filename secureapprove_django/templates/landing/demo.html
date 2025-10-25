@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Demo - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+        /* Demo-specific styles */
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .approval-card {
+            box-shadow: 0 4px 15px var(--card-shadow);
+            border: none;
+            border-radius: 12px;
+            background-color: var(--card-bg);
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        [data-theme="dark"] .status-pending {
+            background: #451a03;
+            color: #fbbf24;
+        }
+        
+        .priority-medium {
+            background: #ddd6fe;
+            color: #5b21b6;
+        }
+        
+        [data-theme="dark"] .priority-medium {
+            background: #3c1361;
+            color: #a78bfa;
+        }
+        
+        .btn-approve {
+            background: var(--secondary-color);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-approve:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-reject {
+            background: #dc2626;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-reject:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
+        .demo-note {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        [data-theme="dark"] .demo-note {
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            color: #dbeafe;
+        }
+</style>
+{% endblock %}
+
+{% block header %}
+<!-- Demo page header -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'landing:index' %}">
+            <i class="bi bi-shield-check me-2 fs-4"></i>
+            <span class="fw-bold">SecureApprove</span>
+            <span class="badge bg-info ms-2">DEMO</span>
+        </a>
+        
+        <div class="d-flex align-items-center gap-3">
+            <!-- Theme Switcher -->
+            <div class="dropdown">
+                <button class="control-button" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-sun" id="themeIcon"></i>
+                    <span id="themeText">{% trans "Claro" %}</span>
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="themeDropdown">
+                    <li><button class="dropdown-item" onclick="setTheme('light')" data-theme-option="light">
+                        <i class="bi bi-sun me-2"></i> {% trans "Claro" %}
+                    </button></li>
+                    <li><button class="dropdown-item" onclick="setTheme('dark')" data-theme-option="dark">
+                        <i class="bi bi-moon me-2"></i> {% trans "Oscuro" %}
+                    </button></li>
+                    <li><button class="dropdown-item" onclick="setTheme('system')" data-theme-option="system">
+                        <i class="bi bi-display me-2"></i> {% trans "Sistema" %}
+                    </button></li>
+                </ul>
+            </div>
+            
+            <!-- Language Switcher -->
+            <div class="dropdown">
+                <button class="control-button" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span id="currentFlag">🇪🇸</span>
+                    <span id="currentLang">ES</span>
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item" href="/es{{ request.get_full_path|slice:'3:' }}" data-lang="es">
+                        <span class="me-2">🇪🇸</span> Español
+                    </a></li>
+                    <li><a class="dropdown-item" href="/en{{ request.get_full_path|slice:'3:' }}" data-lang="en">
+                        <span class="me-2">🇺🇸</span> English
+                    </a></li>
+                    <li><a class="dropdown-item" href="/pt-br{{ request.get_full_path|slice:'3:' }}" data-lang="pt-br">
+                        <span class="me-2">🇧🇷</span> Português
+                    </a></li>
+                </ul>
+            </div>
+            
+            <a href="{% url 'landing:index' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-1"></i>
+                {% trans "Volver" %}
+            </a>
+            <a href="{% url 'account_signup' %}" class="btn btn-primary-custom">
+                {% trans "Comenzar Ahora" %}
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div style="padding-top: 80px;">
+{% endblock %}
+
+{% block content %}
+<!-- Demo Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="demo-container">
+            <!-- Demo Info -->
+            <div class="demo-note p-4 rounded-3 mb-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-info-circle-fill text-primary-custom me-2"></i>
+                    <h5 class="mb-0 fw-bold">{% trans "Demostración Interactiva" %}</h5>
+                </div>
+                <p class="mb-0 text-muted-custom">
+                    {% trans "Esta es una demo de cómo funciona el proceso de aprobación en SecureApprove. Los botones son interactivos para simular la experiencia real." %}
+                </p>
+            </div>
+
+            <!-- Approval Request Card -->
+            <div class="card approval-card">
+                <div class="card-header py-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="mb-2 fw-bold">{% trans "Compra de Equipos de Oficina" %}</h4>
+                            <div class="d-flex gap-2 mb-2">
+                                <span class="status-badge status-pending">
+                                    <i class="bi bi-clock me-1"></i>
+                                    {% trans "Pendiente" %}
+                                </span>
+                                <span class="status-badge priority-medium">
+                                    {% trans "Prioridad" %}: {% trans "Media" %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h4 fw-bold text-primary-custom mb-1">$2,500</div>
+                            <small class="text-muted-custom">{% now "d/m/Y" %}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted-custom small fw-bold">{% trans "SOLICITANTE" %}</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary-custom rounded-circle d-flex align-items-center justify-content-center text-white me-2" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <span class="fw-semibold">{% trans "Ana García" %}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted-custom small fw-bold">{% trans "DEPARTAMENTO" %}</label>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-building text-muted-custom me-2"></i>
+                                    <span class="fw-semibold">{% trans "Recursos Humanos" %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted-custom small fw-bold">{% trans "DESCRIPCIÓN" %}</label>
+                        <div class="p-3 bg-secondary-custom rounded">
+                            <p class="mb-0">{% trans "Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables para el nuevo equipo de trabajo remoto. Los equipos actuales no cumplen con los estándares ergonómicos necesarios para el trabajo prolongado." %}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted-custom small fw-bold">{% trans "DOCUMENTOS ADJUNTOS" %}</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <div class="d-flex align-items-center p-2 bg-secondary-custom rounded">
+                                <i class="bi bi-file-pdf text-danger me-2"></i>
+                                <span class="small">cotizacion_equipos.pdf</span>
+                            </div>
+                            <div class="d-flex align-items-center p-2 bg-secondary-custom rounded">
+                                <i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>
+                                <span class="small">presupuesto_detalle.xlsx</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-column flex-md-row gap-3 pt-3 border-top border-custom">
+                        <button class="btn btn-approve flex-fill" onclick="simulateApproval()">
+                            <i class="bi bi-check-circle me-2"></i>
+                            {% trans "Aprobar Solicitud" %}
+                        </button>
+                        <button class="btn btn-reject flex-fill" onclick="simulateRejection()">
+                            <i class="bi bi-x-circle me-2"></i>
+                            {% trans "Rechazar" %}
+                        </button>
+                        <button class="btn btn-outline-primary flex-fill" onclick="requestMoreInfo()">
+                            <i class="bi bi-chat-dots me-2"></i>
+                            {% trans "Solicitar Info" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Results -->
+            <div id="demo-result" class="mt-4" style="display: none;">
+                <!-- Results will be shown here -->
+            </div>
+
+            <!-- CTA Section -->
+            <div class="text-center mt-5">
+                <div class="card text-white border-0" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6);">
+                    <div class="card-body p-5">
+                        <h3 class="fw-bold mb-3">{% trans "¿Te gusta lo que ves?" %}</h3>
+                        <p class="fs-5 mb-4 opacity-90">
+                            {% trans "Comienza a gestionar tus aprobaciones de manera profesional" %}
+                        </p>
+                        <a href="{% url 'account_signup' %}" class="btn btn-light btn-lg text-primary fw-bold">
+                            <i class="bi bi-rocket-takeoff me-2"></i>
+                            {% trans "Crear Mi Cuenta" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+        // Demo Interactions
+        function simulateApproval() {
+            showResult('success', '{% trans "¡Solicitud Aprobada!" %}', '{% trans "La solicitud ha sido aprobada exitosamente. Se ha enviado notificación al solicitante y se procederá con la compra." %}');
+        }
+
+        function simulateRejection() {
+            showResult('danger', '{% trans "Solicitud Rechazada" %}', '{% trans "La solicitud ha sido rechazada. Se ha enviado notificación al solicitante con los motivos del rechazo." %}');
+        }
+
+        function requestMoreInfo() {
+            showResult('info', '{% trans "Información Solicitada" %}', '{% trans "Se ha enviado una solicitud de información adicional al solicitante. La aprobación quedará pendiente hasta recibir los datos necesarios." %}');
+        }
+
+        function showResult(type, title, message) {
+            const resultDiv = document.getElementById('demo-result');
+            const iconMap = {
+                'success': 'bi-check-circle-fill',
+                'danger': 'bi-x-circle-fill',
+                'info': 'bi-info-circle-fill'
+            };
+            
+            resultDiv.innerHTML = `
+                <div class="alert alert-${type} d-flex align-items-center" role="alert">
+                    <i class="${iconMap[type]} me-3 fs-4"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">${title}</h5>
+                        <p class="mb-0">${message}</p>
+                    </div>
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+</script>
+{% endblock %}

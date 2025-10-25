@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %} - SecureApprove{% endblock %}
+
+{% block extra_css %}
+<style>
+.stats-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.recent-request-item {
+    border-left: 4px solid #dee2e6;
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.recent-request-item.pending { border-left-color: #ffc107; }
+.recent-request-item.approved { border-left-color: #28a745; }
+.recent-request-item.rejected { border-left-color: #dc3545; }
+
+.priority-bar {
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 0.5rem;
+}
+
+.priority-high { background: #dc3545; }
+.priority-medium { background: #ffc107; }
+.priority-low { background: #28a745; }
+
+.quick-action-btn {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.metric-trend {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.trend-up { color: #28a745; }
+.trend-down { color: #dc3545; }
+.trend-neutral { color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{% trans "Dashboard" %}</h1>
+            <p class="text-muted mb-0">
+                {% trans "Welcome back" %}, {{ user.first_name }}! 
+                {% trans "Here's what's happening with your requests." %}
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'requests:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i>
+                {% trans "New Request" %}
+            </a>
+            <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-list-ul"></i>
+                {% trans "All Requests" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">{% trans "Total Requests" %}</h6>
+                            <h3 class="mb-0">{{ stats.total_requests }}</h3>
+                        </div>
+                        <div class="stats-icon bg-primary text-white">
+                            <i class="bi bi-file-text"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">{% trans "Pending" %}</h6>
+                            <h3 class="mb-0 text-warning">{{ stats.pending_requests }}</h3>
+                        </div>
+                        <div class="stats-icon bg-warning text-dark">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">{% trans "Approved" %}</h6>
+                            <h3 class="mb-0 text-success">{{ stats.approved_requests }}</h3>
+                        </div>
+                        <div class="stats-icon bg-success text-white">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">{% trans "My Requests" %}</h6>
+                            <h3 class="mb-0 text-info">{{ stats.my_requests }}</h3>
+                        </div>
+                        <div class="stats-icon bg-info text-white">
+                            <i class="bi bi-person"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Charts and Analytics -->
+        <div class="col-lg-8">
+            <!-- Category Breakdown -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-pie-chart"></i>
+                        {% trans "Requests by Category" %}
+                    </h5>
+                    <small class="text-muted">{% trans "Last 30 days" %}</small>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-activity"></i>
+                        {% trans "Activity Timeline" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Pending Approvals (for approvers) -->
+            {% if user_can_approve and pending_for_approval %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-hand-thumbs-up"></i>
+                            {% trans "Pending Approvals" %}
+                        </h6>
+                        <span class="badge bg-warning">{{ pending_for_approval|length }}</span>
+                    </div>
+                    <div class="card-body">
+                        {% for request in pending_for_approval %}
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'requests:detail' request.pk %}" class="text-decoration-none">
+                                            {{ request.title|truncatechars:30 }}
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">
+                                        {{ request.requester.first_name }} {{ request.requester.last_name }}
+                                        • {{ request.created_at|timesince }} {% trans "ago" %}
+                                    </small>
+                                </div>
+                                <span class="badge bg-{{ request.priority }}">
+                                    {{ request.get_priority_display }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                        <a href="{% url 'requests:list' %}?status=pending" class="btn btn-outline-primary btn-sm w-100">
+                            {% trans "View All Pending" %}
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Recent Requests -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-clock-history"></i>
+                        {% trans "Recent Requests" %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for request in recent_requests %}
+                        <div class="recent-request-item {{ request.status }}">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="mb-0">
+                                    <a href="{% url 'requests:detail' request.pk %}" class="text-decoration-none">
+                                        {{ request.title|truncatechars:25 }}
+                                    </a>
+                                </h6>
+                                <span class="badge bg-{% if request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% else %}warning{% endif %} ms-2">
+                                    {{ request.get_status_display }}
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                {{ request.get_category_display }} • {{ request.created_at|timesince }} {% trans "ago" %}
+                            </small>
+                            <div class="priority-bar priority-{{ request.priority }}"></div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-inbox display-4 text-muted"></i>
+                            <p class="text-muted mb-0">{% trans "No requests yet" %}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-lightning"></i>
+                        {% trans "Quick Actions" %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'requests:create' %}" class="quick-action-btn btn btn-primary">
+                            <i class="bi bi-plus-lg me-2"></i>
+                            {% trans "New Request" %}
+                        </a>
+                        
+                        {% if user_can_approve %}
+                            <a href="{% url 'requests:list' %}?status=pending" class="quick-action-btn btn btn-outline-warning">
+                                <i class="bi bi-clock me-2"></i>
+                                {% trans "Review Pending" %}
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'requests:list' %}?status=approved" class="quick-action-btn btn btn-outline-success">
+                            <i class="bi bi-check-circle me-2"></i>
+                            {% trans "View Approved" %}
+                        </a>
+                        
+                        <a href="{% url 'requests:list' %}" class="quick-action-btn btn btn-outline-secondary">
+                            <i class="bi bi-list-ul me-2"></i>
+                            {% trans "All Requests" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Dashboard Data -->
+{{ category_stats|json_script:"category-data" }}
+{{ daily_stats|json_script:"daily-data" }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get data from Django
+    const categoryData = JSON.parse(document.getElementById('category-data').textContent);
+    const dailyData = JSON.parse(document.getElementById('daily-data').textContent);
+    
+    // Category Chart
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: categoryData.map(item => item.category || 'Other'),
+            datasets: [{
+                data: categoryData.map(item => item.count || 0),
+                backgroundColor: [
+                    '#2196f3', '#28a745', '#ffc107', 
+                    '#dc3545', '#6f42c1', '#fd7e14'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+
+    // Activity Chart
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    
+    new Chart(activityCtx, {
+        type: 'line',
+        data: {
+            labels: dailyData.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }),
+            datasets: [
+                {
+                    label: 'Total',
+                    data: dailyData.map(item => item.total || 0),
+                    borderColor: '#2196f3',
+                    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Approved',
+                    data: dailyData.map(item => item.approved || 0),
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Pending',
+                    data: dailyData.map(item => item.pending || 0),
+                    borderColor: '#ffc107',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    fill: false,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

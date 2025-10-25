@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% load i18n crispy_forms_tags %}
+
+{% block title %}{% trans "New Request" %} - SecureApprove{% endblock %}
+
+{% block extra_css %}
+<style>
+.dynamic-group {
+    transition: all 0.3s ease;
+}
+
+.field-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.category-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.form-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.preview-card {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">{% trans "New Request" %}</h1>
+                    <p class="text-muted mb-0">{% trans "Submit a new approval request" %}</p>
+                </div>
+                <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    {% trans "Back to Requests" %}
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Main Form -->
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form method="post" id="request-form" novalidate>
+                                {% csrf_token %}
+                                {% crispy form %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Help Card -->
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-info-circle"></i>
+                                {% trans "Request Categories" %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="category-help">
+                                <div class="category-item mb-3" data-category="expense">
+                                    <strong>{% trans "Expense" %}</strong>
+                                    <p class="category-description">
+                                        {% trans "Business expenses like meals, transportation, office supplies" %}
+                                    </p>
+                                </div>
+                                
+                                <div class="category-item mb-3" data-category="purchase">
+                                    <strong>{% trans "Purchase" %}</strong>
+                                    <p class="category-description">
+                                        {% trans "Equipment, software, or service purchases" %}
+                                    </p>
+                                </div>
+                                
+                                <div class="category-item mb-3" data-category="travel">
+                                    <strong>{% trans "Travel" %}</strong>
+                                    <p class="category-description">
+                                        {% trans "Travel arrangements and related expenses" %}
+                                    </p>
+                                </div>
+                                
+                                <div class="category-item mb-3" data-category="contract">
+                                    <strong>{% trans "Contract" %}</strong>
+                                    <p class="category-description">
+                                        {% trans "Contract approvals and vendor agreements" %}
+                                    </p>
+                                </div>
+                                
+                                <div class="category-item mb-3" data-category="document">
+                                    <strong>{% trans "Document" %}</strong>
+                                    <p class="category-description">
+                                        {% trans "Document approvals and reviews" %}
+                                    </p>
+                                </div>
+                                
+                                <div class="category-item mb-0" data-category="other">
+                                    <strong>{% trans "Other" %}</strong>
+                                    <p class="category-description">
+                                        {% trans "Any other type of approval request" %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Card -->
+                    <div class="card shadow-sm mt-4" id="preview-card" style="display: none;">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-eye"></i>
+                                {% trans "Preview" %}
+                            </h5>
+                        </div>
+                        <div class="card-body" id="preview-content">
+                            <!-- Preview content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryField = document.getElementById('id_category');
+    const amountField = document.getElementById('amount-field');
+    const form = document.getElementById('request-form');
+    const previewCard = document.getElementById('preview-card');
+    const previewContent = document.getElementById('preview-content');
+    
+    // Category configurations (matches Django form)
+    const categoryConfigs = {
+        'expense': {
+            'show_amount': true,
+            'required_fields': ['title', 'description', 'amount', 'priority', 'expense_category', 'receipt_ref'],
+            'extra_fields': ['expense_category', 'receipt_ref']
+        },
+        'purchase': {
+            'show_amount': true,
+            'required_fields': ['title', 'description', 'amount', 'priority', 'vendor', 'cost_center'],
+            'extra_fields': ['vendor', 'cost_center']
+        },
+        'travel': {
+            'show_amount': true,
+            'required_fields': ['title', 'description', 'amount', 'priority', 'destination', 'start_date', 'end_date'],
+            'extra_fields': ['destination', 'start_date', 'end_date']
+        },
+        'contract': {
+            'show_amount': false,
+            'required_fields': ['title', 'description', 'priority', 'vendor', 'reason'],
+            'extra_fields': ['vendor', 'reason']
+        },
+        'document': {
+            'show_amount': false,
+            'required_fields': ['title', 'description', 'priority', 'document_id', 'reason'],
+            'extra_fields': ['document_id', 'reason']
+        },
+        'other': {
+            'show_amount': false,
+            'required_fields': ['title', 'description', 'priority'],
+            'extra_fields': []
+        }
+    };
+    
+    function updateFormFields() {
+        const category = categoryField.value;
+        const config = categoryConfigs[category] || categoryConfigs['other'];
+        
+        // Show/hide amount field
+        if (config.show_amount) {
+            amountField.style.display = 'block';
+            document.getElementById('id_amount').required = true;
+        } else {
+            amountField.style.display = 'none';
+            document.getElementById('id_amount').required = false;
+            document.getElementById('id_amount').value = '';
+        }
+        
+        // Show/hide dynamic field groups
+        document.querySelectorAll('.dynamic-group').forEach(group => {
+            const groupCategory = group.getAttribute('data-category');
+            if (groupCategory === category) {
+                group.style.display = 'block';
+                // Set required attributes for fields in this group
+                group.querySelectorAll('input, select, textarea').forEach(field => {
+                    const fieldName = field.name;
+                    if (config.required_fields.includes(fieldName)) {
+                        field.required = true;
+                    }
+                });
+            } else {
+                group.style.display = 'none';
+                // Remove required attributes and clear values
+                group.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.required = false;
+                    if (field.type !== 'hidden') {
+                        field.value = '';
+                    }
+                });
+            }
+        });
+        
+        // Update category help highlighting
+        document.querySelectorAll('.category-item').forEach(item => {
+            const itemCategory = item.getAttribute('data-category');
+            if (itemCategory === category) {
+                item.style.backgroundColor = '#e3f2fd';
+                item.style.borderLeft = '4px solid #2196f3';
+                item.style.paddingLeft = '12px';
+            } else {
+                item.style.backgroundColor = '';
+                item.style.borderLeft = '';
+                item.style.paddingLeft = '';
+            }
+        });
+        
+        updatePreview();
+    }
+    
+    function updatePreview() {
+        const formData = new FormData(form);
+        const category = formData.get('category');
+        const title = formData.get('title');
+        const description = formData.get('description');
+        const amount = formData.get('amount');
+        const priority = formData.get('priority');
+        
+        if (!title && !description) {
+            previewCard.style.display = 'none';
+            return;
+        }
+        
+        previewCard.style.display = 'block';
+        
+        let previewHtml = '';
+        
+        if (title) {
+            previewHtml += `<h6>${title}</h6>`;
+        }
+        
+        if (description) {
+            previewHtml += `<p class="text-muted mb-2">${description}</p>`;
+        }
+        
+        previewHtml += '<div class="row">';
+        
+        if (category) {
+            const categoryDisplay = categoryField.options[categoryField.selectedIndex].text;
+            previewHtml += `
+                <div class="col-6">
+                    <small class="text-muted">{% trans "Category" %}</small><br>
+                    <span class="badge bg-primary">${categoryDisplay}</span>
+                </div>
+            `;
+        }
+        
+        if (priority) {
+            const prioritySelect = document.getElementById('id_priority');
+            const priorityDisplay = prioritySelect.options[prioritySelect.selectedIndex].text;
+            const priorityClass = priority === 'high' ? 'bg-danger' : (priority === 'medium' ? 'bg-warning' : 'bg-success');
+            previewHtml += `
+                <div class="col-6">
+                    <small class="text-muted">{% trans "Priority" %}</small><br>
+                    <span class="badge ${priorityClass}">${priorityDisplay}</span>
+                </div>
+            `;
+        }
+        
+        previewHtml += '</div>';
+        
+        if (amount && categoryConfigs[category]?.show_amount) {
+            previewHtml += `
+                <div class="mt-2">
+                    <small class="text-muted">{% trans "Amount" %}</small><br>
+                    <strong>$${parseFloat(amount).toLocaleString()}</strong>
+                </div>
+            `;
+        }
+        
+        previewContent.innerHTML = previewHtml;
+    }
+    
+    // Event listeners
+    categoryField.addEventListener('change', updateFormFields);
+    
+    // Update preview on form changes
+    form.addEventListener('input', updatePreview);
+    form.addEventListener('change', updatePreview);
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const category = categoryField.value;
+        const config = categoryConfigs[category] || categoryConfigs['other'];
+        
+        let hasErrors = false;
+        
+        // Validate required fields
+        config.required_fields.forEach(fieldName => {
+            const field = document.getElementById('id_' + fieldName);
+            if (field && !field.value.trim()) {
+                field.classList.add('field-error');
+                hasErrors = true;
+            } else if (field) {
+                field.classList.remove('field-error');
+            }
+        });
+        
+        if (hasErrors) {
+            e.preventDefault();
+            alert('{% trans "Please fill in all required fields." %}');
+        }
+    });
+    
+    // Initialize form
+    updateFormFields();
+});
+</script>
+{% endblock %}

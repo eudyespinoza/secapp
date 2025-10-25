@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Iniciar sesión" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <!-- Logo/Brand -->
+                        <div class="text-center mb-4">
+                            <h1 class="h3 fw-bold text-primary">
+                                <i class="bi bi-shield-check me-2"></i>
+                                SecureApprove
+                            </h1>
+                            <p class="text-muted">{% trans "Sistema de Aprobaciones Seguras" %}</p>
+                        </div>
+
+                        <!-- Login Form -->
+                        <div class="mb-4">
+                            <h2 class="h4 fw-semibold text-center mb-4">{% trans "Iniciar sesión" %}</h2>
+                            
+                            <form method="post" action="{% url 'account_login' %}">
+                                {% csrf_token %}
+                                
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Email Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.login.id_for_label }}" class="form-label fw-medium">
+                                        {% trans "Email" %}
+                                    </label>
+                                    <input type="email" 
+                                           class="form-control form-control-lg {% if form.login.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.login.id_for_label }}"
+                                           name="{{ form.login.name }}"
+                                           value="{{ form.login.value|default:'' }}"
+                                           placeholder="{% trans 'Ingrese su email' %}"
+                                           required>
+                                    {% if form.login.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.login.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Password Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label fw-medium">
+                                        {% trans "Contraseña" %}
+                                    </label>
+                                    <input type="password" 
+                                           class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.password.id_for_label }}"
+                                           name="{{ form.password.name }}"
+                                           placeholder="{% trans 'Ingrese su contraseña' %}"
+                                           required>
+                                    {% if form.password.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.password.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Remember Me -->
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               id="{{ form.remember.id_for_label }}"
+                                               name="{{ form.remember.name }}"
+                                               {% if form.remember.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ form.remember.id_for_label }}">
+                                            {% trans "Recordarme" %}
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    {% trans "Iniciar sesión" %}
+                                </button>
+
+                                <!-- Forgot Password Link -->
+                                <div class="text-center">
+                                    <a href="{% url 'account_reset_password' %}" class="text-decoration-none">
+                                        {% trans "¿Olvidó su contraseña?" %}
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Register Link -->
+                        <div class="text-center pt-3 border-top">
+                            <p class="text-muted mb-0">
+                                {% trans "¿No tiene una cuenta?" %}
+                                <a href="{% url 'account_signup' %}" class="text-primary text-decoration-none fw-medium">
+                                    {% trans "Registrarse" %}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="text-center mt-4">
+                    <p class="text-muted small">
+                        © {% now "Y" %} SecureApprove. {% trans "Todos los derechos reservados." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Payment Successful - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+        .hero-section {
+            background: linear-gradient(135deg, #eef2ff 0%, var(--bg-color) 50%, #faf5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+        }
+
+        .success-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--card-shadow);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary-custom {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-custom:hover {
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="success-card">
+            <div class="p-5">
+                <div class="success-icon">
+                    <i class="bi bi-check-lg text-white" style="font-size: 2.5rem;"></i>
+                </div>
+                
+                <h1 class="fw-bold text-success mb-3">{% trans "Payment Successful!" %}</h1>
+                
+                <p class="lead mb-4">
+                    {% trans "Thank you for subscribing to SecureApprove. Your account is being set up and you'll receive a confirmation email shortly." %}
+                </p>
+                
+                <div class="alert alert-success" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <div>
+                            <strong>{% trans "What happens next?" %}</strong><br>
+                            <small>
+                                {% trans "Your tenant account is being created. You can now register with WebAuthn and start using SecureApprove immediately." %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'authentication:webauthn_register' %}" class="btn-primary-custom">
+                        <i class="bi bi-fingerprint me-2"></i>
+                        {% trans "Complete Registration" %}
+                    </a>
+                    <a href="{% url 'landing:index' %}" class="btn-secondary-custom">
+                        {% trans "Back to Home" %}
+                    </a>
+                </div>
+                
+                <div class="mt-4 text-muted">
+                    <small>
+                        {% trans "Need help? Contact our support team at" %} 
+                        <a href="mailto:support@secureapprove.com">support@secureapprove.com</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

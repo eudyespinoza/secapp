@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Subscribe to" %} {{ plan.display_name }} - SecureApprove{% endblock %}
+
+{% block extra_css %}
+<style>
+        /* Landing-style unified theme */
+        :root {
+            --indigo-50: #eef2ff;
+            --purple-50: #faf5ff;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--indigo-50) 0%, var(--bg-color) 50%, var(--purple-50) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+        }
+
+        .subscribe-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--card-shadow);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .plan-summary {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .text-muted-custom {
+            color: var(--text-muted) !important;
+        }
+
+        .btn-subscribe {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-subscribe:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-subscribe:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
+            padding: 1rem;
+        }
+
+        .alert-info-custom {
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            border-left: 4px solid var(--info-color);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="subscribe-card">
+            <div class="p-4">
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold mb-2">{% trans "Complete Your Subscription" %}</h2>
+                    <p class="text-muted-custom">{% trans "You're just one step away from accessing SecureApprove" %}</p>
+                </div>
+
+                <!-- Plan Summary -->
+                <div class="plan-summary">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0">{{ plan.display_name }} {% trans "Plan" %}</h4>
+                        <div class="plan-price">${{ plan.monthly_price }}<small class="text-muted-custom fs-6">/{% trans "month" %}</small></div>
+                    </div>
+                    
+                    <ul class="feature-list mb-0">
+                        {% if plan.name == 'starter' %}
+                            <li>{% trans "Up to 2 approvers" %}</li>
+                            <li>{% trans "10 team members" %}</li>
+                            <li>{% trans "Basic workflow templates" %}</li>
+                        {% elif plan.name == 'growth' %}
+                            <li>{% trans "Up to 6 approvers" %}</li>
+                            <li>{% trans "25 team members" %}</li>
+                            <li>{% trans "Advanced workflow automation" %}</li>
+                            <li>{% trans "API access" %}</li>
+                        {% else %}
+                            <li>{% trans "Unlimited approvers" %}</li>
+                            <li>{% trans "Unlimited team members" %}</li>
+                            <li>{% trans "Custom workflow builder" %}</li>
+                            <li>{% trans "Enterprise features" %}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Subscription Form -->
+                <form id="subscriptionForm" method="post">
+                    {% csrf_token %}
+                    
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">{% trans "Email Address" %}</label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email" 
+                            required 
+                            value="{{ user.email|default:'' }}"
+                            placeholder="your@company.com"
+                        >
+                        <div class="form-text text-muted-custom">
+                            {% trans "This email will be used for your account and billing notifications" %}
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info-custom mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <div>
+                                <strong>{% trans "14-Day Free Trial" %}</strong><br>
+                                <small>{% trans "No charge for the first 14 days. Cancel anytime." %}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-subscribe" id="subscribeBtn">
+                        <span id="btnText">{% trans "Start Free Trial" %}</span>
+                        <span id="btnLoading" class="d-none">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            {% trans "Processing..." %}
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Security Notice -->
+                <div class="mt-4 p-3 bg-secondary-custom rounded-3">
+                    <h6 class="fw-semibold mb-2">
+                        <i class="bi bi-shield-lock text-success me-2"></i>
+                        {% trans "Secure & Protected" %}
+                    </h6>
+                    <small class="text-muted-custom">
+                        {% trans "Your payment is processed securely through MercadoPago. We never store your payment information." %}
+                    </small>
+                </div>
+
+                <!-- Back Link -->
+                <div class="text-center mt-3">
+                    <a href="{% url 'billing:select_plan' %}" class="text-primary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        {% trans "Back to plan selection" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('subscriptionForm');
+    const subscribeBtn = document.getElementById('subscribeBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoading = document.getElementById('btnLoading');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        subscribeBtn.disabled = true;
+        btnText.classList.add('d-none');
+        btnLoading.classList.remove('d-none');
+        
+        // Get form data
+        const formData = new FormData(form);
+        const email = formData.get('email');
+        
+        // Create checkout session
+        fetch('{% url "billing:create_subscription_api" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            },
+            body: JSON.stringify({
+                planId: '{{ plan.name }}',
+                email: email,
+                seats: 10,
+                successUrl: window.location.origin + '{% url "billing:payment_success" %}',
+                failureUrl: window.location.origin + '{% url "billing:payment_failure" %}',
+                pendingUrl: window.location.origin + '{% url "billing:payment_pending" %}'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.init_point) {
+                // Redirect to MercadoPago
+                window.location.href = data.init_point;
+            } else if (data.sandbox_init_point) {
+                // Redirect to MercadoPago Sandbox
+                window.location.href = data.sandbox_init_point;
+            } else {
+                throw new Error(data.error || 'Failed to create checkout session');
+            }
+        })
+        .catch(error => {
+            console.error('Subscription error:', error);
+            alert('{% trans "Error starting subscription" %}: ' + error.message);
+            
+            // Reset button state
+            subscribeBtn.disabled = false;
+            btnText.classList.remove('d-none');
+            btnLoading.classList.add('d-none');
+        });
+    });
+});
+</script>
+{% endblock %}

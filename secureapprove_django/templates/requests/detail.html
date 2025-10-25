@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ request_obj.title }} - SecureApprove{% endblock %}
+
+{% block extra_css %}
+<style>
+.status-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.status-pending { background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); }
+.status-approved { background: linear-gradient(135deg, #d1edff 0%, #a8e6cf 100%); }
+.status-rejected { background: linear-gradient(135deg, #f8d7da 0%, #ffb3ba 100%); }
+
+.timeline-item {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 2px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.timeline-item:last-child {
+    border-left: 2px solid transparent;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -0.625rem;
+    top: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+
+.metadata-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    width: 30%;
+}
+
+.action-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.approval-form {
+    background: #fff;
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.rejection-form {
+    background: #fff;
+    border: 2px solid #dc3545;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.priority-badge {
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+
+.priority-high { background: #dc3545; color: white; }
+.priority-medium { background: #ffc107; color: #212529; }
+.priority-low { background: #28a745; color: white; }
+
+.amount-display {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ request_obj.title }}</h1>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-primary">{{ request_obj.get_category_display }}</span>
+                <span class="priority-badge priority-{{ request_obj.priority }}">
+                    {{ request_obj.get_priority_display }} {% trans "Priority" %}
+                </span>
+                <small class="text-muted">
+                    <i class="bi bi-calendar"></i>
+                    {% trans "Created" %} {{ request_obj.created_at|date:"F d, Y \a\t H:i" }}
+                </small>
+            </div>
+        </div>
+        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            {% trans "Back to Requests" %}
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Status Card -->
+            <div class="status-card status-{{ request_obj.status }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="mb-1">
+                            {% if request_obj.status == 'pending' %}
+                                <i class="bi bi-clock text-warning"></i>
+                                {% trans "Pending Approval" %}
+                            {% elif request_obj.status == 'approved' %}
+                                <i class="bi bi-check-circle text-success"></i>
+                                {% trans "Approved" %}
+                            {% elif request_obj.status == 'rejected' %}
+                                <i class="bi bi-x-circle text-danger"></i>
+                                {% trans "Rejected" %}
+                            {% endif %}
+                        </h5>
+                        <p class="mb-0">
+                            {% if request_obj.status == 'pending' %}
+                                {% trans "This request is waiting for approval from an administrator." %}
+                            {% elif request_obj.status == 'approved' %}
+                                {% trans "This request was approved on" %} {{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}
+                                {% trans "by" %} {{ request_obj.approved_by.first_name }} {{ request_obj.approved_by.last_name }}.
+                            {% elif request_obj.status == 'rejected' %}
+                                {% trans "This request was rejected." %}
+                                {% if request_obj.rejection_reason %}
+                                    <br><strong>{% trans "Reason:" %}</strong> {{ request_obj.rejection_reason }}
+                                {% endif %}
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if request_obj.amount %}
+                        <div class="amount-display">
+                            ${{ request_obj.amount|floatformat:2 }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Request Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-file-text"></i>
+                        {% trans "Request Details" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>{% trans "Description" %}</h6>
+                            <p class="text-muted">{{ request_obj.description|linebreaks }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>{% trans "Requested by" %}</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                    <span class="text-white fw-bold">
+                                        {{ request_obj.requester.first_name|first }}{{ request_obj.requester.last_name|first }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ request_obj.requester.first_name }} {{ request_obj.requester.last_name }}</div>
+                                    <small class="text-muted">{{ request_obj.requester.email }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metadata -->
+                    {% if request_obj.metadata %}
+                        <h6>{% trans "Additional Information" %}</h6>
+                        <table class="table table-sm metadata-table">
+                            {% for key, value in request_obj.metadata.items %}
+                                {% if value %}
+                                    <tr>
+                                        <th>{{ key|capfirst|title }}</th>
+                                        <td>{{ value }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history"></i>
+                        {% trans "Timeline" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <!-- Created -->
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-primary text-white">
+                                <i class="bi bi-plus"></i>
+                            </div>
+                            <div>
+                                <strong>{% trans "Request Created" %}</strong>
+                                <div class="text-muted small">
+                                    {{ request_obj.created_at|date:"F d, Y \a\t H:i" }}
+                                    {% trans "by" %} {{ request_obj.requester.first_name }} {{ request_obj.requester.last_name }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Approved/Rejected -->
+                        {% if request_obj.status == 'approved' %}
+                            <div class="timeline-item">
+                                <div class="timeline-icon bg-success text-white">
+                                    <i class="bi bi-check"></i>
+                                </div>
+                                <div>
+                                    <strong>{% trans "Request Approved" %}</strong>
+                                    <div class="text-muted small">
+                                        {{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}
+                                        {% trans "by" %} {{ request_obj.approved_by.first_name }} {{ request_obj.approved_by.last_name }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif request_obj.status == 'rejected' %}
+                            <div class="timeline-item">
+                                <div class="timeline-icon bg-danger text-white">
+                                    <i class="bi bi-x"></i>
+                                </div>
+                                <div>
+                                    <strong>{% trans "Request Rejected" %}</strong>
+                                    <div class="text-muted small">
+                                        {{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}
+                                    </div>
+                                    {% if request_obj.rejection_reason %}
+                                        <div class="mt-1">
+                                            <strong>{% trans "Reason:" %}</strong> {{ request_obj.rejection_reason }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Actions -->
+            {% if can_approve %}
+                <div class="action-card mb-4">
+                    <h5 class="mb-3">
+                        <i class="bi bi-hand-thumbs-up"></i>
+                        {% trans "Approval Actions" %}
+                    </h5>
+                    <p class="text-muted small mb-3">
+                        {% trans "You have permission to approve or reject this request." %}
+                    </p>
+
+                    <!-- Approve Form -->
+                    <div class="approval-form mb-3">
+                        <h6 class="text-success mb-2">
+                            <i class="bi bi-check-circle"></i>
+                            {% trans "Approve Request" %}
+                        </h6>
+                        <p class="small text-muted mb-3">
+                            {% trans "Approving this request will allow the requester to proceed." %}
+                        </p>
+                        <form method="post" action="{% url 'requests:approve' request_obj.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm w-100" onclick="return confirm('{% trans "Are you sure you want to approve this request?" %}')">
+                                <i class="bi bi-check-lg"></i>
+                                {% trans "Approve Request" %}
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Reject Form -->
+                    <div class="rejection-form">
+                        <h6 class="text-danger mb-2">
+                            <i class="bi bi-x-circle"></i>
+                            {% trans "Reject Request" %}
+                        </h6>
+                        <form method="post" action="{% url 'requests:reject' request_obj.pk %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="rejection_reason" class="form-label small">
+                                    {% trans "Reason for rejection" %} <span class="text-danger">*</span>
+                                </label>
+                                <textarea name="reason" id="rejection_reason" class="form-control form-control-sm" rows="3" placeholder="{% trans 'Please explain why you are rejecting this request...' %}" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('{% trans "Are you sure you want to reject this request?" %}')">
+                                <i class="bi bi-x-lg"></i>
+                                {% trans "Reject Request" %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% elif request_obj.status == 'pending' %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock display-4 text-muted mb-3"></i>
+                        <h6>{% trans "Waiting for Approval" %}</h6>
+                        <p class="text-muted small">
+                            {% trans "This request is pending review by an administrator." %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Request Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        {% trans "Request Information" %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td class="text-muted">{% trans "ID:" %}</td>
+                            <td class="fw-bold">#{{ request_obj.id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">{% trans "Category:" %}</td>
+                            <td><span class="badge bg-primary">{{ request_obj.get_category_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">{% trans "Priority:" %}</td>
+                            <td><span class="badge priority-{{ request_obj.priority }}">{{ request_obj.get_priority_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">{% trans "Status:" %}</td>
+                            <td>
+                                <span class="badge bg-{% if request_obj.status == 'approved' %}success{% elif request_obj.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                                    {{ request_obj.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% if request_obj.amount %}
+                            <tr>
+                                <td class="text-muted">{% trans "Amount:" %}</td>
+                                <td class="fw-bold">${{ request_obj.amount|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

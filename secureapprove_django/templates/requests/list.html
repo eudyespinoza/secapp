@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Requests" %} - SecureApprove{% endblock %}
+
+{% block extra_css %}
+<style>
+.filter-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.request-card {
+    transition: all 0.2s ease;
+    border: 1px solid #dee2e6;
+}
+
+.request-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.priority-indicator {
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.priority-high { background-color: #dc3545; }
+.priority-medium { background-color: #ffc107; }
+.priority-low { background-color: #28a745; }
+
+.amount-display {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.metadata-pill {
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+    display: inline-block;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{% trans "Approval Requests" %}</h1>
+            <p class="text-muted mb-0">
+                {% blocktrans count total=page_obj.paginator.count %}
+                    {{ total }} request
+                {% plural %}
+                    {{ total }} requests
+                {% endblocktrans %}
+            </p>
+        </div>
+        <a href="{% url 'requests:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+            {% trans "New Request" %}
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-card">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">{% trans "Status" %}</label>
+                <select name="status" class="form-select">
+                    <option value="all" {% if not status_filter or status_filter == 'all' %}selected{% endif %}>{% trans "All Statuses" %}</option>
+                    {% for value, label in statuses %}
+                        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <label class="form-label">{% trans "Category" %}</label>
+                <select name="category" class="form-select">
+                    <option value="all" {% if not category_filter or category_filter == 'all' %}selected{% endif %}>{% trans "All Categories" %}</option>
+                    {% for value, label in categories %}
+                        <option value="{{ value }}" {% if category_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-4">
+                <label class="form-label">{% trans "Search" %}</label>
+                <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title or description...' %}" value="{{ search_query|default:'' }}">
+            </div>
+            
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i>
+                        {% trans "Filter" %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Requests List -->
+    {% if page_obj.object_list %}
+        <div class="row">
+            {% for request_obj in page_obj.object_list %}
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="card request-card h-100 position-relative">
+                        <!-- Priority Indicator -->
+                        <div class="priority-indicator priority-{{ request_obj.priority }}"></div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <!-- Header -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0 flex-grow-1 me-2">
+                                    <a href="{% url 'requests:detail' request_obj.pk %}" class="text-decoration-none">
+                                        {{ request_obj.title }}
+                                    </a>
+                                </h6>
+                                <span class="status-badge badge bg-{% if request_obj.status == 'approved' %}success{% elif request_obj.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                                    {{ request_obj.get_status_display }}
+                                </span>
+                            </div>
+                            
+                            <!-- Description -->
+                            <p class="card-text text-muted small mb-3">
+                                {{ request_obj.description|truncatewords:15 }}
+                            </p>
+                            
+                            <!-- Category and Amount -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-primary">{{ request_obj.get_category_display }}</span>
+                                {% if request_obj.amount %}
+                                    <span class="amount-display">${{ request_obj.amount|floatformat:2 }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Metadata -->
+                            {% if request_obj.metadata %}
+                                <div class="mb-3">
+                                    {% for key, value in request_obj.metadata.items %}
+                                        {% if value %}
+                                            <span class="metadata-pill">
+                                                {{ key|title }}: {{ value|truncatechars:20 }}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Footer -->
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center text-muted small">
+                                    <span>
+                                        <i class="bi bi-person"></i>
+                                        {{ request_obj.requester.first_name }} {{ request_obj.requester.last_name }}
+                                    </span>
+                                    <span>
+                                        <i class="bi bi-calendar"></i>
+                                        {{ request_obj.created_at|date:"M d, Y" }}
+                                    </span>
+                                </div>
+                                
+                                {% if request_obj.approved_by %}
+                                    <div class="text-muted small mt-1">
+                                        <i class="bi bi-check-circle"></i>
+                                        {% trans "Approved by" %} {{ request_obj.approved_by.first_name }} {{ request_obj.approved_by.last_name }}
+                                    </div>
+                                {% elif request_obj.status == 'rejected' %}
+                                    <div class="text-danger small mt-1">
+                                        <i class="bi bi-x-circle"></i>
+                                        {% trans "Rejected" %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="{% trans 'Requests pagination' %}">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                                <i class="bi bi-chevron-left"></i>
+                                {% trans "Previous" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ page_obj.next_page_number }}">
+                                {% trans "Next" %}
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+            </div>
+            <h4 class="text-muted">{% trans "No requests found" %}</h4>
+            <p class="text-muted mb-4">
+                {% if search_query or status_filter != 'all' or category_filter != 'all' %}
+                    {% trans "Try adjusting your filters or search terms." %}
+                {% else %}
+                    {% trans "Start by creating your first approval request." %}
+                {% endif %}
+            </p>
+            {% if not search_query and status_filter == 'all' and category_filter == 'all' %}
+                <a href="{% url 'requests:create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    {% trans "Create First Request" %}
+                </a>
+            {% else %}
+                <a href="{% url 'requests:list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    {% trans "Clear Filters" %}
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

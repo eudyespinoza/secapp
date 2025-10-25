@@ -1,0 +1,136 @@
+# ================================================
+# SecureApprove - Simple Docker Compose
+# ================================================
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    container_name: secureapprove_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: secureapprove
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: secureapprove_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Django Web Application
+  web:
+    build: 
+      context: ./secureapprove_django
+      dockerfile: Dockerfile
+    container_name: secureapprove_web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Database
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: secureapprove
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      
+      # Redis
+      REDIS_URL: redis://redis:6379/1
+      
+      # Django
+      DEBUG: "False"
+      SECRET_KEY: "your-super-secret-key-change-in-production-django-2024"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.local,secureapprove.com"
+      
+      # Security
+      WEBAUTHN_RP_NAME: "SecureApprove"
+      WEBAUTHN_RP_ID: "localhost"
+      WEBAUTHN_ORIGIN: "http://localhost:8000"
+      
+      # Email (configure for production)
+      EMAIL_HOST: "smtp.gmail.com"
+      EMAIL_PORT: "587"
+      EMAIL_USE_TLS: "True"
+      EMAIL_HOST_USER: ""
+      EMAIL_HOST_PASSWORD: ""
+      DEFAULT_FROM_EMAIL: "noreply@secureapprove.com"
+      
+      # Billing (configure for production)
+      MERCADOPAGO_ACCESS_TOKEN: ""
+      MERCADOPAGO_WEBHOOK_URL: "http://localhost:8000/api/billing/webhooks/mercadopago/"
+    
+    volumes:
+      - ./secureapprove_django/media:/app/media
+      - ./secureapprove_django/staticfiles:/app/staticfiles
+      - ./logs:/app/logs
+    
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Labels for proxy discovery
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.secureapprove.rule=Host(`secureapprove.local`) || Host(`localhost`)"
+      - "traefik.http.routers.secureapprove.entrypoints=web"
+      - "traefik.http.services.secureapprove.loadbalancer.server.port=8000"
+    
+    networks:
+      - default
+
+  # Nginx Reverse Proxy (removed - using external proxy)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: secureapprove_nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./secureapprove_django/staticfiles:/app/staticfiles:ro
+  #     - ./secureapprove_django/media:/app/media:ro
+  #     - ./certs:/etc/nginx/certs:ro
+  #   depends_on:
+  #     - web
+  #   profiles:
+  #     - production
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: secureapprove_internal

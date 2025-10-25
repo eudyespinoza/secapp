@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Create Account" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <!-- Left side - Branding -->
+        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));">
+            <div class="text-center text-white">
+                <i class="bi bi-person-plus-fill" style="font-size: 4rem;"></i>
+                <h1 class="mt-3 mb-4">{% trans "Join SecureApprove" %}</h1>
+                <p class="lead">{% trans "Create your account and start streamlining your approval workflows" %}</p>
+                <div class="mt-5">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <i class="bi bi-clock" style="font-size: 2rem;"></i>
+                            <div class="mt-2">{% trans "Quick Setup" %}</div>
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-people" style="font-size: 2rem;"></i>
+                            <div class="mt-2">{% trans "Team Ready" %}</div>
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-graph-up-arrow" style="font-size: 2rem;"></i>
+                            <div class="mt-2">{% trans "Scalable" %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right side - Registration form -->
+        <div class="col-lg-6 d-flex align-items-center">
+            <div class="w-100" style="max-width: 450px; margin: 0 auto;">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus text-primary" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3">{% trans "Create Account" %}</h2>
+                    <p class="text-muted">{% trans "Get started with your free account" %}</p>
+                </div>
+                
+                <!-- Registration Form -->
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <form method="post" novalidate class="needs-validation">
+                            {% csrf_token %}
+                            {% crispy form %}
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <p class="text-muted mb-2">{% trans "Already have an account?" %}</p>
+                            <a href="{% url 'authentication:login' %}" class="btn btn-outline-primary">
+                                {% trans "Sign In" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Terms and Privacy -->
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        {% trans "By creating an account, you agree to our" %}
+                        <a href="#" class="text-decoration-none">{% trans "Terms of Service" %}</a>
+                        {% trans "and" %}
+                        <a href="#" class="text-decoration-none">{% trans "Privacy Policy" %}</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--gray-50);
+    }
+    
+    .card-custom {
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-height: 800px) {
+        .container-fluid {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+    }
+</style>
+{% endblock %}

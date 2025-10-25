@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Payment Pending - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+        .hero-section {
+            background: linear-gradient(135deg, #eef2ff 0%, var(--bg-color) 50%, #faf5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+        }
+
+        .pending-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--card-shadow);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .pending-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--warning-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="pending-card">
+            <div class="p-5">
+                <div class="pending-icon">
+                    <i class="bi bi-clock text-white" style="font-size: 2.5rem;"></i>
+                </div>
+                
+                <h1 class="fw-bold text-warning mb-3">{% trans "Payment Pending" %}</h1>
+                
+                <p class="lead mb-4">
+                    {% trans "Your payment is being processed. This may take a few minutes. We'll send you an email confirmation once it's complete." %}
+                </p>
+                
+                <div class="alert alert-info" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <div>
+                            <strong>{% trans "What happens next?" %}</strong><br>
+                            <small>
+                                {% trans "You'll receive an email notification once your payment is approved. Your SecureApprove account will be activated automatically." %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'landing:index' %}" class="btn-primary-custom">
+                        <i class="bi bi-house me-2"></i>
+                        {% trans "Back to Home" %}
+                    </a>
+                </div>
+                
+                <div class="mt-4 text-muted">
+                    <small>
+                        {% trans "Questions about your payment?" %} 
+                        <a href="mailto:billing@secureapprove.com">billing@secureapprove.com</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

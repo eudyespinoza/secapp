@@ -1,0 +1,544 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: SecureApprove 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-19 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ================================================
+# Common Terms
+# ================================================
+
+msgid "SecureApprove"
+msgstr "SecureApprove"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Requests"
+msgstr "Requests"
+
+msgid "New Request"
+msgstr "New Request"
+
+msgid "All Requests"
+msgstr "All Requests"
+
+msgid "My Requests"
+msgstr "My Requests"
+
+msgid "Pending"
+msgstr "Pending"
+
+msgid "Approved"
+msgstr "Approved"
+
+msgid "Rejected"
+msgstr "Rejected"
+
+msgid "Submit"
+msgstr "Submit"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "View"
+msgstr "View"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Print"
+msgstr "Print"
+
+msgid "Loading..."
+msgstr "Loading..."
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Success"
+msgstr "Success"
+
+msgid "Warning"
+msgstr "Warning"
+
+msgid "Information"
+msgstr "Information"
+
+# ================================================
+# Authentication
+# ================================================
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+msgid "First Name"
+msgstr "First Name"
+
+msgid "Last Name"
+msgstr "Last Name"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Remember me"
+msgstr "Remember me"
+
+msgid "Forgot password?"
+msgstr "Forgot password?"
+
+msgid "Sign in with fingerprint"
+msgstr "Sign in with fingerprint"
+
+msgid "Use WebAuthn"
+msgstr "Use WebAuthn"
+
+# ================================================
+# Request Categories
+# ================================================
+
+msgid "Expense"
+msgstr "Expense"
+
+msgid "Purchase"
+msgstr "Purchase"
+
+msgid "Travel"
+msgstr "Travel"
+
+msgid "Contract"
+msgstr "Contract"
+
+msgid "Document"
+msgstr "Document"
+
+msgid "Other"
+msgstr "Other"
+
+# ================================================
+# Request Fields
+# ================================================
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Priority"
+msgstr "Priority"
+
+msgid "Amount"
+msgstr "Amount"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created"
+msgstr "Created"
+
+msgid "Approved by"
+msgstr "Approved by"
+
+msgid "Rejected by"
+msgstr "Rejected by"
+
+msgid "High"
+msgstr "High"
+
+msgid "Medium"
+msgstr "Medium"
+
+msgid "Low"
+msgstr "Low"
+
+msgid "Vendor"
+msgstr "Vendor"
+
+msgid "Cost Center"
+msgstr "Cost Center"
+
+msgid "Expense Category"
+msgstr "Expense Category"
+
+msgid "Receipt Reference"
+msgstr "Receipt Reference"
+
+msgid "Destination"
+msgstr "Destination"
+
+msgid "Start Date"
+msgstr "Start Date"
+
+msgid "End Date"
+msgstr "End Date"
+
+msgid "Document ID"
+msgstr "Document ID"
+
+msgid "Reason"
+msgstr "Reason"
+
+# ================================================
+# Request Actions
+# ================================================
+
+msgid "Submit Request"
+msgstr "Submit Request"
+
+msgid "Approve Request"
+msgstr "Approve Request"
+
+msgid "Reject Request"
+msgstr "Reject Request"
+
+msgid "Review Pending"
+msgstr "Review Pending"
+
+msgid "View Approved"
+msgstr "View Approved"
+
+msgid "Back to Requests"
+msgstr "Back to Requests"
+
+msgid "Request Information"
+msgstr "Request Information"
+
+msgid "Request Details"
+msgstr "Request Details"
+
+msgid "Additional Information"
+msgstr "Additional Information"
+
+msgid "Timeline"
+msgstr "Timeline"
+
+msgid "Request Created"
+msgstr "Request Created"
+
+msgid "Request Approved"
+msgstr "Request Approved"
+
+msgid "Request Rejected"
+msgstr "Request Rejected"
+
+# ================================================
+# Dashboard
+# ================================================
+
+msgid "Welcome back"
+msgstr "Welcome back"
+
+msgid "Here's what's happening with your requests."
+msgstr "Here's what's happening with your requests."
+
+msgid "Total Requests"
+msgstr "Total Requests"
+
+msgid "Pending Approvals"
+msgstr "Pending Approvals"
+
+msgid "Quick Actions"
+msgstr "Quick Actions"
+
+msgid "Recent Requests"
+msgstr "Recent Requests"
+
+msgid "Activity Timeline"
+msgstr "Activity Timeline"
+
+msgid "Requests by Category"
+msgstr "Requests by Category"
+
+msgid "Last 30 days"
+msgstr "Last 30 days"
+
+msgid "Last 7 days"
+msgstr "Last 7 days"
+
+msgid "This month"
+msgstr "This month"
+
+msgid "ago"
+msgstr "ago"
+
+msgid "No requests yet"
+msgstr "No requests yet"
+
+msgid "No requests found"
+msgstr "No requests found"
+
+# ================================================
+# Billing
+# ================================================
+
+msgid "Billing"
+msgstr "Billing"
+
+msgid "Subscription"
+msgstr "Subscription"
+
+msgid "Plan"
+msgstr "Plan"
+
+msgid "Starter"
+msgstr "Starter"
+
+msgid "Growth"
+msgstr "Growth"
+
+msgid "Scale"
+msgstr "Scale"
+
+msgid "Monthly"
+msgstr "Monthly"
+
+msgid "Yearly"
+msgstr "Yearly"
+
+msgid "Current Plan"
+msgstr "Current Plan"
+
+msgid "Upgrade Plan"
+msgstr "Upgrade Plan"
+
+msgid "Downgrade Plan"
+msgstr "Downgrade Plan"
+
+msgid "Cancel Subscription"
+msgstr "Cancel Subscription"
+
+msgid "Payment"
+msgstr "Payment"
+
+msgid "Invoice"
+msgstr "Invoice"
+
+msgid "Usage"
+msgstr "Usage"
+
+msgid "Limits"
+msgstr "Limits"
+
+msgid "Features"
+msgstr "Features"
+
+# ================================================
+# Forms & Validation
+# ================================================
+
+msgid "This field is required."
+msgstr "This field is required."
+
+msgid "Please enter a valid email address."
+msgstr "Please enter a valid email address."
+
+msgid "Passwords do not match."
+msgstr "Passwords do not match."
+
+msgid "Please fill in all required fields."
+msgstr "Please fill in all required fields."
+
+msgid "Invalid data provided."
+msgstr "Invalid data provided."
+
+msgid "Operation completed successfully."
+msgstr "Operation completed successfully."
+
+msgid "An error occurred. Please try again."
+msgstr "An error occurred. Please try again."
+
+# ================================================
+# Navigation
+# ================================================
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "English"
+msgstr "English"
+
+msgid "Spanish"
+msgstr "Spanish"
+
+msgid "Portuguese"
+msgstr "Portuguese"
+
+# ================================================
+# Messages
+# ================================================
+
+msgid "Your request has been submitted successfully."
+msgstr "Your request has been submitted successfully."
+
+msgid "Request has been approved."
+msgstr "Request has been approved."
+
+msgid "Request has been rejected."
+msgstr "Request has been rejected."
+
+msgid "You do not have permission to perform this action."
+msgstr "You do not have permission to perform this action."
+
+msgid "This request has already been processed."
+msgstr "This request has already been processed."
+
+msgid "You cannot approve your own request."
+msgstr "You cannot approve your own request."
+
+msgid "Please provide a reason for rejection."
+msgstr "Please provide a reason for rejection."
+
+# ================================================
+# Pagination
+# ================================================
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Page"
+msgstr "Page"
+
+msgid "of"
+msgstr "of"
+
+msgid "Showing"
+msgstr "Showing"
+
+msgid "to"
+msgstr "to"
+
+msgid "entries"
+msgstr "entries"
+
+# ================================================
+# Date & Time
+# ================================================
+
+msgid "Today"
+msgstr "Today"
+
+msgid "Yesterday"
+msgstr "Yesterday"
+
+msgid "Tomorrow"
+msgstr "Tomorrow"
+
+msgid "Monday"
+msgstr "Monday"
+
+msgid "Tuesday"
+msgstr "Tuesday"
+
+msgid "Wednesday"
+msgstr "Wednesday"
+
+msgid "Thursday"
+msgstr "Thursday"
+
+msgid "Friday"
+msgstr "Friday"
+
+msgid "Saturday"
+msgstr "Saturday"
+
+msgid "Sunday"
+msgstr "Sunday"
+
+msgid "January"
+msgstr "January"
+
+msgid "February"
+msgstr "February"
+
+msgid "March"
+msgstr "March"
+
+msgid "April"
+msgstr "April"
+
+msgid "May"
+msgstr "May"
+
+msgid "June"
+msgstr "June"
+
+msgid "July"
+msgstr "July"
+
+msgid "August"
+msgstr "August"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "October"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "December"
