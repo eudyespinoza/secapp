@@ -49,9 +49,13 @@ def generate_mo_file(po_file, mo_file):
     if current_msgid and current_msgstr:
         entries[current_msgid] = current_msgstr
     
-    # Remover entrada vacía
-    if '' in entries:
-        del entries['']
+    # Asegurar que existe la entrada de header con charset
+    if '' not in entries or 'charset=' not in entries.get('', '').lower():
+        # Crear header mínimo con charset UTF-8
+        entries[''] = (
+            'Content-Type: text/plain; charset=UTF-8\\n'
+            'Content-Transfer-Encoding: 8bit\\n'
+        )
     
     print(f"📝 Encontradas {len(entries)} traducciones")
     
