@@ -90,8 +90,8 @@ urlpatterns = [
     # Health check (no i18n)
     path('health/', health_check, name='health'),
     
-    # Language switching with i18n URL translation support
-    path('i18n/setlang/', custom_set_language, name='set_language'),
+    # Django's built-in i18n URLs (includes set_language with CSRF support)
+    path('i18n/', include('django.conf.urls.i18n')),
     
     # API routes (no translation)
     *api_urlpatterns,
