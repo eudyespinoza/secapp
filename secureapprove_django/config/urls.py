@@ -27,7 +27,7 @@ schema_view = get_schema_view(
 # API URLs (no i18n prefix)
 api_urlpatterns = [
     path('api/auth/', include('apps.authentication.api_urls')),
-    path('api/requests/', include('apps.requests.urls')),
+    path('api/requests/', include(('apps.requests.urls', 'requests'), namespace='api-requests')),
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 
@@ -48,7 +48,7 @@ urlpatterns += i18n_patterns(
     path('', include('apps.landing.urls')),
     
     # Dashboard for authenticated users
-    path('dashboard/', include('apps.requests.urls')),
+    path('dashboard/', include(('apps.requests.urls', 'requests'), namespace='dashboard-requests')),
     
     # Web interface routes
     path('auth/', include('apps.authentication.urls')),
