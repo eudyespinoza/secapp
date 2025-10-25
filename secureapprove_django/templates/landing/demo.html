@@ -144,7 +144,7 @@
                 <i class="bi bi-arrow-left me-1"></i>
                 {% trans "Volver" %}
             </a>
-            <a href="{% url 'account_signup' %}" class="btn btn-primary-custom">
+            <a href="{% url 'billing:select_plan' %}" class="btn btn-primary-custom">
                 {% trans "Comenzar Ahora" %}
             </a>
         </div>
@@ -269,9 +269,9 @@
                         <p class="fs-5 mb-4 opacity-90">
                             {% trans "Comienza a gestionar tus aprobaciones de manera profesional" %}
                         </p>
-                        <a href="{% url 'account_signup' %}" class="btn btn-light btn-lg text-primary fw-bold">
+                        <a href="{% url 'billing:select_plan' %}" class="btn btn-light btn-lg text-primary fw-bold">
                             <i class="bi bi-rocket-takeoff me-2"></i>
-                            {% trans "Crear Mi Cuenta" %}
+                            {% trans "Suscribirme Ahora" %}
                         </a>
                     </div>
                 </div>

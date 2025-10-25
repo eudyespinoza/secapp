@@ -676,3 +676,199 @@ msgstr "Noviembre"
 
 msgid "December"
 msgstr "Diciembre"
+
+# ================================================
+# Billing & Subscription Pages - NUEVAS TRADUCCIONES
+# ================================================
+
+msgid "Select the perfect plan for your organization's approval needs"
+msgstr "Selecciona el plan perfecto para las necesidades de aprobación de tu organización"
+
+msgid "Perfect for small teams"
+msgstr "Perfecto para equipos pequeños"
+
+msgid "Up to 2 approvers"
+msgstr "Hasta 2 aprobadores"
+
+msgid "10 team members"
+msgstr "10 miembros del equipo"
+
+msgid "Basic workflow templates"
+msgstr "Plantillas de flujo de trabajo básicas"
+
+msgid "Email notifications"
+msgstr "Notificaciones por correo"
+
+msgid "Basic reporting"
+msgstr "Reportes básicos"
+
+msgid "WebAuthn security"
+msgstr "Seguridad WebAuthn"
+
+msgid "Start Free Trial"
+msgstr "Comenzar Prueba Gratis"
+
+msgid "Ideal for growing companies"
+msgstr "Ideal para empresas en crecimiento"
+
+msgid "Up to 6 approvers"
+msgstr "Hasta 6 aprobadores"
+
+msgid "25 team members"
+msgstr "25 miembros del equipo"
+
+msgid "Advanced workflow automation"
+msgstr "Automatización de flujo de trabajo avanzada"
+
+msgid "Slack & Teams integration"
+msgstr "Integración con Slack y Teams"
+
+msgid "Advanced analytics"
+msgstr "Análisis avanzado"
+
+msgid "API access"
+msgstr "Acceso API"
+
+msgid "Priority support"
+msgstr "Soporte prioritario"
+
+msgid "For enterprise organizations"
+msgstr "Para organizaciones empresariales"
+
+msgid "Unlimited approvers"
+msgstr "Aprobadores ilimitados"
+
+msgid "Unlimited team members"
+msgstr "Miembros del equipo ilimitados"
+
+msgid "Custom workflow builder"
+msgstr "Constructor de flujos personalizado"
+
+msgid "Advanced integrations"
+msgstr "Integraciones avanzadas"
+
+msgid "Enterprise analytics"
+msgstr "Análisis empresarial"
+
+msgid "Dedicated support"
+msgstr "Soporte dedicado"
+
+msgid "SLA guarantee"
+msgstr "Garantía SLA"
+
+msgid "Contact Sales"
+msgstr "Contactar Ventas"
+
+msgid "All plans include"
+msgstr "Todos los planes incluyen"
+
+msgid "WebAuthn Security"
+msgstr "Seguridad WebAuthn"
+
+msgid "Passwordless biometric authentication"
+msgstr "Autenticación biométrica sin contraseña"
+
+msgid "Cloud Hosting"
+msgstr "Hospedaje en la Nube"
+
+msgid "Secure, reliable cloud infrastructure"
+msgstr "Infraestructura en la nube segura y confiable"
+
+msgid "Mobile Ready"
+msgstr "Listo para Móviles"
+
+msgid "Works perfectly on any device"
+msgstr "Funciona perfectamente en cualquier dispositivo"
+
+msgid "24/7 Support"
+msgstr "Soporte 24/7"
+
+msgid "Get help whenever you need it"
+msgstr "Obtén ayuda cuando la necesites"
+
+msgid "Frequently Asked Questions"
+msgstr "Preguntas Frecuentes"
+
+msgid "Can I change my plan later?"
+msgstr "¿Puedo cambiar mi plan más adelante?"
+
+msgid "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately."
+msgstr "Sí, puedes actualizar o degradar tu plan en cualquier momento. Los cambios tienen efecto inmediato."
+
+msgid "Is there a free trial?"
+msgstr "¿Hay una prueba gratuita?"
+
+msgid "Yes, we offer a 14-day free trial for all plans. No credit card required to start."
+msgstr "Sí, ofrecemos una prueba gratuita de 14 días para todos los planes. No se requiere tarjeta de crédito para comenzar."
+
+msgid "What payment methods do you accept?"
+msgstr "¿Qué métodos de pago aceptan?"
+
+msgid "We accept all major credit cards, PayPal, and bank transfers through MercadoPago."
+msgstr "Aceptamos todas las tarjetas de crédito principales, PayPal y transferencias bancarias a través de MercadoPago."
+
+msgid "Questions about our plans?"
+msgstr "¿Preguntas sobre nuestros planes?"
+
+msgid "Contact our sales team"
+msgstr "Contacta a nuestro equipo de ventas"
+
+msgid "Most Popular"
+msgstr "Más Popular"
+
+msgid "month"
+msgstr "mes"
+
+msgid "Complete Your Subscription"
+msgstr "Completa Tu Suscripción"
+
+msgid "You're just one step away from accessing SecureApprove"
+msgstr "Estás a solo un paso de acceder a SecureApprove"
+
+msgid "Email Address"
+msgstr "Dirección de Correo"
+
+msgid "This email will be used for your account and billing notifications"
+msgstr "Este correo se usará para tu cuenta y notificaciones de facturación"
+
+msgid "14-Day Free Trial"
+msgstr "Prueba Gratis de 14 Días"
+
+msgid "No charge for the first 14 days. Cancel anytime."
+msgstr "Sin cargo los primeros 14 días. Cancela en cualquier momento."
+
+msgid "Your payment is processed securely through MercadoPago. We never store your payment information."
+msgstr "Tu pago se procesa de forma segura a través de MercadoPago. Nunca almacenamos tu información de pago."
+
+msgid "Back to plan selection"
+msgstr "Volver a selección de planes"
+
+msgid "Error starting subscription"
+msgstr "Error al iniciar suscripción"
+
+msgid "Payment Successful!"
+msgstr "¡Pago Exitoso!"
+
+msgid "Thank you for subscribing to SecureApprove. Your account is being set up and you'll receive a confirmation email shortly."
+msgstr "Gracias por suscribirte a SecureApprove. Tu cuenta se está configurando y recibirás un correo de confirmación pronto."
+
+msgid "What happens next?"
+msgstr "¿Qué sigue?"
+
+msgid "Your account and tenant have been created. Please set up your biometric authentication to access your dashboard."
+msgstr "Tu cuenta y organización han sido creadas. Por favor configura tu autenticación biométrica para acceder a tu panel."
+
+msgid "Setup Biometric Login"
+msgstr "Configurar Inicio Biométrico"
+
+msgid "Back to Home"
+msgstr "Volver al Inicio"
+
+msgid "Need help? Contact our support team at"
+msgstr "¿Necesitas ayuda? Contacta a nuestro equipo de soporte en"
+
+msgid "Subscribe to"
+msgstr "Suscribirse a"
+
+msgid "Subscribe Now"
+msgstr "Suscribirse Ahora"
