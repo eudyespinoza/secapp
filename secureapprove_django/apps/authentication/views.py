@@ -179,6 +179,7 @@ def webauthn_register_verify(request):
             logger.info(f"WebAuthn registration successful for user: {user.email}")
             
             # Log the user in after successful registration
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
             
             return JsonResponse({
@@ -262,6 +263,7 @@ def webauthn_login_verify(request):
             logger.info(f"WebAuthn login successful for user: {user.email}")
             
             # Log the user in
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
             
             # Update last login
