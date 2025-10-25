@@ -52,11 +52,6 @@ EOF
 echo "🌐 Compiling translation messages..."
 python manage.py compilemessages || echo "⚠️ No translations to compile"
 
-# Collect static files
-echo "📁 Collecting static files..."
-rm -rf /app/staticfiles/*
-python manage.py collectstatic --noinput
-
 # Setup admin user configuration
 echo "👨‍💼 Setting up admin user configuration..."
 python manage.py shell << EOF
