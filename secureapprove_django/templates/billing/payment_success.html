@@ -99,16 +99,16 @@
                         <div>
                             <strong>{% trans "What happens next?" %}</strong><br>
                             <small>
-                                {% trans "Your tenant account is being created. You can now register with WebAuthn and start using SecureApprove immediately." %}
+                                {% trans "Your account and tenant have been created. Please set up your biometric authentication to access your dashboard." %}
                             </small>
                         </div>
                     </div>
                 </div>
                 
                 <div class="mt-4">
-                    <a href="{% url 'authentication:webauthn_register' %}" class="btn-primary-custom">
+                    <a href="{% url 'authentication:webauthn_login' %}" class="btn-primary-custom">
                         <i class="bi bi-fingerprint me-2"></i>
-                        {% trans "Complete Registration" %}
+                        {% trans "Setup Biometric Login" %}
                     </a>
                     <a href="{% url 'landing:index' %}" class="btn-secondary-custom">
                         {% trans "Back to Home" %}

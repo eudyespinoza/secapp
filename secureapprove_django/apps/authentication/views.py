@@ -43,13 +43,23 @@ class WebAuthnLoginView(View):
 
 
 class WebAuthnRegisterView(View):
-    """WebAuthn passwordless registration view"""
-    template_name = 'authentication/webauthn_register.html'
-    
+    """
+    DEPRECATED: Registration is now only available through subscription flow.
+    This view redirects to the subscription plans page.
+    """
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('landing:index')
-        return render(request, self.template_name)
+        messages.info(request, _('Please select a subscription plan to get started.'))
+        return redirect('billing:select_plan')
+
+
+class RedirectToSubscriptionView(View):
+    """Redirect any registration attempts to subscription plans"""
+    def get(self, request):
+        messages.info(request, _('Please select a subscription plan to get started.'))
+        return redirect('billing:select_plan')
+    
+    def post(self, request):
+        return redirect('billing:select_plan')
 
 
 class LogoutView(BaseLogoutView):

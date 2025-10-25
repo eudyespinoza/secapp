@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 import mercadopago
 
-from apps.tenants.services import TenantService
+from apps.tenants.models import Tenant
 from apps.billing.models import Plan, Subscription, Payment
 from apps.billing.services import BillingService
 
@@ -141,44 +141,76 @@ class MercadoPagoWebhookView(View):
     
     def _handle_successful_payment(self, payment_record):
         """
-        Handle successful payment - THIS IS WHERE TENANTS ARE CREATED
+        Handle successful payment - THIS IS WHERE TENANTS AND USERS ARE CREATED
         
-        Critical flow:
-        1. Activate subscription
+        Critical flow for payment-based registration:
+        1. Get or create user from payment email
         2. Create tenant for user (if not exists)
         3. Assign user as tenant admin
-        4. Send welcome email
+        4. Activate subscription
+        5. Send welcome email with WebAuthn setup instructions
         """
         try:
             subscription = payment_record.subscription
+            
+            # Get payment info to extract user email
+            payment_email = payment_record.metadata.get('payer_email') if payment_record.metadata else None
+            
+            # Get or create user
             user = subscription.user
+            if not user and payment_email:
+                # Create user from payment (no tenant yet, no WebAuthn)
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                
+                user, created = User.objects.get_or_create(
+                    email=payment_email,
+                    defaults={
+                        'username': payment_email,
+                        'name': payment_email.split('@')[0],
+                        'role': 'tenant_admin',
+                        'is_active': True,
+                        'tenant': None  # No tenant yet - created below
+                    }
+                )
+                
+                if created:
+                    logger.info(f"Created new user {user.email} from payment")
+                    # User needs to setup WebAuthn after first login
+                
+                # Update subscription with user
+                subscription.user = user
+            
+            if not user:
+                logger.error("Cannot process payment without user or email")
+                return HttpResponseBadRequest("No user found")
             
             logger.info(f"Processing successful payment for user {user.email}")
             
-            # Activate subscription
-            subscription.status = 'active'
-            subscription.save()
-            
             # CREATE TENANT - This is the key step!
-            tenant_service = TenantService()
-            
             # Check if user already has a tenant (shouldn't happen in normal flow)
-            if hasattr(user, 'owned_tenant') and user.owned_tenant:
-                logger.warning(f"User {user.email} already has tenant: {user.owned_tenant.slug}")
-                tenant = user.owned_tenant
+            if hasattr(user, 'tenant') and user.tenant:
+                logger.warning(f"User {user.email} already has tenant: {user.tenant.slug}")
+                tenant = user.tenant
             else:
                 # Create new tenant for the user
-                tenant_data = {
-                    'name': f"{user.first_name or user.email.split('@')[0]}'s Organization",
-                    'slug': f"tenant-{user.id}",  # Simple slug generation
-                    'description': f"Organization for {user.email}",
-                    'owner': user
-                }
-                
-                tenant = tenant_service.create_tenant(tenant_data)
+                tenant_slug = f"tenant-{user.email.split('@')[0]}-{user.id}".lower()[:50]
+                tenant = Tenant.objects.create(
+                    name=f"{user.name or user.email.split('@')[0]}'s Organization",
+                    slug=tenant_slug,
+                    description=f"Organization for {user.email}",
+                    owner=user,
+                    is_active=True
+                )
                 logger.info(f"Created tenant {tenant.slug} for user {user.email}")
+                
+                # Assign tenant to user
+                user.tenant = tenant
+                user.role = 'tenant_admin'
+                user.save()
             
-            # Update subscription with tenant
+            # Activate subscription
+            subscription.status = 'active'
             subscription.tenant = tenant
             subscription.save()
             

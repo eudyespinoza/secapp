@@ -12,9 +12,10 @@ urlpatterns = [
     # WebAuthn Passwordless Authentication (Primary)
     # ================================================
     
-    # Main WebAuthn login/register pages
+    # Main WebAuthn login page
     path('login/', views.WebAuthnLoginView.as_view(), name='webauthn_login'),
-    path('register/', views.WebAuthnRegisterView.as_view(), name='webauthn_register'),
+    # Register redirects to subscription plans
+    path('register/', views.RedirectToSubscriptionView.as_view(), name='webauthn_register'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     
     # ================================================

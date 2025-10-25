@@ -287,7 +287,7 @@
                                 <li class="mb-2">• {% trans "Autenticación biométrica" %}</li>
                                 <li class="mb-2">• {% trans "Soporte básico" %}</li>
                             </ul>
-                            <a href="{% url 'authentication:webauthn_register' %}?plan=starter" class="btn btn-outline-primary w-100">
+                            <a href="{% url 'billing:select_plan' %}" class="btn btn-outline-primary w-100">
                                 {% trans "Suscribirme" %}
                             </a>
                         </div>
@@ -308,7 +308,7 @@
                                 <li class="mb-2">• {% trans "Auditoría avanzada" %}</li>
                                 <li class="mb-2">• {% trans "Integraciones API" %}</li>
                             </ul>
-                            <a href="{% url 'authentication:webauthn_register' %}?plan=growth" class="btn btn-primary-custom w-100">
+                            <a href="{% url 'billing:select_plan' %}" class="btn btn-primary-custom w-100">
                                 {% trans "Suscribirme" %}
                             </a>
                         </div>
@@ -328,7 +328,7 @@
                                 <li class="mb-2">• {% trans "Integraciones premium" %}</li>
                                 <li class="mb-2">• {% trans "Soporte prioritario" %}</li>
                             </ul>
-                            <a href="{% url 'authentication:webauthn_register' %}?plan=scale" class="btn btn-outline-primary w-100">
+                            <a href="{% url 'billing:select_plan' %}" class="btn btn-outline-primary w-100">
                                 {% trans "Suscribirme" %}
                             </a>
                         </div>

@@ -259,8 +259,8 @@
         <div class="text-center mt-4">
             <p class="text-muted">
                 {% trans "Don't have an account?" %}
-                <a href="{% url 'authentication:webauthn_register' %}" class="text-decoration-none fw-semibold">
-                    {% trans "Create Account" %}
+                <a href="{% url 'billing:select_plan' %}" class="text-decoration-none fw-semibold">
+                    {% trans "Subscribe to Get Started" %}
                 </a>
             </p>
         </div>
@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const userCheckResult = await userCheck.json();
             
             if (!userCheckResult.exists) {
-                throw new Error('{% trans "No account found with this email address. Please register first." %}');
+                throw new Error('{% trans "No account found with this email. Please subscribe to a plan to get started." %}');
             }
             
             if (!userCheckResult.hasCredentials) {
