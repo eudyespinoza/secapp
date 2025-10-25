@@ -25,7 +25,7 @@ def generate_mo_file(po_file, mo_file):
         line = line.strip()
         
         if line.startswith('msgid "'):
-            if current_msgid and current_msgstr:
+            if current_msgid is not None and current_msgstr is not None:
                 entries[current_msgid] = current_msgstr
             current_msgid = line[7:-1]  # Remover 'msgid "' y '"'
             in_msgid = True
@@ -46,16 +46,20 @@ def generate_mo_file(po_file, mo_file):
                 current_msgstr += text
     
     # Agregar última entrada
-    if current_msgid and current_msgstr:
+    if current_msgid is not None and current_msgstr is not None:
         entries[current_msgid] = current_msgstr
     
-    # Asegurar que existe la entrada de header con charset
-    if '' not in entries or 'charset=' not in entries.get('', '').lower():
-        # Crear header mínimo con charset UTF-8
-        entries[''] = (
-            'Content-Type: text/plain; charset=UTF-8\\n'
-            'Content-Transfer-Encoding: 8bit\\n'
-        )
+    # Verificar que existe header con charset
+    # El header está en msgid "" y debe contener \n reales, no literales
+    if '' in entries:
+        # Reemplazar \n literales por saltos de línea reales en el header
+        header = entries['']
+        if '\\n' in header:
+            # Convertir \n escapados a saltos de línea reales
+            entries[''] = header.replace('\\n', '\n')
+    else:
+        # Si no hay header, crear uno mínimo
+        entries[''] = 'Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n'
     
     print(f"📝 Encontradas {len(entries)} traducciones")
     
