@@ -8,6 +8,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.i18n import set_language
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
@@ -15,6 +17,11 @@ from rest_framework import permissions
 # Health check endpoint
 def health_check(request):
     return JsonResponse({"status": "healthy", "service": "secureapprove-django"})
+
+# Language switch without CSRF check for trusted origins
+@csrf_exempt
+def set_language_view(request):
+    return set_language(request)
 
 # Swagger/API Documentation
 schema_view = get_schema_view(
@@ -43,8 +50,8 @@ urlpatterns = [
     # Health check (no i18n)
     path('health/', health_check, name='health'),
     
-    # Language switching
-    path('i18n/', include('django.conf.urls.i18n')),
+    # Language switching (custom view without strict CSRF)
+    path('i18n/setlang/', set_language_view, name='set_language'),
     
     # API routes (no translation)
     *api_urlpatterns,
