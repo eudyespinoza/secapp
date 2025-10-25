@@ -322,6 +322,9 @@ msgstr "No requests found"
 msgid "Billing"
 msgstr "Billing"
 
+msgid "Choose Your Plan"
+msgstr "Choose Your Plan"
+
 msgid "Subscription"
 msgstr "Subscription"
 
@@ -413,6 +416,15 @@ msgstr "Help"
 
 msgid "Language"
 msgstr "Language"
+
+msgid "Light"
+msgstr "Light"
+
+msgid "Dark"
+msgstr "Dark"
+
+msgid "System"
+msgstr "System"
 
 msgid "English"
 msgstr "English"

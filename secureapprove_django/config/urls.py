@@ -57,7 +57,7 @@ urlpatterns += i18n_patterns(
     # Django allauth
     path('accounts/', include('allauth.urls')),
     
-    prefix_default_language=False,
+    prefix_default_language=True,
 )
 
 # Static and media files

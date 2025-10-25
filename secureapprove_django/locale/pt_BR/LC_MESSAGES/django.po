@@ -322,6 +322,9 @@ msgstr "Nenhuma solicitação encontrada"
 msgid "Billing"
 msgstr "Faturamento"
 
+msgid "Choose Your Plan"
+msgstr "Escolha Seu Plano"
+
 msgid "Subscription"
 msgstr "Assinatura"
 
@@ -413,6 +416,15 @@ msgstr "Ajuda"
 
 msgid "Language"
 msgstr "Idioma"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Dark"
+msgstr "Escuro"
+
+msgid "System"
+msgstr "Sistema"
 
 msgid "English"
 msgstr "Inglês"

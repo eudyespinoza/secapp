@@ -444,6 +444,9 @@ msgstr "No se encontraron solicitudes"
 msgid "Billing"
 msgstr "Facturación"
 
+msgid "Choose Your Plan"
+msgstr "Elige Tu Plan"
+
 msgid "Subscription"
 msgstr "Suscripción"
 
@@ -535,6 +538,15 @@ msgstr "Ayuda"
 
 msgid "Language"
 msgstr "Idioma"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "System"
+msgstr "Sistema"
 
 msgid "English"
 msgstr "Inglés"

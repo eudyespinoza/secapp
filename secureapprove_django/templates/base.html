@@ -1,6 +1,6 @@
 {% load i18n static %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<html lang="{% get_current_language as CURRENT_LANG %}{{ CURRENT_LANG }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -326,18 +326,18 @@
                     <div class="dropdown">
                         <button class="control-button" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-sun" id="themeIcon"></i>
-                            <span id="themeText">{% trans "Claro" %}</span>
+                            <span id="themeText">{% trans "Light" %}</span>
                             <i class="bi bi-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="themeDropdown">
                             <li><button class="dropdown-item" onclick="setTheme('light')" data-theme-option="light">
-                                <i class="bi bi-sun me-2"></i> {% trans "Claro" %}
+                                <i class="bi bi-sun me-2"></i> {% trans "Light" %}
                             </button></li>
                             <li><button class="dropdown-item" onclick="setTheme('dark')" data-theme-option="dark">
-                                <i class="bi bi-moon me-2"></i> {% trans "Oscuro" %}
+                                <i class="bi bi-moon me-2"></i> {% trans "Dark" %}
                             </button></li>
                             <li><button class="dropdown-item" onclick="setTheme('system')" data-theme-option="system">
-                                <i class="bi bi-display me-2"></i> {% trans "Sistema" %}
+                                <i class="bi bi-display me-2"></i> {% trans "System" %}
                             </button></li>
                         </ul>
                     </div>
@@ -359,7 +359,7 @@
                                     <input name="next" type="hidden" value="{{ request.get_full_path }}" />
                                     <input name="language" type="hidden" value="{{ lang_code }}" />
                                     <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == lang_code %}active{% endif %}" data-lang="{{ lang_code }}">
-                                        {% if lang_code == 'es' %}<span class="me-2">�🇸</span> Español
+                                        {% if lang_code == 'es' %}<span class="me-2">🇪🇸</span> Español
                                         {% elif lang_code == 'en' %}<span class="me-2">🇺🇸</span> English
                                         {% elif lang_code == 'pt-br' %}<span class="me-2">🇧🇷</span> Português
                                         {% endif %}
@@ -376,7 +376,7 @@
                             <i class="bi bi-speedometer2 me-1"></i>{% trans "Dashboard" %}
                         </a>
                         <a href="{% url 'requests:list' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-list-check me-1"></i>{% trans "Solicitudes" %}
+                            <i class="bi bi-list-check me-1"></i>{% trans "Requests" %}
                         </a>
                         
                         <!-- User Dropdown -->
@@ -386,11 +386,11 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{% url 'authentication:profile' %}">
-                                    <i class="bi bi-person me-2"></i>{% trans "Perfil" %}
+                                    <i class="bi bi-person me-2"></i>{% trans "Profile" %}
                                 </a></li>
                                 {% if user.is_staff or user.is_superuser %}
                                 <li><a class="dropdown-item" href="/admin/">
-                                    <i class="bi bi-gear me-2"></i>{% trans "Administración" %}
+                                    <i class="bi bi-gear me-2"></i>{% trans "Administration" %}
                                 </a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
@@ -398,7 +398,7 @@
                                     <form method="post" action="{% url 'authentication:logout' %}">
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i>{% trans "Cerrar Sesión" %}
+                                            <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
                                         </button>
                                     </form>
                                 </li>
@@ -407,10 +407,10 @@
                     {% else %}
                         <!-- Guest Menu -->
                         <a href="{% url 'authentication:webauthn_login' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-fingerprint me-1"></i>{% trans "Iniciar Sesión" %}
+                            <i class="bi bi-fingerprint me-1"></i>{% trans "Login" %}
                         </a>
                         <a href="{% url 'authentication:webauthn_register' %}" class="btn btn-primary-custom">
-                            <i class="bi bi-shield-check me-1"></i>{% trans "Registrarse" %}
+                            <i class="bi bi-shield-check me-1"></i>{% trans "Register" %}
                         </a>
                     {% endif %}
                 </div>
@@ -466,15 +466,15 @@
             switch(theme) {
                 case 'light':
                     themeIcon.className = 'bi bi-sun';
-                    themeText.textContent = '{% trans "Claro" %}';
+                    themeText.textContent = '{% trans "Light" %}';
                     break;
                 case 'dark':
                     themeIcon.className = 'bi bi-moon';
-                    themeText.textContent = '{% trans "Oscuro" %}';
+                    themeText.textContent = '{% trans "Dark" %}';
                     break;
                 case 'system':
                     themeIcon.className = 'bi bi-display';
-                    themeText.textContent = '{% trans "Sistema" %}';
+                    themeText.textContent = '{% trans "System" %}';
                     break;
             }
             
@@ -502,20 +502,12 @@
             dropdownItems.forEach(item => item.classList.remove('active'));
             
             // Get current language from Django context
-            let detectedLang = '{{ LANGUAGE_CODE }}';
+            {% get_current_language as CURRENT_LANGUAGE %}
+            let detectedLang = '{{ CURRENT_LANGUAGE }}';
             
-            // Fallback to browser language detection if not set
-            if (!detectedLang || detectedLang === 'None') {
-                const browserLang = navigator.language || navigator.userLanguage;
-                if (browserLang.startsWith('es')) {
-                    detectedLang = 'es';
-                } else if (browserLang.startsWith('en')) {
-                    detectedLang = 'en';
-                } else if (browserLang.startsWith('pt')) {
-                    detectedLang = 'pt-br';
-                } else {
-                    detectedLang = 'es'; // Default fallback
-                }
+            // Normalize language code
+            if (detectedLang) {
+                detectedLang = detectedLang.toLowerCase();
             }
             
             switch(detectedLang) {
