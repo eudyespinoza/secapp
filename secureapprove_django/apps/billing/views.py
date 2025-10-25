@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import gettext as _
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+from django.conf import settings
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
@@ -63,22 +64,26 @@ def billing_dashboard(request):
     
     return render(request, 'billing/dashboard.html', context)
 
-@login_required
 def select_plan(request):
-    """Plan selection page"""
+    """Plan selection page - Public access for new subscriptions"""
     
     plans = Plan.objects.filter(is_active=True).order_by('order')
-    current_subscription = getattr(request.user.tenant, 'subscription', None)
+    current_subscription = None
+    
+    # Only check subscription if user is authenticated
+    if request.user.is_authenticated and hasattr(request.user, 'tenant') and request.user.tenant:
+        current_subscription = getattr(request.user.tenant, 'subscription', None)
     
     context = {
         'plans': plans,
         'current_subscription': current_subscription,
+        'is_authenticated': request.user.is_authenticated,
     }
     
     return render(request, 'billing/select_plan.html', context)
 
 def subscribe_to_plan(request, plan_name):
-    """Subscribe to a specific plan"""
+    """Subscribe to a specific plan - Public access for new users"""
     plan = get_object_or_404(Plan, name=plan_name, is_active=True)
     
     context = {
@@ -87,30 +92,62 @@ def subscribe_to_plan(request, plan_name):
     }
     
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.POST.get('email', '').strip().lower()
         if not email:
             context['error'] = _('Email is required')
             return render(request, 'billing/subscribe.html', context)
         
-        # Create checkout preference using the service that already exists
+        # Create MercadoPago preference directly for new subscription
         try:
-            checkout_data = get_mp_service().create_preference({
-                'planId': plan.name,
-                'seats': 10,
-                'customerEmail': email
-            })
+            mp_service = get_mp_service()
             
-            if checkout_data.get('success'):
-                # Redirect to MercadoPago
-                init_point = checkout_data.get('init_point') or checkout_data.get('sandbox_init_point')
-                if init_point:
-                    return redirect(init_point)
+            if not mp_service.sdk:
+                # Mock mode for testing
+                logger.warning("MercadoPago SDK not initialized, using mock mode")
+                context['error'] = _('Payment system not configured. Please contact support.')
+                return render(request, 'billing/subscribe.html', context)
             
-            context['error'] = checkout_data.get('error', _('Failed to create checkout session'))
+            # Create preference data for new subscription
+            preference_data = {
+                "items": [{
+                    "title": f"{plan.display_name} - Monthly Subscription",
+                    "description": plan.description or f"Subscription to {plan.display_name}",
+                    "category_id": "services",
+                    "quantity": 1,
+                    "unit_price": float(plan.monthly_price),
+                    "currency_id": "USD"
+                }],
+                "payer": {
+                    "email": email,
+                },
+                "external_reference": f"new-{plan.name}-{email}",
+                "notification_url": f"{settings.SITE_URL}/billing/webhooks/mercadopago/",
+                "back_urls": {
+                    "success": f"{settings.SITE_URL}/billing/success/",
+                    "failure": f"{settings.SITE_URL}/billing/failure/",
+                    "pending": f"{settings.SITE_URL}/billing/pending/"
+                },
+                "auto_return": "approved",
+                "metadata": {
+                    "plan_name": plan.name,
+                    "customer_email": email,
+                    "seats": 10
+                }
+            }
+            
+            preference_response = mp_service.sdk.preference().create(preference_data)
+            
+            if preference_response["status"] == 201:
+                init_point = preference_response["response"]["init_point"]
+                logger.info(f"Created MercadoPago preference for {email} - Plan: {plan.name}")
+                return redirect(init_point)
+            else:
+                logger.error(f"MercadoPago preference creation failed: {preference_response}")
+                context['error'] = _('Failed to create payment session. Please try again.')
             
         except Exception as e:
             logger.error(f"Error creating checkout: {str(e)}")
-            context['error'] = _('Failed to create checkout session')
+            context['error'] = _('Failed to create checkout session. Please contact support.')
     
     return render(request, 'billing/subscribe.html', context)
 
