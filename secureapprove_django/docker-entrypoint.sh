@@ -54,7 +54,7 @@ python manage.py compilemessages || echo "⚠️ No translations to compile"
 
 # Collect static files
 echo "📁 Collecting static files..."
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear
 
 # Setup admin user configuration
 echo "👨‍💼 Setting up admin user configuration..."
