@@ -7,9 +7,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
+from django.http import JsonResponse
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+
+# Health check endpoint
+def health_check(request):
+    return JsonResponse({"status": "healthy", "service": "secureapprove-django"})
 
 # Swagger/API Documentation
 schema_view = get_schema_view(
@@ -34,6 +39,9 @@ api_urlpatterns = [
 # Main URL patterns with i18n
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Health check (no i18n)
+    path('health/', health_check, name='health'),
     
     # Language switching
     path('i18n/', include('django.conf.urls.i18n')),
