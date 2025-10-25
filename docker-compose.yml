@@ -2,8 +2,6 @@
 # SecureApprove - Docker Compose with Traefik
 # ================================================
 
-version: '3.8'
-
 services:
   # PostgreSQL Database
   db:
