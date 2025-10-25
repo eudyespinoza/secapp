@@ -30,22 +30,22 @@ COPY . .
 # Make entrypoint script executable
 RUN chmod +x docker-entrypoint.sh
 
-# Create static and media directories with proper permissions
-RUN mkdir -p staticfiles media logs && \
-    chmod -R 755 staticfiles media logs
-
 # Compile translation messages
 RUN python manage.py compilemessages || echo "No translations to compile"
 
-# Create non-root user BEFORE collectstatic
-RUN adduser --disabled-password --gecos '' django && \
-    chown -R django:django /app
+# Collect static files as root
+RUN python manage.py collectstatic --noinput || echo "Static files collected"
+
+# Create non-root user
+RUN adduser --disabled-password --gecos '' django
+
+# Create directories and set permissions AFTER collectstatic
+RUN mkdir -p staticfiles media logs && \
+    chown -R django:django /app && \
+    chmod -R 755 /app
 
 # Switch to django user
 USER django
-
-# Collect static files as django user
-RUN python manage.py collectstatic --noinput || echo "Static files collected"
 
 # Expose port
 EXPOSE 8000
