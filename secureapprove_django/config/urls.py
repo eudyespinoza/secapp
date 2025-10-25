@@ -7,9 +7,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.i18n import set_language
+from django.utils.translation import activate
+from django.urls import translate_url
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
@@ -18,26 +20,27 @@ from rest_framework import permissions
 def health_check(request):
     return JsonResponse({"status": "healthy", "service": "secureapprove-django"})
 
-# Language switch with proper URL translation for i18n_patterns
-@csrf_exempt
-def set_language_view(request):
-    from django.utils.translation import activate
-    from django.http import HttpResponseRedirect
-    from django.urls import translate_url
-    
+# Custom language switcher with URL translation
+def custom_set_language(request):
+    """
+    Custom language switcher that properly handles i18n_patterns URL translation.
+    This extends Django's built-in set_language view with translate_url support.
+    """
     if request.method == 'POST':
         lang_code = request.POST.get('language')
         next_url = request.POST.get('next', request.META.get('HTTP_REFERER', '/'))
         
-        # Activate the new language
-        if lang_code:
+        if lang_code and lang_code in dict(settings.LANGUAGES):
+            # Activate the language
             activate(lang_code)
-            request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
             
-            # Translate the URL to the new language prefix
+            # Translate the current URL to use the new language prefix
             next_trans = translate_url(next_url, lang_code)
             
+            # Create response with redirect
             response = HttpResponseRedirect(next_trans)
+            
+            # Set language in cookie
             response.set_cookie(
                 settings.LANGUAGE_COOKIE_NAME,
                 lang_code,
@@ -48,9 +51,16 @@ def set_language_view(request):
                 httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
                 samesite=settings.LANGUAGE_COOKIE_SAMESITE,
             )
+            
+            # Also store in session
+            if hasattr(request, 'session'):
+                request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
+            
             return response
     
+    # Fallback to root
     return HttpResponseRedirect('/')
+
 
 
 # Swagger/API Documentation
@@ -80,8 +90,8 @@ urlpatterns = [
     # Health check (no i18n)
     path('health/', health_check, name='health'),
     
-    # Language switching (custom view without strict CSRF)
-    path('i18n/setlang/', set_language_view, name='set_language'),
+    # Language switching with i18n URL translation support
+    path('i18n/setlang/', custom_set_language, name='set_language'),
     
     # API routes (no translation)
     *api_urlpatterns,
