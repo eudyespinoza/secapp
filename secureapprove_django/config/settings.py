@@ -223,6 +223,11 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS', 
+    default='http://localhost:8000,https://secureapprove.com,https://www.secureapprove.com,https://api.secureapprove.com',
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
 
 # Logging
 LOGGING = {
