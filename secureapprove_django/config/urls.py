@@ -18,10 +18,40 @@ from rest_framework import permissions
 def health_check(request):
     return JsonResponse({"status": "healthy", "service": "secureapprove-django"})
 
-# Language switch without CSRF check for trusted origins
+# Language switch with proper URL translation for i18n_patterns
 @csrf_exempt
 def set_language_view(request):
-    return set_language(request)
+    from django.utils.translation import activate
+    from django.http import HttpResponseRedirect
+    from django.urls import translate_url
+    
+    if request.method == 'POST':
+        lang_code = request.POST.get('language')
+        next_url = request.POST.get('next', request.META.get('HTTP_REFERER', '/'))
+        
+        # Activate the new language
+        if lang_code:
+            activate(lang_code)
+            request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
+            
+            # Translate the URL to the new language prefix
+            next_trans = translate_url(next_url, lang_code)
+            
+            response = HttpResponseRedirect(next_trans)
+            response.set_cookie(
+                settings.LANGUAGE_COOKIE_NAME,
+                lang_code,
+                max_age=settings.LANGUAGE_COOKIE_AGE,
+                path=settings.LANGUAGE_COOKIE_PATH,
+                domain=settings.LANGUAGE_COOKIE_DOMAIN,
+                secure=settings.LANGUAGE_COOKIE_SECURE,
+                httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
+                samesite=settings.LANGUAGE_COOKIE_SAMESITE,
+            )
+            return response
+    
+    return HttpResponseRedirect('/')
+
 
 # Swagger/API Documentation
 schema_view = get_schema_view(

@@ -131,6 +131,15 @@ LANGUAGES = [
 
 LOCALE_PATHS = [BASE_DIR / 'locale']
 
+# Language cookie settings
+LANGUAGE_COOKIE_NAME = 'django_language'
+LANGUAGE_COOKIE_AGE = 31536000  # 1 year
+LANGUAGE_COOKIE_PATH = '/'
+LANGUAGE_COOKIE_DOMAIN = None
+LANGUAGE_COOKIE_SECURE = False  # Set True in production with HTTPS
+LANGUAGE_COOKIE_HTTPONLY = False
+LANGUAGE_COOKIE_SAMESITE = 'Lax'
+
 # Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
