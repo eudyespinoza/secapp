@@ -66,9 +66,9 @@ try:
         user.role = 'admin'
         user.save()
         tenant, created = Tenant.objects.get_or_create(
-            key='admin-tenant',
+            key='secureapprove',
             defaults={
-                'name': 'SecureApprove Admin',
+                'name': 'SecureApprove',
                 'plan_id': 'scale',
                 'approver_limit': 999,
                 'status': 'active',

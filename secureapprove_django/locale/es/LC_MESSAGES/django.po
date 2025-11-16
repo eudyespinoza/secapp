@@ -1053,9 +1053,6 @@ msgstr "Actualizado en"
 msgid "User"
 msgstr "User"
 
-msgid "Users"
-msgstr "Users"
-
 msgid "Please select a subscription plan to get started."
 msgstr "Seleccione un plan de suscripción para comenzar."
 
