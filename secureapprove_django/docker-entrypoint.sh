@@ -5,34 +5,35 @@
 
 set -e
 
-echo "🚀 Starting SecureApprove initialization..."
+echo "[*] Starting SecureApprove initialization..."
 
 # Wait for database
-echo "⏳ Waiting for PostgreSQL..."
+echo "[*] Waiting for PostgreSQL on ${DB_HOST}:${DB_PORT}..."
 while ! nc -z "$DB_HOST" "$DB_PORT"; do
   sleep 0.1
 done
-echo "✅ PostgreSQL is ready!"
+echo "[+] PostgreSQL is ready!"
 
 # Wait for Redis
-echo "⏳ Waiting for Redis..."
+echo "[*] Waiting for Redis on redis:6379..."
 while ! nc -z redis 6379; do
   sleep 0.1
 done
-echo "✅ Redis is ready!"
+echo "[+] Redis is ready!"
 
 # Run migrations
-echo "🔄 Creating initial migrations..."
+echo "[*] Creating initial migrations..."
 python manage.py makemigrations authentication
 python manage.py makemigrations tenants
 python manage.py makemigrations requests
 python manage.py makemigrations billing
+python manage.py makemigrations chat
 
-echo "🔄 Running database migrations..."
+echo "[*] Running database migrations..."
 python manage.py migrate --noinput
 
 # Create superuser if it doesn't exist (admin@secureapprove.com)
-echo "👤 Creating default superuser (admin@secureapprove.com)..."
+echo "[*] Ensuring default superuser (admin@secureapprove.com)..."
 python manage.py shell << 'EOF'
 from django.contrib.auth import get_user_model
 
@@ -46,17 +47,19 @@ if not User.objects.filter(email=email).exists():
         name='Admin User',
         password='admin123',
     )
-    print('✅ Superuser created: admin@secureapprove.com / admin123')
+    print('[+] Superuser created: admin@secureapprove.com / admin123')
 else:
-    print('ℹ️ Superuser already exists')
+    print('[=] Superuser already exists')
 EOF
 
 # Compile messages
-echo "🌐 Compiling translation messages..."
-python manage.py compilemessages || echo "⚠️ No translations to compile or compilemessages failed"
+echo "[*] Compiling translation messages..."
+if ! python manage.py compilemessages; then
+  echo "[!] No translations to compile or compilemessages failed"
+fi
 
 # Setup admin user configuration for eudyespinoza@gmail.com
-echo "👨‍💼 Setting up primary admin user configuration..."
+echo "[*] Setting up primary admin user configuration..."
 python manage.py shell << 'EOF'
 from django.contrib.auth import get_user_model
 from apps.tenants.models import Tenant
@@ -65,7 +68,7 @@ User = get_user_model()
 email = 'eudyespinoza@gmail.com'
 
 try:
-    # Ensure admin user exists
+    # Ensure admin user exists (passwordless, WebAuthn only)
     user, created = User.objects.get_or_create(
         email=email,
         defaults={
@@ -104,15 +107,15 @@ try:
     user.tenant = tenant
     user.save(update_fields=['tenant'])
 
-    print(f'✅ Configured {user.email} as admin with tenant {tenant.name}')
+    print(f'[+] Configured {user.email} as admin with tenant {tenant.name}')
 except Exception as e:
-    print(f'⚠️ Admin setup error: {e}')
+    print(f'[!] Admin setup error: {e}')
 EOF
 
-echo "🎉 Initialization complete!"
-echo "🌐 Access the application at: http://localhost:8000"
-echo "👤 Admin login: admin@secureapprove.com / admin123"
-echo "👤 Your WebAuthn admin login: eudyespinoza@gmail.com"
+echo "[*] Initialization complete!"
+echo "[*] Access the application at: http://localhost:8000"
+echo "[*] Admin login: admin@secureapprove.com / admin123"
+echo "[*] Your WebAuthn admin login: eudyespinoza@gmail.com"
 
 # Start the application
 exec "$@"

@@ -280,8 +280,11 @@ def webauthn_login_verify(request):
             # Log the user in
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
-            
-            # Update last login
+
+            # Associate user with a reserved tenant on first login, if any
+            assign_tenant_from_reservation(user)
+
+            # Update last login timestamp
             user.last_login_at = timezone.now()
             user.save(update_fields=['last_login_at'])
             

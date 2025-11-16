@@ -17,6 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+# Spanish translations for SecureApprove
+
 # ================================================
 # Common Terms
 # ================================================
@@ -894,8 +896,8 @@ msgstr "Completa Tu Suscripción"
 msgid "You're just one step away from accessing SecureApprove"
 msgstr "Estás a solo un paso de acceder a SecureApprove"
 
-msgid "Email Address"
-msgstr "Dirección de Correo"
+# msgid "Email Address"
+# msgstr "Dirección de Correo"
 
 msgid "This email will be used for your account and billing notifications"
 msgstr "Este correo se usará para tu cuenta y notificaciones de facturación"

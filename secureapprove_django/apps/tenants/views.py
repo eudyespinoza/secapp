@@ -5,8 +5,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 from apps.requests.models import ApprovalRequest
 from .models import TenantUserInvite
@@ -15,6 +17,7 @@ from .utils import ensure_user_tenant
 User = get_user_model()
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class TenantSettingsView(LoginRequiredMixin, View):
     """
     Basic tenant settings page for tenant admins:
