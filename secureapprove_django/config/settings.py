@@ -47,6 +47,7 @@ LOCAL_APPS = [
     'apps.tenants',
     'apps.requests',
     'apps.billing',
+    'apps.chat',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -119,15 +120,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en'  # English as base language
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
 LANGUAGES = [
-    ('es', 'Español'),
     ('en', 'English'),
-    ('pt-br', 'Português'),
+    ('es', 'Español'),
+    ('pt-br', 'Português (Brasil)'),
 ]
 
 LOCALE_PATHS = [BASE_DIR / 'locale']

@@ -63,7 +63,7 @@ services:
       
       # Django
       DEBUG: "False"
-      SECRET_KEY: "your-super-secret-key-change-in-production-django-2024"
+      SECRET_KEY: "sdkfnklnrvknlrberggerg"
       ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
       
       # Security

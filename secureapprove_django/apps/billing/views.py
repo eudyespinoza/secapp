@@ -93,9 +93,18 @@ def subscribe_to_plan(request, plan_name):
     
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
+        seats_raw = request.POST.get('seats', '').strip()
         if not email:
             context['error'] = _('Email is required')
             return render(request, 'billing/subscribe.html', context)
+
+        # Number of users (seats) for pricing
+        try:
+            seats = int(seats_raw or 2)
+        except ValueError:
+            seats = 2
+        if seats < 2:
+            seats = 2
         
         # Create MercadoPago preference directly for new subscription
         try:
@@ -106,15 +115,19 @@ def subscribe_to_plan(request, plan_name):
                 logger.warning("MercadoPago SDK not initialized, using mock mode")
                 context['error'] = _('Payment system not configured. Please contact support.')
                 return render(request, 'billing/subscribe.html', context)
-            
-            # Create preference data for new subscription
+
+            # Per-user pricing
+            from .pricing import get_price_per_user
+            price_per_user = get_price_per_user(seats)
+
+            # Create preference data for new subscription (per-user pricing)
             preference_data = {
                 "items": [{
-                    "title": f"{plan.display_name} - Monthly Subscription",
+                    "title": f"{plan.display_name} - {seats} users (Monthly)",
                     "description": plan.description or f"Subscription to {plan.display_name}",
                     "category_id": "services",
-                    "quantity": 1,
-                    "unit_price": float(plan.monthly_price),
+                    "quantity": seats,
+                    "unit_price": float(price_per_user),
                     "currency_id": "USD"
                 }],
                 "payer": {
@@ -131,7 +144,7 @@ def subscribe_to_plan(request, plan_name):
                 "metadata": {
                     "plan_name": plan.name,
                     "customer_email": email,
-                    "seats": 10
+                    "seats": seats,
                 }
             }
             
@@ -349,8 +362,9 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
 def create_subscription_api(request):
     """Create subscription via API"""
     
-    plan_name = request.data.get('plan_name')
+    plan_name = request.data.get('plan_name') or request.data.get('planId')
     billing_cycle = request.data.get('billing_cycle', 'monthly')
+    seats_raw = request.data.get('seats')
     
     if not plan_name:
         return Response(
@@ -359,13 +373,28 @@ def create_subscription_api(request):
         )
     
     tenant = request.user.tenant
+
+    # Optional: update tenant seats from request
+    if tenant and seats_raw is not None:
+        try:
+            seats_val = int(seats_raw)
+        except (TypeError, ValueError):
+            seats_val = None
+        if seats_val and seats_val > 0:
+            tenant.seats = seats_val
+            tenant.save(update_fields=['seats'])
+
     result = get_billing_service().create_subscription(tenant, plan_name, billing_cycle)
     
     if result['success']:
         subscription = result['subscription']
         
         # Create payment preference
-        preference_result = get_mp_service().create_preference(subscription, billing_cycle)
+        preference_result = get_mp_service().create_preference(
+            subscription,
+            billing_cycle,
+            seats=getattr(tenant, 'seats', None),
+        )
         
         if preference_result['success']:
             return Response({

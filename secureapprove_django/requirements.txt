@@ -54,6 +54,7 @@ django-health-check==3.17.0
 django-debug-toolbar==4.2.0
 factory-boy==3.3.0
 pytest-django==4.6.0
+polib==1.2.0
 
 # Production
 gunicorn==21.2.0

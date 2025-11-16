@@ -291,6 +291,85 @@
             border-color: var(--border-color) !important;
         }
         
+        /* Chat Widget */
+        .tenant-chat-bar {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            width: 360px;
+            height: 64px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 -2px 8px var(--card-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            cursor: pointer;
+            z-index: 1050;
+        }
+
+        .tenant-chat-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tenant-chat-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tenant-chat-panel {
+            position: fixed;
+            bottom: 64px;
+            right: 20px;
+            width: 360px;
+            max-height: 480px;
+            z-index: 1050;
+        }
+
+        .tenant-chat-panel .card-body {
+            max-height: 420px;
+            overflow: hidden;
+        }
+
+        .tenant-chat-messages {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .tenant-chat-form textarea {
+            resize: none;
+        }
+
+        .tenant-chat-tabs {
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        .tenant-chat-tabs .nav-link {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .tenant-chat-bar {
+                right: 8px;
+                left: 8px;
+                width: auto;
+            }
+
+            .tenant-chat-panel {
+                right: 8px;
+                left: 8px;
+                width: auto;
+            }
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .theme-language-controls {
@@ -371,23 +450,34 @@
                     </div>
                     
                     {% if user.is_authenticated %}
-                        <!-- Authenticated User Menu -->
-                        <a href="{% url 'requests:dashboard' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-speedometer2 me-1"></i>{% trans "Dashboard" %}
-                        </a>
-                        <a href="{% url 'requests:list' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-list-check me-1"></i>{% trans "Requests" %}
-                        </a>
-                        
                         <!-- User Dropdown -->
                         <div class="dropdown">
                             <button class="btn btn-primary-custom dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle me-1"></i>{{ user.email }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'requests:dashboard' %}">
+                                    <i class="bi bi-speedometer2 me-2"></i>{% trans "Dashboard" %}
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'requests:list' %}">
+                                    <i class="bi bi-list-check me-2"></i>{% trans "Requests" %}
+                                </a></li>
                                 <li><a class="dropdown-item" href="{% url 'authentication:profile' %}">
                                     <i class="bi bi-person me-2"></i>{% trans "Profile" %}
                                 </a></li>
+                                {% if user.can_admin_tenant or user.is_staff or user.is_superuser %}
+                                {% get_current_language as CURRENT_MENU_LANG %}
+                                <li><a class="dropdown-item" href="{% url 'tenants:settings' %}">
+                                    <i class="bi bi-building-gear me-2"></i>
+                                    {% if CURRENT_MENU_LANG == 'es' %}
+                                        Configuracion del Tenant
+                                    {% elif CURRENT_MENU_LANG == 'pt-br' %}
+                                        Configuracao do Tenant
+                                    {% else %}
+                                        Tenant Settings
+                                    {% endif %}
+                                </a></li>
+                                {% endif %}
                                 {% if user.is_staff or user.is_superuser %}
                                 <li><a class="dropdown-item" href="/admin/">
                                     <i class="bi bi-gear me-2"></i>{% trans "Administration" %}
@@ -427,6 +517,99 @@
     
     {% block footer %}
     </div>
+
+    {% if user.is_authenticated %}
+    <!-- Tenant Chat Bar -->
+    <div id="tenantChatBar" class="tenant-chat-bar">
+        <div class="tenant-chat-bar-left">
+            <i class="bi bi-chat-dots fs-5"></i>
+            <div>
+                <div class="fw-semibold small">{% trans "Tenant Chat" %}</div>
+                <div id="widgetBarStatus" class="text-muted small"></div>
+            </div>
+        </div>
+        <div class="tenant-chat-bar-right">
+            <span id="widgetNewMessagesBadge" class="badge bg-danger" style="display:none;"></span>
+            <i id="widgetChatChevron" class="bi bi-chevron-up"></i>
+        </div>
+    </div>
+
+    <!-- Tenant Chat Panel -->
+    <div id="tenantChatPanel" class="tenant-chat-panel" style="display:none;">
+        <div class="card">
+            <div class="card-header py-2">
+                <ul class="nav nav-tabs card-header-tabs tenant-chat-tabs" id="tenantChatTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="chat-active-tab" data-bs-toggle="tab"
+                                data-bs-target="#chat-active" type="button" role="tab">
+                            {% trans "Active chat" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="chat-conversations-tab" data-bs-toggle="tab"
+                                data-bs-target="#chat-conversations" type="button" role="tab">
+                            {% trans "Chats" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="chat-users-tab" data-bs-toggle="tab"
+                                data-bs-target="#chat-users" type="button" role="tab">
+                            {% trans "Users & Groups" %}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body p-2">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="chat-active" role="tabpanel">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <strong id="widgetCurrentConversationTitle">
+                                    {% trans "Select a conversation" %}
+                                </strong>
+                                <div id="widgetTypingIndicator" class="text-muted small" style="display:none;">
+                                    {% trans "Typing..." %}
+                                </div>
+                            </div>
+                            <small id="widgetPresenceSummary" class="text-muted small"></small>
+                        </div>
+                        <div id="widgetMessageContainer"
+                             class="border rounded mb-2 p-2 tenant-chat-messages">
+                        </div>
+                        <form id="widgetMessageForm" class="tenant-chat-form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-2">
+                                <textarea id="widgetMessageInput"
+                                          class="form-control form-control-sm"
+                                          rows="2"
+                                          placeholder="{% trans 'Write a message' %}"></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                <input type="file"
+                                       id="widgetAttachmentInput"
+                                       name="attachments"
+                                       multiple
+                                       class="form-control form-control-sm">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    {% trans "Send" %}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="chat-conversations" role="tabpanel">
+                        <h6 class="mb-2">{% trans "Conversations" %}</h6>
+                        <ul id="widgetConversationList" class="list-group list-group-flush small"></ul>
+                    </div>
+                    <div class="tab-pane fade" id="chat-users" role="tabpanel">
+                        <h6 class="mb-2">{% trans "Contacts" %}</h6>
+                        <ul id="widgetUserList" class="list-group list-group-flush small"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% endblock %}
     
     <!-- Bootstrap 5 JS -->
@@ -515,7 +698,7 @@
                     currentFlag.textContent = '🇺🇸';
                     currentLang.textContent = 'EN';
                     break;
-                case 'pt-br':
+                case 'pt_br':
                     currentFlag.textContent = '🇧🇷';
                     currentLang.textContent = 'PT';
                     break;
@@ -562,6 +745,256 @@
                 }
             });
         });
+
+        {% if user.is_authenticated %}
+        // Simple polling-based chat widget
+        (function() {
+            const chatBar = document.getElementById('tenantChatBar');
+            const chatPanel = document.getElementById('tenantChatPanel');
+            const chatChevron = document.getElementById('widgetChatChevron');
+            const newMessagesBadge = document.getElementById('widgetNewMessagesBadge');
+            const barStatus = document.getElementById('widgetBarStatus');
+            const conversationList = document.getElementById('widgetConversationList');
+            const userList = document.getElementById('widgetUserList');
+            const messageContainer = document.getElementById('widgetMessageContainer');
+            const messageForm = document.getElementById('widgetMessageForm');
+            const messageInput = document.getElementById('widgetMessageInput');
+            const attachmentInput = document.getElementById('widgetAttachmentInput');
+            const typingIndicator = document.getElementById('widgetTypingIndicator');
+            const presenceSummary = document.getElementById('widgetPresenceSummary');
+            const currentConversationTitle = document.getElementById('widgetCurrentConversationTitle');
+
+            if (!chatBar || !chatPanel || !conversationList || !messageForm) {
+                return;
+            }
+
+            let currentConversationId = null;
+            let lastMessageId = null;
+            let typingTimeout = null;
+            let panelVisible = false;
+            let panelInitialized = false;
+
+            const csrfInput = messageForm.querySelector('[name=csrfmiddlewaretoken]');
+            const csrfToken = csrfInput ? csrfInput.value : '';
+
+            async function apiGet(url) {
+                const response = await fetch(url, {credentials: 'same-origin'});
+                return response.json();
+            }
+
+            async function apiPost(url, body, isForm) {
+                const options = {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {}
+                };
+                if (isForm) {
+                    options.body = body;
+                } else {
+                    options.headers['Content-Type'] = 'application/json';
+                    options.body = JSON.stringify(body);
+                }
+                if (csrfToken) {
+                    options.headers['X-CSRFToken'] = csrfToken;
+                }
+                const response = await fetch(url, options);
+                return response.json();
+            }
+
+            function setPanelVisible(visible) {
+                panelVisible = visible;
+                chatPanel.style.display = visible ? 'block' : 'none';
+                if (chatChevron) {
+                    chatChevron.className = visible ? 'bi bi-chevron-down' : 'bi bi-chevron-up';
+                }
+            }
+
+            function renderConversations(conversations) {
+                conversationList.innerHTML = '';
+                let totalUnread = 0;
+                conversations.forEach(c => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                    li.dataset.id = c.id;
+                    const title = c.last_message
+                        ? `${c.last_message.sender_name}: ${c.last_message.content}`
+                        : '{{ _("New conversation") }}';
+                    const unread = c.unread_count || 0;
+                    totalUnread += unread;
+                    li.innerHTML = `<span class="text-truncate">${title}</span>` +
+                        (unread ? `<span class="badge bg-danger ms-2">${unread}</span>` : '');
+                    li.addEventListener('click', () => openConversation(c.id));
+                    conversationList.appendChild(li);
+                });
+
+                if (newMessagesBadge) {
+                    if (totalUnread > 0) {
+                        newMessagesBadge.style.display = 'inline-block';
+                        newMessagesBadge.textContent = totalUnread;
+                    } else {
+                        newMessagesBadge.style.display = 'none';
+                        newMessagesBadge.textContent = '';
+                    }
+                }
+            }
+
+            function renderUsers(users) {
+                if (!userList) return;
+                userList.innerHTML = '';
+                {% get_current_language as CHAT_LANG %}
+                const chatLang = '{{ CHAT_LANG }}';
+                users.forEach(u => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                    li.dataset.id = u.id;
+                    const displayName = u.name || u.email;
+                    const online = !!u.is_online;
+                    let statusText;
+                    if (chatLang === 'es') {
+                        statusText = online ? 'En linea' : 'Desconectado';
+                    } else if (chatLang === 'pt-br') {
+                        statusText = online ? 'Online' : 'Offline';
+                    } else {
+                        statusText = online ? 'Online' : 'Offline';
+                    }
+                    const statusClass = online ? 'text-success' : 'text-muted';
+                    li.innerHTML = `<span>${displayName}</span><small class="${statusClass}">${statusText}</small>`;
+                    li.addEventListener('click', () => startConversation(u.id));
+                    userList.appendChild(li);
+                });
+            }
+
+            function renderMessages(messages) {
+                messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.className = 'mb-2 small';
+                    const status = msg.status || '';
+                    div.innerHTML = `<strong>${msg.sender_name}:</strong> ${msg.content || ''}` +
+                        (status ? ` <span class="text-muted">[${status}]</span>` : '');
+                    messageContainer.appendChild(div);
+                    lastMessageId = msg.id;
+                });
+                if (messages.length) {
+                    messageContainer.scrollTop = messageContainer.scrollHeight;
+                }
+            }
+
+            async function loadConversations() {
+                const data = await apiGet('/api/chat/conversations/');
+                const conversations = Array.isArray(data) ? data : [];
+                // Sort by last message date desc if available
+                conversations.sort((a, b) => {
+                    const da = a.last_message && a.last_message.created_at ? new Date(a.last_message.created_at) : new Date(0);
+                    const db = b.last_message && b.last_message.created_at ? new Date(b.last_message.created_at) : new Date(0);
+                    return db - da;
+                });
+                renderConversations(conversations);
+                // If no active conversation yet, open the most recent one
+                if (!currentConversationId && conversations.length) {
+                    await openConversation(conversations[0].id);
+                }
+            }
+
+            async function startConversation(userId) {
+                try {
+                    const data = await apiPost('/api/chat/conversations/start/', {
+                        participant_id: userId
+                    });
+                    if (data && data.id) {
+                        await loadConversations();
+                        await openConversation(data.id);
+                    }
+                } catch (e) {
+                    // Silently ignore for now; could add toast
+                    console.error('Error starting conversation', e);
+                }
+            }
+
+            async function openConversation(id) {
+                currentConversationId = id;
+                lastMessageId = null;
+                messageContainer.innerHTML = '';
+                currentConversationTitle.textContent = '{{ _("Conversation") }} ' + id.substring(0, 8);
+                await loadMessages();
+            }
+
+            async function loadMessages() {
+                if (!currentConversationId) return;
+                let url = `/api/chat/conversations/${currentConversationId}/messages/`;
+                if (lastMessageId) {
+                    url += `?since_id=${lastMessageId}`;
+                }
+                const data = await apiGet(url);
+                renderMessages(data);
+                // Mark messages as read for current user
+                await apiPost(`/api/chat/conversations/${currentConversationId}/mark_read/`, {});
+                await loadConversations();
+            }
+
+            async function loadPresence() {
+                const data = await apiGet('/api/chat/conversations/presence/');
+                const online = data.filter(u => u.is_online);
+                renderUsers(data);
+                if (online.length) {
+                    presenceSummary.textContent = `${online.length} {{ _("users online") }}`;
+                } else {
+                    presenceSummary.textContent = '{{ _("No users online") }}';
+                }
+                if (barStatus) {
+                    if (online.length) {
+                        barStatus.textContent = `${online.length} {{ _("users online") }}`;
+                    } else {
+                        barStatus.textContent = '{{ _("No users online") }}';
+                    }
+                }
+            }
+
+            // Polling
+            setInterval(() => {
+                if (panelVisible) {
+                    loadMessages();
+                    loadPresence();
+                }
+            }, 5000);
+
+            // Typing
+            messageInput.addEventListener('input', function () {
+                if (!currentConversationId) return;
+                apiPost(`/api/chat/conversations/${currentConversationId}/typing/`, {});
+                typingIndicator.style.display = 'block';
+                if (typingTimeout) clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    typingIndicator.style.display = 'none';
+                }, 1500);
+            });
+
+            // Send message
+            messageForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                if (!currentConversationId) return;
+                const formData = new FormData();
+                formData.append('content', messageInput.value);
+                for (const file of attachmentInput.files) {
+                    formData.append('attachments', file);
+                }
+                await apiPost(`/api/chat/conversations/${currentConversationId}/messages/`, formData, true);
+                messageInput.value = '';
+                attachmentInput.value = '';
+                await loadMessages();
+            });
+
+            // Initial load when modal opens
+            chatBar.addEventListener('click', async function () {
+                const nextVisible = !panelVisible;
+                setPanelVisible(nextVisible);
+                if (nextVisible && !panelInitialized) {
+                    panelInitialized = true;
+                    await loadConversations();
+                    await loadPresence();
+                }
+            });
+        })();
+        {% endif %}
     </script>
     
     {% block extra_js %}{% endblock %}

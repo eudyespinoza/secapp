@@ -11,6 +11,7 @@ from decimal import Decimal
 import logging
 
 from .models import Plan, Subscription, Payment, UsageMetrics, Invoice
+from .pricing import get_price_per_user
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +35,22 @@ class MercadoPagoService:
                 # Return a mock SDK for testing
                 self._sdk = None
         return self._sdk
+
+    def _get_tenant_admin_email(self, subscription):
+        """
+        Try to obtain an email address for the tenant admin.
+        Falls back to empty string if not found.
+        """
+        tenant = subscription.tenant
+        admin = tenant.users.filter(role__in=['tenant_admin', 'superadmin']).first()
+        if admin:
+            return admin.email
+        # Fallback: any user in tenant
+        any_user = tenant.users.first()
+        return any_user.email if any_user else ""
     
-    def create_preference(self, subscription, billing_cycle='monthly'):
-        """Create a payment preference for subscription"""
+    def create_preference(self, subscription, billing_cycle='monthly', seats=None):
+        """Create a payment preference for subscription (per-user pricing)"""
         
         if not self.sdk:
             # Mock response for testing
@@ -47,20 +61,36 @@ class MercadoPagoService:
             }
         
         plan = subscription.plan
-        amount = plan.monthly_price if billing_cycle == 'monthly' else plan.yearly_price_calculated
+
+        # Determine seats (users) for this subscription
+        if seats is None:
+            seats = getattr(subscription.tenant, 'seats', 0) or 0
+        try:
+            seats_int = int(seats)
+        except (TypeError, ValueError):
+            seats_int = 0
+        if seats_int <= 0:
+            seats_int = 1
+
+        # Per-user pricing
+        price_per_user = get_price_per_user(seats_int)
+        if billing_cycle == 'yearly':
+            amount = price_per_user * seats_int * 12
+        else:
+            amount = price_per_user * seats_int
         
         preference_data = {
             "items": [{
-                "title": f"{plan.display_name} - {billing_cycle.title()} Subscription",
-                "description": plan.description,
+                "title": f"{plan.display_name} - {seats_int} users ({billing_cycle.title()})",
+                "description": plan.description or "SecureApprove subscription",
                 "category_id": "services",
-                "quantity": 1,
-                "unit_price": float(amount),
+                "quantity": seats_int,
+                "unit_price": float(price_per_user),
                 "currency_id": "USD"
             }],
             "payer": {
                 "name": subscription.tenant.name,
-                "email": subscription.tenant.admin_email,
+                "email": self._get_tenant_admin_email(subscription),
             },
             "external_reference": str(subscription.id),
             "notification_url": f"{settings.SITE_URL}/api/billing/webhooks/mercadopago/",
@@ -73,6 +103,11 @@ class MercadoPagoService:
             "payment_methods": {
                 "excluded_payment_types": [],
                 "installments": 12 if billing_cycle == 'yearly' else 1
+            },
+            "metadata": {
+                "plan_name": plan.name,
+                "customer_email": self._get_tenant_admin_email(subscription),
+                "seats": seats_int,
             }
         }
         
@@ -273,7 +308,7 @@ class BillingService:
         
         # Create subscription
         now = timezone.now()
-        trial_end = now + timedelta(days=14)  # 14 day trial
+        trial_end = now + timedelta(days=7)  # 7 day trial
         
         subscription = Subscription.objects.create(
             tenant=tenant,
@@ -363,12 +398,15 @@ class BillingService:
         subscription = metrics.subscription
         tenant = subscription.tenant
         
-        # Date range for the month
-        start_date = datetime(metrics.year, metrics.month, 1)
+        # Date range for the month (timezone-aware)
+        tz = timezone.get_current_timezone()
+        start_naive = datetime(metrics.year, metrics.month, 1)
         if metrics.month == 12:
-            end_date = datetime(metrics.year + 1, 1, 1)
+            end_naive = datetime(metrics.year + 1, 1, 1)
         else:
-            end_date = datetime(metrics.year, metrics.month + 1, 1)
+            end_naive = datetime(metrics.year, metrics.month + 1, 1)
+        start_date = timezone.make_aware(start_naive, tz)
+        end_date = timezone.make_aware(end_naive, tz)
         
         # Request metrics
         requests_qs = ApprovalRequest.objects.filter(

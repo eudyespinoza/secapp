@@ -178,22 +178,34 @@
                         </div>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="seats" class="form-label">{% trans "Seats" %}</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="seats"
+                            name="seats"
+                            min="2"
+                            value="2"
+                            required
+                        >
+                        <div class="form-text text-muted-custom">
+                            {% trans "Number of users in your organization (minimum 2)." %}
+                        </div>
+                    </div>
+
                     <div class="alert alert-info-custom mb-3">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-info-circle me-2"></i>
                             <div>
-                                <strong>{% trans "14-Day Free Trial" %}</strong><br>
-                                <small>{% trans "No charge for the first 14 days. Cancel anytime." %}</small>
+                                <strong>{% trans "7-Day Free Trial" %}</strong><br>
+                                <small>{% trans "No charge for the first 7 days. Cancel anytime." %}</small>
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-subscribe" id="subscribeBtn">
-                        <span id="btnText">{% trans "Start Free Trial" %}</span>
-                        <span id="btnLoading" class="d-none">
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            {% trans "Processing..." %}
-                        </span>
+                    <button type="submit" class="btn-subscribe">
+                        <span>{% trans "Start Free Trial" %}</span>
                     </button>
                 </form>
 
@@ -219,64 +231,4 @@
         </div>
     </div>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('subscriptionForm');
-    const subscribeBtn = document.getElementById('subscribeBtn');
-    const btnText = document.getElementById('btnText');
-    const btnLoading = document.getElementById('btnLoading');
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Show loading state
-        subscribeBtn.disabled = true;
-        btnText.classList.add('d-none');
-        btnLoading.classList.remove('d-none');
-        
-        // Get form data
-        const formData = new FormData(form);
-        const email = formData.get('email');
-        
-        // Create checkout session
-        fetch('{% url "billing:create_subscription_api" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-            },
-            body: JSON.stringify({
-                planId: '{{ plan.name }}',
-                email: email,
-                seats: 10,
-                successUrl: window.location.origin + '{% url "billing:payment_success" %}',
-                failureUrl: window.location.origin + '{% url "billing:payment_failure" %}',
-                pendingUrl: window.location.origin + '{% url "billing:payment_pending" %}'
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.init_point) {
-                // Redirect to MercadoPago
-                window.location.href = data.init_point;
-            } else if (data.sandbox_init_point) {
-                // Redirect to MercadoPago Sandbox
-                window.location.href = data.sandbox_init_point;
-            } else {
-                throw new Error(data.error || 'Failed to create checkout session');
-            }
-        })
-        .catch(error => {
-            console.error('Subscription error:', error);
-            alert('{% trans "Error starting subscription" %}: ' + error.message);
-            
-            // Reset button state
-            subscribeBtn.disabled = false;
-            btnText.classList.remove('d-none');
-            btnLoading.classList.add('d-none');
-        });
-    });
-});
-</script>
 {% endblock %}

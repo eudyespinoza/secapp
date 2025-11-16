@@ -120,8 +120,21 @@ class Plan(models.Model):
         return current_approvers < self.max_approvers
     
     def can_create_user(self, tenant):
-        """Check if tenant can create another user"""
-        if self.max_users == 0:  # Unlimited
+        """
+        Check if tenant can create another user.
+
+        Instead of using a static max_users per plan, we base this
+        on the tenant's configured seats (number of users purchased).
+        """
+        # If tenant has no explicit seat limit, fall back to plan.max_users
+        seats = getattr(tenant, "seats", 0) or 0
+
+        if seats > 0:
+            current_users = User.objects.filter(tenant=tenant).count()
+            return current_users < seats
+
+        # Legacy fallback: use plan-level max_users (0 = unlimited)
+        if self.max_users == 0:
             return True
         current_users = User.objects.filter(tenant=tenant).count()
         return current_users < self.max_users

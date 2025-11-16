@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+
+{% block title %}
+{% if CURRENT_LANGUAGE == 'es' %}
+Configuración del Tenant - SecureApprove
+{% elif CURRENT_LANGUAGE == 'pt-br' %}
+Configuração do Tenant - SecureApprove
+{% else %}
+Tenant Settings - SecureApprove
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">
+        {% if CURRENT_LANGUAGE == 'es' %}
+            Configuración del Tenant
+        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+            Configuração do Tenant
+        {% else %}
+            Tenant Settings
+        {% endif %}
+    </h1>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        {% if CURRENT_LANGUAGE == 'es' %}
+                            Información del Tenant
+                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                            Informações do Tenant
+                        {% else %}
+                            Tenant Information
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>{% trans "Name" %}:</strong> {{ tenant.name }}</p>
+                    <p class="mb-1"><strong>{% trans "Key" %}:</strong> {{ tenant.key }}</p>
+                    <p class="mb-1"><strong>{% trans "Plan" %}:</strong> {{ tenant.plan_display }}</p>
+                    <p class="mb-1"><strong>{% trans "Seats" %}:</strong> {{ tenant.seats }}</p>
+                    <p class="mb-1"><strong>{% trans "Approver Limit" %}:</strong> {{ tenant.approver_limit }}</p>
+                    <p class="mb-1"><strong>{% trans "Status" %}:</strong> {{ tenant.get_status_display }}</p>
+                    <p class="mb-1"><strong>{% trans "Monthly Price" %}:</strong> ${{ tenant.monthly_price }}</p>
+                    <p class="mb-1"><strong>{% trans "Active Users" %}:</strong> {{ tenant.active_users_count }}</p>
+                    <p class="mb-1"><strong>{% trans "Approvers" %}:</strong> {{ tenant.approvers_count }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        {% if CURRENT_LANGUAGE == 'es' %}
+                            Usuarios del Tenant
+                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                            Usuários do Tenant
+                        {% else %}
+                            Tenant Users
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="p-3 border-bottom">
+                        <form method="post" class="row g-2 align-items-end">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="create_invite">
+                            <div class="col-md-5">
+                                <label class="form-label mb-1">
+                                    {% if CURRENT_LANGUAGE == 'es' %}
+                                        Correo electrónico
+                                    {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                        E-mail
+                                    {% else %}
+                                        Email
+                                    {% endif %}
+                                </label>
+                                <input type="email" name="email" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">
+                                    {% if CURRENT_LANGUAGE == 'es' %}
+                                        Rol
+                                    {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                        Papel
+                                    {% else %}
+                                        Role
+                                    {% endif %}
+                                </label>
+                                <select name="role" class="form-select form-select-sm">
+                                    {% for code, label in roles %}
+                                        <option value="{{ code }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button type="submit" class="btn btn-sm btn-primary mt-3 mt-md-0">
+                                    {% if CURRENT_LANGUAGE == 'es' %}
+                                        Enviar invitación
+                                    {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                        Enviar convite
+                                    {% else %}
+                                        Send Invitation
+                                    {% endif %}
+                                </button>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <small class="text-muted">
+                                    {% if tenant.available_seats is not None %}
+                                        {% if CURRENT_LANGUAGE == 'es' %}
+                                            Asientos usados: {{ used_seats }} / {{ tenant.seats }}.
+                                            Asientos disponibles: {{ available_seats|default:0 }}.
+                                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                            Assentos usados: {{ used_seats }} / {{ tenant.seats }}.
+                                            Assentos disponíveis: {{ available_seats|default:0 }}.
+                                        {% else %}
+                                            Used seats: {{ used_seats }} / {{ tenant.seats }}.
+                                            Available seats: {{ available_seats|default:0 }}.
+                                        {% endif %}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Email" %}</th>
+                                    <th>{% trans "Role" %}</th>
+                                    <th>{% trans "Active" %}</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in users %}
+                                <tr>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="update_user">
+                                        <input type="hidden" name="user_id" value="{{ u.id }}">
+                                        <td>{{ u.email }}</td>
+                                        <td>
+                                            <select name="role" class="form-select form-select-sm">
+                                                {% for code, label in roles %}
+                                                    <option value="{{ code }}" {% if u.role == code %}selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" name="is_active" {% if u.is_active %}checked{% endif %}>
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                {% trans "Save" %}
+                                            </button>
+                                        </td>
+                                    </form>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        {% trans "No users found for this tenant." %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if invites %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        {% if CURRENT_LANGUAGE == 'es' %}
+                            Invitaciones pendientes
+                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                            Convites pendentes
+                        {% else %}
+                            Pending Invitations
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>
+                                        {% if CURRENT_LANGUAGE == 'es' %}
+                                            Rol
+                                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                            Papel
+                                        {% else %}
+                                            Role
+                                        {% endif %}
+                                    </th>
+                                    <th>
+                                        {% if CURRENT_LANGUAGE == 'es' %}
+                                            Estado
+                                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                            Status
+                                        {% else %}
+                                            Status
+                                        {% endif %}
+                                    </th>
+                                    <th>
+                                        {% if CURRENT_LANGUAGE == 'es' %}
+                                            Expira
+                                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                            Expira
+                                        {% else %}
+                                            Expires
+                                        {% endif %}
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for inv in invites %}
+                                <tr>
+                                    <td>{{ inv.email }}</td>
+                                    <td>{{ inv.role }}</td>
+                                    <td>{{ inv.get_status_display }}</td>
+                                    <td>
+                                        {% if inv.expires_at %}
+                                            {{ inv.expires_at|date:"Y-m-d H:i" }}
+                                        {% else %}
+                                            –
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        {% if inv.status == 'pending' %}
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="cancel_invite">
+                                            <input type="hidden" name="invite_id" value="{{ inv.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                {% if CURRENT_LANGUAGE == 'es' %}
+                                                    Cancelar
+                                                {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                                    Cancelar
+                                                {% else %}
+                                                    Cancel
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        {% if CURRENT_LANGUAGE == 'es' %}
+                            Solicitar categorías
+                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                            Categorias de solicitação
+                        {% else %}
+                            Request Categories
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        {% for code, label in categories %}
+                        <li class="mb-1">
+                            <strong>{{ label }}</strong>
+                            <span class="text-muted">({{ code }})</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <small class="text-muted d-block mt-2">
+                        {% if CURRENT_LANGUAGE == 'es' %}
+                            Las categorías de solicitud son actualmente globales. Las versiones futuras permitirán personalización por tenant.
+                        {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                            As categorias de solicitação são atualmente globais. Versões futuras permitirão personalização por tenant.
+                        {% else %}
+                            Request categories are currently global. Future versions will allow per-tenant customization.
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Count, Q
 from django.utils.translation import gettext as _
+from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from datetime import datetime, timedelta
+from datetime import timedelta
 from .models import ApprovalRequest
 
 @login_required
@@ -51,7 +52,7 @@ def dashboard(request):
     ).order_by('-count'))
     
     # Requests by status over time (last 30 days)
-    thirty_days_ago = datetime.now() - timedelta(days=30)
+    thirty_days_ago = timezone.now() - timedelta(days=30)
     daily_stats = []
     
     for i in range(30):
@@ -126,7 +127,7 @@ def dashboard_api_stats(request):
         }
     
     # Recent activity (last 7 days)
-    seven_days_ago = datetime.now() - timedelta(days=7)
+    seven_days_ago = timezone.now() - timedelta(days=7)
     recent_activity = []
     
     for i in range(7):

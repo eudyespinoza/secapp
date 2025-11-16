@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Tenant Chat" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">{% trans "Conversations" %}</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul id="conversationList" class="list-group list-group-flush">
+                        <!-- conversations loaded via JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 mb-3">
+            <div class="card h-100 d-flex flex-column">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 id="currentConversationTitle" class="mb-0">{% trans "Select a conversation" %}</h5>
+                        <small id="typingIndicator" class="text-muted" style="display:none;">
+                            {% trans "Typing..." %}
+                        </small>
+                    </div>
+                    <small id="presenceSummary" class="text-muted"></small>
+                </div>
+                <div id="messageContainer" class="card-body overflow-auto" style="max-height: 400px;">
+                    <!-- messages loaded via JS -->
+                </div>
+                <div class="card-footer">
+                    <form id="messageForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <textarea id="messageInput" class="form-control" rows="2"
+                                      placeholder="{% trans 'Write a message' %}"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <input type="file" id="attachmentInput" name="attachments" multiple class="form-control w-50">
+                            <button type="submit" class="btn btn-primary">
+                                {% trans "Send" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const conversationList = document.getElementById('conversationList');
+    const messageContainer = document.getElementById('messageContainer');
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const attachmentInput = document.getElementById('attachmentInput');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const presenceSummary = document.getElementById('presenceSummary');
+    const currentConversationTitle = document.getElementById('currentConversationTitle');
+
+    let currentConversationId = null;
+    let lastMessageId = null;
+    let typingTimeout = null;
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    async function apiGet(url) {
+        const response = await fetch(url, {
+            credentials: 'same-origin'
+        });
+        return response.json();
+    }
+
+    async function apiPost(url, body, isForm = false) {
+        const options = {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {}
+        };
+        if (isForm) {
+            options.body = body;
+        } else {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
+        }
+        options.headers['X-CSRFToken'] = csrfToken;
+        const response = await fetch(url, options);
+        return response.json();
+    }
+
+    function renderConversations(conversations) {
+        conversationList.innerHTML = '';
+        conversations.forEach(c => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action';
+            li.dataset.id = c.id;
+            li.textContent = c.last_message ? c.last_message.sender_name + ': ' + c.last_message.content : '{{ _("New conversation") }}';
+            li.addEventListener('click', () => openConversation(c.id));
+            conversationList.appendChild(li);
+        });
+    }
+
+    function renderMessages(messages) {
+        messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'mb-2';
+            let status = msg.status || '';
+            div.innerHTML = '<strong>' + msg.sender_name + ':</strong> ' +
+                (msg.content || '') +
+                (status ? ' <small class="text-muted">[' + status + ']</small>' : '');
+            messageContainer.appendChild(div);
+            lastMessageId = msg.id;
+        });
+        if (messages.length > 0) {
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+    }
+
+    async function loadConversations() {
+        const data = await apiGet('/api/chat/conversations/');
+        renderConversations(data);
+    }
+
+    async function openConversation(id) {
+        currentConversationId = id;
+        lastMessageId = null;
+        messageContainer.innerHTML = '';
+        currentConversationTitle.textContent = '{{ _("Conversation") }} ' + id.substring(0, 8);
+        await loadMessages();
+    }
+
+    async function loadMessages() {
+        if (!currentConversationId) return;
+        let url = `/api/chat/conversations/${currentConversationId}/messages/`;
+        if (lastMessageId) {
+            url += `?since_id=${lastMessageId}`;
+        }
+        const data = await apiGet(url);
+        renderMessages(data);
+    }
+
+    async function loadPresence() {
+        const data = await apiGet('/api/chat/conversations/presence/');
+        const online = data.filter(u => u.is_online);
+        presenceSummary.textContent = online.length
+            ? `${online.length} {{ _("users online") }}`
+            : '{{ _("No users online") }}';
+    }
+
+    // Polling for messages and presence
+    setInterval(() => {
+        loadMessages();
+        loadPresence();
+    }, 3000);
+
+    // Typing indicator (simple)
+    messageInput.addEventListener('input', function () {
+        if (!currentConversationId) return;
+        apiPost(`/api/chat/conversations/${currentConversationId}/typing/`, {});
+        if (typingTimeout) clearTimeout(typingTimeout);
+        typingIndicator.style.display = 'block';
+        typingTimeout = setTimeout(() => {
+            typingIndicator.style.display = 'none';
+        }, 1500);
+    });
+
+    messageForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (!currentConversationId) return;
+        const formData = new FormData();
+        formData.append('content', messageInput.value);
+        for (const file of attachmentInput.files) {
+            formData.append('attachments', file);
+        }
+        await apiPost(`/api/chat/conversations/${currentConversationId}/messages/`, formData, true);
+        messageInput.value = '';
+        attachmentInput.value = '';
+        await loadMessages();
+    });
+
+    // Initial load
+    loadConversations();
+    loadPresence();
+});
+</script>
+{% endblock %}
+

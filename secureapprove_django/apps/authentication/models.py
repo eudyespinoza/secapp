@@ -72,11 +72,13 @@ class User(AbstractUser):
     
     def can_approve_requests(self):
         """Check if user can approve requests"""
-        return self.role in ['approver', 'tenant_admin', 'superadmin']
+        # Support legacy 'admin' role and Django staff/superuser flags
+        return self.role in ['approver', 'tenant_admin', 'superadmin', 'admin'] or self.is_staff or self.is_superuser
     
     def can_admin_tenant(self):
         """Check if user can administrate tenant"""
-        return self.role in ['tenant_admin', 'superadmin']
+        # Allow admin roles and Django staff/superusers
+        return self.role in ['tenant_admin', 'superadmin', 'admin'] or self.is_staff or self.is_superuser
     
     def add_webauthn_credential(self, credential_data):
         """Add a WebAuthn credential to the user"""

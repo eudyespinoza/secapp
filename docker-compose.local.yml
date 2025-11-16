@@ -1,0 +1,148 @@
+# ================================================
+# SecureApprove - Docker Compose with Traefik
+# ================================================
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    container_name: secureapprove_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: secureapprove
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: secureapprove_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  # Django Web Application
+  web:
+    build: 
+      context: ./secureapprove_django
+      dockerfile: Dockerfile
+    container_name: secureapprove_web
+    restart: unless-stopped
+    expose:
+      - "8000"
+    ports:
+      - "${LOCAL_PORT:-127.0.0.1:8000}:8000"
+    environment:
+      # Database
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: secureapprove
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      
+      # Redis
+      REDIS_URL: redis://redis:6379/1
+      
+      # Django
+      DEBUG: "False"
+      SECRET_KEY: "sdkfnklnrvknlrberggerg"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
+      
+      # Security
+      WEBAUTHN_RP_NAME: "SecureApprove (Local)"
+      WEBAUTHN_RP_ID: "localhost"
+      WEBAUTHN_ORIGIN: "http://localhost:8000"
+      
+      # Email (configure for production)
+      EMAIL_HOST: "smtp.gmail.com"
+      EMAIL_PORT: "587"
+      EMAIL_USE_TLS: "True"
+      EMAIL_HOST_USER: ""
+      EMAIL_HOST_PASSWORD: ""
+      DEFAULT_FROM_EMAIL: "noreply@secureapprove.com"
+      
+      # Billing (configure for production)
+      MERCADOPAGO_ACCESS_TOKEN: ""
+      MERCADOPAGO_WEBHOOK_URL: "https://api.secureapprove.com/api/billing/webhooks/mercadopago/"
+    
+    volumes:
+      - ./secureapprove_django/media:/app/media
+      - ./secureapprove_django/staticfiles:/app/staticfiles
+      - ./logs:/app/logs
+    
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    labels:
+      # Habilitar Traefik
+      - "traefik.enable=true"
+      
+      # Router para frontend (secureapprove.com y www.secureapprove.com)
+      - "traefik.http.routers.secureapprove-web.rule=Host(`secureapprove.com`) || Host(`www.secureapprove.com`)"
+      - "traefik.http.routers.secureapprove-web.entrypoints=websecure"
+      - "traefik.http.routers.secureapprove-web.tls=true"
+      - "traefik.http.routers.secureapprove-web.service=secureapprove-web"
+      - "traefik.http.routers.secureapprove-web.middlewares=default-sec-headers@file"
+      
+      # Router para API (api.secureapprove.com)
+      - "traefik.http.routers.secureapprove-api.rule=Host(`api.secureapprove.com`)"
+      - "traefik.http.routers.secureapprove-api.entrypoints=websecure"
+      - "traefik.http.routers.secureapprove-api.tls=true"
+      - "traefik.http.routers.secureapprove-api.service=secureapprove-api"
+      - "traefik.http.routers.secureapprove-api.middlewares=cors-headers@file"
+      
+      # Servicios
+      - "traefik.http.services.secureapprove-web.loadbalancer.server.port=8000"
+      - "traefik.http.services.secureapprove-api.loadbalancer.server.port=8000"
+      
+      # Red específica para Traefik
+      - "traefik.docker.network=traefik_proxy"
+    
+    networks:
+      - traefik_proxy
+      - internal
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  # Red interna para comunicación entre servicios
+  internal:
+    name: secureapprove_internal
+    driver: bridge
+  
+  # Red externa de Traefik (debe existir previamente)
+  traefik_proxy:
+    external: true
+    

@@ -1,0 +1,2661 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: SecureApprove 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-13 23:13+0000\n"
+"PO-Revision-Date: 2025-11-13 12:00+0000\n"
+"Last-Translator: SecureApprove Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/authentication/forms.py:25
+#, fuzzy
+#| msgid "Please enter a valid email address."
+msgid "Required. Enter a valid email address."
+msgstr "Please enter a valid email address."
+
+#: apps/authentication/forms.py:30 apps/authentication/forms.py:35
+msgid "Required."
+msgstr ""
+
+#: apps/authentication/forms.py:39
+msgid "I accept the Terms of Service and Privacy Policy"
+msgstr ""
+
+#: apps/authentication/forms.py:51 apps/authentication/forms.py:116
+#: templates/authentication/webauthn_login.html:204
+#, fuzzy
+#| msgid "Please enter a valid email address."
+msgid "Enter your email address"
+msgstr "Please enter a valid email address."
+
+#: apps/authentication/forms.py:55 apps/authentication/forms.py:167
+msgid "Enter your first name"
+msgstr ""
+
+#: apps/authentication/forms.py:59 apps/authentication/forms.py:171
+msgid "Enter your last name"
+msgstr ""
+
+#: apps/authentication/forms.py:63
+msgid "Create a strong password"
+msgstr ""
+
+#: apps/authentication/forms.py:67
+#, fuzzy
+#| msgid "Confirm Password"
+msgid "Confirm your password"
+msgstr "Confirm Password"
+
+#: apps/authentication/forms.py:84
+msgid "Create Account"
+msgstr ""
+
+#: apps/authentication/forms.py:108
+#, fuzzy
+#| msgid "Remember me"
+msgid "Remember me for 30 days"
+msgstr "Remember me"
+
+#: apps/authentication/forms.py:121
+#, fuzzy
+#| msgid "Forgot password?"
+msgid "Enter your password"
+msgstr "Forgot password?"
+
+#: apps/authentication/forms.py:126 apps/authentication/models.py:49
+#: templates/authentication/profile.html:145
+#: templates/authentication/webauthn_login.html:202
+#: templates/billing/subscribe.html:166
+msgid "Email Address"
+msgstr ""
+
+#: apps/authentication/forms.py:127
+msgid "Password"
+msgstr "Password"
+
+#: apps/authentication/forms.py:175
+msgid "Enter your phone number"
+msgstr ""
+
+#: apps/authentication/forms.py:179
+msgid "Enter your company name"
+msgstr ""
+
+#: apps/authentication/forms.py:198
+#, fuzzy
+#| msgid "Profile"
+msgid "Update Profile"
+msgstr "Profile"
+
+#: apps/authentication/forms.py:211
+#, fuzzy
+#| msgid "Current Plan"
+msgid "Current Password"
+msgstr "Current Plan"
+
+#: apps/authentication/forms.py:213
+msgid "Enter your current password"
+msgstr ""
+
+#: apps/authentication/forms.py:218
+#, fuzzy
+#| msgid "Password"
+msgid "New Password"
+msgstr "Password"
+
+#: apps/authentication/forms.py:220
+msgid "Enter your new password"
+msgstr ""
+
+#: apps/authentication/forms.py:225
+#, fuzzy
+#| msgid "Confirm Password"
+msgid "Confirm New Password"
+msgstr "Confirm Password"
+
+#: apps/authentication/forms.py:227
+#, fuzzy
+#| msgid "Confirm Password"
+msgid "Confirm your new password"
+msgstr "Confirm Password"
+
+#: apps/authentication/forms.py:243
+#, fuzzy
+#| msgid "Confirm Password"
+msgid "Change Password"
+msgstr "Confirm Password"
+
+#: apps/authentication/forms.py:250
+msgid "Current password is incorrect."
+msgstr ""
+
+#: apps/authentication/forms.py:260
+#, fuzzy
+#| msgid "Passwords do not match."
+msgid "The two password fields must match."
+msgstr "Passwords do not match."
+
+#: apps/authentication/models.py:15 apps/requests/models.py:61
+#, fuzzy
+#| msgid "Requests"
+msgid "Requester"
+msgstr "Requests"
+
+#: apps/authentication/models.py:16 apps/requests/models.py:70
+#, fuzzy
+#| msgid "Approved"
+msgid "Approver"
+msgstr "Approved"
+
+#: apps/authentication/models.py:17
+msgid "Tenant Admin"
+msgstr ""
+
+#: apps/authentication/models.py:18
+msgid "Super Admin"
+msgstr ""
+
+#: apps/authentication/models.py:22 templates/authentication/profile.html:141
+#, fuzzy
+#| msgid "First Name"
+msgid "Full Name"
+msgstr "First Name"
+
+#: apps/authentication/models.py:23
+msgid "Role"
+msgstr ""
+
+#: apps/authentication/models.py:36
+msgid "WebAuthn Credentials"
+msgstr ""
+
+#: apps/authentication/models.py:39
+msgid "Stored WebAuthn credentials for biometric authentication"
+msgstr ""
+
+#: apps/authentication/models.py:43 apps/billing/models.py:153
+#: apps/tenants/models.py:20 apps/tenants/models.py:36
+msgid "Active"
+msgstr ""
+
+# ================================================
+# Authentication
+# ================================================
+#: apps/authentication/models.py:44
+#, fuzzy
+#| msgid "Login"
+msgid "Last Login"
+msgstr "Login"
+
+#: apps/authentication/models.py:45 apps/requests/models.py:100
+#: apps/tenants/models.py:56
+#, fuzzy
+#| msgid "Created"
+msgid "Created At"
+msgstr "Created"
+
+#: apps/authentication/models.py:46 apps/requests/models.py:101
+#: apps/tenants/models.py:57
+msgid "Updated At"
+msgstr ""
+
+#: apps/authentication/models.py:55 templates/authentication/profile.html:132
+#, fuzzy
+#| msgid "Username"
+msgid "User"
+msgstr "Username"
+
+#: apps/authentication/models.py:56
+#, fuzzy
+#| msgid "Username"
+msgid "Users"
+msgstr "Username"
+
+#: apps/authentication/views.py:51 apps/authentication/views.py:58
+msgid "Please select a subscription plan to get started."
+msgstr ""
+
+# ================================================
+# Messages
+# ================================================
+#: apps/authentication/views.py:70
+#, fuzzy
+#| msgid "Your request has been submitted successfully."
+msgid "You have been successfully logged out."
+msgstr "Your request has been submitted successfully."
+
+#: apps/authentication/views.py:88
+msgid "Name and email are required"
+msgstr ""
+
+#: apps/authentication/views.py:101
+msgid "User exists but needs to complete WebAuthn registration"
+msgstr ""
+
+#: apps/authentication/views.py:104
+msgid "Email already registered with WebAuthn credentials"
+msgstr ""
+
+#: apps/authentication/views.py:124
+msgid "User created successfully. Now register WebAuthn credential."
+msgstr ""
+
+#: apps/authentication/views.py:128 apps/authentication/views.py:165
+#: apps/authentication/views.py:213 apps/authentication/views.py:249
+#: apps/authentication/views.py:298 apps/authentication/views.py:412
+#: apps/authentication/views.py:481
+#, fuzzy
+#| msgid "Invalid data provided."
+msgid "Invalid JSON data"
+msgstr "Invalid data provided."
+
+#: apps/authentication/views.py:131
+msgid "Registration failed"
+msgstr ""
+
+# ================================================
+# Forms & Validation
+# ================================================
+#: apps/authentication/views.py:143 apps/authentication/views.py:427
+#, fuzzy
+#| msgid "This field is required."
+msgid "User ID is required"
+msgstr "This field is required."
+
+#: apps/authentication/views.py:163 apps/authentication/views.py:211
+#: apps/authentication/views.py:233 apps/authentication/views.py:296
+msgid "User not found"
+msgstr ""
+
+#: apps/authentication/views.py:168
+msgid "Failed to generate registration options"
+msgstr ""
+
+#: apps/authentication/views.py:181 apps/authentication/views.py:265
+msgid "User ID and response are required"
+msgstr ""
+
+#: apps/authentication/views.py:205
+msgid "Registration successful! Redirecting..."
+msgstr ""
+
+#: apps/authentication/views.py:208 apps/authentication/webauthn_service.py:181
+msgid "Registration verification failed"
+msgstr ""
+
+# ================================================
+# Forms & Validation
+# ================================================
+#: apps/authentication/views.py:228 apps/authentication/views.py:355
+#: apps/billing/views.py:97
+#, fuzzy
+#| msgid "This field is required."
+msgid "Email is required"
+msgstr "This field is required."
+
+#: apps/authentication/views.py:236
+msgid "No WebAuthn credentials registered for this user"
+msgstr ""
+
+#: apps/authentication/views.py:293 apps/authentication/webauthn_service.py:307
+msgid "Authentication verification failed"
+msgstr ""
+
+#: apps/authentication/views.py:336
+#, fuzzy
+#| msgid "Operation completed successfully."
+msgid "Profile updated successfully."
+msgstr "Operation completed successfully."
+
+#: apps/authentication/views.py:381
+msgid "Credential ID is required"
+msgstr ""
+
+#: apps/authentication/views.py:407
+#, fuzzy
+#| msgid "Operation completed successfully."
+msgid "Device removed successfully"
+msgstr "Operation completed successfully."
+
+#: apps/authentication/views.py:467
+#, fuzzy
+#| msgid "Operation completed successfully."
+msgid "Fallback credential created successfully"
+msgstr "Operation completed successfully."
+
+#: apps/authentication/webauthn_service.py:126
+#: apps/authentication/webauthn_service.py:237
+msgid "Challenge not found or expired"
+msgstr ""
+
+#: apps/authentication/webauthn_service.py:189
+msgid "No credentials registered for this user"
+msgstr ""
+
+#: apps/authentication/webauthn_service.py:263
+msgid "Credential not found"
+msgstr ""
+
+#: apps/billing/admin.py:21
+#, fuzzy
+#| msgid "Information"
+msgid "Basic Information"
+msgstr "Information"
+
+#: apps/billing/admin.py:24
+msgid "Pricing"
+msgstr ""
+
+#: apps/billing/admin.py:27
+msgid "Limits"
+msgstr "Limits"
+
+#: apps/billing/admin.py:30
+msgid "Features"
+msgstr "Features"
+
+#: apps/billing/admin.py:37
+#, fuzzy
+#| msgid "Yearly"
+msgid "Yearly Price"
+msgstr "Yearly"
+
+#: apps/billing/admin.py:50
+#, fuzzy
+#| msgid "Subscription"
+msgid "Subscription Details"
+msgstr "Subscription"
+
+# ================================================
+# Billing
+# ================================================
+#: apps/billing/admin.py:53
+#, fuzzy
+#| msgid "Billing"
+msgid "Billing Period"
+msgstr "Billing"
+
+#: apps/billing/admin.py:56 apps/billing/admin.py:86
+msgid "Mercado Pago"
+msgstr ""
+
+#: apps/billing/admin.py:59 apps/billing/admin.py:119 apps/billing/admin.py:163
+msgid "Timestamps"
+msgstr ""
+
+#: apps/billing/admin.py:67 apps/tenants/models.py:23
+msgid "Trial"
+msgstr ""
+
+#: apps/billing/admin.py:80
+#, fuzzy
+#| msgid "Request Details"
+msgid "Payment Details"
+msgstr "Request Details"
+
+#: apps/billing/admin.py:83 apps/billing/admin.py:154
+#, fuzzy
+#| msgid "End Date"
+msgid "Dates"
+msgstr "End Date"
+
+#: apps/billing/admin.py:89
+#, fuzzy
+#| msgid "Additional Information"
+msgid "Additional Data"
+msgstr "Additional Information"
+
+#: apps/billing/admin.py:96 apps/billing/admin.py:126 apps/billing/admin.py:170
+#: apps/requests/models.py:77 apps/tenants/models.py:60
+msgid "Tenant"
+msgstr ""
+
+#: apps/billing/admin.py:110 apps/billing/admin.py:157
+msgid "Period"
+msgstr ""
+
+#: apps/billing/admin.py:113
+#, fuzzy
+#| msgid "Request Details"
+msgid "Request Metrics"
+msgstr "Request Details"
+
+#: apps/billing/admin.py:116
+msgid "User Activity"
+msgstr ""
+
+#: apps/billing/admin.py:135
+#, fuzzy
+#| msgid "Approved"
+msgid "Approval Rate"
+msgstr "Approved"
+
+#: apps/billing/admin.py:148
+#, fuzzy
+#| msgid "Invoice"
+msgid "Invoice Details"
+msgstr "Invoice"
+
+#: apps/billing/admin.py:151
+#, fuzzy
+#| msgid "Amount"
+msgid "Amounts"
+msgstr "Amount"
+
+#: apps/billing/admin.py:160 apps/billing/models.py:294
+msgid "Payment"
+msgstr "Payment"
+
+# ================================================
+# Billing
+# ================================================
+#: apps/billing/apps.py:11
+msgid "Billing"
+msgstr "Billing"
+
+#: apps/billing/models.py:18 templates/billing/select_plan.html:170
+msgid "Starter"
+msgstr "Starter"
+
+#: apps/billing/models.py:19 templates/billing/select_plan.html:194
+msgid "Growth"
+msgstr "Growth"
+
+#: apps/billing/models.py:20 templates/billing/select_plan.html:219
+msgid "Scale"
+msgstr "Scale"
+
+#: apps/billing/models.py:39
+msgid "Yearly price (optional, defaults to monthly * 10)"
+msgstr ""
+
+#: apps/billing/models.py:44
+msgid "Maximum number of approvers allowed"
+msgstr ""
+
+#: apps/billing/models.py:47
+msgid "Maximum requests per month (0 = unlimited)"
+msgstr ""
+
+#: apps/billing/models.py:50
+msgid "Maximum users in tenant (0 = unlimited)"
+msgstr ""
+
+#: apps/billing/models.py:61
+msgid "Display order"
+msgstr ""
+
+#: apps/billing/models.py:68 apps/tenants/models.py:31
+#: templates/billing/subscribe.html:132
+msgid "Plan"
+msgstr "Plan"
+
+#: apps/billing/models.py:69
+#, fuzzy
+#| msgid "Plan"
+msgid "Plans"
+msgstr "Plan"
+
+#: apps/billing/models.py:154 apps/billing/models.py:249
+#: apps/billing/models.py:363 apps/requests/models.py:36
+#: apps/tenants/models.py:22
+#, fuzzy
+#| msgid "Cancel"
+msgid "Cancelled"
+msgstr "Cancel"
+
+#: apps/billing/models.py:155
+msgid "Past Due"
+msgstr ""
+
+#: apps/billing/models.py:156 apps/tenants/models.py:21
+msgid "Suspended"
+msgstr ""
+
+# ================================================
+# Billing
+# ================================================
+#: apps/billing/models.py:157
+#, fuzzy
+#| msgid "Billing"
+msgid "Trialing"
+msgstr "Billing"
+
+#: apps/billing/models.py:161
+msgid "Monthly"
+msgstr "Monthly"
+
+#: apps/billing/models.py:162
+msgid "Yearly"
+msgstr "Yearly"
+
+#: apps/billing/models.py:197
+msgid "Mercado Pago subscription ID"
+msgstr ""
+
+#: apps/billing/models.py:203
+msgid "Mercado Pago customer ID"
+msgstr ""
+
+#: apps/billing/models.py:207
+msgid "Subscription"
+msgstr "Subscription"
+
+#: apps/billing/models.py:208
+#, fuzzy
+#| msgid "Subscription"
+msgid "Subscriptions"
+msgstr "Subscription"
+
+#: apps/billing/models.py:246 apps/requests/models.py:33
+#: templates/dashboard/index.html:125 templates/test_i18n.html:33
+msgid "Pending"
+msgstr "Pending"
+
+#: apps/billing/models.py:247 apps/requests/models.py:34
+#: templates/dashboard/index.html:141 templates/requests/detail.html:126
+#: templates/test_i18n.html:34
+msgid "Approved"
+msgstr "Approved"
+
+#: apps/billing/models.py:248 apps/requests/models.py:35
+#: templates/requests/detail.html:129 templates/requests/list.html:192
+msgid "Rejected"
+msgstr "Rejected"
+
+#: apps/billing/models.py:250
+msgid "Refunded"
+msgstr ""
+
+#: apps/billing/models.py:278
+msgid "Mercado Pago payment ID"
+msgstr ""
+
+#: apps/billing/models.py:284
+msgid "Mercado Pago preference ID"
+msgstr ""
+
+#: apps/billing/models.py:295
+#, fuzzy
+#| msgid "Payment"
+msgid "Payments"
+msgstr "Payment"
+
+#: apps/billing/models.py:336 apps/billing/models.py:337
+msgid "Usage Metrics"
+msgstr ""
+
+#: apps/billing/models.py:359
+msgid "Draft"
+msgstr ""
+
+#: apps/billing/models.py:360
+msgid "Sent"
+msgstr ""
+
+#: apps/billing/models.py:361
+msgid "Paid"
+msgstr ""
+
+#: apps/billing/models.py:362
+msgid "Overdue"
+msgstr ""
+
+#: apps/billing/models.py:403
+msgid "Invoice"
+msgstr "Invoice"
+
+#: apps/billing/models.py:404
+#, fuzzy
+#| msgid "Invoice"
+msgid "Invoices"
+msgstr "Invoice"
+
+#: apps/billing/serializers.py:142 apps/billing/serializers.py:162
+#: apps/billing/views.py:166
+msgid "Invalid plan selected."
+msgstr ""
+
+#: apps/billing/views.py:107
+msgid "Payment system not configured. Please contact support."
+msgstr ""
+
+#: apps/billing/views.py:146
+msgid "Failed to create payment session. Please try again."
+msgstr ""
+
+#: apps/billing/views.py:150
+msgid "Failed to create checkout session. Please contact support."
+msgstr ""
+
+#: apps/billing/views.py:176
+#, fuzzy
+#| msgid "Operation completed successfully."
+msgid "Plan changed successfully."
+msgstr "Operation completed successfully."
+
+#: apps/billing/views.py:193
+#, fuzzy
+#| msgid "Operation completed successfully."
+msgid "Subscription cancelled successfully."
+msgstr "Operation completed successfully."
+
+#: apps/billing/views.py:195
+#, fuzzy
+#| msgid "Cancel Subscription"
+msgid "Failed to cancel subscription."
+msgstr "Cancel Subscription"
+
+#: apps/requests/forms.py:20
+msgid "Vendor"
+msgstr "Vendor"
+
+#: apps/requests/forms.py:23
+#, fuzzy
+#| msgid "Vendor"
+msgid "Vendor name"
+msgstr "Vendor"
+
+#: apps/requests/forms.py:27
+msgid "Cost Center"
+msgstr "Cost Center"
+
+#: apps/requests/forms.py:30
+#, fuzzy
+#| msgid "Cost Center"
+msgid "Cost center code"
+msgstr "Cost Center"
+
+#: apps/requests/forms.py:34
+msgid "Expense Category"
+msgstr "Expense Category"
+
+#: apps/requests/forms.py:37
+msgid "Meals, Transportation, etc."
+msgstr ""
+
+#: apps/requests/forms.py:41
+msgid "Receipt Reference"
+msgstr "Receipt Reference"
+
+#: apps/requests/forms.py:44
+#, fuzzy
+#| msgid "Receipt Reference"
+msgid "Receipt number or reference"
+msgstr "Receipt Reference"
+
+#: apps/requests/forms.py:48
+msgid "Destination"
+msgstr "Destination"
+
+#: apps/requests/forms.py:51
+#, fuzzy
+#| msgid "Destination"
+msgid "Travel destination"
+msgstr "Destination"
+
+#: apps/requests/forms.py:55
+msgid "Start Date"
+msgstr "Start Date"
+
+#: apps/requests/forms.py:61
+msgid "End Date"
+msgstr "End Date"
+
+#: apps/requests/forms.py:67
+msgid "Document ID"
+msgstr "Document ID"
+
+#: apps/requests/forms.py:70
+#, fuzzy
+#| msgid "Document ID"
+msgid "Document ID or reference"
+msgstr "Document ID"
+
+#: apps/requests/forms.py:74
+msgid "Reason"
+msgstr "Reason"
+
+#: apps/requests/forms.py:77
+msgid "Explain the reason for this request"
+msgstr ""
+
+#: apps/requests/forms.py:86
+#, fuzzy
+#| msgid "Request Details"
+msgid "Request title"
+msgstr "Request Details"
+
+#: apps/requests/forms.py:91
+msgid "Detailed description of your request"
+msgstr ""
+
+#: apps/requests/forms.py:139 templates/requests/detail.html:330
+msgid "Request Information"
+msgstr "Request Information"
+
+# ================================================
+# Request Actions
+# ================================================
+#: apps/requests/forms.py:156
+msgid "Submit Request"
+msgstr "Submit Request"
+
+#: apps/requests/forms.py:198 templates/requests/detail.html:186
+msgid "Additional Information"
+msgstr "Additional Information"
+
+# ================================================
+# Forms & Validation
+# ================================================
+#: apps/requests/forms.py:251 apps/requests/serializers.py:135
+#, fuzzy
+#| msgid "This field is required."
+msgid "This field is required for this category."
+msgstr "This field is required."
+
+#: apps/requests/forms.py:257 apps/requests/serializers.py:54
+#: apps/requests/serializers.py:126
+msgid "Amount is required and must be greater than 0 for this category."
+msgstr ""
+
+#: apps/requests/forms.py:264 apps/requests/serializers.py:146
+msgid "End date must be after start date."
+msgstr ""
+
+#: apps/requests/models.py:17
+msgid "Expense Reimbursement"
+msgstr ""
+
+#: apps/requests/models.py:18
+#, fuzzy
+#| msgid "New Request"
+msgid "Purchase Request"
+msgstr "New Request"
+
+#: apps/requests/models.py:19
+#, fuzzy
+#| msgid "Pending Approvals"
+msgid "Travel Approval"
+msgstr "Pending Approvals"
+
+#: apps/requests/models.py:20
+#, fuzzy
+#| msgid "Contract"
+msgid "Contract Approval"
+msgstr "Contract"
+
+#: apps/requests/models.py:21
+#, fuzzy
+#| msgid "Document ID"
+msgid "Document Withdrawal"
+msgstr "Document ID"
+
+#: apps/requests/models.py:22 templates/requests/create.html:116
+msgid "Other"
+msgstr "Other"
+
+#: apps/requests/models.py:26
+msgid "Low"
+msgstr "Low"
+
+#: apps/requests/models.py:27
+msgid "Medium"
+msgstr "Medium"
+
+#: apps/requests/models.py:28
+msgid "High"
+msgstr "High"
+
+#: apps/requests/models.py:29
+msgid "Critical"
+msgstr ""
+
+# ================================================
+# Request Fields
+# ================================================
+#: apps/requests/models.py:40
+msgid "Title"
+msgstr "Title"
+
+#: apps/requests/models.py:41 templates/requests/detail.html:165
+msgid "Description"
+msgstr "Description"
+
+#: apps/requests/models.py:42 templates/requests/create.html:273
+#: templates/requests/list.html:97
+msgid "Category"
+msgstr "Category"
+
+#: apps/requests/models.py:43 templates/requests/create.html:285
+#: templates/requests/detail.html:100
+msgid "Priority"
+msgstr "Priority"
+
+#: apps/requests/models.py:44 apps/tenants/models.py:37
+#: templates/requests/list.html:87
+msgid "Status"
+msgstr "Status"
+
+#: apps/requests/models.py:48 templates/requests/create.html:296
+msgid "Amount"
+msgstr "Amount"
+
+#: apps/requests/models.py:53
+msgid "Amount for expense, purchase, or travel requests"
+msgstr ""
+
+#: apps/requests/models.py:81
+#, fuzzy
+#| msgid "Approve Request"
+msgid "Approver Comment"
+msgstr "Approve Request"
+
+#: apps/requests/models.py:82
+#, fuzzy
+#| msgid "Approved"
+msgid "Approved At"
+msgstr "Approved"
+
+#: apps/requests/models.py:85
+#, fuzzy
+#| msgid "Reject Request"
+msgid "Rejection Reason"
+msgstr "Reject Request"
+
+#: apps/requests/models.py:86
+#, fuzzy
+#| msgid "Rejected"
+msgid "Rejected At"
+msgstr "Rejected"
+
+#: apps/requests/models.py:90 apps/tenants/models.py:49
+msgid "Metadata"
+msgstr ""
+
+#: apps/requests/models.py:93
+msgid "Category-specific data: vendor, cost_center, destination, etc."
+msgstr ""
+
+#: apps/requests/models.py:97
+msgid "Expires At"
+msgstr ""
+
+#: apps/requests/models.py:104
+#, fuzzy
+#| msgid "Approve Request"
+msgid "Approval Request"
+msgstr "Approve Request"
+
+#: apps/requests/models.py:105 templates/requests/list.html:68
+#, fuzzy
+#| msgid "Approve Request"
+msgid "Approval Requests"
+msgstr "Approve Request"
+
+# ================================================
+# Forms & Validation
+# ================================================
+#: apps/requests/serializers.py:115
+msgid "This field is required."
+msgstr "This field is required."
+
+# ================================================
+# Messages
+# ================================================
+#: apps/requests/views.py:77
+#, fuzzy
+#| msgid "Your request has been submitted successfully."
+msgid "Your request \"{}\" has been submitted successfully."
+msgstr "Your request has been submitted successfully."
+
+#: apps/requests/views.py:85 templates/dashboard/index.html:93
+#: templates/dashboard/index.html:289 templates/requests/create.html:4
+#: templates/requests/create.html:47 templates/requests/list.html:79
+#: templates/test_i18n.html:32
+msgid "New Request"
+msgstr "New Request"
+
+#: apps/requests/views.py:127
+#, fuzzy
+#| msgid "You do not have permission to perform this action."
+msgid "You do not have permission to approve requests."
+msgstr "You do not have permission to perform this action."
+
+#: apps/requests/views.py:131 apps/requests/views.py:165
+msgid "This request has already been processed."
+msgstr "This request has already been processed."
+
+#: apps/requests/views.py:135
+msgid "You cannot approve your own request."
+msgstr "You cannot approve your own request."
+
+#: apps/requests/views.py:143
+#, fuzzy
+#| msgid "Request has been approved."
+msgid "Request \"{}\" has been approved."
+msgstr "Request has been approved."
+
+#: apps/requests/views.py:161
+#, fuzzy
+#| msgid "You do not have permission to perform this action."
+msgid "You do not have permission to reject requests."
+msgstr "You do not have permission to perform this action."
+
+#: apps/requests/views.py:169
+#, fuzzy
+#| msgid "You cannot approve your own request."
+msgid "You cannot reject your own request."
+msgstr "You cannot approve your own request."
+
+#: apps/requests/views.py:175
+msgid "Please provide a reason for rejection."
+msgstr "Please provide a reason for rejection."
+
+#: apps/requests/views.py:183
+#, fuzzy
+#| msgid "Request has been rejected."
+msgid "Request \"{}\" has been rejected."
+msgstr "Request has been rejected."
+
+#: apps/tenants/models.py:14
+msgid "Starter - Up to 2 approvers"
+msgstr ""
+
+#: apps/tenants/models.py:15
+msgid "Growth - Up to 6 approvers"
+msgstr ""
+
+#: apps/tenants/models.py:16
+msgid "Scale - Unlimited approvers"
+msgstr ""
+
+#: apps/tenants/models.py:27
+msgid "Key"
+msgstr ""
+
+#: apps/tenants/models.py:28
+#, fuzzy
+#| msgid "Last Name"
+msgid "Name"
+msgstr "Last Name"
+
+#: apps/tenants/models.py:32
+msgid "Seats"
+msgstr ""
+
+#: apps/tenants/models.py:33
+#, fuzzy
+#| msgid "Approved by"
+msgid "Approver Limit"
+msgstr "Approved by"
+
+#: apps/tenants/models.py:41
+#, fuzzy
+#| msgid "Information"
+msgid "Billing Information"
+msgstr "Information"
+
+#: apps/tenants/models.py:44
+msgid "Stores billing provider data, subscription IDs, etc."
+msgstr ""
+
+#: apps/tenants/models.py:52
+#, fuzzy
+#| msgid "Additional Information"
+msgid "Additional tenant configuration and data"
+msgstr "Additional Information"
+
+#: apps/tenants/models.py:61
+msgid "Tenants"
+msgstr ""
+
+#: templates/account/login.html:5 templates/account/login.html:25
+#: templates/account/login.html:90
+msgid "Iniciar sesión"
+msgstr ""
+
+#: templates/account/login.html:20
+msgid "Sistema de Aprobaciones Seguras"
+msgstr ""
+
+#: templates/account/login.html:39
+msgid "Email"
+msgstr "Email"
+
+#: templates/account/login.html:46
+msgid "Ingrese su email"
+msgstr ""
+
+#: templates/account/login.html:58
+#, fuzzy
+#| msgid "Contract"
+msgid "Contraseña"
+msgstr "Contract"
+
+#: templates/account/login.html:64
+msgid "Ingrese su contraseña"
+msgstr ""
+
+#: templates/account/login.html:82
+msgid "Recordarme"
+msgstr ""
+
+#: templates/account/login.html:96
+msgid "¿Olvidó su contraseña?"
+msgstr ""
+
+#: templates/account/login.html:105
+msgid "¿No tiene una cuenta?"
+msgstr ""
+
+#: templates/account/login.html:107
+#, fuzzy
+#| msgid "Subscription"
+msgid "Suscribirse"
+msgstr "Subscription"
+
+#: templates/account/login.html:117 templates/landing/index.html:381
+msgid "Todos los derechos reservados."
+msgstr ""
+
+#: templates/authentication/login.html:5 templates/authentication/login.html:40
+#: templates/authentication/webauthn_login.html:165
+msgid "Sign In"
+msgstr ""
+
+# ================================================
+# Dashboard
+# ================================================
+#: templates/authentication/login.html:14
+#, fuzzy
+#| msgid "Welcome back"
+msgid "Welcome back!"
+msgstr "Welcome back"
+
+#: templates/authentication/login.html:15
+msgid "Sign in to access your approval workflow dashboard"
+msgstr ""
+
+#: templates/authentication/login.html:20
+msgid "Fast"
+msgstr ""
+
+# ================================================
+# Common Terms
+# ================================================
+#: templates/authentication/login.html:24
+#, fuzzy
+#| msgid "SecureApprove"
+msgid "Secure"
+msgstr "SecureApprove"
+
+#: templates/authentication/login.html:28
+msgid "Efficient"
+msgstr ""
+
+#: templates/authentication/login.html:41
+msgid "Enter your credentials to access your account"
+msgstr ""
+
+#: templates/authentication/login.html:61
+#, fuzzy
+#| msgid "Forgot password?"
+msgid "Forgot your password?"
+msgstr "Forgot password?"
+
+#: templates/authentication/login.html:68
+#: templates/authentication/webauthn_login.html:261
+msgid "Don't have an account?"
+msgstr ""
+
+#: templates/authentication/login.html:70
+#, fuzzy
+#| msgid "Subscription"
+msgid "Subscribe Now"
+msgstr "Subscription"
+
+#: templates/authentication/login.html:80
+msgid "Demo Credentials:"
+msgstr ""
+
+#: templates/authentication/login.html:81
+#, fuzzy
+#| msgid "Email"
+msgid "Email:"
+msgstr "Email"
+
+#: templates/authentication/login.html:82
+#, fuzzy
+#| msgid "Password"
+msgid "Password:"
+msgstr "Password"
+
+#: templates/authentication/login.html:99
+msgid "WebAuthn is not fully implemented yet. Please use email/password login."
+msgstr ""
+
+# ================================================
+# Common Terms
+# ================================================
+#: templates/authentication/profile.html:4
+#, fuzzy
+#| msgid "SecureApprove"
+msgid "Profile - SecureApprove"
+msgstr "SecureApprove"
+
+#: templates/authentication/profile.html:128
+msgid "Administrator"
+msgstr ""
+
+#: templates/authentication/profile.html:130
+#, fuzzy
+#| msgid "September"
+msgid "Staff Member"
+msgstr "September"
+
+#: templates/authentication/profile.html:149
+msgid "Company"
+msgstr ""
+
+#: templates/authentication/profile.html:153
+#, fuzzy
+#| msgid "Remember me"
+msgid "Member Since"
+msgstr "Remember me"
+
+#: templates/authentication/profile.html:162
+msgid "Biometric Authentication"
+msgstr ""
+
+#: templates/authentication/profile.html:166
+msgid "Add Device"
+msgstr ""
+
+#: templates/authentication/profile.html:179
+msgid "Authentication Device"
+msgstr ""
+
+#: templates/authentication/profile.html:182
+#, fuzzy
+#| msgid "Register"
+msgid "Registered on"
+msgstr "Register"
+
+#: templates/authentication/profile.html:184
+#, fuzzy
+#| msgid "Register"
+msgid "Registered device"
+msgstr "Register"
+
+#: templates/authentication/profile.html:200
+msgid "No biometric devices registered"
+msgstr ""
+
+#: templates/authentication/profile.html:201
+msgid "Add a biometric device to enhance your account security"
+msgstr ""
+
+#: templates/authentication/profile.html:211
+#, fuzzy
+#| msgid "Request Information"
+msgid "Security Information"
+msgstr "Request Information"
+
+#: templates/authentication/profile.html:214
+msgid ""
+"Your biometric data is stored securely on your devices and never transmitted "
+"to our servers. Each device creates a unique cryptographic key for "
+"authentication."
+msgstr ""
+
+#: templates/authentication/profile.html:222
+#, fuzzy
+#| msgid "Profile"
+msgid "Edit Profile"
+msgstr "Profile"
+
+#: templates/authentication/profile.html:226
+msgid "Sign Out"
+msgstr ""
+
+#: templates/authentication/profile.html:242
+msgid "Add Biometric Device"
+msgstr ""
+
+#: templates/authentication/profile.html:252
+msgid "Preparing Device Registration"
+msgstr ""
+
+#: templates/authentication/profile.html:253
+msgid "Get ready to use your biometric sensor"
+msgstr ""
+
+#: templates/authentication/profile.html:259
+#: templates/authentication/webauthn_login.html:235
+msgid "Touch Your Sensor"
+msgstr ""
+
+#: templates/authentication/profile.html:260
+msgid "Use your fingerprint, Face ID, or security key"
+msgstr ""
+
+#: templates/authentication/profile.html:266
+#, fuzzy
+#| msgid "Operation completed successfully."
+msgid "Device Added Successfully!"
+msgstr "Operation completed successfully."
+
+#: templates/authentication/profile.html:267
+msgid "Your new device has been registered"
+msgstr ""
+
+#: templates/authentication/profile.html:272
+msgid "Cancel"
+msgstr "Cancel"
+
+#: templates/authentication/profile.html:274
+msgid "Start Registration"
+msgstr ""
+
+#: templates/authentication/profile.html:294
+msgid "Are you sure you want to remove this device?"
+msgstr ""
+
+#: templates/authentication/profile.html:319
+#: templates/authentication/profile.html:324
+msgid "Failed to remove device"
+msgstr ""
+
+#: templates/authentication/profile.html:396
+msgid "Failed to add device"
+msgstr ""
+
+# ================================================
+# Common Terms
+# ================================================
+#: templates/authentication/webauthn_login.html:4
+#, fuzzy
+#| msgid "SecureApprove"
+msgid "Sign In - SecureApprove"
+msgstr "SecureApprove"
+
+#: templates/authentication/webauthn_login.html:166
+msgid "Secure passwordless authentication with biometrics"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:209
+#: templates/authentication/webauthn_login.html:494
+#, fuzzy
+#| msgid "Sign in with fingerprint"
+msgid "Sign In with Biometrics"
+msgstr "Sign in with fingerprint"
+
+#: templates/authentication/webauthn_login.html:214
+msgid "Check Account"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:226
+msgid "Preparing Authentication"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:227
+msgid "Setting up your biometric login..."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:236
+msgid "Please use your fingerprint, Face ID, or security key to sign in"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:244
+msgid "Verifying..."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:245
+msgid "Authenticating your identity"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:253
+msgid "Authentication Successful!"
+msgstr ""
+
+# ================================================
+# Dashboard
+# ================================================
+#: templates/authentication/webauthn_login.html:254
+#, fuzzy
+#| msgid "Welcome back"
+msgid "Welcome back! Redirecting..."
+msgstr "Welcome back"
+
+#: templates/authentication/webauthn_login.html:263
+msgid "Subscribe to Get Started"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:272
+msgid "About Biometric Authentication"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:275
+msgid ""
+"We use WebAuthn for secure, passwordless authentication. Your biometric data "
+"stays on your device and is never shared."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:305
+#, fuzzy
+#| msgid "Please enter a valid email address."
+msgid "Please enter your email address"
+msgstr "Please enter a valid email address."
+
+#: templates/authentication/webauthn_login.html:311
+msgid "Checking Account..."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:318
+msgid ""
+"No account found with this email. Please subscribe to a plan to get started."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:322
+msgid ""
+"No biometric authentication set up for this account. Please contact support."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:362
+msgid "WebAuthn authentication was cancelled"
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:402
+msgid "Authentication successful! Welcome back."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:449
+msgid "No biometric authentication set up for this account."
+msgstr ""
+
+#: templates/authentication/webauthn_login.html:501
+msgid ""
+"WebAuthn is not supported in your browser. Please use Chrome, Firefox, "
+"Safari, or Edge."
+msgstr ""
+
+#: templates/base.html:329 templates/base.html:334 templates/base.html:469
+msgid "Light"
+msgstr "Light"
+
+#: templates/base.html:337 templates/base.html:473
+msgid "Dark"
+msgstr "Dark"
+
+#: templates/base.html:340 templates/base.html:477
+msgid "System"
+msgstr "System"
+
+#: templates/base.html:376 templates/dashboard/index.html:4
+#: templates/dashboard/index.html:84 templates/test_i18n.html:29
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: templates/base.html:379 templates/requests/list.html:4
+#: templates/test_i18n.html:31
+msgid "Requests"
+msgstr "Requests"
+
+#: templates/base.html:389
+msgid "Profile"
+msgstr "Profile"
+
+#: templates/base.html:393
+msgid "Administration"
+msgstr ""
+
+#: templates/base.html:401
+msgid "Logout"
+msgstr "Logout"
+
+# ================================================
+# Authentication
+# ================================================
+#: templates/base.html:410
+msgid "Login"
+msgstr "Login"
+
+#: templates/base.html:413
+#, fuzzy
+#| msgid "Subscription"
+msgid "Subscribe"
+msgstr "Subscription"
+
+# ================================================
+# Common Terms
+# ================================================
+#: templates/billing/payment_failure.html:4
+#, fuzzy
+#| msgid "SecureApprove"
+msgid "Payment Failed - SecureApprove"
+msgstr "SecureApprove"
+
+#: templates/billing/payment_failure.html:90
+#, fuzzy
+#| msgid "Payment"
+msgid "Payment Failed"
+msgstr "Payment"
+
+#: templates/billing/payment_failure.html:93
+msgid ""
+"We're sorry, but your payment could not be processed. Please try again or "
+"contact our support team for assistance."
+msgstr ""
+
+#: templates/billing/payment_failure.html:100
+msgid "Common reasons for payment failures:"
+msgstr ""
+
+#: templates/billing/payment_failure.html:102
+msgid "Insufficient funds"
+msgstr ""
+
+#: templates/billing/payment_failure.html:103
+msgid "Incorrect card details"
+msgstr ""
+
+#: templates/billing/payment_failure.html:104
+msgid "Card blocked by bank"
+msgstr ""
+
+#: templates/billing/payment_failure.html:105
+msgid "Expired card"
+msgstr ""
+
+#: templates/billing/payment_failure.html:114
+msgid "Try Again"
+msgstr ""
+
+#: templates/billing/payment_failure.html:118
+#, fuzzy
+#| msgid "Contract"
+msgid "Contact Support"
+msgstr "Contract"
+
+#: templates/billing/payment_failure.html:125
+#: templates/billing/payment_pending.html:92
+#: templates/billing/payment_success.html:114
+#, fuzzy
+#| msgid "Back to Requests"
+msgid "Back to Home"
+msgstr "Back to Requests"
+
+#: templates/billing/payment_pending.html:4
+msgid "Payment Pending - SecureApprove"
+msgstr ""
+
+#: templates/billing/payment_pending.html:71
+#, fuzzy
+#| msgid "Pending"
+msgid "Payment Pending"
+msgstr "Pending"
+
+#: templates/billing/payment_pending.html:74
+msgid ""
+"Your payment is being processed. This may take a few minutes. We'll send you "
+"an email confirmation once it's complete."
+msgstr ""
+
+#: templates/billing/payment_pending.html:81
+#: templates/billing/payment_success.html:100
+msgid "What happens next?"
+msgstr ""
+
+#: templates/billing/payment_pending.html:83
+msgid ""
+"You'll receive an email notification once your payment is approved. Your "
+"SecureApprove account will be activated automatically."
+msgstr ""
+
+#: templates/billing/payment_pending.html:98
+msgid "Questions about your payment?"
+msgstr ""
+
+#: templates/billing/payment_success.html:4
+msgid "Payment Successful - SecureApprove"
+msgstr ""
+
+#: templates/billing/payment_success.html:90
+msgid "Payment Successful!"
+msgstr ""
+
+#: templates/billing/payment_success.html:93
+msgid ""
+"Thank you for subscribing to SecureApprove. Your account is being set up and "
+"you'll receive a confirmation email shortly."
+msgstr ""
+
+#: templates/billing/payment_success.html:102
+msgid ""
+"Your account and tenant have been created. Please set up your biometric "
+"authentication to access your dashboard."
+msgstr ""
+
+#: templates/billing/payment_success.html:111
+msgid "Setup Biometric Login"
+msgstr ""
+
+#: templates/billing/payment_success.html:120
+msgid "Need help? Contact our support team at"
+msgstr ""
+
+#: templates/billing/select_plan.html:4
+#, fuzzy
+#| msgid "Choose Your Plan"
+msgid "Choose Your Plan - SecureApprove"
+msgstr "Choose Your Plan"
+
+#: templates/billing/select_plan.html:45
+msgid "Most Popular"
+msgstr ""
+
+#: templates/billing/select_plan.html:161
+msgid "Choose Your Plan"
+msgstr "Choose Your Plan"
+
+#: templates/billing/select_plan.html:162
+msgid "Select the perfect plan for your organization's approval needs"
+msgstr ""
+
+#: templates/billing/select_plan.html:171
+#: templates/billing/select_plan.html:195
+#: templates/billing/select_plan.html:220 templates/billing/subscribe.html:133
+#, fuzzy
+#| msgid "This month"
+msgid "month"
+msgstr "This month"
+
+#: templates/billing/select_plan.html:172
+msgid "Perfect for small teams"
+msgstr ""
+
+#: templates/billing/select_plan.html:176 templates/billing/subscribe.html:138
+msgid "Up to 2 approvers"
+msgstr ""
+
+#: templates/billing/select_plan.html:177 templates/billing/subscribe.html:139
+msgid "10 team members"
+msgstr ""
+
+#: templates/billing/select_plan.html:178 templates/billing/subscribe.html:140
+msgid "Basic workflow templates"
+msgstr ""
+
+#: templates/billing/select_plan.html:179
+msgid "Email notifications"
+msgstr ""
+
+#: templates/billing/select_plan.html:180
+msgid "Basic reporting"
+msgstr ""
+
+#: templates/billing/select_plan.html:181
+msgid "WebAuthn security"
+msgstr ""
+
+#: templates/billing/select_plan.html:184
+#: templates/billing/select_plan.html:209 templates/billing/subscribe.html:192
+#, fuzzy
+#| msgid "Starter"
+msgid "Start Free Trial"
+msgstr "Starter"
+
+#: templates/billing/select_plan.html:196
+msgid "Ideal for growing companies"
+msgstr ""
+
+#: templates/billing/select_plan.html:200 templates/billing/subscribe.html:142
+msgid "Up to 6 approvers"
+msgstr ""
+
+#: templates/billing/select_plan.html:201 templates/billing/subscribe.html:143
+msgid "25 team members"
+msgstr ""
+
+#: templates/billing/select_plan.html:202 templates/billing/subscribe.html:144
+msgid "Advanced workflow automation"
+msgstr ""
+
+#: templates/billing/select_plan.html:203
+msgid "Slack & Teams integration"
+msgstr ""
+
+#: templates/billing/select_plan.html:204
+msgid "Advanced analytics"
+msgstr ""
+
+#: templates/billing/select_plan.html:205 templates/billing/subscribe.html:145
+msgid "API access"
+msgstr ""
+
+#: templates/billing/select_plan.html:206
+#, fuzzy
+#| msgid "Priority"
+msgid "Priority support"
+msgstr "Priority"
+
+#: templates/billing/select_plan.html:221
+msgid "For enterprise organizations"
+msgstr ""
+
+#: templates/billing/select_plan.html:225 templates/billing/subscribe.html:147
+msgid "Unlimited approvers"
+msgstr ""
+
+#: templates/billing/select_plan.html:226 templates/billing/subscribe.html:148
+msgid "Unlimited team members"
+msgstr ""
+
+#: templates/billing/select_plan.html:227 templates/billing/subscribe.html:149
+msgid "Custom workflow builder"
+msgstr ""
+
+#: templates/billing/select_plan.html:228
+msgid "Advanced integrations"
+msgstr ""
+
+#: templates/billing/select_plan.html:229
+msgid "Enterprise analytics"
+msgstr ""
+
+#: templates/billing/select_plan.html:230
+msgid "Dedicated support"
+msgstr ""
+
+#: templates/billing/select_plan.html:231
+msgid "SLA guarantee"
+msgstr ""
+
+#: templates/billing/select_plan.html:234
+#, fuzzy
+#| msgid "Contract"
+msgid "Contact Sales"
+msgstr "Contract"
+
+#: templates/billing/select_plan.html:243
+msgid "All plans include"
+msgstr ""
+
+#: templates/billing/select_plan.html:247
+msgid "WebAuthn Security"
+msgstr ""
+
+#: templates/billing/select_plan.html:248
+msgid "Passwordless biometric authentication"
+msgstr ""
+
+#: templates/billing/select_plan.html:252
+msgid "Cloud Hosting"
+msgstr ""
+
+#: templates/billing/select_plan.html:253
+msgid "Secure, reliable cloud infrastructure"
+msgstr ""
+
+#: templates/billing/select_plan.html:257
+msgid "Mobile Ready"
+msgstr ""
+
+#: templates/billing/select_plan.html:258
+msgid "Works perfectly on any device"
+msgstr ""
+
+#: templates/billing/select_plan.html:262
+msgid "24/7 Support"
+msgstr ""
+
+#: templates/billing/select_plan.html:263
+msgid "Get help whenever you need it"
+msgstr ""
+
+#: templates/billing/select_plan.html:270
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: templates/billing/select_plan.html:277
+msgid "Can I change my plan later?"
+msgstr ""
+
+#: templates/billing/select_plan.html:282
+msgid ""
+"Yes, you can upgrade or downgrade your plan at any time. Changes take effect "
+"immediately."
+msgstr ""
+
+#: templates/billing/select_plan.html:289
+msgid "Is there a free trial?"
+msgstr ""
+
+#: templates/billing/select_plan.html:294
+msgid ""
+"Yes, we offer a 14-day free trial for all plans. No credit card required to "
+"start."
+msgstr ""
+
+#: templates/billing/select_plan.html:301
+msgid "What payment methods do you accept?"
+msgstr ""
+
+#: templates/billing/select_plan.html:306
+msgid ""
+"We accept all major credit cards, PayPal, and bank transfers through "
+"MercadoPago."
+msgstr ""
+
+#: templates/billing/select_plan.html:317
+msgid "Questions about our plans?"
+msgstr ""
+
+#: templates/billing/select_plan.html:318
+msgid "Contact our sales team"
+msgstr ""
+
+#: templates/billing/subscribe.html:4
+#, fuzzy
+#| msgid "Subscription"
+msgid "Subscribe to"
+msgstr "Subscription"
+
+#: templates/billing/subscribe.html:125
+#, fuzzy
+#| msgid "Cancel Subscription"
+msgid "Complete Your Subscription"
+msgstr "Cancel Subscription"
+
+#: templates/billing/subscribe.html:126
+msgid "You're just one step away from accessing SecureApprove"
+msgstr ""
+
+#: templates/billing/subscribe.html:150
+msgid "Enterprise features"
+msgstr ""
+
+#: templates/billing/subscribe.html:177
+msgid "This email will be used for your account and billing notifications"
+msgstr ""
+
+#: templates/billing/subscribe.html:185
+msgid "14-Day Free Trial"
+msgstr ""
+
+#: templates/billing/subscribe.html:186
+msgid "No charge for the first 14 days. Cancel anytime."
+msgstr ""
+
+#: templates/billing/subscribe.html:195
+#, fuzzy
+#| msgid "Loading..."
+msgid "Processing..."
+msgstr "Loading..."
+
+#: templates/billing/subscribe.html:204
+msgid "Secure & Protected"
+msgstr ""
+
+#: templates/billing/subscribe.html:207
+msgid ""
+"Your payment is processed securely through MercadoPago. We never store your "
+"payment information."
+msgstr ""
+
+#: templates/billing/subscribe.html:215
+msgid "Back to plan selection"
+msgstr ""
+
+#: templates/billing/subscribe.html:272
+#, fuzzy
+#| msgid "Cancel Subscription"
+msgid "Error starting subscription"
+msgstr "Cancel Subscription"
+
+# ================================================
+# Dashboard
+# ================================================
+#: templates/dashboard/index.html:86 templates/test_i18n.html:30
+msgid "Welcome back"
+msgstr "Welcome back"
+
+#: templates/dashboard/index.html:87
+msgid "Here's what's happening with your requests."
+msgstr "Here's what's happening with your requests."
+
+#: templates/dashboard/index.html:97 templates/dashboard/index.html:306
+msgid "All Requests"
+msgstr "All Requests"
+
+#: templates/dashboard/index.html:109
+msgid "Total Requests"
+msgstr "Total Requests"
+
+#: templates/dashboard/index.html:157
+msgid "My Requests"
+msgstr "My Requests"
+
+#: templates/dashboard/index.html:177
+msgid "Requests by Category"
+msgstr "Requests by Category"
+
+#: templates/dashboard/index.html:179
+msgid "Last 30 days"
+msgstr "Last 30 days"
+
+#: templates/dashboard/index.html:193
+msgid "Activity Timeline"
+msgstr "Activity Timeline"
+
+#: templates/dashboard/index.html:212
+msgid "Pending Approvals"
+msgstr "Pending Approvals"
+
+#: templates/dashboard/index.html:227 templates/dashboard/index.html:264
+msgid "ago"
+msgstr "ago"
+
+#: templates/dashboard/index.html:236
+#, fuzzy
+#| msgid "Review Pending"
+msgid "View All Pending"
+msgstr "Review Pending"
+
+#: templates/dashboard/index.html:247
+msgid "Recent Requests"
+msgstr "Recent Requests"
+
+#: templates/dashboard/index.html:271
+msgid "No requests yet"
+msgstr "No requests yet"
+
+#: templates/dashboard/index.html:282
+msgid "Quick Actions"
+msgstr "Quick Actions"
+
+#: templates/dashboard/index.html:295
+msgid "Review Pending"
+msgstr "Review Pending"
+
+#: templates/dashboard/index.html:301
+msgid "View Approved"
+msgstr "View Approved"
+
+# ================================================
+# Common Terms
+# ================================================
+#: templates/landing/demo.html:4
+#, fuzzy
+#| msgid "SecureApprove"
+msgid "Demo - SecureApprove"
+msgstr "SecureApprove"
+
+#: templates/landing/demo.html:107 templates/landing/demo.html:112
+msgid "Claro"
+msgstr "Light"
+
+#: templates/landing/demo.html:115
+msgid "Oscuro"
+msgstr "Dark"
+
+#: templates/landing/demo.html:118
+#, fuzzy
+#| msgid "System"
+msgid "Sistema"
+msgstr "System"
+
+#: templates/landing/demo.html:153
+msgid "Volver"
+msgstr "Back"
+
+#: templates/landing/demo.html:156 templates/landing/index.html:164
+msgid "Comenzar Ahora"
+msgstr "Get Started Now"
+
+#: templates/landing/demo.html:174
+msgid "Demostración Interactiva"
+msgstr "Interactive Demo"
+
+#: templates/landing/demo.html:177
+msgid ""
+"Esta es una demo de cómo funciona el proceso de aprobación en SecureApprove. "
+"Los botones son interactivos para simular la experiencia real."
+msgstr ""
+
+#: templates/landing/demo.html:186
+msgid "Compra de Equipos de Oficina"
+msgstr "Office Equipment Purchase"
+
+#: templates/landing/demo.html:190
+#, fuzzy
+#| msgid "Pending"
+msgid "Pendiente"
+msgstr "Pending"
+
+#: templates/landing/demo.html:193
+#, fuzzy
+#| msgid "Priority"
+msgid "Prioridad"
+msgstr "Priority"
+
+#: templates/landing/demo.html:193
+#, fuzzy
+#| msgid "Medium"
+msgid "Media"
+msgstr "Medium"
+
+#: templates/landing/demo.html:208
+msgid "SOLICITANTE"
+msgstr "REQUESTER"
+
+#: templates/landing/demo.html:213
+msgid "Ana García"
+msgstr "Ana García"
+
+#: templates/landing/demo.html:219
+msgid "DEPARTAMENTO"
+msgstr "DEPARTMENT"
+
+#: templates/landing/demo.html:222
+msgid "Recursos Humanos"
+msgstr "Human Resources"
+
+#: templates/landing/demo.html:229
+msgid "DESCRIPCIÓN"
+msgstr "DESCRIPTION"
+
+#: templates/landing/demo.html:231
+msgid ""
+"Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables "
+"para el nuevo equipo de trabajo remoto. Los equipos actuales no cumplen con "
+"los estándares ergonómicos necesarios para el trabajo prolongado."
+msgstr ""
+
+#: templates/landing/demo.html:236
+msgid "DOCUMENTOS ADJUNTOS"
+msgstr "ATTACHED DOCUMENTS"
+
+#: templates/landing/demo.html:253
+msgid "Aprobar Solicitud"
+msgstr "Approve Request"
+
+#: templates/landing/demo.html:257
+msgid "Rechazar"
+msgstr "Reject"
+
+#: templates/landing/demo.html:261
+msgid "Solicitar Info"
+msgstr "Request Info"
+
+#: templates/landing/demo.html:276
+msgid "¿Te gusta lo que ves?"
+msgstr "Do you like what you see?"
+
+#: templates/landing/demo.html:278
+msgid "Comienza a gestionar tus aprobaciones de manera profesional"
+msgstr "Start managing your approvals professionally"
+
+#: templates/landing/demo.html:282
+msgid "Suscribirme Ahora"
+msgstr "Subscribe Now"
+
+#: templates/landing/demo.html:296
+msgid "¡Solicitud Aprobada!"
+msgstr "Request Approved!"
+
+#: templates/landing/demo.html:296
+msgid ""
+"La solicitud ha sido aprobada exitosamente. Se ha enviado notificación al "
+"solicitante y se procederá con la compra."
+msgstr ""
+
+#: templates/landing/demo.html:300
+msgid "Solicitud Rechazada"
+msgstr "Request Rejected"
+
+#: templates/landing/demo.html:300
+msgid ""
+"La solicitud ha sido rechazada. Se ha enviado notificación al solicitante "
+"con los motivos del rechazo."
+msgstr ""
+
+#: templates/landing/demo.html:304
+msgid "Información Solicitada"
+msgstr "Information Requested"
+
+#: templates/landing/demo.html:304
+msgid ""
+"Se ha enviado una solicitud de información adicional al solicitante. La "
+"aprobación quedará pendiente hasta recibir los datos necesarios."
+msgstr ""
+
+#: templates/landing/index.html:4
+msgid "SecureApprove - Sistema de Aprobaciones Seguras"
+msgstr "SecureApprove - Secure Approval System"
+
+#: templates/landing/index.html:154
+msgid "Sistema de Aprobaciones Seguras con Autenticación Biométrica"
+msgstr "Secure Approval System with Biometric Authentication"
+
+#: templates/landing/index.html:158
+msgid ""
+"Automatiza tus procesos de aprobación con seguridad de nivel empresarial y "
+"autenticación biométrica avanzada."
+msgstr ""
+
+#: templates/landing/index.html:168
+msgid "Ver Demo"
+msgstr "View Demo"
+
+#: templates/landing/index.html:182
+msgid "Características Principales"
+msgstr ""
+
+#: templates/landing/index.html:185
+msgid "Tecnología avanzada para procesos de aprobación seguros y eficientes"
+msgstr ""
+
+#: templates/landing/index.html:197
+msgid "Autenticación Biométrica"
+msgstr "Biometric Authentication"
+
+#: templates/landing/index.html:198
+msgid "Seguridad avanzada con WebAuthn y autenticación biométrica"
+msgstr ""
+
+#: templates/landing/index.html:209
+msgid "Tiempo Real"
+msgstr ""
+
+#: templates/landing/index.html:210
+msgid "Notificaciones instantáneas y actualizaciones en tiempo real"
+msgstr ""
+
+#: templates/landing/index.html:221
+msgid "Seguridad Empresarial"
+msgstr ""
+
+#: templates/landing/index.html:222
+msgid "Cifrado de 256-bit y cumplimiento de estándares de seguridad"
+msgstr ""
+
+#: templates/landing/index.html:233
+msgid "Auditoría Completa"
+msgstr "Complete Audit Trail"
+
+#: templates/landing/index.html:234
+msgid "Trazabilidad completa y reportes detallados de actividad"
+msgstr ""
+
+#: templates/landing/index.html:248
+msgid "Disponibilidad"
+msgstr ""
+
+#: templates/landing/index.html:252
+msgid "Tiempo de Respuesta"
+msgstr ""
+
+#: templates/landing/index.html:256
+msgid "Solicitudes Procesadas"
+msgstr ""
+
+#: templates/landing/index.html:260
+msgid "Cifrado"
+msgstr ""
+
+#: templates/landing/index.html:271
+#, fuzzy
+#| msgid "Cancel Subscription"
+msgid "Planes de Suscripción"
+msgstr "Cancel Subscription"
+
+#: templates/landing/index.html:272
+msgid "Elige el plan que se adapta a tu equipo"
+msgstr ""
+
+#: templates/landing/index.html:282
+msgid "Hasta 2 aprobadores"
+msgstr ""
+
+#: templates/landing/index.html:285
+msgid "2 aprobadores"
+msgstr ""
+
+#: templates/landing/index.html:286 templates/landing/index.html:307
+#: templates/landing/index.html:327
+msgid "Solicitudes ilimitadas"
+msgstr ""
+
+#: templates/landing/index.html:287
+msgid "Autenticación biométrica"
+msgstr "Biometric authentication"
+
+#: templates/landing/index.html:288
+msgid "Soporte básico"
+msgstr ""
+
+#: templates/landing/index.html:291 templates/landing/index.html:312
+#: templates/landing/index.html:332
+#, fuzzy
+#| msgid "Subscription"
+msgid "Suscribirme"
+msgstr "Subscription"
+
+#: templates/landing/index.html:300
+msgid "Popular"
+msgstr ""
+
+#: templates/landing/index.html:303
+msgid "Hasta 6 aprobadores"
+msgstr ""
+
+#: templates/landing/index.html:306
+msgid "6 aprobadores"
+msgstr ""
+
+#: templates/landing/index.html:308
+msgid "Auditoría avanzada"
+msgstr ""
+
+#: templates/landing/index.html:309
+msgid "Integraciones API"
+msgstr ""
+
+#: templates/landing/index.html:323 templates/landing/index.html:326
+msgid "Aprobadores ilimitados"
+msgstr ""
+
+#: templates/landing/index.html:328
+msgid "Integraciones premium"
+msgstr ""
+
+#: templates/landing/index.html:329
+msgid "Soporte prioritario"
+msgstr "Priority support"
+
+#: templates/landing/index.html:347
+msgid "¿Listo para transformar tus aprobaciones?"
+msgstr ""
+
+#: templates/landing/index.html:349
+msgid "Únete a empresas que ya optimizaron sus procesos con SecureApprove"
+msgstr ""
+
+#: templates/landing/index.html:353
+msgid "Ver Planes"
+msgstr ""
+
+#: templates/landing/index.html:373
+msgid "Sistema de aprobaciones seguras para empresas modernas."
+msgstr "Secure approval system for modern businesses."
+
+#: templates/landing/index.html:376
+msgid "Construido con ❤️ para la Seguridad Empresarial"
+msgstr ""
+
+# ================================================
+# Request Actions
+# ================================================
+#: templates/requests/create.html:48
+#, fuzzy
+#| msgid "Submit Request"
+msgid "Submit a new approval request"
+msgstr "Submit Request"
+
+#: templates/requests/create.html:52 templates/requests/detail.html:110
+msgid "Back to Requests"
+msgstr "Back to Requests"
+
+#: templates/requests/create.html:75
+#, fuzzy
+#| msgid "Requests by Category"
+msgid "Request Categories"
+msgstr "Requests by Category"
+
+# ================================================
+# Request Categories
+# ================================================
+#: templates/requests/create.html:81
+msgid "Expense"
+msgstr "Expense"
+
+#: templates/requests/create.html:83
+msgid "Business expenses like meals, transportation, office supplies"
+msgstr ""
+
+#: templates/requests/create.html:88
+msgid "Purchase"
+msgstr "Purchase"
+
+#: templates/requests/create.html:90
+msgid "Equipment, software, or service purchases"
+msgstr ""
+
+#: templates/requests/create.html:95
+msgid "Travel"
+msgstr "Travel"
+
+#: templates/requests/create.html:97
+msgid "Travel arrangements and related expenses"
+msgstr ""
+
+#: templates/requests/create.html:102
+msgid "Contract"
+msgstr "Contract"
+
+#: templates/requests/create.html:104
+msgid "Contract approvals and vendor agreements"
+msgstr ""
+
+#: templates/requests/create.html:109
+msgid "Document"
+msgstr "Document"
+
+#: templates/requests/create.html:111
+msgid "Document approvals and reviews"
+msgstr ""
+
+#: templates/requests/create.html:118
+msgid "Any other type of approval request"
+msgstr ""
+
+# ================================================
+# Pagination
+# ================================================
+#: templates/requests/create.html:130
+#, fuzzy
+#| msgid "Previous"
+msgid "Preview"
+msgstr "Previous"
+
+#: templates/requests/create.html:332
+msgid "Please fill in all required fields."
+msgstr "Please fill in all required fields."
+
+#: templates/requests/detail.html:104
+msgid "Created"
+msgstr "Created"
+
+#: templates/requests/detail.html:123
+#, fuzzy
+#| msgid "Pending Approvals"
+msgid "Pending Approval"
+msgstr "Pending Approvals"
+
+#: templates/requests/detail.html:134
+msgid "This request is waiting for approval from an administrator."
+msgstr ""
+
+#: templates/requests/detail.html:136
+#, fuzzy
+#| msgid "Request has been approved."
+msgid "This request was approved on"
+msgstr "Request has been approved."
+
+#: templates/requests/detail.html:137 templates/requests/detail.html:220
+#: templates/requests/detail.html:235
+msgid "by"
+msgstr ""
+
+#: templates/requests/detail.html:139
+#, fuzzy
+#| msgid "Request has been rejected."
+msgid "This request was rejected."
+msgstr "Request has been rejected."
+
+#: templates/requests/detail.html:141 templates/requests/detail.html:251
+#, fuzzy
+#| msgid "Reason"
+msgid "Reason:"
+msgstr "Reason"
+
+#: templates/requests/detail.html:159
+msgid "Request Details"
+msgstr "Request Details"
+
+#: templates/requests/detail.html:169
+#, fuzzy
+#| msgid "Rejected by"
+msgid "Requested by"
+msgstr "Rejected by"
+
+#: templates/requests/detail.html:206
+msgid "Timeline"
+msgstr "Timeline"
+
+#: templates/requests/detail.html:217
+msgid "Request Created"
+msgstr "Request Created"
+
+#: templates/requests/detail.html:232
+msgid "Request Approved"
+msgstr "Request Approved"
+
+#: templates/requests/detail.html:245
+msgid "Request Rejected"
+msgstr "Request Rejected"
+
+#: templates/requests/detail.html:268
+msgid "Approval Actions"
+msgstr ""
+
+#: templates/requests/detail.html:271
+#, fuzzy
+#| msgid "You do not have permission to perform this action."
+msgid "You have permission to approve or reject this request."
+msgstr "You do not have permission to perform this action."
+
+#: templates/requests/detail.html:278 templates/requests/detail.html:287
+msgid "Approve Request"
+msgstr "Approve Request"
+
+#: templates/requests/detail.html:281
+msgid "Approving this request will allow the requester to proceed."
+msgstr ""
+
+#: templates/requests/detail.html:285
+msgid "Are you sure you want to approve this request?"
+msgstr ""
+
+#: templates/requests/detail.html:296 templates/requests/detail.html:308
+msgid "Reject Request"
+msgstr "Reject Request"
+
+#: templates/requests/detail.html:302
+#, fuzzy
+#| msgid "Please provide a reason for rejection."
+msgid "Reason for rejection"
+msgstr "Please provide a reason for rejection."
+
+#: templates/requests/detail.html:304
+msgid "Please explain why you are rejecting this request..."
+msgstr ""
+
+#: templates/requests/detail.html:306
+msgid "Are you sure you want to reject this request?"
+msgstr ""
+
+#: templates/requests/detail.html:317
+#, fuzzy
+#| msgid "Pending Approvals"
+msgid "Waiting for Approval"
+msgstr "Pending Approvals"
+
+#: templates/requests/detail.html:319
+msgid "This request is pending review by an administrator."
+msgstr ""
+
+#: templates/requests/detail.html:336
+msgid "ID:"
+msgstr ""
+
+#: templates/requests/detail.html:340
+#, fuzzy
+#| msgid "Category"
+msgid "Category:"
+msgstr "Category"
+
+#: templates/requests/detail.html:344
+#, fuzzy
+#| msgid "Priority"
+msgid "Priority:"
+msgstr "Priority"
+
+#: templates/requests/detail.html:348
+#, fuzzy
+#| msgid "Status"
+msgid "Status:"
+msgstr "Status"
+
+#: templates/requests/detail.html:357
+#, fuzzy
+#| msgid "Amount"
+msgid "Amount:"
+msgstr "Amount"
+
+#: templates/requests/list.html:70
+#, python-format
+msgid ""
+"\n"
+"                    %(total)s request\n"
+"                "
+msgid_plural ""
+"\n"
+"                    %(total)s requests\n"
+"                "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/requests/list.html:89
+#, fuzzy
+#| msgid "Status"
+msgid "All Statuses"
+msgstr "Status"
+
+#: templates/requests/list.html:99
+#, fuzzy
+#| msgid "Category"
+msgid "All Categories"
+msgstr "Category"
+
+#: templates/requests/list.html:107
+msgid "Search"
+msgstr "Search"
+
+#: templates/requests/list.html:108
+msgid "Search by title or description..."
+msgstr ""
+
+#: templates/requests/list.html:116
+msgid "Filter"
+msgstr "Filter"
+
+#: templates/requests/list.html:187
+msgid "Approved by"
+msgstr "Approved by"
+
+#: templates/requests/list.html:204
+#, fuzzy
+#| msgid "Request Information"
+msgid "Requests pagination"
+msgstr "Request Information"
+
+# ================================================
+# Pagination
+# ================================================
+#: templates/requests/list.html:210
+msgid "Previous"
+msgstr "Previous"
+
+#: templates/requests/list.html:230
+msgid "Next"
+msgstr "Next"
+
+#: templates/requests/list.html:244
+msgid "No requests found"
+msgstr "No requests found"
+
+#: templates/requests/list.html:247
+msgid "Try adjusting your filters or search terms."
+msgstr ""
+
+#: templates/requests/list.html:249
+msgid "Start by creating your first approval request."
+msgstr ""
+
+#: templates/requests/list.html:255
+#, fuzzy
+#| msgid "Reject Request"
+msgid "Create First Request"
+msgstr "Reject Request"
+
+#: templates/requests/list.html:260
+#, fuzzy
+#| msgid "Filter"
+msgid "Clear Filters"
+msgstr "Filter"
+
+#~ msgid "Submit"
+#~ msgstr "Submit"
+
+#~ msgid "Save"
+#~ msgstr "Save"
+
+#~ msgid "Delete"
+#~ msgstr "Delete"
+
+#~ msgid "Edit"
+#~ msgstr "Edit"
+
+#~ msgid "View"
+#~ msgstr "View"
+
+#~ msgid "Export"
+#~ msgstr "Export"
+
+#~ msgid "Print"
+#~ msgstr "Print"
+
+#~ msgid "Error"
+#~ msgstr "Error"
+
+#~ msgid "Success"
+#~ msgstr "Success"
+
+#~ msgid "Warning"
+#~ msgstr "Warning"
+
+#~ msgid "Use WebAuthn"
+#~ msgstr "Use WebAuthn"
+
+#~ msgid "Last 7 days"
+#~ msgstr "Last 7 days"
+
+#~ msgid "Upgrade Plan"
+#~ msgstr "Upgrade Plan"
+
+#~ msgid "Downgrade Plan"
+#~ msgstr "Downgrade Plan"
+
+#~ msgid "Usage"
+#~ msgstr "Usage"
+
+#~ msgid "An error occurred. Please try again."
+#~ msgstr "An error occurred. Please try again."
+
+# ================================================
+# Navigation
+# ================================================
+#~ msgid "Home"
+#~ msgstr "Home"
+
+#~ msgid "Settings"
+#~ msgstr "Settings"
+
+#~ msgid "Help"
+#~ msgstr "Help"
+
+#~ msgid "Language"
+#~ msgstr "Language"
+
+#~ msgid "English"
+#~ msgstr "English"
+
+#~ msgid "Spanish"
+#~ msgstr "Spanish"
+
+#~ msgid "Portuguese"
+#~ msgstr "Portuguese"
+
+#~ msgid "Page"
+#~ msgstr "Page"
+
+#~ msgid "of"
+#~ msgstr "of"
+
+#~ msgid "Showing"
+#~ msgstr "Showing"
+
+#~ msgid "to"
+#~ msgstr "to"
+
+#~ msgid "entries"
+#~ msgstr "entries"
+
+# ================================================
+# Date & Time
+# ================================================
+#~ msgid "Today"
+#~ msgstr "Today"
+
+#~ msgid "Yesterday"
+#~ msgstr "Yesterday"
+
+#~ msgid "Tomorrow"
+#~ msgstr "Tomorrow"
+
+#~ msgid "Monday"
+#~ msgstr "Monday"
+
+#~ msgid "Tuesday"
+#~ msgstr "Tuesday"
+
+#~ msgid "Wednesday"
+#~ msgstr "Wednesday"
+
+#~ msgid "Thursday"
+#~ msgstr "Thursday"
+
+#~ msgid "Friday"
+#~ msgstr "Friday"
+
+#~ msgid "Saturday"
+#~ msgstr "Saturday"
+
+#~ msgid "Sunday"
+#~ msgstr "Sunday"
+
+#~ msgid "January"
+#~ msgstr "January"
+
+#~ msgid "February"
+#~ msgstr "February"
+
+#~ msgid "March"
+#~ msgstr "March"
+
+#~ msgid "April"
+#~ msgstr "April"
+
+#~ msgid "May"
+#~ msgstr "May"
+
+#~ msgid "June"
+#~ msgstr "June"
+
+#~ msgid "July"
+#~ msgstr "July"
+
+#~ msgid "August"
+#~ msgstr "August"
+
+#~ msgid "October"
+#~ msgstr "October"
+
+#~ msgid "November"
+#~ msgstr "November"
+
+#~ msgid "December"
+#~ msgstr "December"

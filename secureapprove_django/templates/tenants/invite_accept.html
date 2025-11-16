@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+
+{% block title %}
+{% if CURRENT_LANGUAGE == 'es' %}
+Aceptar invitacion - SecureApprove
+{% elif CURRENT_LANGUAGE == 'pt-br' %}
+Aceitar convite - SecureApprove
+{% else %}
+Accept Invitation - SecureApprove
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    {% if invalid %}
+                        <h3 class="h4 mb-3">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                Invitacion no valida
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                Convite invalido
+                            {% else %}
+                                Invalid invitation
+                            {% endif %}
+                        </h3>
+                        <p class="text-muted">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                Esta invitacion ya fue utilizada, expiro o fue cancelada. Por favor contacta al administrador de tu tenant.
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                Este convite ja foi usado, expirou ou foi cancelado. Entre em contato com o administrador do seu tenant.
+                            {% else %}
+                                This invitation has already been used, expired, or was cancelled. Please contact your tenant administrator.
+                            {% endif %}
+                        </p>
+                    {% elif no_seats %}
+                        <h3 class="h4 mb-3">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                No hay asientos disponibles
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                Nao ha assentos disponiveis
+                            {% else %}
+                                No seats available
+                            {% endif %}
+                        </h3>
+                        <p class="text-muted">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                El tenant {{ tenant.name }} alcanzo el numero maximo de usuarios permitidos. Pide a tu administrador que actualice el plan o libere un asiento.
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                O tenant {{ tenant.name }} atingiu o numero maximo de usuarios permitidos. Peça ao administrador para atualizar o plano ou liberar um assento.
+                            {% else %}
+                                Tenant {{ tenant.name }} has reached the maximum number of allowed users. Ask your administrator to upgrade the plan or free a seat.
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <h3 class="h4 mb-3">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                Invitacion a unirte a {{ tenant.name }}
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                Convite para participar de {{ tenant.name }}
+                            {% else %}
+                                Invitation to join {{ tenant.name }}
+                            {% endif %}
+                        </h3>
+
+                        <p class="text-muted">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                Has sido invitado a unirte al tenant <strong>{{ tenant.name }}</strong> con el correo <strong>{{ invite.email }}</strong>.
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                Voce foi convidado para participar do tenant <strong>{{ tenant.name }}</strong> com o e-mail <strong>{{ invite.email }}</strong>.
+                            {% else %}
+                                You have been invited to join tenant <strong>{{ tenant.name }}</strong> with email <strong>{{ invite.email }}</strong>.
+                            {% endif %}
+                        </p>
+
+                        {% if tenant.available_seats is not None %}
+                        <p class="small text-muted">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                Asientos usados: {{ used_seats }} / {{ tenant.seats }}. Asientos disponibles: {{ available_seats|default:0 }}.
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                Assentos usados: {{ used_seats }} / {{ tenant.seats }}. Assentos disponiveis: {{ available_seats|default:0 }}.
+                            {% else %}
+                                Used seats: {{ used_seats }} / {{ tenant.seats }}. Available seats: {{ available_seats|default:0 }}.
+                            {% endif %}
+                        </p>
+                        {% endif %}
+
+                        <form method="post" class="mt-3">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                {% if CURRENT_LANGUAGE == 'es' %}
+                                    Aceptar invitacion y acceder
+                                {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                    Aceitar convite e acessar
+                                {% else %}
+                                    Accept invitation and sign in
+                                {% endif %}
+                            </button>
+                        </form>
+
+                        <p class="mt-3 small text-muted">
+                            {% if CURRENT_LANGUAGE == 'es' %}
+                                Al aceptar la invitacion se creara tu cuenta (si aun no existe) y se te asignara al tenant indicado. A continuacion podras configurar tu autenticacion biometrica desde tu perfil.
+                            {% elif CURRENT_LANGUAGE == 'pt-br' %}
+                                Ao aceitar o convite sua conta sera criada (se ainda nao existir) e voce sera associado ao tenant indicado. Depois voce podera configurar a autenticacao biometrica no seu perfil.
+                            {% else %}
+                                By accepting the invitation, your account will be created (if it does not exist yet) and you will be associated with the selected tenant. You can then configure biometric authentication from your profile.
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

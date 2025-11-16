@@ -6,6 +6,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views, dashboard_views
 from .api_extensions import bulk_action_requests, export_requests
+from apps.chat.views import ChatPageView
 
 # API Router
 router = DefaultRouter()
@@ -23,6 +24,9 @@ urlpatterns = [
     path('<int:pk>/', views.request_detail, name='detail'),
     path('<int:pk>/approve/', views.approve_request, name='approve'),
     path('<int:pk>/reject/', views.reject_request, name='reject'),
+
+    # Chat UI entrypoint (template)
+    path('chat/', ChatPageView.as_view(), name='chat'),
     
     # AJAX endpoints
     path('api/category-fields/', views.get_category_fields, name='category-fields'),

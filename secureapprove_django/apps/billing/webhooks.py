@@ -8,7 +8,11 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 import mercadopago
+
+from decimal import Decimal
 
 from apps.tenants.models import Tenant
 from apps.billing.models import Plan, Subscription, Payment
@@ -81,7 +85,7 @@ class MercadoPagoWebhookView(View):
                 return HttpResponse("OK")
             
             # Check if already processed
-            if Payment.objects.filter(mercadopago_payment_id=str(payment_id)).exists():
+            if Payment.objects.filter(mp_payment_id=str(payment_id)).exists():
                 logger.info(f"Payment {payment_id} already processed")
                 return HttpResponse("OK")
             
@@ -114,51 +118,98 @@ class MercadoPagoWebhookView(View):
                 logger.error(f"Plan not found: {plan_name}")
                 return HttpResponseBadRequest("Plan not found")
             
-            # 3. Create tenant if needed
+            # 3. Create tenant if needed, using current Tenant model fields
             if not user.tenant:
-                tenant_slug = f"{email.split('@')[0]}-{user.id}".lower().replace('.', '-')[:50]
+                base_key = email.split('@')[0].lower()
+                base_key = ''.join(ch for ch in base_key if ch.isalnum() or ch == '-')
+                if not base_key:
+                    base_key = f"tenant-{user.id}".lower()
+
+                key = base_key
+                suffix = 1
+                while Tenant.objects.filter(key=key).exists():
+                    suffix += 1
+                    key = f"{base_key}-{suffix}"
+
+                # Seats from metadata (fallback 2)
+                metadata = payment_data.get('metadata', {}) or {}
+                seats_val = metadata.get('seats') or 2
+                try:
+                    seats = int(seats_val)
+                except (TypeError, ValueError):
+                    seats = 2
+                if seats < 2:
+                    seats = 2
+
+                # Approver limit based on plan
+                if plan.name == 'starter':
+                    approver_limit = 2
+                elif plan.name == 'growth':
+                    approver_limit = 6
+                else:
+                    # scale or other plans -> treat as "unlimited" approvers
+                    approver_limit = 0
+
                 tenant = Tenant.objects.create(
-                    name=f"{user.name}'s Organization",
-                    slug=tenant_slug,
-                    description=f"Organization for {user.email}",
-                    owner=user,
-                    is_active=True
+                    key=key,
+                    name=f"{user.name or key}",
+                    plan_id=plan.name,
+                    seats=seats,
+                    approver_limit=approver_limit,
+                    is_active=True,
+                    status='active',
+                    billing={
+                        'provider': 'mercadopago',
+                        'customerId': str(payment_data.get('payer', {}).get('id', '')),
+                        'paymentId': str(payment_data.get('id', '')),
+                    },
+                    metadata={},
                 )
                 user.tenant = tenant
                 user.role = 'tenant_admin'
-                user.save()
-                logger.info(f"Created tenant: {tenant.slug}")
+                user.save(update_fields=['tenant', 'role'])
+                logger.info(f"Created tenant: {tenant.key}")
             else:
                 tenant = user.tenant
-                logger.info(f"User already has tenant: {tenant.slug}")
+                logger.info(f"User already has tenant: {tenant.key}")
             
-            # 4. Create or update subscription
-            subscription, sub_created = Subscription.objects.get_or_create(
+            # 4. Create or update subscription using BillingService helpers
+            billing_service = BillingService()
+            subscription, created = Subscription.objects.get_or_create(
                 tenant=tenant,
                 defaults={
                     'plan': plan,
-                    'status': 'active',
+                    'status': 'trialing',
                     'billing_cycle': 'monthly',
-                }
+                    'current_period_start': timezone.now(),
+                    'current_period_end': timezone.now() + timedelta(days=30),
+                },
             )
-            
-            if not sub_created:
-                subscription.status = 'active'
-                subscription.plan = plan
-                subscription.save()
-            
-            logger.info(f"{'Created' if sub_created else 'Updated'} subscription")
-            
+
+            # Ensure plan and status reflect active paid subscription
+            subscription.plan = plan
+            subscription.status = 'active'
+            subscription.trial_end = None
+            subscription.save()
+
+            logger.info(f"{'Created' if created else 'Updated'} subscription for tenant {tenant.key}")
+
             # 5. Create payment record
+            amount = payment_data.get('transaction_amount', 0) or 0
+            try:
+                amount_decimal = Decimal(str(amount))
+            except Exception:
+                amount_decimal = Decimal("0.00")
+
             payment_record = Payment.objects.create(
                 subscription=subscription,
-                mercadopago_payment_id=str(payment_data.get('id')),
+                mp_payment_id=str(payment_data.get('id')),
                 external_reference=payment_data.get('external_reference', ''),
-                amount=payment_data.get('transaction_amount', 0),
-                currency='USD',
-                status='completed',
+                amount=amount_decimal,
+                currency=payment_data.get('currency_id', 'USD') or 'USD',
+                status='approved',
                 payment_method=payment_data.get('payment_method_id', ''),
-                metadata=payment_data
+                metadata=payment_data,
             )
             
             logger.info(f"✅ Complete account created for {user.email}")

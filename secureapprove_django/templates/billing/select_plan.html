@@ -159,80 +159,59 @@
     <div class="container">
         <div class="text-center mb-5">
             <h1 class="fw-bold mb-3">{% trans "Choose Your Plan" %}</h1>
-            <p class="lead text-muted-custom">{% trans "Select the perfect plan for your organization's approval needs" %}</p>
+            <p class="lead text-muted-custom">
+                {% trans "Pricing is based on the number of users in your organization." %}
+            </p>
         </div>
 
-        <div class="row justify-content-center">
-            <!-- Starter Plan -->
-            <div class="col-lg-4 col-md-6 mb-4">
+        <!-- New per-user pricing table -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
                 <div class="plan-card">
                     <div class="plan-header">
-                        <h3 class="fw-bold mb-2">{% trans "Starter" %}</h3>
-                        <div class="plan-price">$25<span class="plan-price-currency">/{% trans "month" %}</span></div>
-                        <p class="text-muted-custom mt-2">{% trans "Perfect for small teams" %}</p>
+                        <h3 class="fw-bold mb-2">{% trans "Simple per-user pricing" %}</h3>
+                        <p class="text-muted-custom mt-2">
+                            {% trans "Choose how many users you need; the price per user adjusts automatically." %}
+                        </p>
                     </div>
                     <div class="plan-body">
-                        <ul class="plan-features">
-                            <li>{% trans "Up to 2 approvers" %}</li>
-                            <li>{% trans "10 team members" %}</li>
-                            <li>{% trans "Basic workflow templates" %}</li>
-                            <li>{% trans "Email notifications" %}</li>
-                            <li>{% trans "Basic reporting" %}</li>
-                            <li>{% trans "WebAuthn security" %}</li>
-                        </ul>
-                        <a href="{% url 'billing:subscribe' 'starter' %}" class="btn-plan btn-plan-secondary">
-                            {% trans "Start Free Trial" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">{% trans "Users" %}</th>
+                                        <th scope="col" class="text-end">{% trans "Price per user (USD / month)" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{% trans "2 to 6 users" %}</td>
+                                        <td class="text-end">$60</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "7 to 12 users" %}</td>
+                                        <td class="text-end">$55</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "More than 12 users" %}</td>
+                                        <td class="text-end">$50</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-            <!-- Growth Plan (Featured) -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="plan-card featured">
-                    <div class="plan-header">
-                        <h3 class="fw-bold mb-2">{% trans "Growth" %}</h3>
-                        <div class="plan-price">$45<span class="plan-price-currency">/{% trans "month" %}</span></div>
-                        <p class="text-muted-custom mt-2">{% trans "Ideal for growing companies" %}</p>
-                    </div>
-                    <div class="plan-body">
-                        <ul class="plan-features">
-                            <li>{% trans "Up to 6 approvers" %}</li>
-                            <li>{% trans "25 team members" %}</li>
-                            <li>{% trans "Advanced workflow automation" %}</li>
-                            <li>{% trans "Slack & Teams integration" %}</li>
-                            <li>{% trans "Advanced analytics" %}</li>
-                            <li>{% trans "API access" %}</li>
-                            <li>{% trans "Priority support" %}</li>
-                        </ul>
-                        <a href="{% url 'billing:subscribe' 'growth' %}" class="btn-plan btn-plan-primary">
-                            {% trans "Start Free Trial" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
+                        <div class="mt-4 text-muted-custom">
+                            <p class="mb-1">
+                                {% trans "The tenant administrator can add as many users as needed; your subscription amount will be calculated based on the total number of seats." %}
+                            </p>
+                        </div>
 
-            <!-- Scale Plan -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="plan-card">
-                    <div class="plan-header">
-                        <h3 class="fw-bold mb-2">{% trans "Scale" %}</h3>
-                        <div class="plan-price">$65<span class="plan-price-currency">/{% trans "month" %}</span></div>
-                        <p class="text-muted-custom mt-2">{% trans "For enterprise organizations" %}</p>
-                    </div>
-                    <div class="plan-body">
-                        <ul class="plan-features">
-                            <li>{% trans "Unlimited approvers" %}</li>
-                            <li>{% trans "Unlimited team members" %}</li>
-                            <li>{% trans "Custom workflow builder" %}</li>
-                            <li>{% trans "Advanced integrations" %}</li>
-                            <li>{% trans "Enterprise analytics" %}</li>
-                            <li>{% trans "Dedicated support" %}</li>
-                            <li>{% trans "SLA guarantee" %}</li>
-                        </ul>
-                        <a href="{% url 'billing:subscribe' 'scale' %}" class="btn-plan btn-plan-secondary">
-                            {% trans "Contact Sales" %}
-                        </a>
+                        <div class="mt-4 text-center">
+                            {# Reuse the middle plan as the entry point; backend pricing is per-seat #}
+                            <a href="{% url 'billing:subscribe' 'growth' %}" class="btn-plan btn-plan-primary">
+                                {% trans "Start Free Trial" %}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

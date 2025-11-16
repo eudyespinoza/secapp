@@ -3,14 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: SecureApprove 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-19 12:00+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2025-11-13 12:00+0000\n"
+"Last-Translator: SecureApprove Team\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -21,6 +20,56 @@ msgstr ""
 # ================================================
 # Common Terms
 # ================================================
+msgid "Pricing is based on the number of users in your organization."
+msgstr "El precio se basa en la cantidad de usuarios de tu organización."
+
+msgid "Simple per-user pricing"
+msgstr "Precios simples por usuario"
+
+msgid "Choose how many users you need; the price per user adjusts automatically."
+msgstr "Elige cuántos usuarios necesitas; el precio por usuario se ajusta automáticamente."
+
+msgid "Users"
+msgstr "Usuarios"
+
+msgid "Price per user (USD / month)"
+msgstr "Precio por usuario (USD/mes)"
+
+msgid "2 to 6 users"
+msgstr "De 2 a 6 usuarios"
+
+msgid "7 to 12 users"
+msgstr "De 7 a 12 usuarios"
+
+msgid "More than 12 users"
+msgstr "Más de 12 usuarios"
+
+msgid "Number of users in your organization (minimum 2)."
+msgstr "Número de usuarios en tu organización (mínimo 2)."
+
+msgid "Precios por número de usuarios"
+msgstr "Precios por número de usuarios"
+
+msgid "El precio se calcula por usuario según el tamaño de tu equipo."
+msgstr "El precio se calcula por usuario según el tamaño de tu equipo."
+
+msgid "Precio por usuario (USD/mes)"
+msgstr "Precio por usuario (USD/mes)"
+
+msgid "De 2 a 6 usuarios"
+msgstr "De 2 a 6 usuarios"
+
+msgid "De 7 a 12 usuarios"
+msgstr "De 7 a 12 usuarios"
+
+msgid "Más de 12 usuarios"
+msgstr "Más de 12 usuarios"
+
+msgid "El administrador de cada tenant puede agregar la cantidad de usuarios que desee; el monto mensual se calcula multiplicando el precio por usuario por el número total de usuarios."
+msgstr "El administrador de cada tenant puede agregar la cantidad de usuarios que desee; el monto mensual se calcula multiplicando el precio por usuario por el número total de usuarios."
+
+msgid "Ir a seleccionar plan"
+msgstr "Ir a seleccionar plan"
 
 msgid "SecureApprove"
 msgstr "SecureApprove"
@@ -97,7 +146,6 @@ msgstr "Información"
 # ================================================
 # Authentication
 # ================================================
-
 msgid "Login"
 msgstr "Iniciar Sesión"
 
@@ -134,7 +182,6 @@ msgstr "¿Olvidaste tu contraseña?"
 # ================================================
 # WebAuthn Authentication
 # ================================================
-
 msgid "Create Account"
 msgstr "Crear Cuenta"
 
@@ -168,11 +215,17 @@ msgstr "Preparando Autenticación"
 msgid "Touch Your Sensor"
 msgstr "Toca tu Sensor"
 
-msgid "Please use your fingerprint, Face ID, or security key to complete registration"
-msgstr "Por favor usa tu huella dactilar, Face ID, o llave de seguridad para completar el registro"
+msgid ""
+"Please use your fingerprint, Face ID, or security key to complete "
+"registration"
+msgstr ""
+"Por favor usa tu huella dactilar, Face ID, o llave de seguridad para "
+"completar el registro"
 
 msgid "Please use your fingerprint, Face ID, or security key to sign in"
-msgstr "Por favor usa tu huella dactilar, Face ID, o llave de seguridad para iniciar sesión"
+msgstr ""
+"Por favor usa tu huella dactilar, Face ID, o llave de seguridad para iniciar"
+" sesión"
 
 msgid "Verifying..."
 msgstr "Verificando..."
@@ -204,8 +257,12 @@ msgstr "¿No tienes una cuenta?"
 msgid "About Biometric Authentication"
 msgstr "Acerca de la Autenticación Biométrica"
 
-msgid "We use WebAuthn for secure, passwordless authentication. Your biometric data stays on your device and is never shared."
-msgstr "Usamos WebAuthn para autenticación segura sin contraseñas. Tus datos biométricos permanecen en tu dispositivo y nunca se comparten."
+msgid ""
+"We use WebAuthn for secure, passwordless authentication. Your biometric data"
+" stays on your device and is never shared."
+msgstr ""
+"Usamos WebAuthn para autenticación segura sin contraseñas. Tus datos "
+"biométricos permanecen en tu dispositivo y nunca se comparten."
 
 msgid "Please fill in all fields"
 msgstr "Por favor completa todos los campos"
@@ -213,8 +270,12 @@ msgstr "Por favor completa todos los campos"
 msgid "Please enter your email address"
 msgstr "Por favor ingresa tu dirección de email"
 
-msgid "WebAuthn is not supported in your browser. Please use Chrome, Firefox, Safari, or Edge."
-msgstr "WebAuthn no es compatible con tu navegador. Por favor usa Chrome, Firefox, Safari, o Edge."
+msgid ""
+"WebAuthn is not supported in your browser. Please use Chrome, Firefox, "
+"Safari, or Edge."
+msgstr ""
+"WebAuthn no es compatible con tu navegador. Por favor usa Chrome, Firefox, "
+"Safari, o Edge."
 
 msgid "WebAuthn registration was cancelled"
 msgstr "El registro WebAuthn fue cancelado"
@@ -223,10 +284,15 @@ msgid "WebAuthn authentication was cancelled"
 msgstr "La autenticación WebAuthn fue cancelada"
 
 msgid "No account found with this email address. Please register first."
-msgstr "No se encontró una cuenta con esta dirección de email. Por favor regístrate primero."
+msgstr ""
+"No se encontró una cuenta con esta dirección de email. Por favor regístrate "
+"primero."
 
-msgid "No biometric authentication set up for this account. Please contact support."
-msgstr "No hay autenticación biométrica configurada para esta cuenta. Por favor contacta al soporte."
+msgid ""
+"No biometric authentication set up for this account. Please contact support."
+msgstr ""
+"No hay autenticación biométrica configurada para esta cuenta. Por favor "
+"contacta al soporte."
 
 msgid "No biometric authentication set up for this account."
 msgstr "No hay autenticación biométrica configurada para esta cuenta."
@@ -262,7 +328,6 @@ msgstr "Usar WebAuthn"
 # ================================================
 # Request Categories
 # ================================================
-
 msgid "Expense"
 msgstr "Gastos"
 
@@ -284,7 +349,6 @@ msgstr "Otros"
 # ================================================
 # Request Fields
 # ================================================
-
 msgid "Title"
 msgstr "Título"
 
@@ -351,7 +415,6 @@ msgstr "Motivo"
 # ================================================
 # Request Actions
 # ================================================
-
 msgid "Submit Request"
 msgstr "Enviar Solicitud"
 
@@ -394,7 +457,6 @@ msgstr "Solicitud Rechazada"
 # ================================================
 # Dashboard
 # ================================================
-
 msgid "Welcome back"
 msgstr "Bienvenido de vuelta"
 
@@ -440,7 +502,6 @@ msgstr "No se encontraron solicitudes"
 # ================================================
 # Billing
 # ================================================
-
 msgid "Billing"
 msgstr "Facturación"
 
@@ -498,7 +559,6 @@ msgstr "Características"
 # ================================================
 # Forms & Validation
 # ================================================
-
 msgid "This field is required."
 msgstr "Este campo es obligatorio."
 
@@ -523,7 +583,6 @@ msgstr "Ocurrió un error. Por favor intenta nuevamente."
 # ================================================
 # Navigation
 # ================================================
-
 msgid "Home"
 msgstr "Inicio"
 
@@ -560,7 +619,6 @@ msgstr "Portugués"
 # ================================================
 # Messages
 # ================================================
-
 msgid "Your request has been submitted successfully."
 msgstr "Tu solicitud ha sido enviada exitosamente."
 
@@ -585,7 +643,6 @@ msgstr "Por favor proporciona un motivo para el rechazo."
 # ================================================
 # Pagination
 # ================================================
-
 msgid "Previous"
 msgstr "Anterior"
 
@@ -610,7 +667,6 @@ msgstr "entradas"
 # ================================================
 # Date & Time
 # ================================================
-
 msgid "Today"
 msgstr "Hoy"
 
@@ -680,9 +736,10 @@ msgstr "Diciembre"
 # ================================================
 # Billing & Subscription Pages - NUEVAS TRADUCCIONES
 # ================================================
-
 msgid "Select the perfect plan for your organization's approval needs"
-msgstr "Selecciona el plan perfecto para las necesidades de aprobación de tu organización"
+msgstr ""
+"Selecciona el plan perfecto para las necesidades de aprobación de tu "
+"organización"
 
 msgid "Perfect for small teams"
 msgstr "Perfecto para equipos pequeños"
@@ -792,20 +849,32 @@ msgstr "Preguntas Frecuentes"
 msgid "Can I change my plan later?"
 msgstr "¿Puedo cambiar mi plan más adelante?"
 
-msgid "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately."
-msgstr "Sí, puedes actualizar o degradar tu plan en cualquier momento. Los cambios tienen efecto inmediato."
+msgid ""
+"Yes, you can upgrade or downgrade your plan at any time. Changes take effect"
+" immediately."
+msgstr ""
+"Sí, puedes actualizar o degradar tu plan en cualquier momento. Los cambios "
+"tienen efecto inmediato."
 
 msgid "Is there a free trial?"
 msgstr "¿Hay una prueba gratuita?"
 
-msgid "Yes, we offer a 14-day free trial for all plans. No credit card required to start."
-msgstr "Sí, ofrecemos una prueba gratuita de 14 días para todos los planes. No se requiere tarjeta de crédito para comenzar."
+msgid ""
+"Yes, we offer a 14-day free trial for all plans. No credit card required to "
+"start."
+msgstr ""
+"Sí, ofrecemos una prueba gratuita de 14 días para todos los planes. No se "
+"requiere tarjeta de crédito para comenzar."
 
 msgid "What payment methods do you accept?"
 msgstr "¿Qué métodos de pago aceptan?"
 
-msgid "We accept all major credit cards, PayPal, and bank transfers through MercadoPago."
-msgstr "Aceptamos todas las tarjetas de crédito principales, PayPal y transferencias bancarias a través de MercadoPago."
+msgid ""
+"We accept all major credit cards, PayPal, and bank transfers through "
+"MercadoPago."
+msgstr ""
+"Aceptamos todas las tarjetas de crédito principales, PayPal y transferencias"
+" bancarias a través de MercadoPago."
 
 msgid "Questions about our plans?"
 msgstr "¿Preguntas sobre nuestros planes?"
@@ -837,8 +906,12 @@ msgstr "Prueba Gratis de 14 Días"
 msgid "No charge for the first 14 days. Cancel anytime."
 msgstr "Sin cargo los primeros 14 días. Cancela en cualquier momento."
 
-msgid "Your payment is processed securely through MercadoPago. We never store your payment information."
-msgstr "Tu pago se procesa de forma segura a través de MercadoPago. Nunca almacenamos tu información de pago."
+msgid ""
+"Your payment is processed securely through MercadoPago. We never store your "
+"payment information."
+msgstr ""
+"Tu pago se procesa de forma segura a través de MercadoPago. Nunca "
+"almacenamos tu información de pago."
 
 msgid "Back to plan selection"
 msgstr "Volver a selección de planes"
@@ -849,14 +922,22 @@ msgstr "Error al iniciar suscripción"
 msgid "Payment Successful!"
 msgstr "¡Pago Exitoso!"
 
-msgid "Thank you for subscribing to SecureApprove. Your account is being set up and you'll receive a confirmation email shortly."
-msgstr "Gracias por suscribirte a SecureApprove. Tu cuenta se está configurando y recibirás un correo de confirmación pronto."
+msgid ""
+"Thank you for subscribing to SecureApprove. Your account is being set up and"
+" you'll receive a confirmation email shortly."
+msgstr ""
+"Gracias por suscribirte a SecureApprove. Tu cuenta se está configurando y "
+"recibirás un correo de confirmación pronto."
 
 msgid "What happens next?"
 msgstr "¿Qué sigue?"
 
-msgid "Your account and tenant have been created. Please set up your biometric authentication to access your dashboard."
-msgstr "Tu cuenta y organización han sido creadas. Por favor configura tu autenticación biométrica para acceder a tu panel."
+msgid ""
+"Your account and tenant have been created. Please set up your biometric "
+"authentication to access your dashboard."
+msgstr ""
+"Tu cuenta y organización han sido creadas. Por favor configura tu "
+"autenticación biométrica para acceder a tu panel."
 
 msgid "Setup Biometric Login"
 msgstr "Configurar Inicio Biométrico"
@@ -872,3 +953,1172 @@ msgstr "Suscribirse a"
 
 msgid "Subscribe Now"
 msgstr "Suscribirse Ahora"
+
+msgid "Required. Enter a valid email address."
+msgstr "Requerido.Ingrese una dirección de correo electrónico válida."
+
+msgid "Required."
+msgstr "Required."
+
+msgid "I accept the Terms of Service and Privacy Policy"
+msgstr "Acepto los Términos de Servicio y Política de Privacidad"
+
+msgid "Enter your first name"
+msgstr "Introduce tu nombre"
+
+msgid "Enter your last name"
+msgstr "Introduce tu apellido"
+
+msgid "Create a strong password"
+msgstr "Crea una contraseña segura"
+
+msgid "Confirm your password"
+msgstr "Confirma tu contraseña"
+
+msgid "Remember me for 30 days"
+msgstr "Recuérdame por 30 días"
+
+msgid "Enter your password"
+msgstr "Introduce tu contraseña"
+
+msgid "Enter your phone number"
+msgstr "Introduce tu número de teléfono"
+
+msgid "Enter your company name"
+msgstr "Introduzca el nombre de su empresa"
+
+msgid "Update Profile"
+msgstr "Actualizar perfil"
+
+msgid "Current Password"
+msgstr "Contraseña actual"
+
+msgid "Enter your current password"
+msgstr "Ingrese su contraseña actual"
+
+msgid "New Password"
+msgstr "Nueva contraseña"
+
+msgid "Enter your new password"
+msgstr "Ingresa tu nueva contraseña"
+
+msgid "Confirm New Password"
+msgstr "Confirmar nueva contraseña"
+
+msgid "Confirm your new password"
+msgstr "Confirma tu nueva contraseña"
+
+msgid "Change Password"
+msgstr "Cambiar la contraseña"
+
+msgid "Current password is incorrect."
+msgstr "La contraseña actual es incorrecta."
+
+msgid "The two password fields must match."
+msgstr "Los dos campos de contraseña deben coincidir."
+
+msgid "Requester"
+msgstr "Solicitante"
+
+msgid "Approver"
+msgstr "Approver"
+
+msgid "Tenant Admin"
+msgstr "Administrador de inquilinos"
+
+msgid "Super Admin"
+msgstr "Súper administrador"
+
+msgid "Role"
+msgstr "Role"
+
+msgid "WebAuthn Credentials"
+msgstr "Credenciales de WebAuthn"
+
+msgid "Stored WebAuthn credentials for biometric authentication"
+msgstr "Credenciales WebAuthn almacenadas para autenticación biométrica"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Last Login"
+msgstr "Último inicio de sesión"
+
+msgid "Created At"
+msgstr "Creado en"
+
+msgid "Updated At"
+msgstr "Actualizado en"
+
+msgid "User"
+msgstr "User"
+
+msgid "Users"
+msgstr "Users"
+
+msgid "Please select a subscription plan to get started."
+msgstr "Seleccione un plan de suscripción para comenzar."
+
+msgid "You have been successfully logged out."
+msgstr "Has cerrado tu sesión correctamente."
+
+msgid "Name and email are required"
+msgstr "Nombre y correo electrónico son requeridos"
+
+msgid "User exists but needs to complete WebAuthn registration"
+msgstr "El usuario existe pero necesita completar el registro de WebAuthn"
+
+msgid "Email already registered with WebAuthn credentials"
+msgstr "Correo electrónico ya registrado con credenciales WebAuthn"
+
+msgid "User created successfully. Now register WebAuthn credential."
+msgstr "Usuario creado exitosamente.Ahora registre la credencial WebAuthn."
+
+msgid "Invalid JSON data"
+msgstr "Datos JSON no válidos"
+
+msgid "Registration failed"
+msgstr "Registro fallido"
+
+msgid "User ID is required"
+msgstr "Se requiere identificación de usuario"
+
+msgid "User not found"
+msgstr "Usuario no encontrado"
+
+msgid "Failed to generate registration options"
+msgstr "No se pudieron generar opciones de registro"
+
+msgid "User ID and response are required"
+msgstr "Se requiere identificación de usuario y respuesta."
+
+msgid "Registration verification failed"
+msgstr "Error en la verificación del registro"
+
+msgid "Email is required"
+msgstr "Se requiere correo electrónico"
+
+msgid "No WebAuthn credentials registered for this user"
+msgstr "No hay credenciales WebAuthn registradas para este usuario"
+
+msgid "Authentication verification failed"
+msgstr "La verificación de autenticación falló"
+
+msgid "Profile updated successfully."
+msgstr "Perfil actualizado exitosamente."
+
+msgid "Credential ID is required"
+msgstr "Se requiere identificación de credencial"
+
+msgid "Device removed successfully"
+msgstr "Dispositivo eliminado correctamente"
+
+msgid "Fallback credential created successfully"
+msgstr "Credencial alternativa creada correctamente"
+
+msgid "Challenge not found or expired"
+msgstr "Desafío no encontrado o caducado"
+
+msgid "No credentials registered for this user"
+msgstr "No credentials registered for this user"
+
+msgid "Credential not found"
+msgstr "Credencial no encontrada"
+
+msgid "Basic Information"
+msgstr "Información básica"
+
+msgid "Pricing"
+msgstr "Precios"
+
+msgid "Yearly Price"
+msgstr "Precio Anual"
+
+msgid "Subscription Details"
+msgstr "Detalles de suscripción"
+
+msgid "Billing Period"
+msgstr "Período de facturación"
+
+msgid "Mercado Pago"
+msgstr "Mercado Pago"
+
+msgid "Timestamps"
+msgstr "Marcas de tiempo"
+
+msgid "Trial"
+msgstr "Ensayo"
+
+msgid "Payment Details"
+msgstr "Detalles de pago"
+
+msgid "Dates"
+msgstr "Fechas"
+
+msgid "Additional Data"
+msgstr "Datos adicionales"
+
+msgid "Tenant"
+msgstr "Tenant"
+
+msgid "Period"
+msgstr "Período"
+
+msgid "Request Metrics"
+msgstr "Solicitar métricas"
+
+msgid "User Activity"
+msgstr "Actividad del usuario"
+
+msgid "Approval Rate"
+msgstr "Tasa de aprobación"
+
+msgid "Invoice Details"
+msgstr "Detalles de la factura"
+
+msgid "Amounts"
+msgstr "Cantidades"
+
+msgid "Yearly price (optional, defaults to monthly * 10)"
+msgstr "Precio anual (opcional, por defecto es mensual * 10)"
+
+msgid "Maximum number of approvers allowed"
+msgstr "Maximum number of approvers allowed"
+
+msgid "Maximum requests per month (0 = unlimited)"
+msgstr "Solicitudes máximas por mes (0 = ilimitado)"
+
+msgid "Maximum users in tenant (0 = unlimited)"
+msgstr "Usuarios máximos en inquilino (0 = ilimitado)"
+
+msgid "Display order"
+msgstr "Orden de visualización"
+
+msgid "Plans"
+msgstr "Planes"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "Past Due"
+msgstr "Vencido"
+
+msgid "Suspended"
+msgstr "Suspended"
+
+msgid "Trialing"
+msgstr "Ensayo"
+
+msgid "Mercado Pago subscription ID"
+msgstr "ID de suscripción de Mercado Pago"
+
+msgid "Mercado Pago customer ID"
+msgstr "ID de cliente de Mercado Pago"
+
+msgid "Subscriptions"
+msgstr "Suscripciones"
+
+msgid "Refunded"
+msgstr "Refunded"
+
+msgid "Mercado Pago payment ID"
+msgstr "Mercado Pago payment ID"
+
+msgid "Mercado Pago preference ID"
+msgstr "Mercado Pago preference ID"
+
+msgid "Payments"
+msgstr "Pagos"
+
+msgid "Usage Metrics"
+msgstr "Métricas de uso"
+
+msgid "Draft"
+msgstr "Borrador"
+
+msgid "Sent"
+msgstr "Sent"
+
+msgid "Paid"
+msgstr "Paid"
+
+msgid "Overdue"
+msgstr "Overdue"
+
+msgid "Invoices"
+msgstr "Facturas"
+
+msgid "Invalid plan selected."
+msgstr "Plan seleccionado no válido."
+
+msgid "Payment system not configured. Please contact support."
+msgstr "Sistema de pago no configurado.Por favor contacte al soporte."
+
+msgid "Failed to create payment session. Please try again."
+msgstr "No se pudo crear la sesión de pago.Por favor inténtalo de nuevo."
+
+msgid "Failed to create checkout session. Please contact support."
+msgstr "No se pudo crear la sesión de pago.Por favor contacte al soporte."
+
+msgid "Plan changed successfully."
+msgstr "El plan cambió exitosamente."
+
+msgid "Subscription cancelled successfully."
+msgstr "Suscripción cancelada exitosamente."
+
+msgid "Failed to cancel subscription."
+msgstr "No se pudo cancelar la suscripción."
+
+msgid "Vendor name"
+msgstr "Nombre del proveedor"
+
+msgid "Cost center code"
+msgstr "Código del centro de costos"
+
+msgid "Meals, Transportation, etc."
+msgstr "Comidas, Transporte, etc."
+
+msgid "Receipt number or reference"
+msgstr "Número de recibo o referencia"
+
+msgid "Travel destination"
+msgstr "Destino de viaje"
+
+msgid "Document ID or reference"
+msgstr "ID o referencia del documento"
+
+msgid "Explain the reason for this request"
+msgstr "Explique el motivo de esta solicitud."
+
+msgid "Request title"
+msgstr "Solicitar título"
+
+msgid "Detailed description of your request"
+msgstr "Descripción detallada de su solicitud"
+
+msgid "This field is required for this category."
+msgstr "Este campo es obligatorio para esta categoría."
+
+msgid "Amount is required and must be greater than 0 for this category."
+msgstr ""
+"La cantidad es obligatoria y debe ser mayor que 0 para esta categoría."
+
+msgid "End date must be after start date."
+msgstr "La fecha de finalización debe ser posterior a la fecha de inicio."
+
+msgid "Expense Reimbursement"
+msgstr "Reembolso de gastos"
+
+msgid "Purchase Request"
+msgstr "Solicitud de compra"
+
+msgid "Travel Approval"
+msgstr "Aprobación de viaje"
+
+msgid "Contract Approval"
+msgstr "Aprobación del contrato"
+
+msgid "Document Withdrawal"
+msgstr "Retiro de documentos"
+
+msgid "Critical"
+msgstr "Critical"
+
+msgid "Amount for expense, purchase, or travel requests"
+msgstr "Monto por gastos, compras o solicitudes de viaje"
+
+msgid "Approver Comment"
+msgstr "Comentario del aprobador"
+
+msgid "Approved At"
+msgstr "Aprobado en"
+
+msgid "Rejection Reason"
+msgstr "Motivo del rechazo"
+
+msgid "Rejected At"
+msgstr "Rechazado en"
+
+msgid "Metadata"
+msgstr "Metadatos"
+
+msgid "Category-specific data: vendor, cost_center, destination, etc."
+msgstr ""
+"Datos específicos de la categoría: proveedor, centro_coste, destino, etc."
+
+msgid "Expires At"
+msgstr "Vence en"
+
+msgid "Approval Request"
+msgstr "Solicitud de aprobación"
+
+msgid "Approval Requests"
+msgstr "Solicitudes de aprobación"
+
+msgid "Your request \"{}\" has been submitted successfully."
+msgstr "Su solicitud \"{}\" se ha enviado correctamente."
+
+msgid "You do not have permission to approve requests."
+msgstr "No tienes permiso para aprobar solicitudes."
+
+msgid "Request \"{}\" has been approved."
+msgstr "La solicitud \"{}\" ha sido aprobada."
+
+msgid "You do not have permission to reject requests."
+msgstr "No tienes permiso para rechazar solicitudes."
+
+msgid "You cannot reject your own request."
+msgstr "No puedes rechazar tu propia solicitud."
+
+msgid "Request \"{}\" has been rejected."
+msgstr "La solicitud \"{}\" ha sido rechazada."
+
+msgid "Starter - Up to 2 approvers"
+msgstr "Starter - Up to 2 approvers"
+
+msgid "Growth - Up to 6 approvers"
+msgstr "Crecimiento: hasta 6 aprobadores"
+
+msgid "Scale - Unlimited approvers"
+msgstr "Escala: aprobadores ilimitados"
+
+msgid "Key"
+msgstr "Llave"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Seats"
+msgstr "Asientos"
+
+msgid "Approver Limit"
+msgstr "Límite de aprobador"
+
+msgid "Billing Information"
+msgstr "Información de facturación"
+
+msgid "Stores billing provider data, subscription IDs, etc."
+msgstr "Almacena datos del proveedor de facturación, ID de suscripción, etc."
+
+msgid "Additional tenant configuration and data"
+msgstr "Configuración y datos adicionales del inquilino"
+
+msgid "Tenants"
+msgstr "Tenants"
+
+msgid "Iniciar sesión"
+msgstr "Iniciar sesión"
+
+msgid "Sistema de Aprobaciones Seguras"
+msgstr "Sistema de Aprobaciones Seguras"
+
+msgid "Ingrese su email"
+msgstr "Ingrese su email"
+
+msgid "Contraseña"
+msgstr "Contraseña"
+
+msgid "Ingrese su contraseña"
+msgstr "Ingrese su contraseña"
+
+msgid "Recordarme"
+msgstr "Recordarme"
+
+msgid "¿Olvidó su contraseña?"
+msgstr "¿Olvidó su contraseña?"
+
+msgid "¿No tiene una cuenta?"
+msgstr "¿No tiene una cuenta?"
+
+msgid "Suscribirse"
+msgstr "Suscribirse"
+
+msgid "Todos los derechos reservados."
+msgstr "Todos los derechos reservados."
+
+msgid "Welcome back!"
+msgstr "¡Bienvenido de nuevo!"
+
+msgid "Sign in to access your approval workflow dashboard"
+msgstr ""
+"Inicie sesión para acceder a su panel de flujo de trabajo de aprobación"
+
+msgid "Fast"
+msgstr "Fast"
+
+msgid "Secure"
+msgstr "Secure"
+
+msgid "Efficient"
+msgstr "Eficiente"
+
+msgid "Enter your credentials to access your account"
+msgstr "Ingrese sus credenciales para acceder a su cuenta"
+
+msgid "Forgot your password?"
+msgstr "¿Olvidaste tu contraseña?"
+
+msgid "Demo Credentials:"
+msgstr "Credenciales de demostración:"
+
+msgid "Email:"
+msgstr "Correo electrónico:"
+
+msgid "Password:"
+msgstr "Contraseña:"
+
+msgid ""
+"WebAuthn is not fully implemented yet. Please use email/password login."
+msgstr ""
+"WebAuthn aún no está completamente implementado.Utilice el correo "
+"electrónico/contraseña para iniciar sesión."
+
+msgid "Profile - SecureApprove"
+msgstr "Perfil - Aprobación segura"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Staff Member"
+msgstr "Miembro del personal"
+
+msgid "Company"
+msgstr "Compañía"
+
+msgid "Member Since"
+msgstr "Miembro desde"
+
+msgid "Biometric Authentication"
+msgstr "Autenticación biométrica"
+
+msgid "Add Device"
+msgstr "Agregar dispositivo"
+
+msgid "Authentication Device"
+msgstr "Dispositivo de autenticación"
+
+msgid "Registered on"
+msgstr "Registrado en"
+
+msgid "Registered device"
+msgstr "Dispositivo registrado"
+
+msgid "No biometric devices registered"
+msgstr "No hay dispositivos biométricos registrados"
+
+msgid "Add a biometric device to enhance your account security"
+msgstr ""
+"Agregue un dispositivo biométrico para mejorar la seguridad de su cuenta"
+
+msgid "Security Information"
+msgstr "Información de seguridad"
+
+msgid ""
+"Your biometric data is stored securely on your devices and never transmitted"
+" to our servers. Each device creates a unique cryptographic key for "
+"authentication."
+msgstr ""
+"Sus datos biométricos se almacenan de forma segura en sus dispositivos y "
+"nunca se transmiten a nuestros servidores.Cada dispositivo crea una clave "
+"criptográfica única para la autenticación."
+
+msgid "Edit Profile"
+msgstr "Editar perfil"
+
+msgid "Sign Out"
+msgstr "Desconectar"
+
+msgid "Add Biometric Device"
+msgstr "Agregar dispositivo biométrico"
+
+msgid "Preparing Device Registration"
+msgstr "Preparando el registro del dispositivo"
+
+msgid "Get ready to use your biometric sensor"
+msgstr "Prepárate para usar tu sensor biométrico"
+
+msgid "Use your fingerprint, Face ID, or security key"
+msgstr "Utilice su huella digital, Face ID o clave de seguridad"
+
+msgid "Device Added Successfully!"
+msgstr "¡Dispositivo agregado exitosamente!"
+
+msgid "Your new device has been registered"
+msgstr "Su nuevo dispositivo ha sido registrado"
+
+msgid "Start Registration"
+msgstr "Iniciar registro"
+
+msgid "Are you sure you want to remove this device?"
+msgstr "Are you sure you want to remove this device?"
+
+msgid "Failed to remove device"
+msgstr "No se pudo eliminar el dispositivo"
+
+msgid "Failed to add device"
+msgstr "No se pudo agregar el dispositivo"
+
+msgid "Sign In - SecureApprove"
+msgstr "Iniciar sesión - SecureApprove"
+
+msgid "Setting up your biometric login..."
+msgstr "Configurando su inicio de sesión biométrico..."
+
+msgid "Subscribe to Get Started"
+msgstr "Suscríbete para empezar"
+
+msgid ""
+"No account found with this email. Please subscribe to a plan to get started."
+msgstr ""
+"No se encontró ninguna cuenta con este correo electrónico.Suscríbase a un "
+"plan para comenzar."
+
+msgid "Administration"
+msgstr "Administración"
+
+msgid "Subscribe"
+msgstr "Suscribir"
+
+msgid "Payment Failed - SecureApprove"
+msgstr "Error en el pago - SecureApprove"
+
+msgid "Payment Failed"
+msgstr "Pago fallido"
+
+msgid ""
+"We're sorry, but your payment could not be processed. Please try again or "
+"contact our support team for assistance."
+msgstr ""
+"Lo sentimos, pero su pago no pudo ser procesado.Inténtelo de nuevo o "
+"comuníquese con nuestro equipo de soporte para obtener ayuda."
+
+msgid "Common reasons for payment failures:"
+msgstr "Motivos comunes de fallos en los pagos:"
+
+msgid "Insufficient funds"
+msgstr "Fondos insuficientes"
+
+msgid "Incorrect card details"
+msgstr "Datos de tarjeta incorrectos"
+
+msgid "Card blocked by bank"
+msgstr "Tarjeta bloqueada por el banco"
+
+msgid "Expired card"
+msgstr "Tarjeta caducada"
+
+msgid "Try Again"
+msgstr "Intentar otra vez"
+
+msgid "Contact Support"
+msgstr "Contactar con soporte"
+
+msgid "Payment Pending - SecureApprove"
+msgstr "Pago pendiente - SecureApprove"
+
+msgid "Payment Pending"
+msgstr "Pago Pendiente"
+
+msgid ""
+"Your payment is being processed. This may take a few minutes. We'll send you"
+" an email confirmation once it's complete."
+msgstr ""
+"Su pago está siendo procesado.Esto puede tardar unos minutos.Le enviaremos "
+"una confirmación por correo electrónico una vez que esté completo."
+
+msgid ""
+"You'll receive an email notification once your payment is approved. Your "
+"SecureApprove account will be activated automatically."
+msgstr ""
+"Recibirá una notificación por correo electrónico una vez que se apruebe su "
+"pago.Su cuenta SecureApprove se activará automáticamente."
+
+msgid "Questions about your payment?"
+msgstr "¿Preguntas sobre su pago?"
+
+msgid "Payment Successful - SecureApprove"
+msgstr "Pago exitoso - SecureApprove"
+
+msgid "Choose Your Plan - SecureApprove"
+msgstr "Elija su plan - SecureApprove"
+
+msgid "Enterprise features"
+msgstr "Funciones empresariales"
+
+msgid "Processing..."
+msgstr "Tratamiento..."
+
+msgid "Secure & Protected"
+msgstr "Secure & Protected"
+
+msgid "View All Pending"
+msgstr "Ver todo pendiente"
+
+msgid "Demo - SecureApprove"
+msgstr "Demostración: aprobación segura"
+
+msgid "Claro"
+msgstr "Por supuesto"
+
+msgid "Oscuro"
+msgstr "Oscuro"
+
+msgid "Sistema"
+msgstr "Sistema"
+
+msgid "Volver"
+msgstr "Volver"
+
+msgid "Comenzar Ahora"
+msgstr "Comenzar Ahora"
+
+msgid "Demostración Interactiva"
+msgstr "Demostración Interactiva"
+
+msgid ""
+"Esta es una demo de cómo funciona el proceso de aprobación en SecureApprove."
+" Los botones son interactivos para simular la experiencia real."
+msgstr ""
+"Esta es una demo de cómo funciona el proceso de aprobación en SecureApprove."
+" Los botones son interactivos para simular la experiencia real."
+
+msgid "Compra de Equipos de Oficina"
+msgstr "Compra de Equipos de Oficina"
+
+msgid "Pendiente"
+msgstr "Pendiente"
+
+msgid "Prioridad"
+msgstr "Prioridad"
+
+msgid "Media"
+msgstr "Medios de comunicación"
+
+msgid "SOLICITANTE"
+msgstr "PEDIDO"
+
+msgid "Ana García"
+msgstr "Ana García"
+
+msgid "DEPARTAMENTO"
+msgstr "DEPARTAMENTO"
+
+msgid "Recursos Humanos"
+msgstr "Recursos Humanos"
+
+msgid "DESCRIPCIÓN"
+msgstr "DESCRIPCIÓN"
+
+msgid ""
+"Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables "
+"para el nuevo equipo de trabajo remoto. Los equipos actuales no cumplen con "
+"los estándares ergonómicos necesarios para el trabajo prolongado."
+msgstr ""
+"Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables "
+"para el nuevo equipo de trabajo remoto. Los equipos actuales no cumplen con "
+"los estándares ergonómicos necesarios para el trabajo prolongado."
+
+msgid "DOCUMENTOS ADJUNTOS"
+msgstr "DOCUMENTOS ADJUNTOS"
+
+msgid "Aprobar Solicitud"
+msgstr "Aprobar Solicitud"
+
+msgid "Rechazar"
+msgstr "Rechazar"
+
+msgid "Solicitar Info"
+msgstr "Solicitar Info"
+
+msgid "¿Te gusta lo que ves?"
+msgstr "¿Te gusta lo que ves?"
+
+msgid "Comienza a gestionar tus aprobaciones de manera profesional"
+msgstr "Comienza a gestionar tus aprobaciones de manera profesional"
+
+msgid "Suscribirme Ahora"
+msgstr "Suscribirme Ahora"
+
+msgid "¡Solicitud Aprobada!"
+msgstr "¡Solicitud Aprobada!"
+
+msgid ""
+"La solicitud ha sido aprobada exitosamente. Se ha enviado notificación al "
+"solicitante y se procederá con la compra."
+msgstr ""
+"La solicitud ha sido aprobada exitosamente. Se ha enviado notificación al "
+"solicitante y se procederá con la compra."
+
+msgid "Solicitud Rechazada"
+msgstr "Solicitud Rechazada"
+
+msgid ""
+"La solicitud ha sido rechazada. Se ha enviado notificación al solicitante "
+"con los motivos del rechazo."
+msgstr ""
+"La solicitud ha sido rechazada. Se ha enviado notificación al solicitante "
+"con los motivos del rechazo."
+
+msgid "Información Solicitada"
+msgstr "Información Solicitada"
+
+msgid ""
+"Se ha enviado una solicitud de información adicional al solicitante. La "
+"aprobación quedará pendiente hasta recibir los datos necesarios."
+msgstr ""
+"Se ha enviado una solicitud de información adicional al solicitante. La "
+"aprobación quedará pendiente hasta recibir los datos necesarios."
+
+msgid "SecureApprove - Sistema de Aprobaciones Seguras"
+msgstr "SecureApprove - Sistema de Aprobaciones Seguras"
+
+msgid "Sistema de Aprobaciones Seguras con Autenticación Biométrica"
+msgstr "Sistema de Aprobaciones Seguras con Autenticación Biométrica"
+
+msgid ""
+"Automatiza tus procesos de aprobación con seguridad de nivel empresarial y "
+"autenticación biométrica avanzada."
+msgstr ""
+"Automatiza tus procesos de aprobación con seguridad de nivel empresarial y "
+"autenticación biométrica avanzada."
+
+msgid "Ver Demo"
+msgstr "Ver demostración"
+
+msgid "Características Principales"
+msgstr "Características Principales"
+
+msgid "Tecnología avanzada para procesos de aprobación seguros y eficientes"
+msgstr "Tecnología avanzada para procesos de aprobación seguros y eficientes"
+
+msgid "Autenticación Biométrica"
+msgstr "Autenticación Biométrica"
+
+msgid "Seguridad avanzada con WebAuthn y autenticación biométrica"
+msgstr "Seguridad avanzada con WebAuthn y autenticación biométrica"
+
+msgid "Tiempo Real"
+msgstr "Tiempo Real"
+
+msgid "Notificaciones instantáneas y actualizaciones en tiempo real"
+msgstr "Notificaciones instantáneas y actualizaciones en tiempo real"
+
+msgid "Seguridad Empresarial"
+msgstr "Seguridad Empresarial"
+
+msgid "Cifrado de 256-bit y cumplimiento de estándares de seguridad"
+msgstr "Cifrado de 256-bit y cumplimiento de estándares de seguridad"
+
+msgid "Auditoría Completa"
+msgstr "Auditoría Completa"
+
+msgid "Trazabilidad completa y reportes detallados de actividad"
+msgstr "Trazabilidad completa y reportes detallados de actividad"
+
+msgid "Disponibilidad"
+msgstr "Disponibilidad"
+
+msgid "Tiempo de Respuesta"
+msgstr "Tiempo de Respuesta"
+
+msgid "Solicitudes Procesadas"
+msgstr "Solicitudes Procesadas"
+
+msgid "Cifrado"
+msgstr "Cifrado"
+
+msgid "Planes de Suscripción"
+msgstr "Planes de Suscripción"
+
+msgid "Elige el plan que se adapta a tu equipo"
+msgstr "Elige el plan que se adapta a tu equipo"
+
+msgid "Hasta 2 aprobadores"
+msgstr "Hasta 2 aprobadores"
+
+msgid "2 aprobadores"
+msgstr "2 aprobadores"
+
+msgid "Solicitudes ilimitadas"
+msgstr "Solicitudes ilimitadas"
+
+msgid "Autenticación biométrica"
+msgstr "Autenticación biométrica"
+
+msgid "Soporte básico"
+msgstr "Soporte básico"
+
+msgid "Suscribirme"
+msgstr "Suscribirme"
+
+msgid "Popular"
+msgstr "Popular"
+
+msgid "Hasta 6 aprobadores"
+msgstr "Hasta 6 aprobadores"
+
+msgid "6 aprobadores"
+msgstr "6 aprobadores"
+
+msgid "Auditoría avanzada"
+msgstr "Auditoría avanzada"
+
+msgid "Integraciones API"
+msgstr "Integraciones API"
+
+msgid "Aprobadores ilimitados"
+msgstr "Aprobadores ilimitados"
+
+msgid "Integraciones premium"
+msgstr "Integraciones premium"
+
+msgid "Soporte prioritario"
+msgstr "Soporte prioritario"
+
+msgid "¿Listo para transformar tus aprobaciones?"
+msgstr "¿Listo para transformar tus aprobaciones?"
+
+msgid "Únete a empresas que ya optimizaron sus procesos con SecureApprove"
+msgstr "Únete a empresas que ya optimizaron sus procesos con SecureApprove"
+
+msgid "Ver Planes"
+msgstr "Ver Planes"
+
+msgid "Sistema de aprobaciones seguras para empresas modernas."
+msgstr "Sistema de aprobaciones seguras para empresas modernas."
+
+msgid "Construido con ❤️ para la Seguridad Empresarial"
+msgstr "Construido con ❤️ para la Seguridad Empresarial"
+
+msgid "Submit a new approval request"
+msgstr "Enviar una nueva solicitud de aprobación"
+
+msgid "Request Categories"
+msgstr "Solicitar categorías"
+
+msgid "Business expenses like meals, transportation, office supplies"
+msgstr "Gastos comerciales como comidas, transporte, suministros de oficina."
+
+msgid "Equipment, software, or service purchases"
+msgstr "Compras de equipos, software o servicios"
+
+msgid "Travel arrangements and related expenses"
+msgstr "Arreglos de viaje y gastos relacionados."
+
+msgid "Contract approvals and vendor agreements"
+msgstr "Aprobaciones de contratos y acuerdos con proveedores"
+
+msgid "Document approvals and reviews"
+msgstr "Aprobaciones y revisiones de documentos."
+
+msgid "Any other type of approval request"
+msgstr "Cualquier otro tipo de solicitud de aprobación"
+
+msgid "Preview"
+msgstr "Avance"
+
+msgid "Pending Approval"
+msgstr "Pendiente de aprobación"
+
+msgid "This request is waiting for approval from an administrator."
+msgstr "Esta solicitud está esperando la aprobación de un administrador."
+
+msgid "This request was approved on"
+msgstr "Esta solicitud fue aprobada el"
+
+msgid "by"
+msgstr "por"
+
+msgid "This request was rejected."
+msgstr "Esta solicitud fue rechazada."
+
+msgid "Reason:"
+msgstr "Razón:"
+
+msgid "Requested by"
+msgstr "Solicitado por"
+
+msgid "Approval Actions"
+msgstr "Acciones de aprobación"
+
+msgid "You have permission to approve or reject this request."
+msgstr "Tiene permiso para aprobar o rechazar esta solicitud."
+
+msgid "Approving this request will allow the requester to proceed."
+msgstr "La aprobación de esta solicitud permitirá al solicitante continuar."
+
+msgid "Are you sure you want to approve this request?"
+msgstr "Are you sure you want to approve this request?"
+
+msgid "Reason for rejection"
+msgstr "Motivo del rechazo"
+
+msgid "Please explain why you are rejecting this request..."
+msgstr "Por favor explique por qué rechaza esta solicitud..."
+
+msgid "Are you sure you want to reject this request?"
+msgstr "Are you sure you want to reject this request?"
+
+msgid "Waiting for Approval"
+msgstr "Esperando aprobación"
+
+msgid "This request is pending review by an administrator."
+msgstr ""
+"Esta solicitud está pendiente de revisión por parte de un administrador."
+
+msgid "ID:"
+msgstr "IDENTIFICACIÓN:"
+
+msgid "Category:"
+msgstr "Categoría:"
+
+msgid "Priority:"
+msgstr "Prioridad:"
+
+msgid "Status:"
+msgstr "Estado:"
+
+msgid "Amount:"
+msgstr "Cantidad:"
+
+msgid ""
+"\n"
+"                    %(total)s request\n"
+"                "
+msgstr "%(total)s de solicitudes"
+
+msgid "All Statuses"
+msgstr "Todos los estados"
+
+msgid "All Categories"
+msgstr "Todas las categorías"
+
+msgid "Search by title or description..."
+msgstr "Buscar por título o descripción..."
+
+msgid "Requests pagination"
+msgstr "Solicitudes de paginación"
+
+msgid "Try adjusting your filters or search terms."
+msgstr "Intente ajustar sus filtros o términos de búsqueda."
+
+msgid "Start by creating your first approval request."
+msgstr "Comience creando su primera solicitud de aprobación."
+
+msgid "Create First Request"
+msgstr "Crear primera solicitud"
+
+msgid "Clear Filters"
+msgstr "Borrar filtros"
+
+msgid "Tenant Chat"
+msgstr "Chat del Tenant"
+
+msgid "Conversations"
+msgstr "Conversaciones"
+
+msgid "Select a conversation"
+msgstr "Selecciona una conversación"
+
+msgid "Typing..."
+msgstr "Escribiendo..."
+
+msgid "Write a message"
+msgstr "Escribe un mensaje"
+
+msgid "Send"
+msgstr "Enviar"
+
+msgid "users online"
+msgstr "usuarios en línea"
+
+msgid "No users online"
+msgstr "No hay usuarios en línea"
+
+msgid "New conversation"
+msgstr "Nueva conversación"
+
+msgid "Conversation"
+msgstr "Conversación"
+
+msgid "7-Day Free Trial"
+msgstr "Prueba Gratis de 7 Días"
+
+msgid "No charge for the first 7 days. Cancel anytime."
+msgstr "Sin cargo los primeros 7 días. Cancela en cualquier momento."
+
+msgid "Tenant Settings"
+msgstr "Configuraci��n del Tenant"
+
+msgid "Tenant Information"
+msgstr "Informaci��n del Tenant"
+
+msgid "Tenant Users"
+msgstr "Usuarios del Tenant"
+
+msgid "Request categories are currently global. Future versions will allow per-tenant customization."
+msgstr "Las categor��as de solicitud son actualmente globales. Las versiones futuras permitir��n personalizaci��n por tenant."
+
+msgid "Contacts"
+msgstr "Contactos"
+
+msgid "Online"
+msgstr "En l��nea"
+
+msgid "Offline"
+msgstr "Desconectado"
+
+msgid "Open chat"
+msgstr "Abrir chat"
+
+msgid "Active chat"
+msgstr "Chat activo"
+
+msgid "Chats"
+msgstr "Chats"
+
+msgid "Users & Groups"
+msgstr "Usuarios y grupos"
+msgid "Email is required to invite a user."
+msgstr "Se requiere correo electronico para invitar un usuario."
+
+msgid "You have reached the maximum number of users for your current seats. Please upgrade your subscription to add more users."
+msgstr "Haz alcanzado el numero maximo de usuarios para tus asientos actuales. Actualiza tu suscripcion para agregar mas usuarios."
+
+msgid "Your current subscription does not allow adding more users this month."
+msgstr "Tu suscripcion actual no permite agregar mas usuarios este mes."
+
+msgid "You have been invited to SecureApprove"
+msgstr "Has sido invitado a SecureApprove"
+
+msgid ""
+"You have been invited to join the tenant '%(tenant)s' on SecureApprove.\\n\\n"
+"To accept the invitation and access the platform, please click the following link:\\n\\n"
+"%(url)s\\n\\n"
+"If you did not expect this invitation, you can ignore this email."
+msgstr ""
+"Has sido invitado a unirte al tenant '%(tenant)s' en SecureApprove.\\n\\n"
+"Para aceptar la invitacion y acceder a la plataforma, haz clic en el siguiente enlace:\\n\\n"
+"%(url)s\\n\\n"
+"Si no esperabas esta invitacion, puedes ignorar este correo."
+
+msgid "Invitation created successfully for %(email)s."
+msgstr "Invitacion creada correctamente para %(email)s."
+
+msgid "Invitation updated for %(email)s."
+msgstr "Invitacion actualizada para %(email)s."
+
+msgid "Invitation for %(email)s has been cancelled."
+msgstr "La invitacion para %(email)s ha sido cancelada."
+
+msgid "This invitation is no longer valid."
+msgstr "Esta invitacion ya no es valida."
+
+msgid "This tenant has no available seats. Please contact the administrator."
+msgstr "Este tenant no tiene asientos disponibles. Por favor contacta al administrador."
+
+msgid "This email is already associated with a different tenant. Please contact support."
+msgstr "Este correo ya esta asociado a un tenant diferente. Por favor contacta al soporte."
+
+msgid "Welcome! Your invitation has been accepted and your account is ready."
+msgstr "Bienvenido. Tu invitacion ha sido aceptada y tu cuenta esta lista."

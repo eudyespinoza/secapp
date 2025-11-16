@@ -19,6 +19,7 @@ import json
 import logging
 
 from .models import User
+from apps.tenants.utils import assign_tenant_from_reservation
 from .webauthn_service import webauthn_service
 
 logger = logging.getLogger(__name__)
@@ -191,6 +192,9 @@ def webauthn_register_verify(request):
             # Log the user in after successful registration
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
+
+            # Associate user with a reserved tenant, if any
+            assign_tenant_from_reservation(user)
             
             return JsonResponse({
                 'verified': True,
@@ -306,23 +310,29 @@ def webauthn_login_verify(request):
 # ================================================
 
 @login_required
-@login_required
 def profile_view(request):
     """User profile view"""
-    # Get user's WebAuthn credentials
+    # Get user's WebAuthn credentials from JSONField
     webauthn_credentials = []
-    if hasattr(request.user, 'webauthn_credentials') and request.user.webauthn_credentials:
-        try:
-            import json
-            credentials_data = json.loads(request.user.webauthn_credentials)
-            if isinstance(credentials_data, list):
-                webauthn_credentials = credentials_data
-        except (json.JSONDecodeError, AttributeError):
-            webauthn_credentials = []
-    
+    raw_creds = getattr(request.user, "webauthn_credentials", None)
+
+    if raw_creds:
+        # JSONField normally returns a Python list, pero contemplamos
+        # también el caso legacy en el que haya quedado una cadena JSON.
+        if isinstance(raw_creds, list):
+            webauthn_credentials = raw_creds
+        else:
+            try:
+                import json
+                parsed = json.loads(raw_creds)
+                if isinstance(parsed, list):
+                    webauthn_credentials = parsed
+            except Exception:
+                webauthn_credentials = []
+
     return render(request, 'authentication/profile.html', {
         'user': request.user,
-        'webauthn_credentials': webauthn_credentials
+        'webauthn_credentials': webauthn_credentials,
     })
 
 
@@ -382,15 +392,19 @@ def webauthn_delete_credential(request):
         
         user = request.user
         
-        # Get current credentials
+        # Get current credentials from JSONField (list or JSON string)
         webauthn_credentials = []
-        if hasattr(user, 'webauthn_credentials') and user.webauthn_credentials:
-            try:
-                credentials_data = json.loads(user.webauthn_credentials)
-                if isinstance(credentials_data, list):
-                    webauthn_credentials = credentials_data
-            except (json.JSONDecodeError, AttributeError):
-                webauthn_credentials = []
+        raw_creds = getattr(user, "webauthn_credentials", None)
+        if raw_creds:
+            if isinstance(raw_creds, list):
+                webauthn_credentials = raw_creds
+            else:
+                try:
+                    parsed = json.loads(raw_creds)
+                    if isinstance(parsed, list):
+                        webauthn_credentials = parsed
+                except Exception:
+                    webauthn_credentials = []
         
         # Filter out the credential to delete
         updated_credentials = [
@@ -398,8 +412,8 @@ def webauthn_delete_credential(request):
             if str(cred.get('credential_id', '')) != str(credential_id)
         ]
         
-        # Update user's credentials
-        user.webauthn_credentials = json.dumps(updated_credentials) if updated_credentials else None
+        # Update user's credentials (JSONField, almacenamos como lista)
+        user.webauthn_credentials = updated_credentials
         user.save()
         
         return JsonResponse({
@@ -437,30 +451,36 @@ def webauthn_create_fallback_credential(request):
         # Create a fallback credential
         fallback_credential = {
             'credential_id': credential_id,
-            'public_key': None,  # No actual public key for fallback
+            'public_key': None,
             'sign_count': 0,
             'created_at': timezone.now().isoformat(),
-            'name': f'Auto-generated Key',
+            'name': 'Auto-generated Key',
             'type': 'fallback',
-            'authenticator_type': 'software'
+            'authenticator_type': 'software',
         }
         
-        # Store the credential
+        # Store the credential in JSONField
         webauthn_credentials = []
-        if hasattr(user, 'webauthn_credentials') and user.webauthn_credentials:
-            try:
-                credentials_data = json.loads(user.webauthn_credentials)
-                if isinstance(credentials_data, list):
-                    webauthn_credentials = credentials_data
-            except (json.JSONDecodeError, AttributeError):
-                webauthn_credentials = []
+        raw_creds = getattr(user, "webauthn_credentials", None)
+        if raw_creds:
+            if isinstance(raw_creds, list):
+                webauthn_credentials = raw_creds
+            else:
+                try:
+                    parsed = json.loads(raw_creds)
+                    if isinstance(parsed, list):
+                        webauthn_credentials = parsed
+                except Exception:
+                    webauthn_credentials = []
         
         webauthn_credentials.append(fallback_credential)
-        user.webauthn_credentials = json.dumps(webauthn_credentials)
+        user.webauthn_credentials = webauthn_credentials
         user.save()
         
         # Log the user in after creating fallback credential
         login(request, user)
+        # Associate with reserved tenant if applicable
+        assign_tenant_from_reservation(user)
         
         return JsonResponse({
             'success': True,
