@@ -19,6 +19,7 @@ import json
 import logging
 
 from .models import User
+from apps.tenants.models import TenantUserInvite
 from apps.tenants.utils import assign_tenant_from_reservation
 from .webauthn_service import webauthn_service
 
@@ -369,13 +370,19 @@ def webauthn_user_check(request):
         return JsonResponse({
             'exists': True,
             'hasCredentials': user.has_webauthn_credentials,
-            'userId': str(user.id)
+            'userId': str(user.id),
+            'reserved': False,
         })
     except User.DoesNotExist:
+        reserved = TenantUserInvite.objects.filter(
+            email=email,
+            status='pending',
+        ).exists()
         return JsonResponse({
             'exists': False,
             'hasCredentials': False,
-            'userId': None
+            'userId': None,
+            'reserved': reserved,
         })
 
 

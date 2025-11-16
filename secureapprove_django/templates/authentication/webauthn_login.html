@@ -295,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const langPrefix = '/{{ CURRENT_LANGUAGE }}';
     
     let currentUser = null;
+    let currentUserId = null;
     
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -310,18 +311,24 @@ document.addEventListener('DOMContentLoaded', function() {
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="bi bi-gear-fill me-2" style="animation: spin 1s linear infinite;"></i>{% trans "Checking Account..." %}';
             
-            // Step 1: Check if user exists and has credentials
+            // Step 1: Check if user exists and has credentials or reservation
             const userCheck = await fetch(`${langPrefix}/auth/webauthn/user-check/?email=${encodeURIComponent(email)}`);
             const userCheckResult = await userCheck.json();
-            
+
+            // New user with reservation or existing user without credentials -> registration flow
             if (!userCheckResult.exists) {
+                if (userCheckResult.reserved) {
+                    await startRegistration(email);
+                    return;
+                }
                 throw new Error('{% trans "No account found with this email. Please subscribe to a plan to get started." %}');
             }
-            
+
             if (!userCheckResult.hasCredentials) {
-                throw new Error('{% trans "No biometric authentication set up for this account. Please contact support." %}');
+                await startRegistration(email);
+                return;
             }
-            
+
             // Step 2: Get login options
             showBiometricStep(1);
             
@@ -392,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const verifyResult = await verifyResponse.json();
-            
+
             if (!verifyResponse.ok) {
                 throw new Error(verifyResult.error || 'Authentication verification failed');
             }
@@ -428,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (result.exists) {
                 currentUser = result;
+                currentUserId = result.userId || null;
                 showUserInfo(email, result.hasCredentials);
             } else {
                 hideUserInfo();
@@ -445,18 +453,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         userInfo.style.display = 'block';
         
-        if (!hasCredentials) {
-            showError('{% trans "No biometric authentication set up for this account." %}');
-            loginBtn.disabled = true;
-        } else {
-            document.getElementById('errorAlert').style.display = 'none';
-            loginBtn.disabled = false;
-        }
+        // If the account has no credentials yet, we will configure WebAuthn
+        // automatically when the user submits the form.
+        document.getElementById('errorAlert').style.display = 'none';
+        loginBtn.disabled = false;
     }
     
     function hideUserInfo() {
         userInfo.style.display = 'none';
         currentUser = null;
+        currentUserId = null;
     }
     
     function showBiometricStep(stepNumber) {
@@ -500,6 +506,111 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!navigator.credentials || !navigator.credentials.get) {
         showError('{% trans "WebAuthn is not supported in your browser. Please use Chrome, Firefox, Safari, or Edge." %}');
         loginBtn.disabled = true;
+    }
+
+    // Registration flow used when the account has no WebAuthn credentials yet
+    async function startRegistration(email) {
+        try {
+            // Step A: ensure user exists (or reuse existing without credentials)
+            const name = email.split('@')[0] || email;
+            const registerResponse = await fetch(`${langPrefix}/auth/webauthn/register/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ name, email })
+            });
+            const registerResult = await registerResponse.json();
+            if (!registerResponse.ok) {
+                throw new Error(registerResult.error || '{% trans "Registration failed" %}');
+            }
+
+            const userId = registerResult.id;
+
+            // Step B: get registration options
+            showBiometricStep(1);
+            const optionsResponse = await fetch(`${langPrefix}/auth/webauthn/register/options/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ userId })
+            });
+            const options = await optionsResponse.json();
+            if (!optionsResponse.ok) {
+                throw new Error(options.error || 'Failed to get registration options');
+            }
+
+            // Step C: show sensor prompt
+            showBiometricStep(2);
+
+            // Build publicKey object for navigator.credentials.create
+            const publicKey = {
+                challenge: Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0)),
+                rp: options.rp,
+                user: {
+                    id: Uint8Array.from(atob(options.user.id), c => c.charCodeAt(0)),
+                    name: options.user.name,
+                    displayName: options.user.displayName
+                },
+                pubKeyCredParams: options.pubKeyCredParams,
+                timeout: options.timeout,
+                excludeCredentials: (options.excludeCredentials || []).map(cred => ({
+                    ...cred,
+                    id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0))
+                })),
+                authenticatorSelection: options.authenticatorSelection,
+                attestation: options.attestation
+            };
+
+            const credential = await navigator.credentials.create({ publicKey });
+            if (!credential) {
+                throw new Error('{% trans "WebAuthn authentication was cancelled" %}');
+            }
+
+            // Step D: verify registration
+            showBiometricStep(3);
+            const attestationData = {
+                id: credential.id,
+                rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(credential.rawId))),
+                response: {
+                    clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(credential.response.clientDataJSON))),
+                    attestationObject: btoa(String.fromCharCode.apply(null, new Uint8Array(credential.response.attestationObject)))
+                },
+                type: credential.type
+            };
+
+            const verifyResponse = await fetch(`${langPrefix}/auth/webauthn/register/verify/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    response: attestationData
+                })
+            });
+            const verifyResult = await verifyResponse.json();
+            if (!verifyResponse.ok || !verifyResult.verified) {
+                throw new Error(verifyResult.error || 'Registration verification failed');
+            }
+
+            // Success: registration + login completed on server side
+            showBiometricStep(4);
+            showSuccess('{% trans "Authentication successful! Welcome back." %}');
+
+            const redirectUrl = verifyResult.redirect_url || '/';
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 2000);
+        } catch (error) {
+            console.error('Registration error:', error);
+            showError(error.message);
+            resetForm();
+        }
     }
 });
 </script>

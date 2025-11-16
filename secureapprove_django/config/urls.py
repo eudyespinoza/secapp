@@ -91,7 +91,8 @@ urlpatterns = [
     # Health check (no i18n)
     path('health/', health_check, name='health'),
     
-    # Django's built-in i18n URLs (includes set_language with CSRF support)
+    # i18n URLs (override set_language to avoid CSRF issues behind proxies)
+    path('i18n/setlang/', csrf_exempt(custom_set_language), name='set_language'),
     path('i18n/', include('django.conf.urls.i18n')),
     
     # API routes (no translation)
