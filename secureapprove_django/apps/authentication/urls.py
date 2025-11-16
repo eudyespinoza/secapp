@@ -57,6 +57,23 @@ urlpatterns = [
     path('webauthn/fallback/', 
          views.webauthn_create_fallback_credential, 
          name='webauthn_create_fallback_credential'),
+
+    # Device pairing (pair new device via link/QR)
+    path('device-pairing/create/',
+         views.device_pairing_create,
+         name='device_pairing_create'),
+    path('device-pairing/<str:token>/',
+         views.DevicePairingLandingView.as_view(),
+         name='device_pairing_landing'),
+    path('device-pairing/<str:token>/begin/',
+         views.device_pairing_begin,
+         name='device_pairing_begin'),
+    path('device-pairing/<str:token>/complete/',
+         views.device_pairing_complete,
+         name='device_pairing_complete'),
+    path('device-pairing/<str:token>/status/',
+         views.device_pairing_status,
+         name='device_pairing_status'),
     
     # Status endpoint
     path('status/', 

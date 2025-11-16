@@ -2730,3 +2730,60 @@ msgstr "This email is already associated with a different tenant. Please contact
 
 msgid "Welcome! Your invitation has been accepted and your account is ready."
 msgstr "Welcome! Your invitation has been accepted and your account is ready."
+
+msgid "Pair a New Device - SecureApprove"
+msgstr "Pair a New Device - SecureApprove"
+
+msgid "Pairing link created. Open this URL on the device you want to pair:"
+msgstr "Pairing link created. Open this URL on the device you want to pair:"
+
+msgid "Pairing session not found or expired."
+msgstr "Pairing session not found or expired."
+
+msgid "Pair This Device"
+msgstr "Pair This Device"
+
+msgid "Pair This Device and set up biometric authentication"
+msgstr "Pair This Device and set up biometric authentication"
+
+msgid "Pairing Link Invalid or Expired"
+msgstr "Pairing Link Invalid or Expired"
+
+msgid "This device pairing link is no longer valid. Please generate a new link from your SecureApprove profile."
+msgstr "This device pairing link is no longer valid. Please generate a new link from your SecureApprove profile."
+
+msgid "Prepare Your Biometric Sensor"
+msgstr "Prepare Your Biometric Sensor"
+
+msgid "When you continue, your browser will ask you to confirm with your fingerprint, Face ID, or security key."
+msgstr "When you continue, your browser will ask you to confirm with your fingerprint, Face ID, or security key."
+
+msgid "This device will be added as an additional authenticator for your existing SecureApprove account."
+msgstr "This device will be added as an additional authenticator for your existing SecureApprove account."
+
+msgid "Device Paired Successfully!"
+msgstr "Device Paired Successfully!"
+
+msgid "You can now sign in to SecureApprove from this device using your biometric authentication."
+msgstr "You can now sign in to SecureApprove from this device using your biometric authentication."
+
+msgid "Go to Login"
+msgstr "Go to Login"
+
+msgid "Failed to create pairing session"
+msgstr "Failed to create pairing session"
+
+msgid "Copy link"
+msgstr "Copy link"
+
+msgid "Scan this QR code with the device you want to pair."
+msgstr "Scan this QR code with the device you want to pair."
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Link copied to clipboard."
+msgstr "Link copied to clipboard."
+
+msgid "Failed to copy link."
+msgstr "Failed to copy link."

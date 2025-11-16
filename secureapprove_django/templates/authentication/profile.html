@@ -221,6 +221,10 @@
                             <i class="bi bi-pencil me-1"></i>
                             {% trans "Edit Profile" %}
                         </a>
+                        <button type="button" class="btn btn-outline-primary" id="generatePairingLinkBtn">
+                            <i class="bi bi-qr-code me-1"></i>
+                            {% trans "Pair a New Device" %}
+                        </button>
                         <a href="{% url 'authentication:logout' %}" class="btn btn-outline-secondary">
                             <i class="bi bi-box-arrow-right me-1"></i>
                             {% trans "Sign Out" %}
@@ -278,8 +282,53 @@
     </div>
 </div>
 
+<!-- Pairing Link Modal -->
+<div class="modal fade" id="pairingLinkModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-qr-code me-2"></i>
+                    {% trans "Pair a New Device" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="pairingLinkInput">
+                        {% trans "Pairing link" %}
+                    </label>
+                    <div class="input-group">
+                        <input type="text" id="pairingLinkInput" class="form-control" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="copyPairingLinkBtn">
+                            <i class="bi bi-clipboard"></i>
+                            {% trans "Copy link" %}
+                        </button>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div id="pairingQr"></div>
+                    <small class="text-muted-custom d-block mt-2">
+                        {% trans "Scan this QR code with the device you want to pair." %}
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {% trans "Close" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    {% get_current_language as PROFILE_LANG %}
+    const langPrefix = '/{{ PROFILE_LANG }}';
+
     // Initialize modal
     window.addCredentialModal = new bootstrap.Modal(document.getElementById('addCredentialModal'));
     
@@ -292,9 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Remove credential function
     window.removeCredential = function(credentialId) {
         if (confirm('{% trans "Are you sure you want to remove this device?" %}')) {
-            {% get_current_language as PROFILE_LANG %}
-            const langPrefix = '/{{ PROFILE_LANG }}';
-
             fetch(`${langPrefix}/auth/webauthn/delete/`, {
                 method: 'POST',
                 headers: {
@@ -449,6 +495,79 @@ document.addEventListener('DOMContentLoaded', function() {
             binary += String.fromCharCode(bytes[i]);
         }
         return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    // Device pairing: generate link from profile
+    const pairingBtn = document.getElementById('generatePairingLinkBtn');
+    const pairingLinkInput = document.getElementById('pairingLinkInput');
+    const copyPairingLinkBtn = document.getElementById('copyPairingLinkBtn');
+    const pairingQrContainer = document.getElementById('pairingQr');
+    let pairingLinkModal = null;
+
+    if (document.getElementById('pairingLinkModal')) {
+        pairingLinkModal = new bootstrap.Modal(document.getElementById('pairingLinkModal'));
+    }
+
+    if (copyPairingLinkBtn && pairingLinkInput) {
+        copyPairingLinkBtn.addEventListener('click', async function () {
+            const url = pairingLinkInput.value;
+            if (!url) return;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(url);
+                } else {
+                    pairingLinkInput.select();
+                    document.execCommand('copy');
+                }
+                alert('{% trans "Link copied to clipboard." %}');
+            } catch (e) {
+                console.error('Copy failed', e);
+                alert('{% trans "Failed to copy link." %}');
+            }
+        });
+    }
+
+    if (pairingBtn) {
+        pairingBtn.addEventListener('click', async function () {
+            try {
+                const response = await fetch(`${langPrefix}/auth/device-pairing/create/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({})
+                });
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to create pairing session');
+                }
+
+                const pairingUrl = result.pairingUrl;
+
+                if (pairingLinkInput) {
+                    pairingLinkInput.value = pairingUrl;
+                }
+
+                if (pairingQrContainer && window.QRCode) {
+                    pairingQrContainer.innerHTML = '';
+                    new QRCode(pairingQrContainer, {
+                        text: pairingUrl,
+                        width: 180,
+                        height: 180
+                    });
+                }
+
+                if (pairingLinkModal) {
+                    pairingLinkModal.show();
+                } else {
+                    alert(`{% trans "Pairing link created. Open this URL on the device you want to pair:" %}\n\n${pairingUrl}`);
+                }
+            } catch (error) {
+                console.error('Error creating pairing session:', error);
+                alert('{% trans "Failed to create pairing session" %}: ' + (error.message || error));
+            }
+        });
     }
 });
 </script>

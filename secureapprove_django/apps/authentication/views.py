@@ -15,10 +15,12 @@ from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.utils import timezone
+from django.conf import settings
+from secrets import token_urlsafe
 import json
 import logging
 
-from .models import User
+from .models import User, DevicePairingSession
 from apps.tenants.models import Tenant, TenantUserInvite
 from apps.tenants.utils import assign_tenant_from_reservation
 from .webauthn_service import webauthn_service
@@ -657,6 +659,205 @@ def webauthn_create_fallback_credential(request):
     except Exception as e:
         logger.error(f"Error creating fallback credential: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
+
+
+# ================================================
+# Device Pairing Flow (pair new device via link/QR)
+# ================================================
+
+@login_required
+@require_http_methods(["POST"])
+def device_pairing_create(request):
+    """
+    Create a new pairing session for the current user.
+    Returns a URL (with language prefix) that can be opened on another device.
+    """
+    ttl_minutes = 10
+    expires_at = timezone.now() + timezone.timedelta(minutes=ttl_minutes)
+
+    # Generate secure random token
+    token = token_urlsafe(32)
+
+    session = DevicePairingSession.objects.create(
+        user=request.user,
+        token=token,
+        status='pending',
+        expires_at=expires_at,
+    )
+
+    # Build absolute URL with current language prefix
+    from django.utils.translation import get_language
+    lang = get_language() or settings.LANGUAGE_CODE
+    pairing_path = f"/{lang}/auth/device-pairing/{session.token}/"
+    pairing_url = request.build_absolute_uri(pairing_path)
+
+    return JsonResponse(
+        {
+            "success": True,
+            "pairingUrl": pairing_url,
+            "expiresInSeconds": ttl_minutes * 60,
+        }
+    )
+
+
+def _get_valid_pairing_session(token: str):
+    try:
+        session = DevicePairingSession.objects.select_related("user").get(token=token)
+    except DevicePairingSession.DoesNotExist:
+        return None
+
+    if session.status != "pending":
+        return None
+    if session.is_expired:
+        session.status = "expired"
+        session.save(update_fields=["status"])
+        return None
+    return session
+
+
+class DevicePairingLandingView(View):
+    """
+    Public landing page when opening a pairing link on a new device.
+    """
+
+    template_name = "authentication/device_pairing_landing.html"
+
+    def get(self, request, token):
+        session = _get_valid_pairing_session(token)
+        if not session:
+            return render(
+                request,
+                self.template_name,
+                {"invalid": True},
+            )
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "invalid": False,
+                "pairing_token": token,
+                "user_email": session.user.email,
+                "expires_at": session.expires_at,
+            },
+        )
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def device_pairing_begin(request, token):
+    """
+    Begin WebAuthn registration on the pairing device.
+    The user is identified via the pairing token.
+    """
+    session = _get_valid_pairing_session(token)
+    if not session:
+        return JsonResponse(
+            {"success": False, "error": _("Pairing session not found or expired.")},
+            status=400,
+        )
+
+    try:
+        options = webauthn_service.generate_registration_options(session.user)
+        return JsonResponse(
+            {
+                "success": True,
+                "publicKey": {
+                    "challenge": options["challenge"],
+                    "rp": options["rp"],
+                    "user": options["user"],
+                    "pubKeyCredParams": options["pubKeyCredParams"],
+                    "timeout": options["timeout"],
+                    "excludeCredentials": options["excludeCredentials"],
+                    "authenticatorSelection": options["authenticatorSelection"],
+                    "attestation": options["attestation"],
+                },
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error generating WebAuthn options for device pairing: {e}")
+        return JsonResponse(
+            {"success": False, "error": str(e)},
+            status=400,
+        )
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def device_pairing_complete(request, token):
+    """
+    Complete WebAuthn registration on the pairing device.
+    """
+    session = _get_valid_pairing_session(token)
+    if not session:
+        return JsonResponse(
+            {"success": False, "error": _("Pairing session not found or expired.")},
+            status=400,
+        )
+
+    try:
+        data = json.loads(request.body)
+        credential = data.get("credential")
+        if not credential:
+            return JsonResponse(
+                {"success": False, "error": _("Credential data is required")},
+                status=400,
+            )
+
+        result = webauthn_service.verify_registration_response(session.user, credential)
+
+        # Mark session as completed
+        session.status = "completed"
+        session.paired_at = timezone.now()
+        session.paired_user_agent = request.META.get("HTTP_USER_AGENT", "")[:500]
+        session.paired_platform = data.get("platform", "")[:255]
+        session.save(
+            update_fields=["status", "paired_at", "paired_user_agent", "paired_platform"]
+        )
+
+        return JsonResponse(
+            {
+                "success": True,
+                "credentialId": result.get("credential_id"),
+            }
+        )
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"success": False, "error": _("Invalid JSON data")},
+            status=400,
+        )
+    except Exception as e:
+        logger.error(f"Error completing device pairing: {e}")
+        return JsonResponse(
+            {"success": False, "error": str(e)},
+            status=400,
+        )
+
+
+@login_required
+@require_http_methods(["GET"])
+def device_pairing_status(request, token):
+    """
+    Check the status of a pairing session for the current user.
+    """
+    try:
+        session = DevicePairingSession.objects.get(token=token, user=request.user)
+    except DevicePairingSession.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": _("Pairing session not found.")},
+            status=404,
+        )
+
+    status = session.status
+    if session.is_expired and status == "pending":
+        status = "expired"
+
+    return JsonResponse(
+        {
+            "success": True,
+            "status": status,
+        }
+    )
 
 
 @csrf_exempt

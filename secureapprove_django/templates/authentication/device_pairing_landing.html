@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Pair a New Device - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #eef2ff 0%, var(--bg-color) 50%, #faf5ff 100%);
+    }
+    [data-theme="dark"] .hero-section {
+        background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+    }
+    .pairing-card {
+        max-width: 520px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 12px 30px var(--card-shadow);
+        border: 1px solid var(--border-color);
+    }
+    .pairing-header-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+    .pairing-step {
+        display: none;
+    }
+    .pairing-step.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="pairing-card p-4">
+            {% if invalid %}
+                <div class="text-center">
+                    <div class="pairing-header-icon mb-3">
+                        <i class="bi bi-exclamation-triangle-fill text-white" style="font-size: 28px;"></i>
+                    </div>
+                    <h3 class="fw-bold mb-2">{% trans "Pairing Link Invalid or Expired" %}</h3>
+                    <p class="text-muted">
+                        {% trans "This device pairing link is no longer valid. Please generate a new link from your SecureApprove profile." %}
+                    </p>
+                </div>
+            {% else %}
+                <div class="text-center mb-3">
+                    <div class="pairing-header-icon">
+                        <i class="bi bi-phone-fill text-white" style="font-size: 28px;"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{% trans "Pair This Device" %}</h3>
+                    <p class="text-muted mb-0">
+                        {% blocktrans with email=user_email %}
+                        You are about to pair this device with the account {{ email }}.
+                        {% endblocktrans %}
+                    </p>
+                </div>
+
+                <div id="pairingSteps">
+                    <div class="pairing-step active" id="pairStep1">
+                        <h6 class="fw-semibold mb-2">{% trans "Prepare Your Biometric Sensor" %}</h6>
+                        <p class="text-muted small mb-3">
+                            {% trans "When you continue, your browser will ask you to confirm with your fingerprint, Face ID, or security key." %}
+                        </p>
+                        <div class="alert alert-info alert-custom alert-info-custom mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-shield-lock text-primary me-2"></i>
+                                <small class="text-muted">
+                                    {% trans "This device will be added as an additional authenticator for your existing SecureApprove account." %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pairing-step" id="pairStep2">
+                        <h6 class="fw-semibold mb-2">{% trans "Touch Your Sensor" %}</h6>
+                        <p class="text-muted small mb-3">
+                            {% trans "Use your fingerprint, Face ID, or security key on this device to complete the pairing." %}
+                        </p>
+                    </div>
+
+                    <div class="pairing-step" id="pairStep3">
+                        <h6 class="fw-semibold text-success mb-2">{% trans "Device Paired Successfully!" %}</h6>
+                        <p class="text-muted small mb-3">
+                            {% trans "You can now sign in to SecureApprove from this device using your biometric authentication." %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-3" id="pairingActions">
+                    <a href="/" class="btn btn-outline-secondary">
+                        {% trans "Cancel" %}
+                    </a>
+                    <button type="button" class="btn btn-primary" id="startPairingBtn">
+                        {% trans "Pair This Device" %}
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% if not invalid %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const startBtn = document.getElementById('startPairingBtn');
+    const stepsContainer = document.getElementById('pairingSteps');
+    const actionsContainer = document.getElementById('pairingActions');
+    const token = '{{ pairing_token }}';
+
+    function showPairStep(stepNumber) {
+        if (!stepsContainer) return;
+        stepsContainer.querySelectorAll('.pairing-step').forEach(step => {
+            step.classList.remove('active');
+            step.style.display = 'none';
+        });
+        const current = document.getElementById(`pairStep${stepNumber}`);
+        if (current) {
+            current.classList.add('active');
+            current.style.display = 'block';
+        }
+    }
+
+    function base64urlToBuffer(base64url) {
+        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+        const binary = atob(padded);
+        const buffer = new ArrayBuffer(binary.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < binary.length; i++) {
+            view[i] = binary.charCodeAt(i);
+        }
+        return buffer;
+    }
+
+    function bufferToBase64url(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    if (startBtn) {
+        startBtn.addEventListener('click', async function () {
+            try {
+                if (!navigator.credentials || !navigator.credentials.create) {
+                    alert("{% trans 'WebAuthn is not supported in your browser. Please use Chrome, Firefox, Safari, or Edge.' %}");
+                    return;
+                }
+
+                showPairStep(2);
+                startBtn.disabled = true;
+
+                // Step 1: get options from server
+                const optionsResponse = await fetch(`./begin/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                const optionsResult = await optionsResponse.json();
+                if (!optionsResult.success) {
+                    throw new Error(optionsResult.error || 'Failed to get pairing options');
+                }
+
+                const publicKey = optionsResult.publicKey;
+                // Decode challenge and user.id
+                publicKey.challenge = base64urlToBuffer(publicKey.challenge);
+                publicKey.user.id = base64urlToBuffer(publicKey.user.id);
+
+                if (publicKey.excludeCredentials) {
+                    publicKey.excludeCredentials = publicKey.excludeCredentials.map(cred => ({
+                        ...cred,
+                        id: base64urlToBuffer(cred.id)
+                    }));
+                }
+
+                // Step 2: create credential on this device
+                const credential = await navigator.credentials.create({ publicKey });
+                if (!credential) {
+                    throw new Error("{% trans 'WebAuthn registration was cancelled' %}");
+                }
+
+                // Step 3: send to server for verification
+                const completeResponse = await fetch(`./complete/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        credential: {
+                            id: credential.id,
+                            rawId: bufferToBase64url(credential.rawId),
+                            response: {
+                                attestationObject: bufferToBase64url(credential.response.attestationObject),
+                                clientDataJSON: bufferToBase64url(credential.response.clientDataJSON)
+                            },
+                            type: credential.type
+                        },
+                        platform: navigator.userAgent || ''
+                    })
+                });
+
+                const completeResult = await completeResponse.json();
+                if (!completeResult.success) {
+                    throw new Error(completeResult.error || 'Pairing failed');
+                }
+
+                showPairStep(3);
+                if (actionsContainer) {
+                    actionsContainer.innerHTML = `
+                        <a href="/" class="btn btn-primary w-100">
+                            {% trans "Go to Login" %}
+                        </a>
+                    `;
+                }
+            } catch (error) {
+                console.error('Device pairing error:', error);
+                alert('{% trans "Failed to add device" %}: ' + (error.message || error));
+                showPairStep(1);
+                if (startBtn) startBtn.disabled = false;
+            }
+        });
+    }
+});
+</script>
+{% endif %}
+
+{% endblock %}
+

@@ -5,6 +5,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+import uuid
 
 class User(AbstractUser):
     """
@@ -107,3 +109,52 @@ class User(AbstractUser):
         # User is passwordless-only if they have WebAuthn credentials
         # and no usable password set
         return self.has_webauthn_credentials and not self.has_usable_password()
+
+
+class DevicePairingSession(models.Model):
+    """
+    Temporary pairing session used to link a new device
+    (e.g., phone) with an existing user account for WebAuthn.
+    """
+
+    STATUS_CHOICES = [
+        ('pending', _('Pending')),
+        ('completed', _('Completed')),
+        ('expired', _('Expired')),
+        ('cancelled', _('Cancelled')),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.CASCADE,
+        related_name='device_pairing_sessions',
+    )
+    token = models.CharField(_('Pairing Token'), max_length=128, unique=True)
+    status = models.CharField(
+        _('Status'),
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+    )
+    created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
+    expires_at = models.DateTimeField(_('Expires At'))
+    paired_at = models.DateTimeField(_('Paired At'), null=True, blank=True)
+    paired_user_agent = models.TextField(_('Paired User Agent'), blank=True)
+    paired_platform = models.CharField(_('Paired Platform'), max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = _('Device Pairing Session')
+        verbose_name_plural = _('Device Pairing Sessions')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['token']),
+            models.Index(fields=['user', 'status']),
+        ]
+
+    def __str__(self):
+        return f"Pairing session {self.id} for {self.user.email} ({self.status})"
+
+    @property
+    def is_expired(self):
+        return timezone.now() >= self.expires_at
