@@ -292,7 +292,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Remove credential function
     window.removeCredential = function(credentialId) {
         if (confirm('{% trans "Are you sure you want to remove this device?" %}')) {
-            fetch('/webauthn/delete/', {
+            {% get_current_language as PROFILE_LANG %}
+            const langPrefix = '/{{ PROFILE_LANG }}';
+
+            fetch(`${langPrefix}/auth/webauthn/delete/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -332,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showCredentialStep(2);
             
             // Get registration options from server
-            const optionsResponse = await fetch('/webauthn/register/begin/', {
+            const optionsResponse = await fetch(`${langPrefix}/auth/webauthn/register/begin/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -358,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Verify registration with server
-            const verifyResponse = await fetch('/webauthn/register/complete/', {
+            const verifyResponse = await fetch(`${langPrefix}/auth/webauthn/register/complete/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -205,6 +205,79 @@ def webauthn_register_user(request):
         return JsonResponse({'error': _('Registration failed')}, status=500)
 
 
+@login_required
+@require_http_methods(["POST"])
+def webauthn_register_begin(request):
+    """
+    Begin WebAuthn registration for an additional device for the logged-in user.
+
+    Used from the profile page "Add Biometric Device" flow.
+    """
+    user = request.user
+    try:
+        options = webauthn_service.generate_registration_options(user)
+        return JsonResponse(
+            {
+                "success": True,
+                "publicKey": {
+                    "challenge": options["challenge"],
+                    "rp": options["rp"],
+                    "user": options["user"],
+                    "pubKeyCredParams": options["pubKeyCredParams"],
+                    "timeout": options["timeout"],
+                    "excludeCredentials": options["excludeCredentials"],
+                    "authenticatorSelection": options["authenticatorSelection"],
+                    "attestation": options["attestation"],
+                },
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error generating WebAuthn options for extra device: {e}")
+        return JsonResponse(
+            {"success": False, "error": str(e)},
+            status=400,
+        )
+
+
+@login_required
+@require_http_methods(["POST"])
+def webauthn_register_complete(request):
+    """
+    Complete WebAuthn registration for an additional device for the logged-in user.
+
+    Expects a `credential` object in the body with id/rawId/response/type as sent
+    from the profile page JavaScript.
+    """
+    try:
+        data = json.loads(request.body)
+        credential = data.get("credential")
+        if not credential:
+            return JsonResponse(
+                {"success": False, "error": _("Credential data is required")},
+                status=400,
+            )
+
+        result = webauthn_service.verify_registration_response(request.user, credential)
+
+        return JsonResponse(
+            {
+                "success": True,
+                "credentialId": result.get("credential_id"),
+            }
+        )
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"success": False, "error": _("Invalid JSON data")},
+            status=400,
+        )
+    except Exception as e:
+        logger.error(f"Error completing WebAuthn registration for extra device: {e}")
+        return JsonResponse(
+            {"success": False, "error": str(e)},
+            status=400,
+        )
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def webauthn_register_options(request):
