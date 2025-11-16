@@ -19,7 +19,7 @@ import json
 import logging
 
 from .models import User
-from apps.tenants.models import TenantUserInvite
+from apps.tenants.models import Tenant, TenantUserInvite
 from apps.tenants.utils import assign_tenant_from_reservation
 from .webauthn_service import webauthn_service
 
@@ -81,7 +81,18 @@ class LogoutView(BaseLogoutView):
 @csrf_exempt
 @require_http_methods(["POST"])
 def webauthn_register_user(request):
-    """Create new user for WebAuthn registration (step 1) - NO TENANT CREATED"""
+    """
+    Create or reuse a user for WebAuthn registration (step 1).
+
+    Business rules:
+      - If the email already exists and has NO WebAuthn credentials -> allow registration.
+      - If the email already exists and HAS WebAuthn credentials -> reject (409).
+      - If the email does not exist:
+          * Allow creation ONLY if:
+              - There is a pending TenantUserInvite (reserved email), OR
+              - It is the primary admin email (handled specially).
+          * Otherwise, reject with 403 so the user must subscribe first.
+    """
     try:
         data = json.loads(request.body)
         name = data.get('name', '').strip()
@@ -106,17 +117,77 @@ def webauthn_register_user(request):
             else:
                 return JsonResponse({'error': _('Email already registered with WebAuthn credentials')}, status=409)
         
-        # Create new user WITHOUT tenant (tenant is created after payment)
-        user = User.objects.create(
-            username=email,  # Use email as username
+        # At this point, no user exists with this email.
+        # Only allow creation if the email is RESERVED for a tenant,
+        # or it is the primary admin email.
+        is_reserved = TenantUserInvite.objects.filter(
             email=email,
-            name=name,
-            role='requester',  # Default role for new users
-            is_active=True,
-            tenant=None  # NO TENANT - will be created after subscription payment
-        )
-        
-        logger.info(f"Created new user for WebAuthn registration: {user.email} (NO TENANT)")
+            status='pending',
+        ).exists()
+
+        primary_admin_email = 'eudyespinoza@gmail.com'
+
+        if not is_reserved and email != primary_admin_email:
+            # This email is not allowed to self-register via WebAuthn.
+            # The user must go through the subscription flow instead.
+            return JsonResponse(
+                {
+                    'error': _(
+                        'No account found for this email. Please subscribe to a plan or ask your administrator to add you.'
+                    ),
+                    'code': 'registration_not_allowed',
+                },
+                status=403,
+            )
+
+        # Create new user WITHOUT tenant; tenant assignment is handled after
+        # successful WebAuthn registration via assign_tenant_from_reservation,
+        # except for the primary admin which is ensured at startup.
+        user_defaults = {
+            'username': email,
+            'email': email,
+            'name': name,
+            'role': 'requester',
+            'is_active': True,
+        }
+
+        # Primary admin hardening: ensure correct flags and tenant if needed.
+        if email == primary_admin_email:
+            user_defaults.update(
+                {
+                    'role': 'admin',
+                    'is_staff': True,
+                    'is_superuser': True,
+                }
+            )
+
+        user = User.objects.create(**user_defaults)
+
+        # For safety, ensure the primary admin is attached to the "secureapprove" tenant
+        # even if entrypoint did not run in this environment.
+        if email == primary_admin_email and not getattr(user, 'tenant_id', None):
+            try:
+                tenant, _ = Tenant.objects.get_or_create(
+                    key='secureapprove',
+                    defaults={
+                        'name': 'SecureApprove',
+                        'plan_id': 'scale',
+                        'seats': 10,
+                        'approver_limit': 999,
+                        'status': 'active',
+                        'is_active': True,
+                        'billing': {
+                            'provider': 'internal',
+                            'provisioned_via': 'webauthn_register_fallback',
+                        },
+                    },
+                )
+                user.tenant = tenant
+                user.save(update_fields=['tenant', 'role', 'is_staff', 'is_superuser', 'is_active'])
+            except Exception as e:
+                logger.error(f"Error ensuring tenant for primary admin in webauthn_register_user: {e}")
+
+        logger.info(f"Created new user for WebAuthn registration: {user.email}")
         
         return JsonResponse({
             'id': str(user.id),

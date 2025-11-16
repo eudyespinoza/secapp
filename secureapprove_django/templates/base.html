@@ -523,10 +523,7 @@
     <div id="tenantChatBar" class="tenant-chat-bar">
         <div class="tenant-chat-bar-left">
             <i class="bi bi-chat-dots fs-5"></i>
-            <div>
-                <div class="fw-semibold small">{% trans "Tenant Chat" %}</div>
-                <div id="widgetBarStatus" class="text-muted small"></div>
-            </div>
+            <div id="widgetBarStatus" class="text-muted small"></div>
         </div>
         <div class="tenant-chat-bar-right">
             <span id="widgetNewMessagesBadge" class="badge bg-danger" style="display:none;"></span>
@@ -564,9 +561,7 @@
                     <div class="tab-pane fade show active" id="chat-active" role="tabpanel">
                         <div class="d-flex justify-content-between mb-2">
                             <div>
-                                <strong id="widgetCurrentConversationTitle">
-                                    {% trans "Select a conversation" %}
-                                </strong>
+                                <strong id="widgetCurrentConversationTitle"></strong>
                                 <div id="widgetTypingIndicator" class="text-muted small" style="display:none;">
                                     {% trans "Typing..." %}
                                 </div>
@@ -715,22 +710,22 @@
         }
         
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize theme
-            const savedTheme = localStorage.getItem('theme') || 'system';
-            applyTheme(savedTheme);
-            
-            // Initialize language UI
-            updateLanguageUI();
-            
-            // Listen for system theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
-                const currentTheme = localStorage.getItem('theme') || 'system';
-                if (currentTheme === 'system') {
-                    applyTheme('system');
-                }
-            });
-        });
+	        document.addEventListener('DOMContentLoaded', function() {
+	            // Initialize theme
+	            const savedTheme = localStorage.getItem('theme') || 'system';
+	            applyTheme(savedTheme);
+	            
+	            // Initialize language UI
+	            updateLanguageUI();
+	            
+	            // Listen for system theme changes
+	            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+	                const currentTheme = localStorage.getItem('theme') || 'system';
+	                if (currentTheme === 'system') {
+	                    applyTheme('system');
+	                }
+	            });
+	        });
         
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -746,9 +741,9 @@
             });
         });
 
-        {% if user.is_authenticated %}
-        // Simple polling-based chat widget
-        (function() {
+	        {% if user.is_authenticated %}
+	        // Simple polling-based chat widget
+	        (function() {
             const chatBar = document.getElementById('tenantChatBar');
             const chatPanel = document.getElementById('tenantChatPanel');
             const chatChevron = document.getElementById('widgetChatChevron');
@@ -764,9 +759,9 @@
             const presenceSummary = document.getElementById('widgetPresenceSummary');
             const currentConversationTitle = document.getElementById('widgetCurrentConversationTitle');
 
-            if (!chatBar || !chatPanel || !conversationList || !messageForm) {
-                return;
-            }
+	            if (!chatBar || !chatPanel || !conversationList || !messageForm) {
+	                return;
+	            }
 
             let currentConversationId = null;
             let lastMessageId = null;
@@ -809,6 +804,8 @@
                 }
             }
 
+            let lastTotalUnread = 0;
+
             function renderConversations(conversations) {
                 conversationList.innerHTML = '';
                 let totalUnread = 0;
@@ -829,6 +826,23 @@
 
                 if (newMessagesBadge) {
                     if (totalUnread > 0) {
+                        // Show badge and send push-style notification if new unread messages arrived
+                        if (totalUnread > lastTotalUnread && 'Notification' in window) {
+                            if (Notification.permission === 'granted') {
+                                const diff = totalUnread - lastTotalUnread;
+                                const title = diff === 1
+                                    ? '{{ _("New chat message") }}'
+                                    : '{{ _("New chat messages") }}';
+                                try {
+                                    new Notification(title, {
+                                        body: `${totalUnread} {{ _("unread messages") }}`,
+                                        icon: '/static/favicon.ico'
+                                    });
+                                } catch (e) {
+                                    console.warn('Notification error', e);
+                                }
+                            }
+                        }
                         newMessagesBadge.style.display = 'inline-block';
                         newMessagesBadge.textContent = totalUnread;
                     } else {
@@ -836,6 +850,8 @@
                         newMessagesBadge.textContent = '';
                     }
                 }
+
+                lastTotalUnread = totalUnread;
             }
 
             function renderUsers(users) {
@@ -879,7 +895,7 @@
                 }
             }
 
-            async function loadConversations() {
+	            async function loadConversations() {
                 const data = await apiGet('/api/chat/conversations/');
                 const conversations = Array.isArray(data) ? data : [];
                 // Sort by last message date desc if available
@@ -888,11 +904,7 @@
                     const db = b.last_message && b.last_message.created_at ? new Date(b.last_message.created_at) : new Date(0);
                     return db - da;
                 });
-                renderConversations(conversations);
-                // If no active conversation yet, open the most recent one
-                if (!currentConversationId && conversations.length) {
-                    await openConversation(conversations[0].id);
-                }
+	                renderConversations(conversations);
             }
 
             async function startConversation(userId) {
@@ -949,13 +961,20 @@
                 }
             }
 
-            // Polling
-            setInterval(() => {
-                if (panelVisible) {
-                    loadMessages();
-                    loadPresence();
-                }
-            }, 5000);
+	            // Initial load for bar data (online users + unread) even if panel is closed
+	            loadPresence();
+	            loadConversations();
+
+	            // Polling
+	            setInterval(() => {
+	                // Presence and unread counts should always stay fresh
+	                loadPresence();
+	                loadConversations();
+	                // Only fetch messages when panel is visible and a conversation is selected
+	                if (panelVisible && currentConversationId) {
+	                    loadMessages();
+	                }
+	            }, 5000);
 
             // Typing
             messageInput.addEventListener('input', function () {
