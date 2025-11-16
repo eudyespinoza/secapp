@@ -250,11 +250,6 @@ msgstr "Updated At"
 msgid "User"
 msgstr "Username"
 
-#: apps/authentication/models.py:56
-#| msgid "Username"
-msgid "Users"
-msgstr "Username"
-
 #: apps/authentication/views.py:51 apps/authentication/views.py:58
 msgid "Please select a subscription plan to get started."
 msgstr "Please select a subscription plan to get started."
