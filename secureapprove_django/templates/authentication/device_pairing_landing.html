@@ -154,6 +154,29 @@ document.addEventListener('DOMContentLoaded', function () {
         return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
+    function getFriendlyErrorMessage(error) {
+        const name = (error && (error.name || error.code)) || '';
+        const message = (error && error.message) || '';
+
+        switch (name) {
+            case 'NotAllowedError':
+                // User cancelled, timed out, or OS/browser rejected silently
+                return "{% trans 'The biometric prompt was cancelled or timed out. Please try again and make sure to confirm with your fingerprint, Face ID, or security key.' %}";
+            case 'SecurityError':
+                return "{% trans 'A security error occurred while creating the credential. Please ensure you are accessing SecureApprove directly over HTTPS and not inside another application.' %}";
+            case 'NotSupportedError':
+                return "{% trans 'This browser or device does not fully support WebAuthn passkeys for this site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) with passkeys enabled.' %}";
+            case 'InvalidStateError':
+                return "{% trans 'A credential for this account already exists on this device. Try signing in instead of pairing again.' %}";
+            default:
+                // Fallback if the browser returns a generic error
+                if (message && message.indexOf('operation either timed out or was not allowed') !== -1) {
+                    return "{% trans 'The operation either timed out or was not allowed by the browser. Please try again, and check your browser privacy settings.' %}";
+                }
+                return "{% trans 'An unexpected error occurred while adding this device. Please try again.' %}";
+        }
+    }
+
     if (startBtn) {
         startBtn.addEventListener('click', async function () {
             try {
@@ -231,7 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } catch (error) {
                 console.error('Device pairing error:', error);
-                alert('{% trans "Failed to add device" %}: ' + (error.message || error));
+                const friendly = getFriendlyErrorMessage(error);
+                alert(friendly);
                 showPairStep(1);
                 if (startBtn) startBtn.disabled = false;
             }
@@ -242,4 +266,3 @@ document.addEventListener('DOMContentLoaded', function () {
 {% endif %}
 
 {% endblock %}
-

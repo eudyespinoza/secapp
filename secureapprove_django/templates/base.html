@@ -1,6 +1,7 @@
 {% load i18n static %}
+{% get_current_language as CURRENT_LANG %}
 <!DOCTYPE html>
-<html lang="{% get_current_language as CURRENT_LANG %}{{ CURRENT_LANG }}">
+<html lang="{{ CURRENT_LANG }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -400,7 +401,7 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="ms-auto d-flex align-items-center gap-3">
+                <div class="ms-auto theme-language-controls">
                     <!-- Theme Switcher -->
                     <div class="dropdown">
                         <button class="control-button" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
