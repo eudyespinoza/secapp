@@ -64,8 +64,9 @@ class RedirectToSubscriptionView(View):
         return redirect('billing:select_plan')
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class LogoutView(BaseLogoutView):
-    """Custom logout view"""
+    """Custom logout view (CSRF-exempt for proxy compatibility)"""
     next_page = 'authentication:webauthn_login'
     
     def dispatch(self, request, *args, **kwargs):

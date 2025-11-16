@@ -7,11 +7,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.i18n import set_language
-from django.utils.translation import activate
-from django.urls import translate_url
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
@@ -19,49 +17,6 @@ from rest_framework import permissions
 # Health check endpoint
 def health_check(request):
     return JsonResponse({"status": "healthy", "service": "secureapprove-django"})
-
-# Custom language switcher with URL translation
-def custom_set_language(request):
-    """
-    Custom language switcher that properly handles i18n_patterns URL translation.
-    This extends Django's built-in set_language view with translate_url support.
-    """
-    if request.method == 'POST':
-        lang_code = request.POST.get('language')
-        next_url = request.POST.get('next', request.META.get('HTTP_REFERER', '/'))
-        
-        if lang_code and lang_code in dict(settings.LANGUAGES):
-            # Activate the language
-            activate(lang_code)
-            
-            # Translate the current URL to use the new language prefix
-            next_trans = translate_url(next_url, lang_code)
-            
-            # Create response with redirect
-            response = HttpResponseRedirect(next_trans)
-            
-            # Set language in cookie
-            response.set_cookie(
-                settings.LANGUAGE_COOKIE_NAME,
-                lang_code,
-                max_age=settings.LANGUAGE_COOKIE_AGE,
-                path=settings.LANGUAGE_COOKIE_PATH,
-                domain=settings.LANGUAGE_COOKIE_DOMAIN,
-                secure=settings.LANGUAGE_COOKIE_SECURE,
-                httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
-                samesite=settings.LANGUAGE_COOKIE_SAMESITE,
-            )
-            
-            # Also store in session
-            if hasattr(request, 'session'):
-                request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
-            
-            return response
-    
-    # Fallback to root
-    return HttpResponseRedirect('/')
-
-
 
 # Swagger/API Documentation
 schema_view = get_schema_view(
@@ -91,8 +46,8 @@ urlpatterns = [
     # Health check (no i18n)
     path('health/', health_check, name='health'),
     
-    # i18n URLs (override set_language to avoid CSRF issues behind proxies)
-    path('i18n/setlang/', csrf_exempt(custom_set_language), name='set_language'),
+    # i18n URLs (use built-in set_language but exempt from CSRF to avoid proxy issues)
+    path('i18n/setlang/', csrf_exempt(set_language), name='set_language'),
     path('i18n/', include('django.conf.urls.i18n')),
     
     # API routes (no translation)
