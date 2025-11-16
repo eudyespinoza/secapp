@@ -9,7 +9,7 @@ echo "🚀 Starting SecureApprove initialization..."
 
 # Wait for database
 echo "⏳ Waiting for PostgreSQL..."
-while ! nc -z $DB_HOST $DB_PORT; do
+while ! nc -z "$DB_HOST" "$DB_PORT"; do
   sleep 0.1
 done
 echo "✅ PostgreSQL is ready!"
@@ -31,17 +31,20 @@ python manage.py makemigrations billing
 echo "🔄 Running database migrations..."
 python manage.py migrate --noinput
 
-# Create superuser if it doesn't exist
-echo "👤 Creating superuser..."
-python manage.py shell << EOF
+# Create superuser if it doesn't exist (admin@secureapprove.com)
+echo "👤 Creating default superuser (admin@secureapprove.com)..."
+python manage.py shell << 'EOF'
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
-if not User.objects.filter(email='admin@secureapprove.com').exists():
+email = 'admin@secureapprove.com'
+
+if not User.objects.filter(email=email).exists():
     User.objects.create_superuser(
         username='admin',
-        email='admin@secureapprove.com',
+        email=email,
         name='Admin User',
-        password='admin123'
+        password='admin123',
     )
     print('✅ Superuser created: admin@secureapprove.com / admin123')
 else:
@@ -50,36 +53,58 @@ EOF
 
 # Compile messages
 echo "🌐 Compiling translation messages..."
-python manage.py compilemessages || echo "⚠️ No translations to compile"
+python manage.py compilemessages || echo "⚠️ No translations to compile or compilemessages failed"
 
-# Setup admin user configuration
-echo "👨‍💼 Setting up admin user configuration..."
-python manage.py shell << EOF
+# Setup admin user configuration for eudyespinoza@gmail.com
+echo "👨‍💼 Setting up primary admin user configuration..."
+python manage.py shell << 'EOF'
 from django.contrib.auth import get_user_model
 from apps.tenants.models import Tenant
+
+User = get_user_model()
+email = 'eudyespinoza@gmail.com'
+
 try:
-    User = get_user_model()
-    user = User.objects.filter(email='eudyespinoza@gmail.com').first()
-    if user:
-        user.is_superuser = True
-        user.is_staff = True
-        user.role = 'admin'
-        user.save()
-        tenant, created = Tenant.objects.get_or_create(
-            key='secureapprove',
-            defaults={
-                'name': 'SecureApprove',
-                'plan_id': 'scale',
-                'approver_limit': 999,
-                'status': 'active',
-                'is_active': True
-            }
-        )
-        user.tenant = tenant
-        user.save()
-        print(f'✅ Configured {user.email} as admin with tenant {tenant.name}')
-    else:
-        print('⚠️ User eudyespinoza@gmail.com not found - will be configured on first login')
+    # Ensure admin user exists
+    user, created = User.objects.get_or_create(
+        email=email,
+        defaults={
+            'username': 'eudyespinoza',
+            'name': 'Eudys Espinoza',
+            'role': 'admin',
+            'is_active': True,
+        },
+    )
+
+    # Make sure this account has full admin flags
+    user.is_superuser = True
+    user.is_staff = True
+    user.role = 'admin'
+    # No password is set here on purpose: this account is meant to use WebAuthn
+    user.save()
+
+    # Ensure the primary tenant "secureapprove" exists
+    tenant, created_tenant = Tenant.objects.get_or_create(
+        key='secureapprove',
+        defaults={
+            'name': 'SecureApprove',
+            'plan_id': 'scale',
+            'seats': 10,
+            'approver_limit': 999,
+            'status': 'active',
+            'is_active': True,
+            'billing': {
+                'provider': 'internal',
+                'provisioned_via': 'entrypoint',
+            },
+        },
+    )
+
+    # Associate the admin user with this tenant
+    user.tenant = tenant
+    user.save(update_fields=['tenant'])
+
+    print(f'✅ Configured {user.email} as admin with tenant {tenant.name}')
 except Exception as e:
     print(f'⚠️ Admin setup error: {e}')
 EOF
@@ -87,7 +112,8 @@ EOF
 echo "🎉 Initialization complete!"
 echo "🌐 Access the application at: http://localhost:8000"
 echo "👤 Admin login: admin@secureapprove.com / admin123"
-echo "👤 Your admin login: eudyespinoza@gmail.com (WebAuthn)"
+echo "👤 Your WebAuthn admin login: eudyespinoza@gmail.com"
 
 # Start the application
 exec "$@"
+
