@@ -169,7 +169,7 @@ def webauthn_register_user(request):
         # even if entrypoint did not run in this environment.
         if email == primary_admin_email and not getattr(user, 'tenant_id', None):
             try:
-                tenant, _ = Tenant.objects.get_or_create(
+                tenant, created_tenant = Tenant.objects.get_or_create(
                     key='secureapprove',
                     defaults={
                         'name': 'SecureApprove',
