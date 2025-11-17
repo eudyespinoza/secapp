@@ -18,6 +18,15 @@ from .serializers import (
     UserPresenceSerializer,
 )
 
+try:
+    # Optional import; if Channels is not configured, we simply skip
+    # WebSocket notifications.
+    from asgiref.sync import async_to_sync
+    from channels.layers import get_channel_layer
+except Exception:  # pragma: no cover - graceful degradation if channels is missing
+    async_to_sync = None
+    get_channel_layer = None
+
 
 class ChatPageView(TemplateView):
     """
@@ -114,7 +123,17 @@ class ChatConversationViewSet(viewsets.ReadOnlyModelViewSet):
             since_id = request.query_params.get('since_id')
             qs = conv.messages.all()
             if since_id:
-                qs = qs.filter(id__gt=since_id)
+                # Use created_at of the reference message as cursor instead of
+                # relying on UUID ordering, which is not guaranteed to be
+                # monotonic.
+                try:
+                    last_msg = conv.messages.get(id=since_id)
+                except ChatMessage.DoesNotExist:
+                    # If the message does not exist (e.g. was deleted), fall
+                    # back to returning all messages.
+                    pass
+                else:
+                    qs = qs.filter(created_at__gt=last_msg.created_at)
 
             # Mark as delivered for current user
             ChatMessageDelivery.objects.filter(
@@ -165,6 +184,32 @@ class ChatConversationViewSet(viewsets.ReadOnlyModelViewSet):
             ChatMessageDelivery.objects.bulk_create(deliveries)
 
         serializer = ChatMessageSerializer(msg, context={'request': request})
+
+        # Push real-time notification via Django Channels (if available)
+        if async_to_sync and get_channel_layer:
+            try:
+                channel_layer = get_channel_layer()
+            except Exception:
+                channel_layer = None
+            if channel_layer is not None:
+                event = {
+                    "type": "chat.message",
+                    "event": "message_created",
+                    "conversation_id": str(conv.id),
+                    "message": serializer.data,
+                }
+                # Notify sender
+                async_to_sync(channel_layer.group_send)(
+                    f"user_{user.id}",
+                    event,
+                )
+                # Notify each recipient
+                for recipient in recipients:
+                    async_to_sync(channel_layer.group_send)(
+                        f"user_{recipient.id}",
+                        event,
+                    )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])

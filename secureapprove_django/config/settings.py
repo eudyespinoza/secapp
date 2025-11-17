@@ -39,6 +39,7 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount',
     'guardian',
     'drf_yasg',
+    'channels',
 ]
 
 LOCAL_APPS = [
@@ -87,6 +88,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 DATABASES = {
@@ -101,10 +103,12 @@ DATABASES = {
 }
 
 # Cache (Redis)
+REDIS_URL = config('REDIS_URL', default='redis://localhost:6379/1')
+
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://localhost:6379/1'),
+        'LOCATION': REDIS_URL,
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -261,6 +265,16 @@ LOGGING = {
             'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
+        },
+    },
+}
+
+# Django Channels (WebSockets / real-time features)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [REDIS_URL],
         },
     },
 }

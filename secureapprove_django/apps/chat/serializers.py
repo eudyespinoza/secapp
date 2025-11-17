@@ -77,10 +77,12 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 class ChatConversationSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()
+    participants = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
 
     class Meta:
         model = ChatConversation
-        fields = ['id', 'created_at', 'last_message', 'unread_count']
+        fields = ['id', 'created_at', 'last_message', 'unread_count', 'participants', 'title']
 
     def get_last_message(self, obj):
         last_msg = obj.messages.order_by('-created_at').first()
@@ -97,6 +99,55 @@ class ChatConversationSerializer(serializers.ModelSerializer):
             recipient=request.user,
             read_at__isnull=True,
         ).count()
+
+    def _get_participants_cached(self, obj):
+        """
+        Small helper to avoid hitting the DB multiple times per conversation
+        when resolving participants and title.
+        """
+        cached = getattr(obj, '_participants_cache', None)
+        if cached is None:
+            cached = list(obj.participants.all())
+            setattr(obj, '_participants_cache', cached)
+        return cached
+
+    def get_participants(self, obj):
+        participants = self._get_participants_cached(obj)
+        return [
+            {
+                'id': user.id,
+                'name': user.get_full_name(),
+                'email': user.email,
+            }
+            for user in participants
+        ]
+
+    def get_title(self, obj):
+        """
+        Human-friendly conversation title.
+
+        For direct messages, uses the other participant's name/email.
+        For group conversations, joins participant names.
+        """
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+
+        participants = self._get_participants_cached(obj)
+        others = participants
+        if user and getattr(user, 'is_authenticated', False):
+            others = [u for u in participants if u.id != user.id]
+
+        if len(others) == 1:
+            other = others[0]
+            return other.get_full_name() or other.email
+
+        if others:
+            return ", ".join(
+                (u.get_full_name() or u.email) for u in others
+            )
+
+        # Fallback for edge cases (e.g. no participants yet)
+        return f"Conversation {obj.id}"
 
 
 class UserPresenceSerializer(serializers.ModelSerializer):

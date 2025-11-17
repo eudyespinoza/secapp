@@ -37,7 +37,7 @@
             margin: 0 auto 2rem;
         }
 
-        .btn-primary-custom {
+        .btn-billing-primary {
             background: var(--primary-color);
             color: white;
             border: none;
@@ -50,7 +50,7 @@
             transition: all 0.3s ease;
         }
 
-        .btn-primary-custom:hover {
+        .btn-billing-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
             color: white;
@@ -109,7 +109,7 @@
                 </div>
                 
                 <div class="mt-4">
-                    <a href="{% url 'billing:select_plan' %}" class="btn-primary-custom">
+                    <a href="{% url 'billing:select_plan' %}" class="btn-billing-primary">
                         <i class="bi bi-arrow-clockwise me-2"></i>
                         {% trans "Try Again" %}
                     </a>

@@ -43,7 +43,7 @@
             margin-bottom: 1rem;
         }
 
-        .btn-primary-custom {
+        .btn-hero-primary {
             background: var(--primary-color);
             border: none;
             padding: 12px 30px;
@@ -51,8 +51,8 @@
             transition: all 0.3s ease;
             color: white;
         }
-
-        .btn-primary-custom:hover {
+        
+        .btn-hero-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
@@ -111,7 +111,7 @@
                     </p>
 
                     <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                        <a href="{% url 'authentication:webauthn_login' %}" class="btn btn-primary-custom btn-lg">
+                        <a href="{% url 'authentication:webauthn_login' %}" class="btn btn-hero-primary btn-lg">
                             <i class="bi bi-fingerprint me-2"></i>
                             {% trans "Comenzar Ahora" %}
                         </a>
@@ -272,7 +272,7 @@
                                 {% trans "El administrador de cada tenant puede agregar la cantidad de usuarios que desee; el monto mensual se calcula multiplicando el precio por usuario por el número total de usuarios." %}
                             </p>
                             <div class="text-center">
-                                <a href="{% url 'billing:select_plan' %}" class="btn btn-primary-custom">
+                        <a href="{% url 'billing:select_plan' %}" class="btn btn-hero-primary">
                                     {% trans "Ir a seleccionar plan" %}
                                 </a>
                             </div>
@@ -306,4 +306,3 @@
         </div>
     </section>
 {% endblock %}
-

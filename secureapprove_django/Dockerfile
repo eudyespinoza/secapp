@@ -57,5 +57,5 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 # Set entrypoint
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "config.wsgi:application"]
+# Run the application with ASGI server (Daphne) to support WebSockets
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
