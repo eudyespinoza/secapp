@@ -794,7 +794,21 @@
                     options.headers['X-CSRFToken'] = csrfToken;
                 }
                 const response = await fetch(url, options);
-                return response.json();
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('Failed to parse JSON from', url, e);
+                }
+                if (!response.ok) {
+                    console.error('Chat API error', url, response.status, data);
+                    if (data && data.error) {
+                        throw new Error(data.error);
+                    } else {
+                        throw new Error(`Request failed (${response.status})`);
+                    }
+                }
+                return data;
             }
 
             function setPanelVisible(visible) {

@@ -14,7 +14,7 @@ class ChatAttachmentSerializer(serializers.ModelSerializer):
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     sender_name = serializers.CharField(source='sender.get_full_name', read_only=True)
-    sender_id = serializers.UUIDField(source='sender.id', read_only=True)
+    sender_id = serializers.IntegerField(source='sender.id', read_only=True)
     attachments = ChatAttachmentSerializer(many=True, read_only=True)
     status = serializers.SerializerMethodField()
 

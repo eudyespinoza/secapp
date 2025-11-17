@@ -2,6 +2,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -34,6 +36,7 @@ class ChatPageView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class ChatConversationViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Conversation list and creation for current tenant/user.
