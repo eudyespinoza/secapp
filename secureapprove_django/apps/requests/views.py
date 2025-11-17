@@ -134,6 +134,26 @@ def approve_request(request, pk):
     if approval_request.requester == request.user:
         messages.error(request, _('You cannot approve your own request.'))
         return redirect('requests:detail', pk=pk)
+
+    # Require recent WebAuthn verification on this device
+    from django.utils import timezone
+    last_webauthn_at = request.session.get('last_webauthn_at')
+    is_recent = False
+    if last_webauthn_at:
+        try:
+            last_dt = timezone.datetime.fromisoformat(last_webauthn_at)
+            if timezone.is_naive(last_dt):
+                last_dt = timezone.make_aware(last_dt, timezone.utc)
+            # Consider valid if within last 2 minutes
+            is_recent = (timezone.now() - last_dt).total_seconds() <= 120
+        except Exception:
+            is_recent = False
+    if not is_recent:
+        messages.error(
+            request,
+            _('For security reasons, you must confirm with your biometric on this device before approving. Please try again.'),
+        )
+        return redirect('requests:detail', pk=pk)
     
     # Approve the request
     approval_request.approve(request.user)
@@ -167,6 +187,25 @@ def reject_request(request, pk):
     
     if approval_request.requester == request.user:
         messages.error(request, _('You cannot reject your own request.'))
+        return redirect('requests:detail', pk=pk)
+
+    # Require recent WebAuthn verification on this device
+    from django.utils import timezone
+    last_webauthn_at = request.session.get('last_webauthn_at')
+    is_recent = False
+    if last_webauthn_at:
+        try:
+            last_dt = timezone.datetime.fromisoformat(last_webauthn_at)
+            if timezone.is_naive(last_dt):
+                last_dt = timezone.make_aware(last_dt, timezone.utc)
+            is_recent = (timezone.now() - last_dt).total_seconds() <= 120
+        except Exception:
+            is_recent = False
+    if not is_recent:
+        messages.error(
+            request,
+            _('For security reasons, you must confirm with your biometric on this device before rejecting. Please try again.'),
+        )
         return redirect('requests:detail', pk=pk)
     
     # Get rejection reason

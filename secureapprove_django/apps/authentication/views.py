@@ -432,8 +432,12 @@ def webauthn_login_verify(request):
             assign_tenant_from_reservation(user)
 
             # Update last login timestamp
-            user.last_login_at = timezone.now()
+            now = timezone.now()
+            user.last_login_at = now
             user.save(update_fields=['last_login_at'])
+
+            # Mark in session the time of last WebAuthn verification
+            request.session['last_webauthn_at'] = now.isoformat()
             
             return JsonResponse({
                 'verified': True,

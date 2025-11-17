@@ -260,16 +260,16 @@
         </div>
 
         <div class="col-lg-4">
-            <!-- Actions -->
+                    <!-- Actions -->
             {% if can_approve %}
                 <div class="action-card mb-4">
                     <h5 class="mb-3">
                         <i class="bi bi-hand-thumbs-up"></i>
                         {% trans "Approval Actions" %}
                     </h5>
-                    <p class="text-muted small mb-3">
-                        {% trans "You have permission to approve or reject this request." %}
-                    </p>
+                        <p class="text-muted small mb-3">
+                            {% trans "You have permission to approve or reject this request." %}
+                        </p>
 
                     <!-- Approve Form -->
                     <div class="approval-form mb-3">
@@ -280,9 +280,9 @@
                         <p class="small text-muted mb-3">
                             {% trans "Approving this request will allow the requester to proceed." %}
                         </p>
-                        <form method="post" action="{% url 'requests:approve' request_obj.pk %}">
+                        <form method="post" action="{% url 'requests:approve' request_obj.pk %}" id="approveForm">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-success btn-sm w-100" onclick="return confirm('{% trans "Are you sure you want to approve this request?" %}')">
+                            <button type="submit" class="btn btn-success btn-sm w-100">
                                 <i class="bi bi-check-lg"></i>
                                 {% trans "Approve Request" %}
                             </button>
@@ -295,7 +295,7 @@
                             <i class="bi bi-x-circle"></i>
                             {% trans "Reject Request" %}
                         </h6>
-                        <form method="post" action="{% url 'requests:reject' request_obj.pk %}">
+                        <form method="post" action="{% url 'requests:reject' request_obj.pk %}" id="rejectForm">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="rejection_reason" class="form-label small">
@@ -303,7 +303,7 @@
                                 </label>
                                 <textarea name="reason" id="rejection_reason" class="form-control form-control-sm" rows="3" placeholder="{% trans 'Please explain why you are rejecting this request...' %}" required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('{% trans "Are you sure you want to reject this request?" %}')">
+                            <button type="submit" class="btn btn-danger btn-sm w-100">
                                 <i class="bi bi-x-lg"></i>
                                 {% trans "Reject Request" %}
                             </button>
@@ -320,7 +320,7 @@
                         </p>
                     </div>
                 </div>
-            {% endif %}
+{% endif %}
 
             <!-- Request Info -->
             <div class="card">
@@ -364,4 +364,153 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const approveForm = document.getElementById('approveForm');
+    const rejectForm = document.getElementById('rejectForm');
+
+    if (!approveForm && !rejectForm) {
+        return;
+    }
+
+    {% get_current_language as REQ_LANG %}
+    const langPrefix = '/{{ REQ_LANG }}';
+    const userEmail = '{{ user.email|lower }}';
+
+    function base64urlToBuffer(base64url) {
+        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+        const binary = atob(padded);
+        const buffer = new ArrayBuffer(binary.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < binary.length; i++) {
+            view[i] = binary.charCodeAt(i);
+        }
+        return buffer;
+    }
+
+    async function runWebAuthnAssertion() {
+        if (!navigator.credentials || !navigator.credentials.get) {
+            alert('{% trans "This device does not support WebAuthn authentication. Please use a compatible device to approve requests." %}');
+            return false;
+        }
+
+        try {
+            // Step 1: get authentication options for this user
+            const optionsResponse = await fetch(`${langPrefix}/auth/webauthn/login/options/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: userEmail })
+            });
+            const optionsResult = await optionsResponse.json();
+
+            if (!optionsResponse.ok) {
+                const err = optionsResult.error || 'Failed to get authentication options';
+                if (err.indexOf('No WebAuthn credentials registered') !== -1) {
+                    alert('{% trans "This device does not have a registered WebAuthn credential for your account. Please approve from a device where biometric login is configured." %}');
+                } else {
+                    alert(err);
+                }
+                return false;
+            }
+
+            const { options, userId } = optionsResult;
+
+            // Prepare options: decode challenge and allowCredentials
+            const publicKey = Object.assign({}, options);
+            publicKey.challenge = base64urlToBuffer(publicKey.challenge);
+            if (publicKey.allowCredentials) {
+                publicKey.allowCredentials = publicKey.allowCredentials.map(cred => ({
+                    type: cred.type,
+                    id: base64urlToBuffer(cred.id),
+                    transports: cred.transports || []
+                }));
+            }
+
+            // Step 2: WebAuthn get()
+            const assertion = await navigator.credentials.get({ publicKey });
+            if (!assertion) {
+                alert('{% trans "WebAuthn authentication was cancelled." %}');
+                return false;
+            }
+
+            // Step 3: send assertion to server for verification
+            function bufferToBase64url(buffer) {
+                const bytes = new Uint8Array(buffer);
+                let binary = '';
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+            }
+
+            const assertionData = {
+                id: assertion.id,
+                rawId: bufferToBase64url(assertion.rawId),
+                response: {
+                    clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
+                    authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
+                    signature: bufferToBase64url(assertion.response.signature),
+                    userHandle: assertion.response.userHandle ? bufferToBase64url(assertion.response.userHandle) : null,
+                },
+                type: assertion.type
+            };
+
+            const verifyResponse = await fetch(`${langPrefix}/auth/webauthn/login/verify/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    response: assertionData
+                })
+            });
+
+            const verifyResult = await verifyResponse.json();
+            if (!verifyResponse.ok || !verifyResult.verified) {
+                alert(verifyResult.error || '{% trans "Authentication verification failed." %}');
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Approval WebAuthn error:', error);
+            alert('{% trans "An error occurred while confirming your biometric authentication. Please try again." %}');
+            return false;
+        }
+    }
+
+    async function handleProtectedSubmit(event, form, confirmMessage) {
+        event.preventDefault();
+        if (!confirm(confirmMessage)) {
+            return;
+        }
+
+        const ok = await runWebAuthnAssertion();
+        if (!ok) {
+            return;
+        }
+
+        form.submit();
+    }
+
+    if (approveForm) {
+        approveForm.addEventListener('submit', function (e) {
+            handleProtectedSubmit(e, approveForm, '{% trans "Are you sure you want to approve this request?" %}');
+        });
+    }
+
+    if (rejectForm) {
+        rejectForm.addEventListener('submit', function (e) {
+            handleProtectedSubmit(e, rejectForm, '{% trans "Are you sure you want to reject this request?" %}');
+        });
+    }
+});
+</script>
 {% endblock %}
