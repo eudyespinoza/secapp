@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 import uuid
+import json
 
 class User(AbstractUser):
     """
@@ -34,6 +35,8 @@ class User(AbstractUser):
     )
     
     # WebAuthn credentials (JSON field to store credentials array)
+    # Each credential now has: credential_id, public_key, sign_count, transports,
+    # display_name, is_active, created_at, last_used_at
     webauthn_credentials = models.JSONField(
         _('WebAuthn Credentials'),
         default=list,
@@ -44,6 +47,7 @@ class User(AbstractUser):
     # Additional fields
     is_active = models.BooleanField(_('Active'), default=True)
     last_login_at = models.DateTimeField(_('Last Login'), null=True, blank=True)
+    webauthn_last_login_at = models.DateTimeField(_('Last WebAuthn Login'), null=True, blank=True)
     created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
     updated_at = models.DateTimeField(_('Updated At'), auto_now=True)
     
@@ -70,7 +74,10 @@ class User(AbstractUser):
     @property
     def has_webauthn_credentials(self):
         """Check if user has registered WebAuthn credentials"""
-        return len(self.webauthn_credentials) > 0
+        if not isinstance(self.webauthn_credentials, list):
+            return False
+        # Only count active credentials
+        return any(cred.get('is_active', True) for cred in self.webauthn_credentials)
     
     def can_approve_requests(self):
         """Check if user can approve requests"""
@@ -86,7 +93,21 @@ class User(AbstractUser):
         """Add a WebAuthn credential to the user"""
         if not isinstance(self.webauthn_credentials, list):
             self.webauthn_credentials = []
-        self.webauthn_credentials.append(credential_data)
+        
+        # Ensure credential has required fields
+        now = timezone.now().isoformat()
+        credential = {
+            'credential_id': credential_data.get('credential_id'),
+            'credential_public_key': credential_data.get('credential_public_key'),
+            'sign_count': credential_data.get('sign_count', 0),
+            'transports': credential_data.get('transports', []),
+            'display_name': credential_data.get('display_name', f'Device {len(self.webauthn_credentials) + 1}'),
+            'is_active': True,
+            'created_at': credential_data.get('created_at', now),
+            'last_used_at': None,
+        }
+        
+        self.webauthn_credentials.append(credential)
         self.save(update_fields=['webauthn_credentials'])
     
     def get_webauthn_credential(self, credential_id):
@@ -96,13 +117,43 @@ class User(AbstractUser):
                 return cred
         return None
     
+    def update_credential_last_used(self, credential_id):
+        """Update last_used_at timestamp for a credential"""
+        for cred in self.webauthn_credentials:
+            if cred.get('credential_id') == credential_id:
+                cred['last_used_at'] = timezone.now().isoformat()
+                self.save(update_fields=['webauthn_credentials'])
+                break
+    
+    def rename_webauthn_credential(self, credential_id, new_name):
+        """Rename a WebAuthn credential"""
+        for cred in self.webauthn_credentials:
+            if cred.get('credential_id') == credential_id:
+                cred['display_name'] = new_name
+                self.save(update_fields=['webauthn_credentials'])
+                return True
+        return False
+    
+    def deactivate_webauthn_credential(self, credential_id):
+        """Deactivate (soft delete) a WebAuthn credential"""
+        for cred in self.webauthn_credentials:
+            if cred.get('credential_id') == credential_id:
+                cred['is_active'] = False
+                self.save(update_fields=['webauthn_credentials'])
+                return True
+        return False
+    
     def remove_webauthn_credential(self, credential_id):
-        """Remove a WebAuthn credential"""
+        """Remove (hard delete) a WebAuthn credential"""
+        original_count = len(self.webauthn_credentials)
         self.webauthn_credentials = [
             cred for cred in self.webauthn_credentials 
             if cred.get('credential_id') != credential_id
         ]
-        self.save(update_fields=['webauthn_credentials'])
+        if len(self.webauthn_credentials) < original_count:
+            self.save(update_fields=['webauthn_credentials'])
+            return True
+        return False
     
     def is_passwordless_only(self):
         """Check if user only uses passwordless authentication"""
@@ -158,3 +209,96 @@ class DevicePairingSession(models.Model):
     @property
     def is_expired(self):
         return timezone.now() >= self.expires_at
+
+
+class ApprovalAudit(models.Model):
+    """
+    Audit log for approval actions performed with WebAuthn step-up authentication.
+    Records every WebAuthn challenge verification for approval operations.
+    """
+    
+    STATUS_CHOICES = [
+        ('success', _('Success')),
+        ('failed', _('Failed')),
+        ('expired', _('Expired')),
+        ('cancelled', _('Cancelled')),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    # Related approval request
+    approval_request = models.ForeignKey(
+        'requests.ApprovalRequest',
+        on_delete=models.CASCADE,
+        related_name='webauthn_audits',
+        verbose_name=_('Approval Request')
+    )
+    
+    # User who performed the action
+    user = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.CASCADE,
+        related_name='approval_audits',
+        verbose_name=_('User')
+    )
+    
+    # WebAuthn credential used
+    credential_id = models.CharField(
+        _('Credential ID'),
+        max_length=512,
+        help_text=_('Base64-encoded WebAuthn credential ID used for this approval')
+    )
+    
+    # Challenge information
+    challenge_id = models.CharField(
+        _('Challenge ID'),
+        max_length=128,
+        help_text=_('Unique identifier for the challenge')
+    )
+    
+    # Action details
+    action = models.CharField(
+        _('Action'),
+        max_length=20,
+        choices=[('approve', _('Approve')), ('reject', _('Reject'))],
+        help_text=_('Type of approval action')
+    )
+    
+    status = models.CharField(
+        _('Status'),
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='success'
+    )
+    
+    # Request metadata
+    ip_address = models.GenericIPAddressField(_('IP Address'), null=True, blank=True)
+    user_agent = models.TextField(_('User Agent'), blank=True)
+    
+    # Context data (optional, can include approval details hash for cryptographic binding)
+    context_data = models.JSONField(
+        _('Context Data'),
+        default=dict,
+        blank=True,
+        help_text=_('Additional context: approval amount, type, etc.')
+    )
+    
+    # Timestamps
+    performed_at = models.DateTimeField(_('Performed At'), auto_now_add=True)
+    
+    # Error details (if failed)
+    error_message = models.TextField(_('Error Message'), blank=True)
+    
+    class Meta:
+        verbose_name = _('Approval Audit')
+        verbose_name_plural = _('Approval Audits')
+        ordering = ['-performed_at']
+        indexes = [
+            models.Index(fields=['approval_request', 'performed_at']),
+            models.Index(fields=['user', 'performed_at']),
+            models.Index(fields=['status']),
+            models.Index(fields=['credential_id']),
+        ]
+    
+    def __str__(self):
+        return f"Audit {self.id}: {self.user.email} - {self.action} - {self.status}"

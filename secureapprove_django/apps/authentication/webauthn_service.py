@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
+from django.utils import timezone
 
 from webauthn import generate_registration_options, verify_registration_response
 from webauthn import generate_authentication_options, verify_authentication_response
@@ -67,7 +68,7 @@ class WebAuthnService:
             authenticator_selection=AuthenticatorSelectionCriteria(
                 authenticator_attachment=None,  # Allow both platform and cross-platform authenticators
                 resident_key=ResidentKeyRequirement.PREFERRED,
-                user_verification=UserVerificationRequirement.DISCOURAGED,  # Don't require biometrics
+                user_verification=UserVerificationRequirement.REQUIRED,  # REQUIRE biometrics/PIN
             ),
             supported_pub_key_algs=[
                 COSEAlgorithmIdentifier.ECDSA_SHA_256,
@@ -143,7 +144,7 @@ class WebAuthnService:
                 expected_challenge=expected_challenge,
                 expected_origin=self.origin,
                 expected_rp_id=self.rp_id,
-                require_user_verification=False,
+                require_user_verification=True,  # Require user verification
             )
             
             # Clean up challenge
@@ -202,7 +203,7 @@ class WebAuthnService:
         options = generate_authentication_options(
             rp_id=self.rp_id,
             allow_credentials=allow_credentials,
-            user_verification=UserVerificationRequirement.PREFERRED,
+            user_verification=UserVerificationRequirement.REQUIRED,  # REQUIRE user verification
             timeout=60000,
         )
         
@@ -283,7 +284,7 @@ class WebAuthnService:
                 expected_rp_id=self.rp_id,
                 credential_public_key=base64.b64decode(user_credential['credential_public_key']),
                 credential_current_sign_count=user_credential.get('sign_count', 0),
-                require_user_verification=False,
+                require_user_verification=True,  # Require user verification
             )
             
             # Clean up challenge
@@ -314,6 +315,198 @@ class WebAuthnService:
             cache.delete(f"webauthn_challenge_reg_{user_id}")
         if challenge_type in ['auth', 'both']:
             cache.delete(f"webauthn_challenge_auth_{user_id}")
+    
+    def generate_approval_challenge(self, user: User, approval_id: str, context_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Generate WebAuthn challenge specifically for an approval action (step-up authentication).
+        
+        Args:
+            user: User performing the approval
+            approval_id: ID of the approval request
+            context_data: Additional context (amount, type, etc.) for cryptographic binding
+        
+        Returns:
+            Dictionary with challenge options
+        """
+        import secrets
+        import hashlib
+        
+        if not user.webauthn_credentials:
+            raise ValueError(_('No credentials registered for this user'))
+        
+        # Only include active credentials
+        active_credentials = [
+            cred for cred in user.webauthn_credentials 
+            if cred.get('is_active', True)
+        ]
+        
+        if not active_credentials:
+            raise ValueError(_('No active credentials found'))
+        
+        # Prepare allowed credentials
+        allow_credentials = []
+        for cred in active_credentials:
+            if 'credential_id' in cred:
+                allow_credentials.append({
+                    'id': base64.b64decode(cred['credential_id']),
+                    'type': 'public-key',
+                    'transports': cred.get('transports', [])
+                })
+        
+        # Generate authentication options
+        options = generate_authentication_options(
+            rp_id=self.rp_id,
+            allow_credentials=allow_credentials,
+            user_verification=UserVerificationRequirement.REQUIRED,
+            timeout=60000,
+        )
+        
+        # Generate unique challenge ID for this approval
+        challenge_id = secrets.token_urlsafe(32)
+        
+        # Create context hash for cryptographic binding (optional but recommended)
+        context_hash = None
+        if context_data:
+            context_str = json.dumps(context_data, sort_keys=True)
+            context_hash = hashlib.sha256(context_str.encode()).hexdigest()
+        
+        # Store challenge with approval context
+        challenge_key = f"webauthn_challenge_approval_{user.id}_{approval_id}"
+        challenge_data = {
+            'challenge': options.challenge,
+            'challenge_id': challenge_id,
+            'approval_id': approval_id,
+            'context_hash': context_hash,
+            'created_at': timezone.now().isoformat(),
+        }
+        cache.set(challenge_key, challenge_data, timeout=self.challenge_timeout)
+        
+        return {
+            'challenge': base64.b64encode(options.challenge).decode('utf-8') if isinstance(options.challenge, bytes) else base64.b64encode(options.challenge.encode('utf-8')).decode('utf-8'),
+            'timeout': options.timeout,
+            'rpId': options.rp_id,
+            'allowCredentials': [
+                {
+                    'id': base64.b64encode(cred.id).decode('utf-8') if isinstance(cred.id, bytes) else base64.b64encode(cred.id.encode('utf-8')).decode('utf-8'),
+                    'type': cred.type,
+                    'transports': cred.transports,
+                }
+                for cred in options.allow_credentials
+            ],
+            'userVerification': options.user_verification.value,
+            'challengeId': challenge_id,
+        }
+    
+    def verify_approval_response(self, user: User, approval_id: str, credential_data: Dict[str, Any], context_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Verify WebAuthn response for approval step-up authentication.
+        
+        Args:
+            user: User performing the approval
+            approval_id: ID of the approval request
+            credential_data: WebAuthn response from client
+            context_data: Context data to verify against stored hash
+        
+        Returns:
+            Dictionary with verification result
+        """
+        import hashlib
+        
+        challenge_key = f"webauthn_challenge_approval_{user.id}_{approval_id}"
+        challenge_data = cache.get(challenge_key)
+        
+        if not challenge_data:
+            raise ValueError(_('Challenge not found or expired. Please try again.'))
+        
+        expected_challenge = challenge_data['challenge']
+        stored_challenge_id = challenge_data['challenge_id']
+        stored_approval_id = challenge_data['approval_id']
+        stored_context_hash = challenge_data.get('context_hash')
+        
+        # Verify approval_id matches
+        if stored_approval_id != approval_id:
+            cache.delete(challenge_key)
+            raise ValueError(_('Challenge does not match the approval request'))
+        
+        # Verify context hash if provided
+        if stored_context_hash and context_data:
+            context_str = json.dumps(context_data, sort_keys=True)
+            context_hash = hashlib.sha256(context_str.encode()).hexdigest()
+            if context_hash != stored_context_hash:
+                cache.delete(challenge_key)
+                raise ValueError(_('Approval context has changed. Please try again.'))
+        
+        try:
+            # Find the credential
+            credential_id = credential_data.get('id', '')
+            
+            # Normalize base64 padding for comparison
+            def normalize_base64(b64_str):
+                missing_padding = len(b64_str) % 4
+                if missing_padding:
+                    b64_str += '=' * (4 - missing_padding)
+                return b64_str
+            
+            normalized_credential_id = normalize_base64(credential_id)
+            
+            user_credential = None
+            for cred in user.webauthn_credentials:
+                stored_id = cred.get('credential_id', '')
+                normalized_stored_id = normalize_base64(stored_id)
+                if normalized_stored_id == normalized_credential_id:
+                    user_credential = cred
+                    break
+            
+            if not user_credential:
+                raise ValueError(_('Credential not found'))
+            
+            # Check if credential is active
+            if not user_credential.get('is_active', True):
+                raise ValueError(_('This credential has been deactivated'))
+            
+            # Convert the credential data to the expected format
+            authentication_credential = AuthenticationCredential.parse_raw(json.dumps({
+                'id': credential_data['id'],
+                'raw_id': credential_data['rawId'],
+                'response': {
+                    'client_data_json': credential_data['response']['clientDataJSON'],
+                    'authenticator_data': credential_data['response']['authenticatorData'],
+                    'signature': credential_data['response']['signature'],
+                    'user_handle': credential_data['response'].get('userHandle'),
+                },
+                'type': credential_data['type'],
+            }))
+            
+            # Verify the authentication
+            verification = verify_authentication_response(
+                credential=authentication_credential,
+                expected_challenge=expected_challenge,
+                expected_origin=self.origin,
+                expected_rp_id=self.rp_id,
+                credential_public_key=base64.b64decode(user_credential['credential_public_key']),
+                credential_current_sign_count=user_credential.get('sign_count', 0),
+                require_user_verification=True,
+            )
+            
+            # Clean up challenge (one-time use)
+            cache.delete(challenge_key)
+            
+            # Update sign count and last_used_at
+            user_credential['sign_count'] = verification.new_sign_count
+            user_credential['last_used_at'] = timezone.now().isoformat()
+            user.save(update_fields=['webauthn_credentials'])
+            
+            return {
+                'verified': True,
+                'credential_id': credential_id,
+                'challenge_id': stored_challenge_id,
+                'new_sign_count': verification.new_sign_count,
+                'user_verified': True,
+            }
+            
+        except Exception as e:
+            cache.delete(challenge_key)
+            raise ValueError(f'{_("Approval verification failed")}: {str(e)}')
 
 
 # Global instance

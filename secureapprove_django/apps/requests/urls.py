@@ -4,7 +4,7 @@
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views, dashboard_views
+from . import views, dashboard_views, webauthn_views
 from .api_extensions import bulk_action_requests, export_requests
 from apps.chat.views import ChatPageView
 
@@ -24,6 +24,10 @@ urlpatterns = [
     path('<int:pk>/', views.request_detail, name='detail'),
     path('<int:pk>/approve/', views.approve_request, name='approve'),
     path('<int:pk>/reject/', views.reject_request, name='reject'),
+    
+    # WebAuthn step-up authentication for approvals
+    path('<int:approval_id>/webauthn/options/', webauthn_views.approval_webauthn_options, name='approval-webauthn-options'),
+    path('<int:approval_id>/webauthn/verify/', webauthn_views.approval_webauthn_verify, name='approval-webauthn-verify'),
 
     # Chat UI entrypoint (template)
     path('chat/', ChatPageView.as_view(), name='chat'),

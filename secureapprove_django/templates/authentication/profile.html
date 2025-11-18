@@ -170,24 +170,42 @@
                     {% if webauthn_credentials %}
                         <div id="credentialsList">
                             {% for credential in webauthn_credentials %}
-                            <div class="credential-item" data-credential-id="{{ credential.credential_id|default:forloop.counter }}">
+                            <div class="credential-item {% if not credential.is_active %}opacity-50{% endif %}" data-credential-id="{{ credential.credential_id|default:forloop.counter }}">
                                 <div class="d-flex align-items-center">
                                     <div class="credential-icon me-3">
-                                        <i class="bi bi-shield-check" style="font-size: 1rem;"></i>
+                                        <i class="bi bi-{% if credential.is_active|default:True %}shield-check text-success{% else %}shield-x text-muted{% endif %}" style="font-size: 1.5rem;"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="fw-semibold mb-1">{% trans "Authentication Device" %} #{{ forloop.counter }}</h6>
-                                        <small class="text-muted-custom">
+                                        <h6 class="fw-semibold mb-1">
+                                            <span class="credential-name">{{ credential.display_name|default:"Authentication Device #"|add:forloop.counter }}</span>
+                                            {% if not credential.is_active|default:True %}
+                                                <span class="badge bg-secondary ms-2">{% trans "Inactive" %}</span>
+                                            {% endif %}
+                                        </h6>
+                                        <small class="text-muted-custom d-block">
                                             {% if credential.created_at %}
-                                                {% trans "Registered on" %} {{ credential.created_at|date:"M j, Y" }}
+                                                {% trans "Added" %}: {{ credential.created_at|date:"M j, Y" }}
                                             {% else %}
                                                 {% trans "Registered device" %}
                                             {% endif %}
+                                            {% if credential.last_used_at %}
+                                                • {% trans "Last used" %}: {{ credential.last_used_at|date:"M j, Y H:i" }}
+                                            {% endif %}
                                         </small>
                                     </div>
-                                    <button class="btn btn-danger-outline btn-sm" onclick="removeCredential('{{ credential.credential_id|default:forloop.counter }}')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    <div class="btn-group">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="renameCredential('{{ credential.credential_id|default:forloop.counter }}')" title="{% trans 'Rename device' %}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-outline-{% if credential.is_active|default:True %}warning{% else %}success{% endif %} btn-sm" 
+                                                onclick="toggleCredential('{{ credential.credential_id|default:forloop.counter }}', {{ credential.is_active|default:True|yesno:'false,true' }})" 
+                                                title="{% trans 'Activate/Deactivate' %}">
+                                            <i class="bi bi-{% if credential.is_active|default:True %}pause{% else %}play{% endif %}-circle"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="removeCredential('{{ credential.credential_id|default:forloop.counter }}')" title="{% trans 'Remove device' %}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -365,12 +383,84 @@ document.addEventListener('DOMContentLoaded', function() {
                         location.reload(); // Reload to show the "no devices" message
                     }
                 } else {
-                    alert('{% trans "Failed to remove device" %}');
+                    alert(data.error || '{% trans "Failed to remove device" %}');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('{% trans "Failed to remove device" %}');
+            });
+        }
+    };
+    
+    // Rename credential function
+    window.renameCredential = function(credentialId) {
+        const credentialElement = document.querySelector(`[data-credential-id="${credentialId}"]`);
+        if (!credentialElement) return;
+        
+        const credentialNameElement = credentialElement.querySelector('.credential-name');
+        const currentName = credentialNameElement.textContent.trim();
+        
+        const newName = prompt('{% trans "Enter new device name:" %}', currentName);
+        
+        if (newName && newName.trim() !== '' && newName !== currentName) {
+            fetch(`${langPrefix}/auth/webauthn/rename/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    credential_id: credentialId,
+                    name: newName.trim()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    credentialNameElement.textContent = data.name;
+                } else {
+                    alert(data.error || '{% trans "Failed to rename device" %}');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{% trans "Failed to rename device" %}');
+            });
+        }
+    };
+    
+    // Toggle credential active status
+    window.toggleCredential = function(credentialId, activateStatus) {
+        const action = activateStatus ? 'activate' : 'deactivate';
+        const confirmMsg = activateStatus 
+            ? '{% trans "Are you sure you want to activate this device?" %}'
+            : '{% trans "Are you sure you want to deactivate this device?" %}';
+        
+        if (confirm(confirmMsg)) {
+            fetch(`${langPrefix}/auth/webauthn/toggle/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    credential_id: credentialId,
+                    is_active: activateStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload page to reflect changes
+                    location.reload();
+                } else {
+                    alert(data.error || `{% trans "Failed to" %} ${action} {% trans "device" %}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`{% trans "Failed to" %} ${action} {% trans "device" %}`);
             });
         }
     };

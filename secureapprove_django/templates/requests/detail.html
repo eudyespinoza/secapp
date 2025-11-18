@@ -378,12 +378,140 @@ document.addEventListener('DOMContentLoaded', function () {
 
     {% get_current_language as REQ_LANG %}
     const langPrefix = '/{{ REQ_LANG }}';
-    const userEmail = '{{ user.email|lower }}';
+    const approvalId = '{{ request_obj.pk }}';
 
-    function base64urlToBuffer(base64url) {
-        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-        const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
-        const binary = atob(padded);
+    // Check WebAuthn support
+    if (!navigator.credentials || !navigator.credentials.get) {
+        console.error('WebAuthn not supported');
+        if (approveForm) {
+            approveForm.insertAdjacentHTML('beforebegin', `
+                <div class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    {% trans "WebAuthn authentication is required to approve requests. This device/browser does not support it." %}
+                </div>
+            `);
+            approveForm.querySelector('button').disabled = true;
+        }
+        if (rejectForm) {
+            rejectForm.insertAdjacentHTML('beforebegin', `
+                <div class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    {% trans "WebAuthn authentication is required to reject requests. This device/browser does not support it." %}
+                </div>
+            `);
+            rejectForm.querySelector('button').disabled = true;
+        }
+        return;
+    }
+
+    /**
+     * Execute WebAuthn step-up authentication for approval action
+     * @param {string} action - 'approve' or 'reject'
+     * @param {object} extraData - Additional data (comment, reason)
+     * @returns {Promise<boolean>} Success status
+     */
+    async function performApprovalWebAuthn(action, extraData = {}) {
+        try {
+            // Step 1: Get WebAuthn challenge for this specific approval
+            const optionsResponse = await fetch(`${langPrefix}/approvals/${approvalId}/webauthn/options/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ action: action })
+            });
+
+            if (!optionsResponse.ok) {
+                const errorData = await optionsResponse.json();
+                throw new Error(errorData.error || '{% trans "Failed to get authentication options" %}');
+            }
+
+            const optionsResult = await optionsResponse.json();
+            const { options } = optionsResult;
+
+            // Step 2: Prepare WebAuthn options
+            const publicKey = {
+                challenge: base64ToBuffer(options.challenge),
+                timeout: options.timeout || 60000,
+                rpId: options.rpId,
+                allowCredentials: (options.allowCredentials || []).map(cred => ({
+                    type: cred.type,
+                    id: base64ToBuffer(cred.id),
+                    transports: cred.transports || []
+                })),
+                userVerification: options.userVerification || 'required'
+            };
+
+            // Step 3: Show biometric prompt
+            const assertion = await navigator.credentials.get({ publicKey });
+
+            if (!assertion) {
+                throw new Error('{% trans "WebAuthn authentication was cancelled" %}');
+            }
+
+            // Step 4: Prepare assertion data
+            const assertionData = {
+                id: assertion.id,
+                rawId: bufferToBase64(assertion.rawId),
+                response: {
+                    clientDataJSON: bufferToBase64(assertion.response.clientDataJSON),
+                    authenticatorData: bufferToBase64(assertion.response.authenticatorData),
+                    signature: bufferToBase64(assertion.response.signature),
+                    userHandle: assertion.response.userHandle ? bufferToBase64(assertion.response.userHandle) : null,
+                },
+                type: assertion.type
+            };
+
+            // Step 5: Verify and execute action
+            const verifyPayload = {
+                action: action,
+                response: assertionData,
+                ...extraData
+            };
+
+            const verifyResponse = await fetch(`${langPrefix}/approvals/${approvalId}/webauthn/verify/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(verifyPayload)
+            });
+
+            if (!verifyResponse.ok) {
+                const errorData = await verifyResponse.json();
+                throw new Error(errorData.error || '{% trans "Authentication verification failed" %}');
+            }
+
+            const verifyResult = await verifyResponse.json();
+
+            if (!verifyResult.success) {
+                throw new Error(verifyResult.error || '{% trans "Action failed" %}');
+            }
+
+            return true;
+
+        } catch (error) {
+            console.error('Approval WebAuthn error:', error);
+            
+            let errorMsg = error.message;
+            if (error.name === 'NotAllowedError') {
+                errorMsg = '{% trans "Biometric authentication was cancelled or denied. Please try again." %}';
+            } else if (error.name === 'InvalidStateError') {
+                errorMsg = '{% trans "No matching credential found on this device. Please use a device where you have registered your biometric authentication." %}';
+            } else if (error.name === 'NotSupportedError') {
+                errorMsg = '{% trans "This device does not support the required authentication method." %}';
+            }
+            
+            alert(errorMsg);
+            return false;
+        }
+    }
+
+    // Helper functions for base64 conversion
+    function base64ToBuffer(base64) {
+        const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
         const buffer = new ArrayBuffer(binary.length);
         const view = new Uint8Array(buffer);
         for (let i = 0; i < binary.length; i++) {
@@ -392,123 +520,103 @@ document.addEventListener('DOMContentLoaded', function () {
         return buffer;
     }
 
-    async function runWebAuthnAssertion() {
-        if (!navigator.credentials || !navigator.credentials.get) {
-            alert('{% trans "This device does not support WebAuthn authentication. Please use a compatible device to approve requests." %}');
-            return false;
+    function bufferToBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
         }
-
-        try {
-            // Step 1: get authentication options for this user
-            const optionsResponse = await fetch(`${langPrefix}/auth/webauthn/login/options/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email: userEmail })
-            });
-            const optionsResult = await optionsResponse.json();
-
-            if (!optionsResponse.ok) {
-                const err = optionsResult.error || 'Failed to get authentication options';
-                if (err.indexOf('No WebAuthn credentials registered') !== -1) {
-                    alert('{% trans "This device does not have a registered WebAuthn credential for your account. Please approve from a device where biometric login is configured." %}');
-                } else {
-                    alert(err);
-                }
-                return false;
-            }
-
-            const { options, userId } = optionsResult;
-
-            // Prepare options: decode challenge and allowCredentials
-            const publicKey = Object.assign({}, options);
-            publicKey.challenge = base64urlToBuffer(publicKey.challenge);
-            if (publicKey.allowCredentials) {
-                publicKey.allowCredentials = publicKey.allowCredentials.map(cred => ({
-                    type: cred.type,
-                    id: base64urlToBuffer(cred.id),
-                    transports: cred.transports || []
-                }));
-            }
-
-            // Step 2: WebAuthn get()
-            const assertion = await navigator.credentials.get({ publicKey });
-            if (!assertion) {
-                alert('{% trans "WebAuthn authentication was cancelled." %}');
-                return false;
-            }
-
-            // Step 3: send assertion to server for verification
-            function bufferToBase64url(buffer) {
-                const bytes = new Uint8Array(buffer);
-                let binary = '';
-                for (let i = 0; i < bytes.byteLength; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-            }
-
-            const assertionData = {
-                id: assertion.id,
-                rawId: bufferToBase64url(assertion.rawId),
-                response: {
-                    clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
-                    authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
-                    signature: bufferToBase64url(assertion.response.signature),
-                    userHandle: assertion.response.userHandle ? bufferToBase64url(assertion.response.userHandle) : null,
-                },
-                type: assertion.type
-            };
-
-            const verifyResponse = await fetch(`${langPrefix}/auth/webauthn/login/verify/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                    response: assertionData
-                })
-            });
-
-            const verifyResult = await verifyResponse.json();
-            if (!verifyResponse.ok || !verifyResult.verified) {
-                alert(verifyResult.error || '{% trans "Authentication verification failed." %}');
-                return false;
-            }
-
-            return true;
-        } catch (error) {
-            console.error('Approval WebAuthn error:', error);
-            alert('{% trans "An error occurred while confirming your biometric authentication. Please try again." %}');
-            return false;
-        }
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
-    async function handleProtectedSubmit(event, form, confirmMessage) {
-        event.preventDefault();
-        if (!confirm(confirmMessage)) {
-            return;
-        }
-
-        const ok = await runWebAuthnAssertion();
-        if (!ok) {
-            return;
-        }
-
-        form.submit();
-    }
-
+    // Handle Approve form
     if (approveForm) {
-        approveForm.addEventListener('submit', function (e) {
-            handleProtectedSubmit(e, approveForm, '{% trans "Are you sure you want to approve this request?" %}');
+        approveForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!confirm('{% trans "Are you sure you want to approve this request? This action requires biometric confirmation." %}')) {
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnContent = submitBtn.innerHTML;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="bi bi-fingerprint me-2"></i>{% trans "Authenticating..." %}';
+
+                const success = await performApprovalWebAuthn('approve', {
+                    comment: '' // Could add a comment field if needed
+                });
+
+                if (success) {
+                    submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>{% trans "Approved!" %}';
+                    submitBtn.classList.remove('btn-success');
+                    submitBtn.classList.add('btn-success', 'disabled');
+                    
+                    // Show success message and reload after 2 seconds
+                    alert('{% trans "Request approved successfully!" %}');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnContent;
+                }
+            } catch (error) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
         });
     }
 
+    // Handle Reject form
     if (rejectForm) {
-        rejectForm.addEventListener('submit', function (e) {
-            handleProtectedSubmit(e, rejectForm, '{% trans "Are you sure you want to reject this request?" %}');
+        rejectForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const reasonField = document.getElementById('rejection_reason');
+            const reason = reasonField.value.trim();
+
+            if (!reason) {
+                alert('{% trans "Please provide a reason for rejection." %}');
+                reasonField.focus();
+                return;
+            }
+
+            if (!confirm('{% trans "Are you sure you want to reject this request? This action requires biometric confirmation." %}')) {
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnContent = submitBtn.innerHTML;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="bi bi-fingerprint me-2"></i>{% trans "Authenticating..." %}';
+
+                const success = await performApprovalWebAuthn('reject', {
+                    reason: reason
+                });
+
+                if (success) {
+                    submitBtn.innerHTML = '<i class="bi bi-x-circle me-2"></i>{% trans "Rejected" %}';
+                    submitBtn.classList.remove('btn-danger');
+                    submitBtn.classList.add('btn-secondary', 'disabled');
+                    
+                    // Show success message and reload after 2 seconds
+                    alert('{% trans "Request rejected successfully." %}');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnContent;
+                }
+            } catch (error) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
         });
     }
 });

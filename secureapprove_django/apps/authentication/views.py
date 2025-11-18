@@ -436,8 +436,19 @@ def webauthn_login_verify(request):
             user.last_login_at = now
             user.save(update_fields=['last_login_at'])
 
-            # Mark in session the time of last WebAuthn verification
+            # Mark in session that WebAuthn was used
+            request.session['webauthn_authenticated'] = True
+            request.session['webauthn_credential_id'] = result.get('credential_id', 'unknown')
             request.session['last_webauthn_at'] = now.isoformat()
+            
+            # Update webauthn_last_login_at on user model
+            user.webauthn_last_login_at = now
+            user.save(update_fields=['last_login_at', 'webauthn_last_login_at'])
+            
+            # Update credential last_used_at
+            credential_id = result.get('credential_id')
+            if credential_id:
+                user.update_credential_last_used(credential_id)
             
             return JsonResponse({
                 'verified': True,
@@ -543,7 +554,7 @@ def webauthn_user_check(request):
 @login_required
 @require_http_methods(["POST"])
 def webauthn_delete_credential(request):
-    """Delete a WebAuthn credential"""
+    """Delete (hard remove) a WebAuthn credential"""
     try:
         data = json.loads(request.body)
         credential_id = data.get('credential_id')
@@ -553,40 +564,122 @@ def webauthn_delete_credential(request):
         
         user = request.user
         
-        # Get current credentials from JSONField (list or JSON string)
-        webauthn_credentials = []
-        raw_creds = getattr(user, "webauthn_credentials", None)
-        if raw_creds:
-            if isinstance(raw_creds, list):
-                webauthn_credentials = raw_creds
-            else:
-                try:
-                    parsed = json.loads(raw_creds)
-                    if isinstance(parsed, list):
-                        webauthn_credentials = parsed
-                except Exception:
-                    webauthn_credentials = []
-        
-        # Filter out the credential to delete
-        updated_credentials = [
-            cred for cred in webauthn_credentials 
-            if str(cred.get('credential_id', '')) != str(credential_id)
+        # Check remaining active credentials
+        active_creds = [
+            cred for cred in user.webauthn_credentials 
+            if cred.get('is_active', True) and cred.get('credential_id') != credential_id
         ]
         
-        # Update user's credentials (JSONField, almacenamos como lista)
-        user.webauthn_credentials = updated_credentials
-        user.save()
+        if len(active_creds) == 0:
+            return JsonResponse({
+                'error': _('Cannot delete last active credential. Register another device first.')
+            }, status=400)
         
-        return JsonResponse({
-            'success': True,
-            'message': _('Device removed successfully'),
-            'remaining_credentials': len(updated_credentials)
-        })
+        # Remove credential
+        if user.remove_webauthn_credential(credential_id):
+            logger.info(f"User {user.email} deleted credential {credential_id[:16]}...")
+            return JsonResponse({
+                'success': True,
+                'message': _('Device removed successfully'),
+                'remaining_credentials': len(user.webauthn_credentials)
+            })
+        else:
+            return JsonResponse({
+                'error': _('Credential not found')
+            }, status=404)
         
     except json.JSONDecodeError:
         return JsonResponse({'error': _('Invalid JSON data')}, status=400)
     except Exception as e:
         logger.error(f"Error deleting WebAuthn credential: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def webauthn_rename_credential(request):
+    """Rename a WebAuthn credential"""
+    try:
+        data = json.loads(request.body)
+        credential_id = data.get('credential_id')
+        new_name = data.get('name', '').strip()
+        
+        if not credential_id:
+            return JsonResponse({'error': _('Credential ID is required')}, status=400)
+        
+        if not new_name:
+            return JsonResponse({'error': _('New name is required')}, status=400)
+        
+        user = request.user
+        
+        if user.rename_webauthn_credential(credential_id, new_name):
+            logger.info(f"User {user.email} renamed credential {credential_id[:16]}... to '{new_name}'")
+            return JsonResponse({
+                'success': True,
+                'message': _('Device renamed successfully'),
+                'name': new_name
+            })
+        else:
+            return JsonResponse({
+                'error': _('Credential not found')
+            }, status=404)
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': _('Invalid JSON data')}, status=400)
+    except Exception as e:
+        logger.error(f"Error renaming WebAuthn credential: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def webauthn_toggle_credential(request):
+    """Activate or deactivate a WebAuthn credential"""
+    try:
+        data = json.loads(request.body)
+        credential_id = data.get('credential_id')
+        is_active = data.get('is_active', True)
+        
+        if not credential_id:
+            return JsonResponse({'error': _('Credential ID is required')}, status=400)
+        
+        user = request.user
+        
+        # If deactivating, ensure at least one other active credential remains
+        if not is_active:
+            other_active_creds = [
+                cred for cred in user.webauthn_credentials 
+                if cred.get('is_active', True) and cred.get('credential_id') != credential_id
+            ]
+            
+            if len(other_active_creds) == 0:
+                return JsonResponse({
+                    'error': _('Cannot deactivate last active credential.')
+                }, status=400)
+        
+        # Update credential
+        for cred in user.webauthn_credentials:
+            if cred.get('credential_id') == credential_id:
+                cred['is_active'] = is_active
+                user.save(update_fields=['webauthn_credentials'])
+                
+                action = 'activated' if is_active else 'deactivated'
+                logger.info(f"User {user.email} {action} credential {credential_id[:16]}...")
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': _('Device {} successfully').format(_('activated') if is_active else _('deactivated')),
+                    'is_active': is_active
+                })
+        
+        return JsonResponse({
+            'error': _('Credential not found')
+        }, status=404)
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': _('Invalid JSON data')}, status=400)
+    except Exception as e:
+        logger.error(f"Error toggling WebAuthn credential: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 
