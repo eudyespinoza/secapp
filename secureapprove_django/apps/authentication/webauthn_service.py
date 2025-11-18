@@ -249,8 +249,14 @@ class WebAuthnService:
             
             # Debug logging
             logger.info(f"Verifying authentication for user {user.email}")
-            logger.info(f"Credential ID from response: {credential_id[:20]}...")
+            logger.info(f"Credential ID from response (full): {credential_id}")
             logger.info(f"User has {len(user.webauthn_credentials)} stored credentials")
+            
+            # Log all stored credentials
+            for idx, cred in enumerate(user.webauthn_credentials):
+                logger.info(f"  Stored credential #{idx+1}: {cred.get('credential_id', 'N/A')}")
+                logger.info(f"    is_active: {cred.get('is_active', 'NOT SET')}")
+                logger.info(f"    display_name: {cred.get('display_name', 'N/A')}")
             
             # Normalize base64 padding for comparison
             def normalize_base64(b64_str):
@@ -261,25 +267,30 @@ class WebAuthnService:
                 return b64_str
             
             normalized_credential_id = normalize_base64(credential_id)
+            logger.info(f"Normalized credential ID from response: {normalized_credential_id}")
             
             user_credential = None
             
-            for cred in user.webauthn_credentials:
+            for idx, cred in enumerate(user.webauthn_credentials):
                 # Skip inactive credentials
                 if not cred.get('is_active', True):
-                    logger.info(f"Skipping inactive credential")
+                    logger.warning(f"Skipping inactive credential #{idx+1}")
                     continue
                     
                 stored_id = cred.get('credential_id', '')
-                logger.info(f"Comparing with stored credential: {stored_id[:20]}...")
                 normalized_stored_id = normalize_base64(stored_id)
+                logger.info(f"Comparing normalized stored #{idx+1}: {normalized_stored_id}")
+                logger.info(f"  Match: {normalized_stored_id == normalized_credential_id}")
+                
                 if normalized_stored_id == normalized_credential_id:
                     user_credential = cred
-                    logger.info(f"Found matching credential!")
+                    logger.info(f"✓ Found matching credential #{idx+1}!")
                     break
             
             if not user_credential:
-                logger.error(f"No matching credential found for ID: {credential_id[:20]}...")
+                logger.error(f"❌ No matching credential found!")
+                logger.error(f"Response ID (normalized): {normalized_credential_id}")
+                logger.error(f"Available active credentials: {sum(1 for c in user.webauthn_credentials if c.get('is_active', True))}")
                 raise ValueError(_('Credential not found or inactive'))
             
             # Convert the credential data to the expected format
