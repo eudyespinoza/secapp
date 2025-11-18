@@ -4,6 +4,7 @@
 
 import json
 import base64
+import logging
 from typing import Optional, Dict, List, Any
 from django.conf import settings
 from django.core.cache import cache
@@ -27,6 +28,7 @@ from webauthn.helpers.structs import (
 from webauthn.helpers.cose import COSEAlgorithmIdentifier
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class WebAuthnService:
