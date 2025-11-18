@@ -3,18 +3,56 @@ from django.core.cache import cache
 from rest_framework import serializers
 
 from apps.authentication.models import User
-from .models import ChatConversation, ChatMessage, ChatMessageDelivery, ChatAttachment
+from .models import (
+    ChatConversation,
+    ChatParticipant,
+    ChatMessage,
+    ChatMessageDelivery,
+    ChatAttachment,
+    UserPresence,
+)
 
 
 class ChatAttachmentSerializer(serializers.ModelSerializer):
+    """Serializer for chat file attachments."""
+
+    file_url = serializers.SerializerMethodField()
+
     class Meta:
         model = ChatAttachment
-        fields = ['id', 'filename', 'content_type', 'size', 'file', 'uploaded_at']
+        fields = ['id', 'filename', 'content_type', 'size', 'file', 'file_url', 'uploaded_at']
+        read_only_fields = ['id', 'uploaded_at', 'size', 'content_type']
+
+    def get_file_url(self, obj):
+        """Return absolute URL for file."""
+        request = self.context.get('request')
+        if obj.file and request:
+            return request.build_absolute_uri(obj.file.url)
+        return obj.file.url if obj.file else None
+
+    def validate_file(self, value):
+        """Validate file size and content type."""
+        if value.size > ChatAttachment.MAX_FILE_SIZE:
+            raise serializers.ValidationError(
+                f'File size must be under {ChatAttachment.MAX_FILE_SIZE / (1024*1024)}MB'
+            )
+
+        content_type = getattr(value, 'content_type', '')
+        if content_type and content_type not in ChatAttachment.ALLOWED_CONTENT_TYPES:
+            raise serializers.ValidationError(
+                f'File type {content_type} is not allowed'
+            )
+
+        return value
+
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
+    """Serializer for chat messages with delivery status."""
+
     sender_name = serializers.CharField(source='sender.get_full_name', read_only=True)
     sender_id = serializers.IntegerField(source='sender.id', read_only=True)
+    sender_email = serializers.EmailField(source='sender.email', read_only=True)
     attachments = ChatAttachmentSerializer(many=True, read_only=True)
     status = serializers.SerializerMethodField()
 
@@ -25,6 +63,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             'conversation',
             'sender_id',
             'sender_name',
+            'sender_email',
             'content',
             'has_attachments',
             'attachments',
@@ -49,7 +88,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         """
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
-            return None
+            return 'sent'
 
         user = request.user
 
@@ -60,7 +99,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         except ChatMessageDelivery.DoesNotExist:
             pass
 
-        # Sender perspective (DM: one or more recipients)
+        # Sender perspective
         if getattr(obj, "sender_id", None) == getattr(user, "id", None):
             deliveries = list(obj.deliveries.all())
             if not deliveries:
@@ -71,55 +110,95 @@ class ChatMessageSerializer(serializers.ModelSerializer):
                 return "delivered"
             return "sent"
 
-        return None
+        return "sent"
+
+    def validate_content(self, value):
+        """Validate message content length."""
+        if value and len(value) > 5000:
+            raise serializers.ValidationError('Message content must be under 5000 characters')
+        return value
+
+
+
+class ChatParticipantSerializer(serializers.ModelSerializer):
+    """Serializer for conversation participants."""
+
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = ChatParticipant
+        fields = [
+            'id',
+            'user_id',
+            'user_name',
+            'user_email',
+            'unread_count',
+            'is_archived',
+            'is_muted',
+            'joined_at',
+        ]
+        read_only_fields = ['id', 'joined_at', 'unread_count']
 
 
 class ChatConversationSerializer(serializers.ModelSerializer):
+    """Serializer for conversations with last message and participant info."""
+
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
+    is_group = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = ChatConversation
-        fields = ['id', 'created_at', 'last_message', 'unread_count', 'participants', 'title']
+        fields = [
+            'id',
+            'title',
+            'is_group',
+            'created_at',
+            'updated_at',
+            'last_message',
+            'unread_count',
+            'participants',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_last_message(self, obj):
+        """Get the last message in the conversation."""
+        if obj.last_message:
+            return ChatMessageSerializer(obj.last_message, context=self.context).data
+        
+        # Fallback if last_message cache is not set
         last_msg = obj.messages.order_by('-created_at').first()
-        if not last_msg:
-            return None
-        return ChatMessageSerializer(last_msg, context=self.context).data
+        if last_msg:
+            return ChatMessageSerializer(last_msg, context=self.context).data
+        return None
 
     def get_unread_count(self, obj):
+        """Get unread message count for current user."""
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return 0
-        return ChatMessageDelivery.objects.filter(
-            message__conversation=obj,
-            recipient=request.user,
-            read_at__isnull=True,
-        ).count()
 
-    def _get_participants_cached(self, obj):
-        """
-        Small helper to avoid hitting the DB multiple times per conversation
-        when resolving participants and title.
-        """
-        cached = getattr(obj, '_participants_cache', None)
-        if cached is None:
-            cached = list(obj.participants.all())
-            setattr(obj, '_participants_cache', cached)
-        return cached
+        try:
+            participant = obj.participant_set.get(user=request.user)
+            return participant.unread_count
+        except ChatParticipant.DoesNotExist:
+            return 0
 
     def get_participants(self, obj):
-        participants = self._get_participants_cached(obj)
+        """Get list of participants with basic info."""
+        # Use select_related to avoid N+1 queries
+        participants = obj.participant_set.select_related('user').all()
         return [
             {
-                'id': user.id,
-                'name': user.get_full_name(),
-                'email': user.email,
+                'id': p.user.id,
+                'name': p.user.get_full_name(),
+                'email': p.user.email,
             }
-            for user in participants
+            for p in participants
         ]
 
     def get_title(self, obj):
@@ -127,47 +206,70 @@ class ChatConversationSerializer(serializers.ModelSerializer):
         Human-friendly conversation title.
 
         For direct messages, uses the other participant's name/email.
-        For group conversations, joins participant names.
+        For group conversations, uses the title or joins participant names.
         """
+        # If title is set, use it
+        if obj.title:
+            return obj.title
+
         request = self.context.get('request')
         user = getattr(request, 'user', None)
 
-        participants = self._get_participants_cached(obj)
-        others = participants
+        # Get participants excluding current user
+        participants = obj.participant_set.select_related('user').all()
+        others = [p.user for p in participants]
         if user and getattr(user, 'is_authenticated', False):
-            others = [u for u in participants if u.id != user.id]
+            others = [u for u in others if u.id != user.id]
 
+        # For 1-to-1: use other person's name
         if len(others) == 1:
             other = others[0]
             return other.get_full_name() or other.email
 
+        # For groups: join names
         if others:
-            return ", ".join(
-                (u.get_full_name() or u.email) for u in others
-            )
+            names = [u.get_full_name() or u.email for u in others[:3]]
+            if len(others) > 3:
+                names.append(f'+{len(others) - 3} more')
+            return ", ".join(names)
 
-        # Fallback for edge cases (e.g. no participants yet)
-        return f"Conversation {obj.id}"
+        # Fallback
+        return f"Conversation"
+
 
 
 class UserPresenceSerializer(serializers.ModelSerializer):
+    """Serializer for user presence information."""
+
     is_online = serializers.SerializerMethodField()
-    last_seen = serializers.SerializerMethodField()
+    last_seen = serializers.DateTimeField(source='last_activity', read_only=True)
+    name = serializers.CharField(source='get_full_name', read_only=True)
 
     class Meta:
         model = User
         fields = ['id', 'name', 'email', 'is_online', 'last_seen']
-
-    def _get_last_activity(self, obj):
-        key = f"user:last_activity:{obj.pk}"
-        return cache.get(key)
+        read_only_fields = ['id', 'name', 'email']
 
     def get_is_online(self, obj):
-        last = self._get_last_activity(obj)
-        if not last:
-            return False
-        # Consider online if active in last 60 seconds
-        return last >= timezone.now() - timezone.timedelta(seconds=60)
+        """
+        Determine if user is online based on last activity.
+        Uses both UserPresence model and cache.
+        """
+        # Try UserPresence model first
+        try:
+            presence = obj.chat_presence
+            # Consider online if activity within last 2 minutes
+            threshold = timezone.now() - timezone.timedelta(seconds=120)
+            return presence.last_activity >= threshold
+        except (UserPresence.DoesNotExist, AttributeError):
+            pass
 
-    def get_last_seen(self, obj):
-        return self._get_last_activity(obj)
+        # Fallback to cache-based presence
+        key = f"user:last_activity:{obj.pk}"
+        last_activity = cache.get(key)
+        if not last_activity:
+            return False
+        
+        threshold = timezone.now() - timezone.timedelta(seconds=120)
+        return last_activity >= threshold
+

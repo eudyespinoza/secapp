@@ -810,9 +810,35 @@
             });
         });
 
-	        {% if user.is_authenticated %}
-	        // Simple polling-based chat widget
-	        (function() {
+        {% if user.is_authenticated %}
+        // Chat Widget Configuration
+        window.CHAT_CURRENT_USER_ID = {{ user.id|default:'null' }};
+        window.CHAT_I18N = {
+            newMessage: '{% trans "New chat message" %}',
+            newMessages: '{% trans "New chat messages" %}',
+            unreadMessages: '{% trans "unread messages" %}',
+            usersOnline: '{% trans "users online" %}',
+            noUsersOnline: '{% trans "No users online" %}',
+            online: '{% trans "Online" %}',
+            offline: '{% trans "Offline" %}',
+            serviceUnavailable: '{% trans "Chat service unavailable" %}',
+            noMessages: '{% trans "No messages yet. Start the conversation." %}',
+            conversation: '{% trans "Conversation" %}',
+            newConversation: '{% trans "New conversation" %}',
+            attachment: '{% trans "Attachment" %}',
+            error: '{% trans "Error" %}',
+            errorStartingConversation: '{% trans "Could not start conversation" %}',
+            errorLoadingMessages: '{% trans "Could not load messages" %}',
+            errorSendingMessage: '{% trans "Could not send message" %}',
+            fileTooLarge: '{% trans "File is too large (max 10MB)" %}',
+            fileTypeNotAllowed: '{% trans "File type not allowed" %}',
+        };
+        {% endif %}
+
+        {% comment %}
+        Old inline chat code removed - now using external tenant_chat.js
+        {% if user.is_authenticated %}
+        (function() {
             const chatBar = document.getElementById('tenantChatBar');
             const chatPanel = document.getElementById('tenantChatPanel');
             const chatChevron = document.getElementById('widgetChatChevron');
@@ -1284,10 +1310,17 @@
                     await loadConversations();
                     await loadPresence();
                 }
+                }
             });
         })();
         {% endif %}
+        {% endcomment %}
     </script>
+    
+    {% if user.is_authenticated %}
+    <!-- Tenant Chat Widget -->
+    <script src="{% static 'chat/js/tenant_chat.js' %}"></script>
+    {% endif %}
     
     {% block extra_js %}{% endblock %}
 </body>

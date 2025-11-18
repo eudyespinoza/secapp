@@ -32,6 +32,16 @@ python manage.py makemigrations chat
 echo "[*] Running database migrations..."
 python manage.py migrate --noinput
 
+# Migrate chat schema safely (handles old to new schema transition)
+echo "[*] Checking chat schema migration..."
+python manage.py migrate_chat_schema --check-only
+if [ $? -ne 0 ]; then
+  echo "[*] Migrating chat schema..."
+  python manage.py migrate_chat_schema
+else
+  echo "[+] Chat schema is up to date"
+fi
+
 # Create superuser if it doesn't exist (admin@secureapprove.com)
 echo "[*] Ensuring default superuser (admin@secureapprove.com)..."
 python manage.py shell << 'EOF'
