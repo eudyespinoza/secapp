@@ -192,12 +192,16 @@ class WebAuthnService:
         # Prepare allowed credentials
         allow_credentials = []
         for cred in user.webauthn_credentials:
-            if 'credential_id' in cred:
+            # Only include active credentials
+            if 'credential_id' in cred and cred.get('is_active', True):
                 allow_credentials.append({
                     'id': base64.b64decode(cred['credential_id']),
                     'type': 'public-key',
                     'transports': cred.get('transports', [])
                 })
+        
+        if not allow_credentials:
+            raise ValueError(_('No active credentials available for authentication'))
         
         # Generate authentication options
         options = generate_authentication_options(
@@ -241,6 +245,11 @@ class WebAuthnService:
             # Find the credential
             credential_id = credential_data.get('id', '')
             
+            # Debug logging
+            logger.info(f"Verifying authentication for user {user.email}")
+            logger.info(f"Credential ID from response: {credential_id[:20]}...")
+            logger.info(f"User has {len(user.webauthn_credentials)} stored credentials")
+            
             # Normalize base64 padding for comparison
             def normalize_base64(b64_str):
                 # Add padding if missing
@@ -254,14 +263,22 @@ class WebAuthnService:
             user_credential = None
             
             for cred in user.webauthn_credentials:
+                # Skip inactive credentials
+                if not cred.get('is_active', True):
+                    logger.info(f"Skipping inactive credential")
+                    continue
+                    
                 stored_id = cred.get('credential_id', '')
+                logger.info(f"Comparing with stored credential: {stored_id[:20]}...")
                 normalized_stored_id = normalize_base64(stored_id)
                 if normalized_stored_id == normalized_credential_id:
                     user_credential = cred
+                    logger.info(f"Found matching credential!")
                     break
             
             if not user_credential:
-                raise ValueError(_('Credential not found'))
+                logger.error(f"No matching credential found for ID: {credential_id[:20]}...")
+                raise ValueError(_('Credential not found or inactive'))
             
             # Convert the credential data to the expected format
             authentication_credential = AuthenticationCredential.parse_raw(json.dumps({
