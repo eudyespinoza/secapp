@@ -258,8 +258,10 @@ class WebAuthnService:
                 logger.info(f"    is_active: {cred.get('is_active', 'NOT SET')}")
                 logger.info(f"    display_name: {cred.get('display_name', 'N/A')}")
             
-            # Normalize base64 padding for comparison
+            # Normalize base64 padding and convert base64url to base64
             def normalize_base64(b64_str):
+                # Convert base64url to base64 (- to +, _ to /)
+                b64_str = b64_str.replace('-', '+').replace('_', '/')
                 # Add padding if missing
                 missing_padding = len(b64_str) % 4
                 if missing_padding:
