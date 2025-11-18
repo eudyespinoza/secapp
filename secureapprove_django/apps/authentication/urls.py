@@ -16,7 +16,7 @@ urlpatterns = [
     path('login/', views.WebAuthnLoginView.as_view(), name='webauthn_login'),
     # Register redirects to subscription plans
     path('register/', views.RedirectToSubscriptionView.as_view(), name='webauthn_register'),
-    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.logout_view, name='logout'),
     
     # ================================================
     # WebAuthn API Endpoints

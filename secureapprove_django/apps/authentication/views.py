@@ -66,14 +66,12 @@ class RedirectToSubscriptionView(View):
         return redirect('billing:select_plan')
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class LogoutView(BaseLogoutView):
+@csrf_exempt
+def logout_view(request):
     """Custom logout view (CSRF-exempt for proxy compatibility)"""
-    next_page = 'authentication:webauthn_login'
-    
-    def dispatch(self, request, *args, **kwargs):
-        messages.info(request, _('You have been successfully logged out.'))
-        return super().dispatch(request, *args, **kwargs)
+    logout(request)
+    messages.info(request, _('You have been successfully logged out.'))
+    return redirect('authentication:webauthn_login')
 
 
 # ================================================
