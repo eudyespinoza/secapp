@@ -33,15 +33,18 @@ RUN chmod +x docker-entrypoint.sh
 # Compile translation messages
 RUN python manage.py compilemessages || echo "No translations to compile"
 
-# Collect static files as root
-RUN python manage.py collectstatic --noinput || echo "Static files collected"
+# Create directories first
+RUN mkdir -p staticfiles media logs
+
+# Collect static files (includes tenant_chat.js and all new files)
+RUN python manage.py collectstatic --noinput --clear && \
+    echo "✓ Static files collected successfully"
 
 # Create non-root user
 RUN adduser --disabled-password --gecos '' django
 
-# Create directories and set permissions AFTER collectstatic
-RUN mkdir -p staticfiles media logs && \
-    chown -R django:django /app && \
+# Set permissions AFTER all file operations
+RUN chown -R django:django /app && \
     chmod -R 755 /app
 
 # Switch to django user

@@ -39,12 +39,6 @@ python manage.py migrate_chat_schema --force || {
 echo "[*] Running database migrations..."
 python manage.py migrate --noinput
 
-# Collect static files (CSS, JS, images)
-echo "[*] Collecting static files..."
-python manage.py collectstatic --noinput --clear || {
-  echo "[!] Static files collection failed, but continuing..."
-}
-
 # Create superuser if it doesn't exist (admin@secureapprove.com)
 echo "[*] Ensuring default superuser (admin@secureapprove.com)..."
 python manage.py shell << 'EOF'
