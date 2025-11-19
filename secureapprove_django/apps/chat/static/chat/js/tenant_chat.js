@@ -959,7 +959,7 @@
             this.ui.updateUnreadBadge(totalUnread);
 
             // Show notification if unread count increased
-            if (totalUnread > this.state.lastTotalUnread && this.state.lastTotalUnread > 0) {
+            if (totalUnread > this.state.lastTotalUnread) {
                 const diff = totalUnread - this.state.lastTotalUnread;
                 
                 if (this.notifications.canNotify() && !this.state.panelVisible) {
