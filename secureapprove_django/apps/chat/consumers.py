@@ -1,9 +1,11 @@
-import json
+import logging
 from typing import Any, Dict
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -53,16 +55,23 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         
         # Reject unauthenticated connections
         if not user or not user.is_authenticated:
+            logger.warning("Rejected unauthenticated chat connection")
             await self.close(code=4401)
+            return
+
+        tenant_id = getattr(user, "tenant_id", None)
+        if not tenant_id:
+            logger.warning("Rejected chat connection for user %s without tenant", user.id)
+            await self.close(code=4403)
             return
 
         # Store user info
         self.user = user
-        self.user_group_name = f"user_{user.id}"
+        self.tenant_group_name = f"tenant_{tenant_id}_chat"
         
-        # Join user's personal group
+        # Join tenant group (all chat events are broadcast per tenant)
         await self.channel_layer.group_add(
-            self.user_group_name,
+            self.tenant_group_name,
             self.channel_name
         )
         
@@ -71,6 +80,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         
         # Accept connection
         await self.accept()
+
+        logger.info(
+            "[CHAT] WebSocket connected for user %s (tenant %s)",
+            user.id,
+            tenant_id,
+        )
         
         # Send connection confirmation
         await self.send_json({
@@ -86,13 +101,19 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         - Removes user from their group
         - Optionally updates presence to offline (with delay)
         """
-        if not hasattr(self, 'user') or not hasattr(self, 'user_group_name'):
+        if not hasattr(self, 'user') or not hasattr(self, 'tenant_group_name'):
             return
         
-        # Leave user group
+        # Leave tenant group
         await self.channel_layer.group_discard(
-            self.user_group_name,
+            self.tenant_group_name,
             self.channel_name
+        )
+
+        logger.info(
+            "[CHAT] WebSocket disconnected for user %s (code=%s)",
+            getattr(getattr(self, "user", None), "id", None),
+            code,
         )
 
     async def receive_json(self, content: Dict[str, Any], **kwargs: Any) -> None:
@@ -116,24 +137,24 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         # Future: Handle other client-initiated events
         # e.g., typing notifications, read receipts, etc.
 
-    async def chat_message(self, event: Dict[str, Any]) -> None:
+    async def chat_message_created(self, event: Dict[str, Any]) -> None:
         """
-        Handler for "chat.message" events sent to user group.
-        
-        Forwards message_created events to the WebSocket client.
-        
-        Expected event structure:
-        {
-            "type": "chat.message",
-            "event": "message_created",
-            "conversation_id": "uuid",
-            "message": {message_data}
-        }
+        Handler for "chat_message_created" events sent to the tenant group.
+
+        Ensures we only forward the payload once per user and skips echoing
+        the sender's own messages to avoid duplicates in the UI.
         """
+        message = event.get("message", {})
+        sender_id = message.get("sender_id")
+
+        if sender_id and hasattr(self, "user") and sender_id == self.user.id:
+            # Skip echoing the sender's own message; frontend already renders it
+            return
+
         await self.send_json({
-            "type": event.get("event", "message_created"),
+            "type": "message_created",
             "conversation_id": event.get("conversation_id"),
-            "message": event.get("message"),
+            "message": message,
         })
 
     async def chat_typing(self, event: Dict[str, Any]) -> None:
@@ -200,5 +221,3 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         except Exception as e:
             # Don't fail the connection on presence update errors
             print(f"Error updating presence: {e}")
-
-

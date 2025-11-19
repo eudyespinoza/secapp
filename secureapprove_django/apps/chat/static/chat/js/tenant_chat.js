@@ -114,7 +114,7 @@
             if (!this.socket) return;
 
             this.socket.onopen = () => {
-                console.log('Chat WebSocket connected');
+                console.log('[CHAT] WebSocket connected');
                 this.connected = true;
                 this.reconnectAttempts = 0;
                 
@@ -127,7 +127,7 @@
             };
 
             this.socket.onclose = (event) => {
-                console.log('Chat WebSocket closed:', event.code, event.reason);
+                console.log('[CHAT] WebSocket closed:', event.code, event.reason);
                 this.connected = false;
                 this.stopPingInterval();
                 
@@ -142,7 +142,7 @@
             };
 
             this.socket.onerror = (error) => {
-                console.error('Chat WebSocket error:', error);
+                console.error('[CHAT] WebSocket error:', error);
                 this.connected = false;
                 
                 if (this.callbacks.onError) {
@@ -751,6 +751,7 @@
         }
 
         init() {
+            console.log('[CHAT] TenantChatWidget.init');
             this.setupEventListeners();
             this.startWebSocket();
             this.startPolling();
@@ -842,6 +843,7 @@
         async loadConversations() {
             try {
                 const data = await this.api.getConversations();
+                console.log('[CHAT] conversations API response:', data);
                 this.state.conversations = Array.isArray(data) ? data : [];
 
                 // Sort by last message date
@@ -1001,6 +1003,7 @@
         }
 
         updateUnreadCount() {
+            console.log('[CHAT] conversations state for unread:', this.state.conversations);
             const totalUnread = this.state.conversations.reduce(
                 (sum, conv) => sum + (conv.unread_count || 0),
                 0
@@ -1035,14 +1038,15 @@
         }
 
         handleWebSocketConnect() {
-            console.log('Chat WebSocket connected successfully');
+            console.log('[CHAT] TenantChatWidget.handleWebSocketConnect');
         }
 
         handleWebSocketDisconnect() {
-            console.log('Chat WebSocket disconnected, using polling fallback');
+            console.log('[CHAT] TenantChatWidget.handleWebSocketDisconnect');
         }
 
         handleWebSocketMessage(data) {
+            console.log('[CHAT] WS message_created payload:', data);
             const { conversation_id, message } = data;
 
             if (!conversation_id || !message) return;
@@ -1126,6 +1130,7 @@
     // ========================================
     
     function initializeTenantChat() {
+        console.log('[CHAT] initializeTenantChat called');
         // Get DOM elements
         const elements = {
             bar: document.getElementById('tenantChatBar'),

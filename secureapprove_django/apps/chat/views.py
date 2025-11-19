@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from django.db.models import Q, Prefetch
 from django.utils import timezone
@@ -35,6 +37,8 @@ except Exception:  # pragma: no cover
     async_to_sync = None
     get_channel_layer = None
 
+logger = logging.getLogger(__name__)
+
 
 class ChatPageView(TemplateView):
     """
@@ -55,16 +59,15 @@ class ChatPageView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-def broadcast_to_conversation(conversation_id, event_data, exclude_user_id=None):
+def broadcast_to_conversation(conversation, event_type, payload):
     """
     Helper to broadcast WebSocket events to all participants in a conversation.
-    
-    Args:
-        conversation_id: UUID of the conversation
-        event_data: Dict with event data to send
-        exclude_user_id: Optional user ID to exclude from broadcast
+
+    Sends a single event to the tenant-wide chat channel so every user that
+    belongs to the tenant receives the update in real time (frontend filters
+    automatically based on the conversation data it already has).
     """
-    if not async_to_sync or not get_channel_layer:
+    if not async_to_sync or not get_channel_layer or not conversation:
         return
 
     try:
@@ -72,23 +75,16 @@ def broadcast_to_conversation(conversation_id, event_data, exclude_user_id=None)
         if not channel_layer:
             return
 
-        # Get all participants in the conversation
-        participants = ChatParticipant.objects.filter(
-            conversation_id=conversation_id
-        ).values_list('user_id', flat=True)
-
-        # Send to each participant's group
-        for user_id in participants:
-            if exclude_user_id and user_id == exclude_user_id:
-                continue
-            
-            async_to_sync(channel_layer.group_send)(
-                f"user_{user_id}",
-                event_data,
-            )
+        async_to_sync(channel_layer.group_send)(
+            f"tenant_{conversation.tenant_id}_chat",
+            {
+                "type": event_type,
+                **payload,
+            },
+        )
     except Exception as e:
         # Log but don't fail the request
-        print(f"WebSocket broadcast error: {e}")
+        logger.warning("WebSocket broadcast error for conversation %s: %s", conversation.id, e)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -107,6 +103,7 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
     serializer_class = ChatConversationSerializer
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+    pagination_class = None
 
     def get_queryset(self):
         """Get conversations for current user in their tenant."""
@@ -132,6 +129,26 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
         ).distinct().order_by('-updated_at')
 
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        """Return conversations as a flat array (no pagination) for the widget."""
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            data = serializer.data
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+            data = serializer.data
+
+        logger.info(
+            "[CHAT] /api/chat/conversations/ returned %s items for user %s",
+            len(data),
+            getattr(request.user, "id", None),
+        )
+        logger.debug("[CHAT] conversations payload: %s", data)
+        return Response(data)
 
     def perform_authentication(self, request):
         """Update user presence on every API call."""
@@ -323,13 +340,14 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
         serializer = ChatMessageSerializer(msg, context={'request': request})
 
         # Broadcast via WebSocket
-        event_data = {
-            "type": "chat.message",
-            "event": "message_created",
-            "conversation_id": str(conv.id),
-            "message": serializer.data,
-        }
-        broadcast_to_conversation(conv.id, event_data)
+        broadcast_to_conversation(
+            conv,
+            "chat_message_created",
+            {
+                "conversation_id": str(conv.id),
+                "message": serializer.data,
+            },
+        )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -352,11 +370,16 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
                 read_at__isnull=True,
             ).update(read_at=now, delivered_at=now)
 
-            # Reset unread count for this participant
+            # Reset unread count and update last read message for this participant
+            last_message = conv.messages.order_by('-created_at').first()
+            update_kwargs = {'unread_count': 0}
+            if last_message:
+                update_kwargs['last_read_message'] = last_message
+
             ChatParticipant.objects.filter(
                 conversation=conv,
                 user=user,
-            ).update(unread_count=0)
+            ).update(**update_kwargs)
 
         return Response({
             'status': 'ok',
@@ -384,14 +407,15 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
         cache.set(f"user:last_activity:{user.pk}", timezone.now(), timeout=3600)
 
         # Broadcast typing event
-        event_data = {
-            "type": "chat.typing",
-            "event": "typing",
-            "conversation_id": str(conv.id),
-            "user_id": user.id,
-            "user_name": user.get_full_name() or user.email,
-        }
-        broadcast_to_conversation(conv.id, event_data, exclude_user_id=user.id)
+        broadcast_to_conversation(
+            conv,
+            "chat_typing",
+            {
+                "conversation_id": str(conv.id),
+                "user_id": user.id,
+                "user_name": user.get_full_name() or user.email,
+            },
+        )
 
         return Response({'status': 'ok'})
 
