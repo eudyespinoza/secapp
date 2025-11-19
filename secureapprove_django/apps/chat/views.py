@@ -339,6 +339,13 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
         # Serialize response
         serializer = ChatMessageSerializer(msg, context={'request': request})
 
+        logger.info(
+            "[CHAT] Sending WS message_created conversation=%s tenant=%s message=%s",
+            conv.id,
+            conv.tenant_id,
+            msg.id,
+        )
+
         # Broadcast via WebSocket
         broadcast_to_conversation(
             conv,

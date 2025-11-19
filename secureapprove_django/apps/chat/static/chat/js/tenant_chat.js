@@ -114,7 +114,10 @@
             if (!this.socket) return;
 
             this.socket.onopen = () => {
-                console.log('[CHAT] WebSocket connected');
+                console.log('[CHAT] WebSocketManager.onopen', {
+                    url: this.socket ? this.socket.url : null,
+                    readyState: this.socket ? this.socket.readyState : null,
+                });
                 this.connected = true;
                 this.reconnectAttempts = 0;
                 
@@ -127,7 +130,12 @@
             };
 
             this.socket.onclose = (event) => {
-                console.log('[CHAT] WebSocket closed:', event.code, event.reason);
+                console.log('[CHAT] WebSocketManager.onclose', {
+                    code: event.code,
+                    reason: event.reason,
+                    wasClean: event.wasClean,
+                    readyState: this.socket ? this.socket.readyState : null,
+                });
                 this.connected = false;
                 this.stopPingInterval();
                 
@@ -142,7 +150,7 @@
             };
 
             this.socket.onerror = (error) => {
-                console.error('[CHAT] WebSocket error:', error);
+                console.error('[CHAT] WebSocketManager.onerror', error);
                 this.connected = false;
                 
                 if (this.callbacks.onError) {
@@ -151,6 +159,7 @@
             };
 
             this.socket.onmessage = (event) => {
+                console.log('[CHAT] WebSocketManager.onmessage raw:', event.data);
                 try {
                     const data = JSON.parse(event.data);
                     this.handleMessage(data);
@@ -164,6 +173,7 @@
             if (!data || !data.type) return;
 
             const { type } = data;
+            console.log('[CHAT] WebSocketManager.handleMessage parsed:', data);
 
             switch (type) {
                 case 'connected':
@@ -750,6 +760,48 @@
             this.init();
         }
 
+        normalizeConversationData(conversation) {
+            if (!conversation || typeof conversation !== 'object') {
+                return null;
+            }
+
+            const normalized = { ...conversation };
+            normalized.id = normalized.id != null ? String(normalized.id) : '';
+
+            if (normalized.last_message) {
+                normalized.last_message = this.normalizeMessageData(
+                    normalized.last_message,
+                    normalized.id
+                );
+            }
+
+            return normalized;
+        }
+
+        normalizeMessageData(message, fallbackConversationId = null) {
+            if (!message || typeof message !== 'object') {
+                return null;
+            }
+
+            const normalized = { ...message };
+
+            if (normalized.conversation !== undefined && normalized.conversation !== null) {
+                normalized.conversation = String(normalized.conversation);
+            } else if (fallbackConversationId) {
+                normalized.conversation = fallbackConversationId;
+            }
+
+            if (normalized.conversation_id !== undefined && normalized.conversation_id !== null) {
+                normalized.conversation_id = String(normalized.conversation_id);
+            }
+
+            if (normalized.attachments && Array.isArray(normalized.attachments)) {
+                normalized.attachments = normalized.attachments.map(att => ({ ...att }));
+            }
+
+            return normalized;
+        }
+
         init() {
             console.log('[CHAT] TenantChatWidget.init');
             this.setupEventListeners();
@@ -775,7 +827,7 @@
             this.elements.conversationList.addEventListener('click', (e) => {
                 const item = e.target.closest('li');
                 if (item && item.dataset.id) {
-                    const convId = item.dataset.id;
+                    const convId = item.dataset.id ? String(item.dataset.id) : null;
                     const conv = this.state.conversations.find(c => c.id === convId);
                     this.openConversation(convId, conv?.title);
                     this.switchToTab('chat-active');
@@ -844,7 +896,10 @@
             try {
                 const data = await this.api.getConversations();
                 console.log('[CHAT] conversations API response:', data);
-                this.state.conversations = Array.isArray(data) ? data : [];
+                const normalized = Array.isArray(data)
+                    ? data.map(conv => this.normalizeConversationData(conv)).filter(Boolean)
+                    : [];
+                this.state.conversations = normalized;
 
                 // Sort by last message date
                 this.state.conversations.sort((a, b) => {
@@ -892,9 +947,10 @@
         async startConversation(userId) {
             try {
                 const conv = await this.api.startConversation(userId);
-                if (conv && conv.id) {
+                const normalizedConv = this.normalizeConversationData(conv);
+                if (normalizedConv && normalizedConv.id) {
                     await this.loadConversations();
-                    await this.openConversation(conv.id, conv.title);
+                    await this.openConversation(normalizedConv.id, normalizedConv.title);
                 }
             } catch (e) {
                 console.error('Error starting conversation:', e);
@@ -903,11 +959,12 @@
         }
 
         async openConversation(conversationId, title) {
-            this.state.currentConversationId = conversationId;
+            this.state.currentConversationId = conversationId != null ? String(conversationId) : null;
             this.state.lastMessageId = null;
 
             this.ui.clearMessages();
-            this.ui.setCurrentConversationTitle(title || `${this.i18n.conversation} ${conversationId.substring(0, 8)}`);
+            const fallbackTitle = `${this.i18n.conversation} ${(this.state.currentConversationId || '').substring(0, 8)}`;
+            this.ui.setCurrentConversationTitle(title || fallbackTitle);
 
             await this.loadMessages();
         }
@@ -922,18 +979,23 @@
                     this.state.lastMessageId
                 );
 
-                if (!Array.isArray(messages) || messages.length === 0) {
+                const normalizedMessages = Array.isArray(messages)
+                    ? messages.map(msg => this.normalizeMessageData(msg, this.state.currentConversationId)).filter(Boolean)
+                    : [];
+
+                if (normalizedMessages.length === 0) {
                     if (!this.state.lastMessageId) {
                         this.ui.showEmptyState();
                     }
                     return;
                 }
 
-                this.ui.renderMessages(messages, this.state.currentUserId);
+                this.ui.renderMessages(normalizedMessages, this.state.currentUserId);
 
                 // Update last message ID
-                if (messages.length > 0) {
-                    this.state.lastMessageId = messages[messages.length - 1].id;
+                if (normalizedMessages.length > 0) {
+                    const lastMessage = normalizedMessages[normalizedMessages.length - 1];
+                    this.state.lastMessageId = lastMessage.id;
                 }
 
                 // Mark as read
@@ -1008,6 +1070,7 @@
                 (sum, conv) => sum + (conv.unread_count || 0),
                 0
             );
+            console.log('[CHAT] total unread computed:', totalUnread, 'panelVisible:', this.state.panelVisible);
 
             this.ui.updateUnreadBadge(totalUnread);
 
@@ -1047,17 +1110,28 @@
 
         handleWebSocketMessage(data) {
             console.log('[CHAT] WS message_created payload:', data);
-            const { conversation_id, message } = data;
+            const incomingConversationId = data && data.conversation_id != null
+                ? String(data.conversation_id)
+                : null;
+            const currentConversationId = this.state.currentConversationId != null
+                ? String(this.state.currentConversationId)
+                : null;
+            console.log('[CHAT] handleWebSocketMessage state:', {
+                incomingConversationId,
+                currentConversationId,
+                panelVisible: this.state.panelVisible,
+            });
+            const message = this.normalizeMessageData(data?.message, incomingConversationId);
 
-            if (!conversation_id || !message) return;
+            if (!incomingConversationId || !message) return;
 
             // If this is for the current conversation, add message
-            if (this.state.currentConversationId === conversation_id) {
+            if (currentConversationId && currentConversationId === incomingConversationId) {
                 this.ui.renderMessages([message], this.state.currentUserId);
                 
                 // Mark as read immediately if panel is open
                 if (this.state.panelVisible) {
-                    this.api.markAsRead(conversation_id).catch(e => 
+                    this.api.markAsRead(incomingConversationId).catch(e => 
                         console.error('Error marking as read:', e)
                     );
                 }

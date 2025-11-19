@@ -126,6 +126,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         """
         msg_type = content.get("type")
         
+        if hasattr(self, "user") and self.user.is_authenticated:
+            logger.debug(
+                "[CHAT] WebSocket receive_json user=%s payload=%s",
+                self.user.id,
+                content,
+            )
+
         # Health check ping/pong
         if msg_type == "ping":
             await self.send_json({"type": "pong"})
@@ -148,8 +155,19 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         sender_id = message.get("sender_id")
 
         if sender_id and hasattr(self, "user") and sender_id == self.user.id:
-            # Skip echoing the sender's own message; frontend already renders it
+            logger.debug(
+                "[CHAT] Skipping echo for sender user=%s conversation=%s",
+                self.user.id,
+                event.get("conversation_id"),
+            )
             return
+
+        logger.debug(
+            "[CHAT] Forwarding message_created to user=%s conversation=%s message=%s",
+            getattr(self, "user", None) and self.user.id,
+            event.get("conversation_id"),
+            isinstance(message, dict) and message.get("id"),
+        )
 
         await self.send_json({
             "type": "message_created",
