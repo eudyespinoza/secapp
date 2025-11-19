@@ -29,18 +29,15 @@ python manage.py makemigrations requests
 python manage.py makemigrations billing
 python manage.py makemigrations chat
 
+# Migrate chat schema BEFORE running all migrations
+# This handles old to new schema transition automatically
+echo "[*] Checking chat schema migration..."
+python manage.py migrate_chat_schema --force || {
+  echo "[!] Chat schema migration had issues, but continuing..."
+}
+
 echo "[*] Running database migrations..."
 python manage.py migrate --noinput
-
-# Migrate chat schema safely (handles old to new schema transition)
-echo "[*] Checking chat schema migration..."
-python manage.py migrate_chat_schema --check-only
-if [ $? -ne 0 ]; then
-  echo "[*] Migrating chat schema..."
-  python manage.py migrate_chat_schema
-else
-  echo "[+] Chat schema is up to date"
-fi
 
 # Create superuser if it doesn't exist (admin@secureapprove.com)
 echo "[*] Ensuring default superuser (admin@secureapprove.com)..."
