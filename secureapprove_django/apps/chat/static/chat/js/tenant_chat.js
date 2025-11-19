@@ -365,12 +365,48 @@
         constructor(elements, i18n) {
             this.elements = elements;
             this.i18n = i18n;
+            this.messageLoadingEl = null;
         }
 
         showError(message) {
-            // Simple alert for now - could be improved with toast notifications
             console.error('Chat error:', message);
-            alert(this.i18n.error + ': ' + message);
+            if (!this.elements.alerts) return;
+
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show py-1 mb-1';
+            alert.setAttribute('role', 'alert');
+            alert.innerHTML = `
+                <small>${this.escapeHtml(this.i18n.error)}: ${this.escapeHtml(message)}</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            this.elements.alerts.appendChild(alert);
+
+            setTimeout(() => {
+                alert.classList.remove('show');
+                alert.addEventListener('transitionend', () => alert.remove(), { once: true });
+            }, 5000);
+        }
+
+        showMessageLoading() {
+            if (!this.elements.messageContainer || this.messageLoadingEl) return;
+
+            const container = document.createElement('div');
+            container.className = 'tenant-chat-loading text-center text-muted py-3';
+            container.innerHTML = `
+                <div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
+                <small>${this.escapeHtml(this.i18n.loadingMessages || 'Loading...')}</small>
+            `;
+
+            this.elements.messageContainer.appendChild(container);
+            this.messageLoadingEl = container;
+        }
+
+        hideMessageLoading() {
+            if (this.messageLoadingEl) {
+                this.messageLoadingEl.remove();
+                this.messageLoadingEl = null;
+            }
         }
 
         setPanelVisible(visible) {
@@ -416,13 +452,15 @@
 
         clearMessages() {
             if (this.elements.messageContainer) {
+                this.hideMessageLoading();
                 this.elements.messageContainer.innerHTML = '';
             }
         }
 
         showEmptyState() {
             if (!this.elements.messageContainer) return;
-            
+            this.hideMessageLoading();
+
             const empty = document.createElement('div');
             empty.className = 'tenant-chat-empty-state';
             empty.textContent = this.i18n.noMessages;
@@ -500,6 +538,7 @@
 
         renderMessages(messages, currentUserId) {
             if (!this.elements.messageContainer) return;
+            this.hideMessageLoading();
 
             // Remove empty state if present
             const emptyState = this.elements.messageContainer.querySelector('.tenant-chat-empty-state');
@@ -875,6 +914,7 @@
             if (!this.state.currentConversationId) return;
 
             try {
+                this.ui.showMessageLoading();
                 const messages = await this.api.getMessages(
                     this.state.currentConversationId,
                     this.state.lastMessageId
@@ -900,6 +940,8 @@
             } catch (e) {
                 console.error('Error loading messages:', e);
                 this.ui.showError(this.i18n.errorLoadingMessages);
+            } finally {
+                this.ui.hideMessageLoading();
             }
         }
 
@@ -908,6 +950,7 @@
 
             const content = this.elements.messageInput.value.trim();
             const files = Array.from(this.elements.attachmentInput.files);
+            const sendButton = this.elements.sendButton;
 
             if (!content && files.length === 0) return;
 
@@ -919,6 +962,9 @@
             }
 
             try {
+                if (sendButton) {
+                    sendButton.disabled = true;
+                }
                 await this.api.sendMessage(this.state.currentConversationId, content, files);
 
                 // Clear inputs
@@ -930,6 +976,10 @@
             } catch (e) {
                 console.error('Error sending message:', e);
                 this.ui.showError(this.i18n.errorSendingMessage);
+            } finally {
+                if (sendButton) {
+                    sendButton.disabled = false;
+                }
             }
         }
 
@@ -1037,11 +1087,13 @@
         startPolling() {
             // Main polling for conversations and messages
             this.pollingInterval = setInterval(() => {
-                this.loadConversations();
+                if (!this.ws.connected) {
+                    this.loadConversations();
 
-                // Only poll messages if WebSocket is not connected and panel is visible
-                if (!this.ws.connected && this.state.panelVisible && this.state.currentConversationId) {
-                    this.loadMessages();
+                    // Only poll messages if WebSocket is not connected and panel is visible
+                    if (this.state.panelVisible && this.state.currentConversationId) {
+                        this.loadMessages();
+                    }
                 }
             }, CONFIG.POLLING_INTERVAL);
 
@@ -1090,6 +1142,8 @@
             typingIndicator: document.getElementById('widgetTypingIndicator'),
             presenceSummary: document.getElementById('widgetPresenceSummary'),
             conversationTitle: document.getElementById('widgetCurrentConversationTitle'),
+            alerts: document.getElementById('widgetChatAlerts'),
+            sendButton: document.getElementById('widgetSendButton'),
         };
 
         // Validate required elements
@@ -1125,6 +1179,7 @@
             errorSendingMessage: 'Could not send message',
             fileTooLarge: 'File is too large',
             fileTypeNotAllowed: 'File type not allowed',
+            loadingMessages: 'Loading messages...',
         };
 
         // Create widget

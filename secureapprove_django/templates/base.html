@@ -637,6 +637,7 @@
                             </div>
                             <small id="widgetPresenceSummary" class="text-muted small"></small>
                         </div>
+                        <div id="widgetChatAlerts" class="mb-2"></div>
                         <div id="widgetMessageContainer"
                              class="border rounded mb-2 p-2 tenant-chat-messages">
                         </div>
@@ -649,12 +650,17 @@
                                           placeholder="{% trans 'Write a message' %}"></textarea>
                             </div>
                             <div class="d-flex justify-content-between align-items-center gap-2">
-                                <input type="file"
-                                       id="widgetAttachmentInput"
-                                       name="attachments"
-                                       multiple
-                                       class="form-control form-control-sm">
-                                <button type="submit" class="btn btn-sm btn-primary">
+                                <div class="flex-grow-1">
+                                    <input type="file"
+                                           id="widgetAttachmentInput"
+                                           name="attachments"
+                                           multiple
+                                           class="form-control form-control-sm">
+                                    <small class="text-muted-custom d-block mt-1">
+                                        {% trans "Max 10MB. Allowed: images, PDF, Office, TXT, CSV." %}
+                                    </small>
+                                </div>
+                                <button id="widgetSendButton" type="submit" class="btn btn-sm btn-primary">
                                     {% trans "Send" %}
                                 </button>
                             </div>
@@ -832,6 +838,7 @@
             errorSendingMessage: '{% trans "Could not send message" %}',
             fileTooLarge: '{% trans "File is too large (max 10MB)" %}',
             fileTypeNotAllowed: '{% trans "File type not allowed" %}',
+            loadingMessages: '{% trans "Loading messages..." %}',
         };
         {% endif %}
 
