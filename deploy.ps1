@@ -106,6 +106,9 @@ Write-Step 2 8 "Pulling latest images"
 Write-Step 3 8 "Building services"
 & $dockerComposeCmd -f $ComposeFile build
 
+Write-Info "[*] Applying new containers with updated image/config"
+& $dockerComposeCmd -f $ComposeFile up -d
+
 if (-not $SkipMigrations) {
     Write-Step 4 8 "Running database migrations"
     

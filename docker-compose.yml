@@ -85,7 +85,6 @@ services:
     
     volumes:
       - ./secureapprove_django/media:/app/media
-      - ./secureapprove_django/staticfiles:/app/staticfiles
       - ./logs:/app/logs
     
     depends_on:

@@ -108,6 +108,9 @@ $DOCKER_COMPOSE -f "$COMPOSE_FILE" pull
 echo -e "${GREEN}[3/8] Building services${NC}"
 $DOCKER_COMPOSE -f "$COMPOSE_FILE" build
 
+echo -e "${GREEN}[*] Applying new containers with updated image/config${NC}"
+$DOCKER_COMPOSE -f "$COMPOSE_FILE" up -d
+
 if [ "$SKIP_MIGRATIONS" = false ]; then
     echo -e "${GREEN}[4/8] Running database migrations${NC}"
     
