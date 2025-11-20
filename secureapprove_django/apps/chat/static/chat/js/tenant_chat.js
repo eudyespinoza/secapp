@@ -1125,6 +1125,10 @@
 
             if (!incomingConversationId || !message) return;
 
+            // Check if this message is from another user (not from current user)
+            const isFromOtherUser = message.sender && 
+                String(message.sender.id) !== String(this.state.currentUserId);
+
             // If this is for the current conversation, add message
             if (currentConversationId && currentConversationId === incomingConversationId) {
                 this.ui.renderMessages([message], this.state.currentUserId);
@@ -1134,11 +1138,31 @@
                     this.api.markAsRead(incomingConversationId).catch(e => 
                         console.error('Error marking as read:', e)
                     );
+                } else if (isFromOtherUser) {
+                    // Show notification if panel is closed and message is from someone else
+                    this.showMessageNotification(message);
                 }
+            } else if (isFromOtherUser) {
+                // Message is for a different conversation - always show notification
+                this.showMessageNotification(message);
             }
 
-            // Refresh conversations list
+            // Refresh conversations list to update unread counts
             this.loadConversations();
+        }
+
+        showMessageNotification(message) {
+            if (!message || !message.sender) return;
+
+            const senderName = message.sender.name || message.sender.email || this.i18n.unknownUser;
+            const messagePreview = message.content 
+                ? (message.content.length > 50 ? message.content.substring(0, 50) + '...' : message.content)
+                : this.i18n.newMessage;
+
+            this.notifications.show(
+                `${senderName}`,
+                messagePreview
+            );
         }
 
         handleWebSocketTyping(data) {
