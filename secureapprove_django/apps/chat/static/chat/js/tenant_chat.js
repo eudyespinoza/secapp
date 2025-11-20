@@ -1218,12 +1218,18 @@
         startPolling() {
             // Main polling for conversations and messages
             this.pollingInterval = setInterval(() => {
-                if (!this.ws.connected) {
-                    this.loadConversations();
+                this.loadConversations();
 
-                    // Only poll messages if WebSocket is not connected and panel is visible
-                    if (this.state.panelVisible && this.state.currentConversationId) {
-                        this.loadMessages();
+                // Keep active conversation fresh even if WebSocket is connected
+                if (this.state.panelVisible && this.state.currentConversationId) {
+                    this.loadMessages();
+                }
+
+                // If socket got disconnected silently, attempt reconnect
+                if (!this.ws.connected) {
+                    const socketReadyState = this.ws.socket ? this.ws.socket.readyState : WebSocket.CLOSED;
+                    if (!this.ws.socket || socketReadyState === WebSocket.CLOSED) {
+                        this.ws.connect();
                     }
                 }
             }, CONFIG.POLLING_INTERVAL);
