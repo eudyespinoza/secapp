@@ -291,13 +291,6 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
                     {'error': f'File {f.name} exceeds maximum size of {ChatAttachment.MAX_FILE_SIZE / (1024*1024)}MB'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
-            content_type = getattr(f, 'content_type', '')
-            if content_type and content_type not in ChatAttachment.ALLOWED_CONTENT_TYPES:
-                return Response(
-                    {'error': f'File type {content_type} is not allowed'},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
 
         # Create message with attachments
         with transaction.atomic():

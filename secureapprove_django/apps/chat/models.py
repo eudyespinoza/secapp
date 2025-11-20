@@ -188,26 +188,14 @@ class ChatMessage(models.Model):
 class ChatAttachment(models.Model):
     """
     File attached to a message.
-    Enforces file size and type validation.
+    Enforces file size validation (all MIME types allowed).
     """
 
-    # Maximum file size: 10MB
-    MAX_FILE_SIZE = 10 * 1024 * 1024
+    # Maximum file size: 25MB
+    MAX_FILE_SIZE = 25 * 1024 * 1024
 
-    # Allowed MIME types
-    ALLOWED_CONTENT_TYPES = [
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/plain',
-        'text/csv',
-    ]
+    # Allowed MIME types (empty means all)
+    ALLOWED_CONTENT_TYPES = []
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     message = models.ForeignKey(

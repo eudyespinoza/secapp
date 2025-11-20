@@ -37,12 +37,6 @@ class ChatAttachmentSerializer(serializers.ModelSerializer):
                 f'File size must be under {ChatAttachment.MAX_FILE_SIZE / (1024*1024)}MB'
             )
 
-        content_type = getattr(value, 'content_type', '')
-        if content_type and content_type not in ChatAttachment.ALLOWED_CONTENT_TYPES:
-            raise serializers.ValidationError(
-                f'File type {content_type} is not allowed'
-            )
-
         return value
 
 

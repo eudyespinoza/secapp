@@ -214,6 +214,23 @@
         .nav-link:hover {
             color: var(--primary-color) !important;
         }
+
+        .navbar-toggler {
+            border-color: var(--text-color);
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.15rem rgba(79, 70, 229, 0.35);
+        }
+
+        .navbar-toggler-icon {
+            opacity: 0.9;
+        }
+
+        [data-theme="dark"] .navbar-toggler-icon {
+            filter: invert(1) contrast(1.15);
+            opacity: 0.95;
+        }
         
         /* Theme and Language Controls */
         .theme-language-controls {
@@ -986,7 +1003,7 @@
                                                multiple
                                                class="form-control form-control-sm">
                                         <small class="text-muted-custom d-block mt-1">
-                                            {% trans "Max 10MB. Allowed: images, PDF, Office, TXT, CSV." %}
+                                            {% trans "Max 25MB. Any file type is allowed." %}
                                         </small>
                                     </div>
                                     <button id="widgetSendButton" type="submit" class="btn btn-sm btn-primary">
@@ -1173,7 +1190,7 @@
             errorStartingConversation: '{% trans "Could not start conversation" %}',
             errorLoadingMessages: '{% trans "Could not load messages" %}',
             errorSendingMessage: '{% trans "Could not send message" %}',
-            fileTooLarge: '{% trans "File is too large (max 10MB)" %}',
+            fileTooLarge: '{% trans "File is too large (max 25MB)" %}',
             fileTypeNotAllowed: '{% trans "File type not allowed" %}',
             loadingMessages: '{% trans "Loading messages..." %}',
             unknownUser: '{% trans "Unknown user" %}',

@@ -27,23 +27,9 @@
         WEBSOCKET_RECONNECT_BASE: 1000,  // 1 second base
         WEBSOCKET_RECONNECT_MAX: 30000,  // 30 seconds max
         ONLINE_THRESHOLD: 120,           // 2 minutes
-        MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+        MAX_FILE_SIZE: 25 * 1024 * 1024, // 25MB
         NOTIFICATION_PERMISSION_KEY: 'chat_notification_permission_requested',
     };
-
-    const ALLOWED_FILE_TYPES = [
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/plain',
-        'text/csv',
-    ];
 
     // ========================================
     // State Management
@@ -682,10 +668,6 @@
             for (const file of files) {
                 if (file.size > CONFIG.MAX_FILE_SIZE) {
                     errors.push(`${file.name}: ${this.i18n.fileTooLarge}`);
-                }
-
-                if (file.type && !ALLOWED_FILE_TYPES.includes(file.type)) {
-                    errors.push(`${file.name}: ${this.i18n.fileTypeNotAllowed}`);
                 }
             }
 
@@ -1368,7 +1350,7 @@
             errorStartingConversation: 'Could not start conversation',
             errorLoadingMessages: 'Could not load messages',
             errorSendingMessage: 'Could not send message',
-            fileTooLarge: 'File is too large',
+            fileTooLarge: 'File is too large (max 25MB)',
             fileTypeNotAllowed: 'File type not allowed',
             loadingMessages: 'Loading messages...',
             unknownUser: 'Unknown user',
