@@ -114,7 +114,7 @@
             if (!this.socket) return;
 
             this.socket.onopen = () => {
-                console.log('[CHAT] WebSocketManager.onopen', {
+                console.log('%c[CHAT] ✓ WebSocket CONNECTED', 'color: green; font-weight: bold', {
                     url: this.socket ? this.socket.url : null,
                     readyState: this.socket ? this.socket.readyState : null,
                 });
@@ -130,7 +130,7 @@
             };
 
             this.socket.onclose = (event) => {
-                console.log('[CHAT] WebSocketManager.onclose', {
+                console.log('%c[CHAT] ✗ WebSocket DISCONNECTED', 'color: red; font-weight: bold', {
                     code: event.code,
                     reason: event.reason,
                     wasClean: event.wasClean,
@@ -209,9 +209,11 @@
 
         send(data) {
             if (this.connected && this.socket && this.socket.readyState === WebSocket.OPEN) {
+                console.log('%c[CHAT] → Sending WebSocket message', 'color: purple; font-weight: bold', data);
                 this.socket.send(JSON.stringify(data));
                 return true;
             }
+            console.warn('[CHAT] Cannot send WebSocket message - not connected', { connected: this.connected, readyState: this.socket?.readyState });
             return false;
         }
 
