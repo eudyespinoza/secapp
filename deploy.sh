@@ -216,7 +216,14 @@ echo ""
 echo "Chat system status:"
 echo "  - Database tables: ✓ Created/Migrated"
 echo "  - Static files: ✓ Collected"
-echo "  - WebSocket support: $([ -n \"$(docker ps -q -f name=redis)\" ] && echo \"✓ Enabled\" || echo \"⚠ Disabled (Redis not running)\")"
+
+if docker ps -q -f name=redis > /dev/null; then
+    WEBSOCKET_STATUS="✓ Enabled"
+else
+    WEBSOCKET_STATUS="⚠ Disabled (Redis not running)"
+fi
+
+echo "  - WebSocket support: $WEBSOCKET_STATUS"
 echo ""
 
 exit 0
