@@ -490,6 +490,12 @@
             }
         }
 
+        showActiveWindow(visible) {
+            if (this.elements.activeWindow) {
+                this.elements.activeWindow.style.display = visible ? 'block' : 'none';
+            }
+        }
+
         showEmptyState() {
             if (!this.elements.messageContainer) return;
             this.hideMessageLoading();
@@ -886,7 +892,6 @@
                     const convId = item.dataset.id ? String(item.dataset.id) : null;
                     const conv = this.state.conversations.find(c => c.id === convId);
                     this.openConversation(convId, conv?.title);
-                    this.switchToTab('chat-active');
                 }
             });
 
@@ -895,7 +900,6 @@
                 const item = e.target.closest('li');
                 if (item && item.dataset.id) {
                     this.startConversation(item.dataset.id);
-                    this.switchToTab('chat-active');
                 }
             });
 
@@ -917,6 +921,10 @@
                     this.sendMessage();
                 }
             });
+
+            if (this.elements.closeConversation) {
+                this.elements.closeConversation.addEventListener('click', () => this.closeConversation());
+            }
         }
 
         togglePanel() {
@@ -927,13 +935,8 @@
                 this.state.panelInitialized = true;
                 this.loadConversations();
                 this.loadPresence();
-            }
-        }
-
-        switchToTab(tabId) {
-            const tab = document.querySelector(`#${tabId}-tab`);
-            if (tab) {
-                tab.click();
+            } else if (!this.state.panelVisible) {
+                this.ui.showActiveWindow(false);
             }
         }
 
@@ -1001,6 +1004,9 @@
         }
 
         async startConversation(userId) {
+            if (this.state.currentUserId && String(userId) === String(this.state.currentUserId)) {
+                return;
+            }
             try {
                 const conv = await this.api.startConversation(userId);
                 const normalizedConv = this.normalizeConversationData(conv);
@@ -1021,8 +1027,16 @@
             this.ui.clearMessages();
             const fallbackTitle = `${this.i18n.conversation} ${(this.state.currentConversationId || '').substring(0, 8)}`;
             this.ui.setCurrentConversationTitle(title || fallbackTitle);
+            this.ui.showActiveWindow(true);
 
             await this.loadMessages();
+        }
+
+        closeConversation() {
+            this.state.currentConversationId = null;
+            this.state.lastMessageId = null;
+            this.ui.clearMessages();
+            this.ui.showActiveWindow(false);
         }
 
         async loadMessages() {
@@ -1302,6 +1316,7 @@
         const elements = {
             bar: document.getElementById('tenantChatBar'),
             panel: document.getElementById('tenantChatPanel'),
+            activeWindow: document.getElementById('tenantChatActiveWindow'),
             chevron: document.getElementById('widgetChatChevron'),
             badge: document.getElementById('widgetNewMessagesBadge'),
             barStatus: document.getElementById('widgetBarStatus'),
@@ -1317,6 +1332,7 @@
             alerts: document.getElementById('widgetChatAlerts'),
             sendButton: document.getElementById('widgetSendButton'),
             toastContainer: document.getElementById('tenantChatToastContainer'),
+            closeConversation: document.getElementById('widgetCloseConversation'),
         };
 
         // Validate required elements
