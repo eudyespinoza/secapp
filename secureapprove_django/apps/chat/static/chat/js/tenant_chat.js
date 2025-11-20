@@ -382,6 +382,15 @@
 
         showError(message) {
             console.error('Chat error:', message);
+            if (this.elements.toastContainer) {
+                this.showToast({
+                    title: this.i18n.error || 'Error',
+                    body: message,
+                    tone: 'danger',
+                    timeout: 5200
+                });
+            }
+
             if (!this.elements.alerts) return;
 
             const alert = document.createElement('div');
@@ -398,6 +407,32 @@
                 alert.classList.remove('show');
                 alert.addEventListener('transitionend', () => alert.remove(), { once: true });
             }, 5000);
+        }
+
+        showToast({ title, body = '', tone = 'info', timeout = 5200 }) {
+            const container = this.elements.toastContainer || document.body;
+            const toast = document.createElement('div');
+            const toneClass = tone === 'danger' ? ' tenant-chat-toast-danger' : '';
+            toast.className = `tenant-chat-toast${toneClass}`;
+            toast.innerHTML = `
+                <div class="tenant-chat-toast-icon">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+                <div>
+                    <div class="tenant-chat-toast-title">${this.escapeHtml(title)}</div>
+                    ${body ? `<div class="tenant-chat-toast-body">${this.escapeHtml(body)}</div>` : ''}
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            // Allow CSS transition
+            requestAnimationFrame(() => toast.classList.add('show'));
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            }, timeout);
         }
 
         showMessageLoading() {
@@ -663,8 +698,9 @@
     // ========================================
     
     class NotificationManager {
-        constructor(i18n) {
+        constructor(i18n, ui) {
             this.i18n = i18n;
+            this.ui = ui;
             this.permissionRequested = localStorage.getItem(CONFIG.NOTIFICATION_PERMISSION_KEY) === 'true';
         }
 
@@ -693,27 +729,43 @@
         }
 
         show(title, body, icon = null) {
-            if (!this.canNotify()) return;
+            let shown = false;
 
-            try {
-                const notification = new Notification(title, {
-                    body: body,
-                    icon: icon || '/static/favicon.ico',
-                    badge: icon || '/static/favicon.ico',
-                    tag: 'chat-message',
-                    renotify: false,
-                });
+            if (this.canNotify()) {
+                try {
+                    const notification = new Notification(title, {
+                        body: body,
+                        icon: icon || '/static/favicon.ico',
+                        badge: icon || '/static/favicon.ico',
+                        tag: 'chat-message',
+                        renotify: false,
+                        requireInteraction: true,
+                        silent: false,
+                    });
 
-                notification.onclick = () => {
-                    window.focus();
-                    notification.close();
-                };
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                    };
 
-                // Auto-close after 5 seconds
-                setTimeout(() => notification.close(), 5000);
-            } catch (e) {
-                console.error('Error showing notification:', e);
+                    // Auto-close after 5 seconds
+                    setTimeout(() => notification.close(), 5000);
+                    shown = true;
+                } catch (e) {
+                    console.error('Error showing notification:', e);
+                }
             }
+
+            if (this.ui) {
+                this.ui.showToast({
+                    title,
+                    body,
+                    tone: 'info',
+                    timeout: shown ? 6000 : 5200
+                });
+            }
+
+            return shown;
         }
 
         notifyNewMessage(senderName, preview, count) {
@@ -746,7 +798,7 @@
 
             this.api = new ChatAPI(this.state.csrfToken);
             this.ui = new ChatUI(this.elements, this.i18n);
-            this.notifications = new NotificationManager(this.i18n);
+            this.notifications = new NotificationManager(this.i18n, this.ui);
 
             this.ws = new WebSocketManager({
                 onConnect: () => this.handleWebSocketConnect(),
@@ -1282,6 +1334,7 @@
             conversationTitle: document.getElementById('widgetCurrentConversationTitle'),
             alerts: document.getElementById('widgetChatAlerts'),
             sendButton: document.getElementById('widgetSendButton'),
+            toastContainer: document.getElementById('tenantChatToastContainer'),
         };
 
         // Validate required elements

@@ -316,26 +316,55 @@
         /* Chat Widget */
         .tenant-chat-bar {
             position: fixed;
-            bottom: 0;
+            bottom: 16px;
             right: 20px;
-            width: 360px;
-            height: 64px;
-            background-color: var(--card-bg);
+            width: 380px;
+            min-height: 72px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(16, 185, 129, 0.08));
             border: 1px solid var(--border-color);
-            border-radius: 12px 12px 0 0;
-            box-shadow: 0 -2px 8px var(--card-shadow);
+            border-radius: 16px 16px 12px 12px;
+            box-shadow: 0 12px 28px var(--card-shadow);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 12px;
+            padding: 12px 14px;
             cursor: pointer;
             z-index: 1050;
+            backdrop-filter: blur(6px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tenant-chat-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+            border-color: var(--primary-color);
+        }
+
+        .tenant-chat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.35);
         }
 
         .tenant-chat-bar-left {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .tenant-chat-bar-title {
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        .tenant-chat-bar-status {
+            color: var(--text-muted);
+            font-size: 0.82rem;
         }
 
         .tenant-chat-bar-right {
@@ -344,51 +373,202 @@
             gap: 8px;
         }
 
+        .tenant-chat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.07);
+        }
+
+        .tenant-chat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+        }
+
         #widgetBarStatus,
         #widgetPresenceSummary {
             color: var(--text-secondary);
         }
 
+        #widgetNewMessagesBadge {
+            min-width: 32px;
+            height: 32px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 10px 22px rgba(220, 38, 38, 0.25);
+        }
+
+        #widgetNewMessagesBadge[style*="inline"] {
+            display: inline-flex !important;
+        }
+
+        .tenant-chat-chevron {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+        }
+
         .tenant-chat-panel {
             position: fixed;
-            bottom: 64px;
+            bottom: 92px;
             right: 20px;
-            width: 360px;
-            max-height: 480px;
+            width: 380px;
+            max-height: clamp(420px, 72vh, 560px);
             z-index: 1050;
         }
 
-        .tenant-chat-panel .card-body {
-            max-height: 420px;
+        .tenant-chat-panel .card {
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.22);
             overflow: hidden;
         }
 
-        .tenant-chat-messages {
-            max-height: 260px;
-            overflow-y: auto;
-            background-color: var(--bg-secondary);
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
+        .tenant-chat-panel .card-header {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(16, 185, 129, 0.08));
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .tenant-chat-form textarea {
-            resize: none;
+        .tenant-chat-panel .card-body {
+            max-height: calc(clamp(420px, 72vh, 560px) - 96px);
+            overflow-y: auto;
+            background: var(--card-bg);
+        }
+
+        .tenant-chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tenant-chat-eyebrow {
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
         }
 
         .tenant-chat-tabs {
             flex-wrap: nowrap;
             white-space: nowrap;
             overflow-x: auto;
+            gap: 8px;
+            border-bottom: none;
         }
 
+        .tenant-chat-tabs::-webkit-scrollbar { display: none; }
+
         .tenant-chat-tabs .nav-link {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
+            font-size: 0.85rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        [data-theme="dark"] .tenant-chat-tabs .nav-link {
+            background: rgba(31, 41, 55, 0.88);
+            color: var(--text-color);
+        }
+
+        .tenant-chat-tabs .nav-link .bi {
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+
+        .tenant-chat-tabs .nav-link.active {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+        }
+
+        .tenant-chat-tabs .nav-link:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .tenant-chat-active-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .tenant-chat-conversation-title {
+            font-size: 1rem;
+            line-height: 1.3;
+        }
+
+        .tenant-chat-typing {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tenant-chat-typing .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+
+        .tenant-chat-typing .dot:nth-child(2) { animation-delay: 0.15s; }
+        .tenant-chat-typing .dot:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .tenant-chat-messages {
+            max-height: calc(clamp(420px, 72vh, 560px) - 200px);
+            min-height: 160px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .tenant-chat-message {
             display: flex;
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.6rem;
         }
 
         .tenant-chat-message.me {
@@ -400,23 +580,23 @@
         }
 
         .tenant-chat-bubble {
-            max-width: 80%;
-            padding: 0.4rem 0.6rem;
-            border-radius: 0.6rem;
+            max-width: 82%;
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.85rem;
             background-color: var(--card-bg);
             color: var(--text-color);
-            font-size: 0.8rem;
-            box-shadow: 0 1px 2px var(--card-shadow);
+            font-size: 0.85rem;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
         }
 
         .tenant-chat-message.me .tenant-chat-bubble {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: #ffffff;
         }
 
         .tenant-chat-meta {
-            font-size: 0.7rem;
-            margin-top: 0.15rem;
+            font-size: 0.75rem;
+            margin-top: 0.2rem;
         }
 
         .tenant-chat-message.me .tenant-chat-meta {
@@ -430,7 +610,7 @@
         .tenant-chat-attachments a {
             display: inline-block;
             margin-right: 0.35rem;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             color: var(--primary-color);
             text-decoration: underline;
         }
@@ -440,10 +620,93 @@
         }
 
         .tenant-chat-empty-state {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
             text-align: center;
-            padding: 0.5rem 0.25rem;
+            padding: 0.75rem 0.25rem;
+        }
+
+        .tenant-chat-form-shell {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--card-bg);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .tenant-chat-form textarea {
+            resize: none;
+        }
+
+        .tenant-chat-list .list-group-item {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .tenant-chat-list .list-group-item:hover {
+            transform: translateY(-1px);
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .tenant-chat-toast-container {
+            position: fixed;
+            right: 20px;
+            bottom: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1060;
+            width: 340px;
+            max-width: calc(100vw - 40px);
+        }
+
+        .tenant-chat-toast {
+            display: flex;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(16, 185, 129, 0.12));
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
+            color: var(--text-color);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+        }
+
+        .tenant-chat-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tenant-chat-toast-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 10px 22px rgba(79, 70, 229, 0.22);
+        }
+
+        .tenant-chat-toast-title {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .tenant-chat-toast-body {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .tenant-chat-toast-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(220, 38, 38, 0.12));
         }
 
         @media (max-width: 768px) {
@@ -457,6 +720,14 @@
                 right: 8px;
                 left: 8px;
                 width: auto;
+            }
+
+            .tenant-chat-toast-container {
+                left: 12px;
+                right: 12px;
+                width: auto;
+                bottom: 110px;
+                transform: none;
             }
         }
 
@@ -612,93 +883,133 @@
     <!-- Tenant Chat Bar -->
     <div id="tenantChatBar" class="tenant-chat-bar">
         <div class="tenant-chat-bar-left">
-            <i class="bi bi-chat-dots fs-5"></i>
-            <div id="widgetBarStatus" class="text-muted small"></div>
+            <div class="tenant-chat-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <div>
+                <div class="tenant-chat-bar-title">{% trans "Chat" %}</div>
+                <div id="widgetBarStatus" class="tenant-chat-bar-status"></div>
+            </div>
         </div>
         <div class="tenant-chat-bar-right">
-            <span id="widgetNewMessagesBadge" class="badge bg-danger" style="display:none;"></span>
-            <i id="widgetChatChevron" class="bi bi-chevron-up"></i>
+            <div class="tenant-chat-pill">
+                <span class="tenant-chat-dot"></span>
+                <span class="tenant-chat-pill-text">{% trans "Chats" %}</span>
+            </div>
+            <span id="widgetNewMessagesBadge" class="badge" style="display:none;"></span>
+            <div class="tenant-chat-chevron">
+                <i id="widgetChatChevron" class="bi bi-chevron-up"></i>
+            </div>
         </div>
     </div>
 
     <!-- Tenant Chat Panel -->
     <div id="tenantChatPanel" class="tenant-chat-panel" style="display:none;">
         <div class="card">
-            <div class="card-header py-2">
+            <div class="card-header py-3">
+                <div class="tenant-chat-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="tenant-chat-icon">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <div>
+                            <div class="tenant-chat-eyebrow">{% trans "Chat" %}</div>
+                            <div class="tenant-chat-bar-title">{% trans "Chats" %}</div>
+                        </div>
+                    </div>
+                    <div class="tenant-chat-pill">
+                        <span class="tenant-chat-dot"></span>
+                        <span id="widgetPresenceSummary" class="tenant-chat-pill-text small"></span>
+                    </div>
+                </div>
                 <ul class="nav nav-tabs card-header-tabs tenant-chat-tabs" id="tenantChatTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="chat-active-tab" data-bs-toggle="tab"
                                 data-bs-target="#chat-active" type="button" role="tab">
-                            {% trans "Internal chat" %}
+                            <i class="bi bi-sparkles"></i>
+                            {% trans "Chat" %}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="chat-conversations-tab" data-bs-toggle="tab"
                                 data-bs-target="#chat-conversations" type="button" role="tab">
+                            <i class="bi bi-inboxes"></i>
                             {% trans "Chats" %}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="chat-users-tab" data-bs-toggle="tab"
                                 data-bs-target="#chat-users" type="button" role="tab">
+                            <i class="bi bi-people"></i>
                             {% trans "Users & Groups" %}
                         </button>
                     </li>
                 </ul>
             </div>
-            <div class="card-body p-2">
+            <div class="card-body p-3">
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="chat-active" role="tabpanel">
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="tenant-chat-active-header mb-3">
                             <div>
-                                <strong id="widgetCurrentConversationTitle"></strong>
-                                <div id="widgetTypingIndicator" class="text-muted small" style="display:none;">
-                                    {% trans "Typing..." %}
+                                <div class="tenant-chat-eyebrow">{% trans "Conversation" %}</div>
+                                <div class="tenant-chat-conversation-title fw-semibold" id="widgetCurrentConversationTitle"></div>
+                                <div id="widgetTypingIndicator" class="tenant-chat-typing" style="display:none;">
+                                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                    <span>{% trans "Typing..." %}</span>
                                 </div>
                             </div>
-                            <small id="widgetPresenceSummary" class="text-muted small"></small>
+                            <div>
+                                <div class="tenant-chat-pill">
+                                    <span class="tenant-chat-dot"></span>
+                                    <span class="tenant-chat-bar-status small">{% trans "Chat" %}</span>
+                                </div>
+                            </div>
                         </div>
                         <div id="widgetChatAlerts" class="mb-2"></div>
                         <div id="widgetMessageContainer"
-                             class="border rounded mb-2 p-2 tenant-chat-messages">
+                             class="tenant-chat-messages mb-2">
                         </div>
-                        <form id="widgetMessageForm" class="tenant-chat-form" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="mb-2">
-                                <textarea id="widgetMessageInput"
-                                          class="form-control form-control-sm"
-                                          rows="2"
-                                          placeholder="{% trans 'Write a message' %}"></textarea>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center gap-2">
-                                <div class="flex-grow-1">
-                                    <input type="file"
-                                           id="widgetAttachmentInput"
-                                           name="attachments"
-                                           multiple
-                                           class="form-control form-control-sm">
-                                    <small class="text-muted-custom d-block mt-1">
-                                        {% trans "Max 10MB. Allowed: images, PDF, Office, TXT, CSV." %}
-                                    </small>
+                        <div class="tenant-chat-form-shell">
+                            <form id="widgetMessageForm" class="tenant-chat-form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-2">
+                                    <textarea id="widgetMessageInput"
+                                              class="form-control form-control-sm"
+                                              rows="2"
+                                              placeholder="{% trans 'Write a message' %}"></textarea>
                                 </div>
-                                <button id="widgetSendButton" type="submit" class="btn btn-sm btn-primary">
-                                    {% trans "Send" %}
-                                </button>
-                            </div>
-                        </form>
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <div class="flex-grow-1">
+                                        <input type="file"
+                                               id="widgetAttachmentInput"
+                                               name="attachments"
+                                               multiple
+                                               class="form-control form-control-sm">
+                                        <small class="text-muted-custom d-block mt-1">
+                                            {% trans "Max 10MB. Allowed: images, PDF, Office, TXT, CSV." %}
+                                        </small>
+                                    </div>
+                                    <button id="widgetSendButton" type="submit" class="btn btn-sm btn-primary">
+                                        {% trans "Send" %}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="chat-conversations" role="tabpanel">
                         <h6 class="mb-2">{% trans "Conversations" %}</h6>
-                        <ul id="widgetConversationList" class="list-group list-group-flush small"></ul>
+                        <ul id="widgetConversationList" class="list-group list-group-flush small tenant-chat-list"></ul>
                     </div>
                     <div class="tab-pane fade" id="chat-users" role="tabpanel">
                         <h6 class="mb-2">{% trans "Contacts" %}</h6>
-                        <ul id="widgetUserList" class="list-group list-group-flush small"></ul>
+                        <ul id="widgetUserList" class="list-group list-group-flush small tenant-chat-list"></ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="tenantChatToastContainer" class="tenant-chat-toast-container"></div>
     {% endif %}
 
     {% endblock %}
