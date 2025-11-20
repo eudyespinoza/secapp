@@ -801,6 +801,26 @@
                 normalized.attachments = normalized.attachments.map(att => ({ ...att }));
             }
 
+            const senderId = normalized.sender?.id ?? normalized.sender_id ?? null;
+            const senderName = normalized.sender?.name ?? normalized.sender_name ?? '';
+            const senderEmail = normalized.sender?.email ?? normalized.sender_email ?? '';
+
+            if (normalized.sender_id == null && senderId != null) {
+                normalized.sender_id = senderId;
+            }
+            if (!normalized.sender_name && senderName) {
+                normalized.sender_name = senderName;
+            }
+            if (!normalized.sender_email && senderEmail) {
+                normalized.sender_email = senderEmail;
+            }
+
+            normalized.sender = {
+                id: senderId,
+                name: normalized.sender_name || senderName || '',
+                email: normalized.sender_email || senderEmail || '',
+            };
+
             return normalized;
         }
 
@@ -1128,8 +1148,11 @@
             if (!incomingConversationId || !message) return;
 
             // Check if this message is from another user (not from current user)
-            const isFromOtherUser = message.sender && 
-                String(message.sender.id) !== String(this.state.currentUserId);
+            const senderId = message.sender?.id ?? message.sender_id ?? null;
+            const currentUserId = this.state.currentUserId;
+            const isFromOtherUser = senderId != null && (
+                currentUserId == null || String(senderId) !== String(currentUserId)
+            );
 
             // If this is for the current conversation, add message
             if (currentConversationId && currentConversationId === incomingConversationId) {
@@ -1154,9 +1177,13 @@
         }
 
         showMessageNotification(message) {
-            if (!message || !message.sender) return;
+            if (!message) return;
 
-            const senderName = message.sender.name || message.sender.email || this.i18n.unknownUser;
+            const senderName = message.sender?.name
+                || message.sender_name
+                || message.sender?.email
+                || message.sender_email
+                || this.i18n.unknownUser;
             const messagePreview = message.content 
                 ? (message.content.length > 50 ? message.content.substring(0, 50) + '...' : message.content)
                 : this.i18n.newMessage;
@@ -1285,6 +1312,7 @@
             fileTooLarge: 'File is too large',
             fileTypeNotAllowed: 'File type not allowed',
             loadingMessages: 'Loading messages...',
+            unknownUser: 'Unknown user',
         };
 
         // Create widget
