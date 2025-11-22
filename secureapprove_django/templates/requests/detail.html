@@ -134,7 +134,7 @@
                                 {% trans "This request is waiting for approval from an administrator." %}
                             {% elif request_obj.status == 'approved' %}
                                 {% trans "This request was approved on" %} {{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}
-                                {% trans "by" %} {{ request_obj.approved_by.first_name }} {{ request_obj.approved_by.last_name }}.
+                                {% trans "by" %} {{ request_obj.approver.get_full_name }}.
                             {% elif request_obj.status == 'rejected' %}
                                 {% trans "This request was rejected." %}
                                 {% if request_obj.rejection_reason %}
@@ -170,11 +170,11 @@
                             <div class="d-flex align-items-center">
                                 <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
                                     <span class="text-white fw-bold">
-                                        {{ request_obj.requester.first_name|first }}{{ request_obj.requester.last_name|first }}
+                                        {{ request_obj.requester.get_short_name|first|upper }}
                                     </span>
                                 </div>
                                 <div>
-                                    <div class="fw-bold">{{ request_obj.requester.first_name }} {{ request_obj.requester.last_name }}</div>
+                                    <div class="fw-bold">{{ request_obj.requester.get_full_name }}</div>
                                     <small class="text-muted">{{ request_obj.requester.email }}</small>
                                 </div>
                             </div>
@@ -217,7 +217,7 @@
                                 <strong>{% trans "Request Created" %}</strong>
                                 <div class="text-muted small">
                                     {{ request_obj.created_at|date:"F d, Y \a\t H:i" }}
-                                    {% trans "by" %} {{ request_obj.requester.first_name }} {{ request_obj.requester.last_name }}
+                                    {% trans "by" %} {{ request_obj.requester.get_full_name }}
                                 </div>
                             </div>
                         </div>
@@ -232,7 +232,7 @@
                                     <strong>{% trans "Request Approved" %}</strong>
                                     <div class="text-muted small">
                                         {{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}
-                                        {% trans "by" %} {{ request_obj.approved_by.first_name }} {{ request_obj.approved_by.last_name }}
+                                        {% trans "by" %} {{ request_obj.approver.get_full_name }}
                                     </div>
                                 </div>
                             </div>
