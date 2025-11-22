@@ -226,8 +226,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'purchase': {
             'show_amount': true,
-            'required_fields': ['title', 'description', 'amount', 'priority', 'vendor', 'cost_center'],
-            'extra_fields': ['vendor', 'cost_center']
+            'required_fields': ['title', 'description', 'amount', 'priority', 'purchase_vendor', 'cost_center'],
+            'extra_fields': ['purchase_vendor', 'cost_center']
         },
         'travel': {
             'show_amount': true,
@@ -236,13 +236,13 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'contract': {
             'show_amount': false,
-            'required_fields': ['title', 'description', 'priority', 'vendor', 'reason'],
-            'extra_fields': ['vendor', 'reason']
+            'required_fields': ['title', 'description', 'priority', 'contract_vendor', 'contract_reason'],
+            'extra_fields': ['contract_vendor', 'contract_reason']
         },
         'document': {
             'show_amount': false,
-            'required_fields': ['title', 'description', 'priority', 'document_id', 'reason'],
-            'extra_fields': ['document_id', 'reason']
+            'required_fields': ['title', 'description', 'priority', 'document_id', 'document_reason'],
+            'extra_fields': ['document_id', 'document_reason']
         },
         'other': {
             'show_amount': false,

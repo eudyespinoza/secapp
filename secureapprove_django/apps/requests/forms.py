@@ -16,7 +16,14 @@ class DynamicRequestForm(forms.ModelForm):
     """
     
     # Extra fields for dynamic categories
-    vendor = forms.CharField(
+    purchase_vendor = forms.CharField(
+        label=_('Vendor'),
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': _('Vendor name')})
+    )
+    
+    contract_vendor = forms.CharField(
         label=_('Vendor'),
         max_length=200,
         required=False,
@@ -70,7 +77,14 @@ class DynamicRequestForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'placeholder': _('Document ID or reference')})
     )
     
-    reason = forms.CharField(
+    contract_reason = forms.CharField(
+        label=_('Reason'),
+        max_length=500,
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Explain the reason for this request')})
+    )
+    
+    document_reason = forms.CharField(
         label=_('Reason'),
         max_length=500,
         required=False,
@@ -166,8 +180,8 @@ class DynamicRequestForm(forms.ModelForm):
             },
             'purchase': {
                 'show_amount': True,
-                'required_fields': ['title', 'description', 'amount', 'priority', 'vendor', 'cost_center'],
-                'extra_fields': ['vendor', 'cost_center']
+                'required_fields': ['title', 'description', 'amount', 'priority', 'purchase_vendor', 'cost_center'],
+                'extra_fields': ['purchase_vendor', 'cost_center']
             },
             'travel': {
                 'show_amount': True,
@@ -176,13 +190,13 @@ class DynamicRequestForm(forms.ModelForm):
             },
             'contract': {
                 'show_amount': False,
-                'required_fields': ['title', 'description', 'priority', 'vendor', 'reason'],
-                'extra_fields': ['vendor', 'reason']
+                'required_fields': ['title', 'description', 'priority', 'contract_vendor', 'contract_reason'],
+                'extra_fields': ['contract_vendor', 'contract_reason']
             },
             'document': {
                 'show_amount': False,
-                'required_fields': ['title', 'description', 'priority', 'document_id', 'reason'],
-                'extra_fields': ['document_id', 'reason']
+                'required_fields': ['title', 'description', 'priority', 'document_id', 'document_reason'],
+                'extra_fields': ['document_id', 'document_reason']
             },
             'other': {
                 'show_amount': False,
@@ -207,7 +221,7 @@ class DynamicRequestForm(forms.ModelForm):
             # Purchase fields
             HTML('<div class="dynamic-group" data-category="purchase" style="display: none;">'),
             Row(
-                Column('vendor', css_class='col-md-6'),
+                Column('purchase_vendor', css_class='col-md-6'),
                 Column('cost_center', css_class='col-md-6'),
             ),
             HTML('</div>'),
@@ -223,14 +237,14 @@ class DynamicRequestForm(forms.ModelForm):
             
             # Contract fields
             HTML('<div class="dynamic-group" data-category="contract" style="display: none;">'),
-            'vendor',
-            'reason',
+            'contract_vendor',
+            'contract_reason',
             HTML('</div>'),
             
             # Document fields
             HTML('<div class="dynamic-group" data-category="document" style="display: none;">'),
             'document_id',
-            'reason',
+            'document_reason',
             HTML('</div>'),
         )
     
@@ -278,10 +292,19 @@ class DynamicRequestForm(forms.ModelForm):
         config = self._get_category_config(category)
         metadata = {}
         
+        # Map fields to metadata keys
+        field_mapping = {
+            'purchase_vendor': 'vendor',
+            'contract_vendor': 'vendor',
+            'contract_reason': 'reason',
+            'document_reason': 'reason',
+        }
+        
         for field_name in config.get('extra_fields', []):
             value = self.cleaned_data.get(field_name)
             if value:
-                metadata[field_name] = str(value) if not isinstance(value, str) else value
+                metadata_key = field_mapping.get(field_name, field_name)
+                metadata[metadata_key] = str(value) if not isinstance(value, str) else value
         
         request.metadata = metadata
         
