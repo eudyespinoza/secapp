@@ -472,24 +472,36 @@ class WebAuthnService:
             # Find the credential
             credential_id = credential_data.get('id', '')
             
-            # Normalize base64 padding for comparison
+            # Debug logging
+            logger.info(f"Verifying approval for user {user.email}")
+            logger.info(f"Credential ID from response: {credential_id}")
+            
+            # Normalize base64 padding and convert base64url to base64
             def normalize_base64(b64_str):
+                # Convert base64url to base64 (- to +, _ to /)
+                b64_str = b64_str.replace('-', '+').replace('_', '/')
+                # Add padding if missing
                 missing_padding = len(b64_str) % 4
                 if missing_padding:
                     b64_str += '=' * (4 - missing_padding)
                 return b64_str
             
             normalized_credential_id = normalize_base64(credential_id)
+            logger.info(f"Normalized credential ID: {normalized_credential_id}")
             
             user_credential = None
             for cred in user.webauthn_credentials:
                 stored_id = cred.get('credential_id', '')
                 normalized_stored_id = normalize_base64(stored_id)
+                
                 if normalized_stored_id == normalized_credential_id:
                     user_credential = cred
+                    logger.info(f"✓ Found matching credential!")
                     break
             
             if not user_credential:
+                logger.error(f"❌ No matching credential found for approval!")
+                logger.error(f"Available credentials: {[c.get('credential_id') for c in user.webauthn_credentials]}")
                 raise ValueError(_('Credential not found'))
             
             # Check if credential is active
