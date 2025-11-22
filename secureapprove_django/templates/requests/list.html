@@ -125,7 +125,7 @@
         <div class="row">
             {% for request_obj in page_obj.object_list %}
                 <div class="col-lg-6 col-xl-4 mb-4">
-                    <div class="card request-card h-100 position-relative">
+                    <div class="card request-card h-100 position-relative" data-request-id="{{ request_obj.pk }}">
                         <!-- Priority Indicator -->
                         <div class="priority-indicator priority-{{ request_obj.priority }}"></div>
                         
@@ -195,7 +195,7 @@
                             </div>
                         </div>
                         <!-- Stretched link for whole card clickability -->
-                        <a href="#" class="stretched-link" onclick="openRequestModal(event, {{ request_obj.pk }})"></a>
+                        <a href="{% url 'requests:detail' request_obj.pk %}" class="stretched-link"></a>
                     </div>
                 </div>
             {% endfor %}
@@ -266,280 +266,16 @@
         <div class="row" id="requests-container" style="display: none;"></div>
     {% endif %}
 </div>
-
-<!-- Request Detail Modal -->
-<div class="modal fade" id="requestDetailModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Request Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-8">
-                        <h4 id="modalRequestTitle" class="mb-3"></h4>
-                        <p id="modalDescription" class="text-muted"></p>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <span id="modalStatus" class="badge bg-secondary fs-6 mb-2"></span>
-                        <div id="modalAmount" class="h4 text-primary"></div>
-                    </div>
-                </div>
-                
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <small class="text-muted d-block">Category</small>
-                        <span id="modalCategory" class="fw-bold"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <small class="text-muted d-block">Priority</small>
-                        <span id="modalPriority" class="fw-bold"></span>
-                    </div>
-                </div>
-
-                <div id="modalMetadataContainer" class="mb-4 p-3 bg-light rounded d-none">
-                    <h6 class="mb-2">Additional Details</h6>
-                    <div id="modalMetadataContent" class="row g-2"></div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                    <div class="small text-muted">
-                        Created by <span id="modalRequester" class="fw-bold"></span> on <span id="modalDate"></span>
-                    </div>
-                    <div id="modalActions">
-                        <a id="modalViewFull" href="#" class="btn btn-outline-secondary btn-sm">View Full Page</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Initialize Modal
-    const requestModal = new bootstrap.Modal(document.getElementById('requestDetailModal'));
-
-    function openRequestModal(event, requestId) {
-        event.preventDefault();
-        
-        // Show loading state
-        document.getElementById('modalTitle').textContent = 'Loading...';
-        requestModal.show();
-
-        // Fetch details
-        fetch(`/dashboard/api/requests/${requestId}/`)
-            .then(response => response.json())
-            .then(data => {
-                // Populate Modal
-                document.getElementById('modalTitle').textContent = `Request #${data.id}`;
-                document.getElementById('modalRequestTitle').textContent = data.title;
-                document.getElementById('modalDescription').textContent = data.description;
-                
-                // Status
-                const statusEl = document.getElementById('modalStatus');
-                statusEl.textContent = data.status_display || data.status;
-                statusEl.className = `badge fs-6 mb-2 bg-${getStatusColor(data.status)}`;
-                
-                // Amount
-                if (data.amount) {
-                    document.getElementById('modalAmount').textContent = `$${parseFloat(data.amount).toFixed(2)}`;
-                } else {
-                    document.getElementById('modalAmount').textContent = '';
-                }
-
-                // Category & Priority
-                document.getElementById('modalCategory').textContent = data.category_display || data.category;
-                document.getElementById('modalPriority').textContent = data.priority_display || data.priority;
-
-                // Metadata
-                const metaContainer = document.getElementById('modalMetadataContainer');
-                const metaContent = document.getElementById('modalMetadataContent');
-                metaContent.innerHTML = '';
-                
-                if (data.metadata && Object.keys(data.metadata).length > 0) {
-                    metaContainer.classList.remove('d-none');
-                    for (const [key, value] of Object.entries(data.metadata)) {
-                        if (value) {
-                            const col = document.createElement('div');
-                            col.className = 'col-md-6';
-                            col.innerHTML = `<small class="text-muted d-block text-capitalize">${key.replace(/_/g, ' ')}</small><span class="fw-medium">${value}</span>`;
-                            metaContent.appendChild(col);
-                        }
-                    }
-                } else {
-                    metaContainer.classList.add('d-none');
-                }
-
-                // Footer
-                document.getElementById('modalRequester').textContent = `${data.requester.first_name} ${data.requester.last_name}`;
-                document.getElementById('modalDate').textContent = new Date(data.created_at).toLocaleDateString();
-                document.getElementById('modalViewFull').href = `/requests/${data.id}/`;
-
-                // Add Approve/Reject buttons if pending and user is approver
-                const actionsDiv = document.getElementById('modalActions');
-                // Clear previous buttons except View Full
-                const viewFullBtn = document.getElementById('modalViewFull');
-                actionsDiv.innerHTML = '';
-                
-                if (data.can_approve && data.status === 'pending') {
-                    // Reject Button
-                    const rejectBtn = document.createElement('button');
-                    rejectBtn.className = 'btn btn-danger btn-sm me-2';
-                    rejectBtn.innerHTML = '<i class="bi bi-x-lg"></i> Reject';
-                    rejectBtn.onclick = () => handleModalAction('reject', data.id);
-                    actionsDiv.appendChild(rejectBtn);
-
-                    // Approve Button
-                    const approveBtn = document.createElement('button');
-                    approveBtn.className = 'btn btn-success btn-sm me-2';
-                    approveBtn.innerHTML = '<i class="bi bi-check-lg"></i> Approve';
-                    approveBtn.onclick = () => handleModalAction('approve', data.id);
-                    actionsDiv.appendChild(approveBtn);
-                }
-                
-                actionsDiv.appendChild(viewFullBtn);
-            })
-            .catch(error => {
-                console.error('Error fetching request details:', error);
-                document.getElementById('modalTitle').textContent = 'Error loading details';
-            });
-    }
-
     function getStatusColor(status) {
         switch(status) {
             case 'approved': return 'success';
             case 'rejected': return 'danger';
             default: return 'warning';
         }
-    }
-
-    // WebAuthn Helpers
-    function base64ToBuffer(base64) {
-        const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
-        const buffer = new ArrayBuffer(binary.length);
-        const view = new Uint8Array(buffer);
-        for (let i = 0; i < binary.length; i++) {
-            view[i] = binary.charCodeAt(i);
-        }
-        return buffer;
-    }
-
-    function bufferToBase64(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    }
-
-    async function handleModalAction(action, requestId) {
-        let extraData = {};
-        
-        if (action === 'reject') {
-            const reason = prompt('Please provide a reason for rejection:');
-            if (reason === null) return; // Cancelled
-            if (!reason.trim()) {
-                alert('Reason is required for rejection.');
-                return;
-            }
-            extraData.reason = reason;
-        } else {
-            if (!confirm('Are you sure you want to approve this request?')) return;
-        }
-
-        // Check for WebAuthn support
-        if (window.PublicKeyCredential) {
-            try {
-                await performApprovalWebAuthn(action, requestId, extraData);
-                // Close modal and refresh list (or update UI)
-                requestModal.hide();
-                window.location.reload(); // Simple reload to reflect changes
-            } catch (error) {
-                console.error('WebAuthn error:', error);
-                alert(error.message || 'Authentication failed');
-            }
-        } else {
-            alert('WebAuthn is not supported on this device. Please use the full details page.');
-            window.location.href = `/requests/${requestId}/`;
-        }
-    }
-
-    async function performApprovalWebAuthn(action, requestId, extraData = {}) {
-        {% get_current_language as REQ_LANG %}
-        const langPrefix = '/{{ REQ_LANG }}';
-        
-        // Step 1: Get Options
-        const optionsResponse = await fetch(`${langPrefix}/approvals/${requestId}/webauthn/options/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ action: action })
-        });
-
-        if (!optionsResponse.ok) {
-            const error = await optionsResponse.json();
-            throw new Error(error.error || 'Failed to init authentication');
-        }
-
-        const { options } = await optionsResponse.json();
-
-        // Step 2: Get Assertion
-        const publicKey = {
-            challenge: base64ToBuffer(options.challenge),
-            timeout: options.timeout || 60000,
-            rpId: options.rpId,
-            allowCredentials: (options.allowCredentials || []).map(cred => ({
-                type: cred.type,
-                id: base64ToBuffer(cred.id),
-                transports: cred.transports || []
-            })),
-            userVerification: options.userVerification || 'required'
-        };
-
-        const assertion = await navigator.credentials.get({ publicKey });
-        if (!assertion) throw new Error('Authentication cancelled');
-
-        // Step 3: Verify
-        const assertionData = {
-            id: assertion.id,
-            rawId: bufferToBase64(assertion.rawId),
-            response: {
-                clientDataJSON: bufferToBase64(assertion.response.clientDataJSON),
-                authenticatorData: bufferToBase64(assertion.response.authenticatorData),
-                signature: bufferToBase64(assertion.response.signature),
-                userHandle: assertion.response.userHandle ? bufferToBase64(assertion.response.userHandle) : null,
-            },
-            type: assertion.type
-        };
-
-        const verifyResponse = await fetch(`${langPrefix}/approvals/${requestId}/webauthn/verify/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                action: action,
-                response: assertionData,
-                ...extraData
-            })
-        });
-
-        if (!verifyResponse.ok) {
-            const error = await verifyResponse.json();
-            throw new Error(error.error || 'Verification failed');
-        }
-
-        const result = await verifyResponse.json();
-        if (!result.success) throw new Error(result.error || 'Action failed');
-        
-        return true;
     }
 
     // Real-time Updates
@@ -563,10 +299,11 @@
                 }
 
                 // Create new card HTML
+                const detailUrl = "{% url 'requests:detail' 0 %}".replace('0', data.id);
                 const col = document.createElement('div');
                 col.className = 'col-lg-6 col-xl-4 mb-4 new-request-item';
                 col.innerHTML = `
-                    <div class="card request-card h-100 position-relative border-primary">
+                    <div class="card request-card h-100 position-relative border-primary" data-request-id="${data.id}">
                         <div class="priority-indicator priority-${data.priority || 'medium'}"></div>
                         <div class="card-body d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -587,7 +324,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#" class="stretched-link" onclick="openRequestModal(event, ${data.id})"></a>
+                        <a href="${detailUrl}" class="stretched-link"></a>
                     </div>
                 `;
 
@@ -605,12 +342,10 @@
         console.log('Status update received:', data);
         
         // Find the card
-        const links = document.querySelectorAll(`a[onclick*="openRequestModal(event, ${data.request_id})"]`);
-        if (links.length > 0) {
-            const card = links[0].closest('.card');
-            if (card) {
-                // 1. Update Status Badge
-                const badge = card.querySelector('.status-badge');
+        const card = document.querySelector(`.card[data-request-id="${data.request_id}"]`);
+        if (card) {
+            // 1. Update Status Badge
+            const badge = card.querySelector('.status-badge');
                 if (badge) {
                     badge.className = `status-badge badge bg-${getStatusColor(data.status)}`;
                     // Capitalize first letter
@@ -649,7 +384,6 @@
                     card.style.backgroundColor = originalBg;
                 }, 2000);
             }
-        }
     });
 </script>
 {% endblock %}
