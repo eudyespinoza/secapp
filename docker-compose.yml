@@ -40,48 +40,6 @@ services:
       - internal
 
   # Django Web Application
-# ================================================
-# SecureApprove - Docker Compose with Traefik
-# ================================================
-
-services:
-  # PostgreSQL Database
-  db:
-    image: postgres:15
-    container_name: secureapprove_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: secureapprove
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backups:/backups
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - internal
-
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: secureapprove_redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - internal
-
-  # Django Web Application
   web:
     build: 
       context: ./secureapprove_django
