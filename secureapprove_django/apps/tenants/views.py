@@ -66,7 +66,7 @@ class TenantSettingsView(LoginRequiredMixin, View):
         action = request.POST.get("action")
         if action == "update_user":
             user_id = request.POST.get("user_id")
-            role = request.POST.get("role")
+            role = (request.POST.get("role") or "").strip()
             is_active = request.POST.get("is_active") == "on"
 
             try:
@@ -77,8 +77,11 @@ class TenantSettingsView(LoginRequiredMixin, View):
             valid_roles = {code for code, _ in User.ROLE_CHOICES}
             if role in valid_roles:
                 user.role = role
-            user.is_active = is_active
-            user.save(update_fields=["role", "is_active"])
+                user.is_active = is_active
+                user.save(update_fields=["role", "is_active"])
+                messages.success(request, _("User updated successfully."))
+            else:
+                messages.error(request, _("Invalid role selected."))
 
         elif action == "create_invite":
             email = (request.POST.get("email") or "").strip().lower()

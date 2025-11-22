@@ -1039,7 +1039,7 @@ msgid "Super Admin"
 msgstr "Súper administrador"
 
 msgid "Role"
-msgstr "Role"
+msgstr "Rol"
 
 msgid "WebAuthn Credentials"
 msgstr "Credenciales de WebAuthn"
@@ -1991,7 +1991,10 @@ msgid ""
 "\n"
 "                    %(total)s request\n"
 "                "
-msgstr "%(total)s de solicitudes"
+msgstr ""
+"\n"
+"                    %(total)s de solicitudes\n"
+"                "
 
 msgid "All Statuses"
 msgstr "Todos los estados"
@@ -2054,10 +2057,10 @@ msgid "No charge for the first 7 days. Cancel anytime."
 msgstr "Sin cargo los primeros 7 días. Cancela en cualquier momento."
 
 msgid "Tenant Settings"
-msgstr "Configuraci��n del Tenant"
+msgstr "Configuración del Tenant"
 
 msgid "Tenant Information"
-msgstr "Informaci��n del Tenant"
+msgstr "Información del Tenant"
 
 msgid "Tenant Users"
 msgstr "Usuarios del Tenant"
@@ -2066,14 +2069,14 @@ msgid ""
 "Request categories are currently global. Future versions will allow per-"
 "tenant customization."
 msgstr ""
-"Las categor��as de solicitud son actualmente globales. Las versiones futuras"
-" permitir��n personalizaci��n por tenant."
+"Las categorías de solicitud son actualmente globales. Las versiones futuras"
+" permitirán personalización por tenant."
 
 msgid "Contacts"
 msgstr "Contactos"
 
 msgid "Online"
-msgstr "En l��nea"
+msgstr "En línea"
 
 msgid "Offline"
 msgstr "Desconectado"
@@ -2090,18 +2093,6 @@ msgstr "Chats"
 msgid "Users & Groups"
 msgstr "Usuarios y grupos"
 
-msgid "Email is required to invite a user."
-msgstr "Se requiere correo electronico para invitar un usuario."
-
-msgid ""
-"You have reached the maximum number of users for your current seats. Please "
-"upgrade your subscription to add more users."
-msgstr ""
-"Haz alcanzado el numero maximo de usuarios para tus asientos actuales. "
-"Actualiza tu suscripcion para agregar mas usuarios."
-
-msgid "Your current subscription does not allow adding more users this month."
-msgstr "Tu suscripcion actual no permite agregar mas usuarios este mes."
 
 msgid "You have been invited to SecureApprove"
 msgstr "Has sido invitado a SecureApprove"
@@ -2113,21 +2104,13 @@ msgid ""
 "invitation, you can ignore this email."
 msgstr ""
 "Has sido invitado a unirte al tenant '%(tenant)s' en "
-"SecureApprove.\\n\\nPara aceptar la invitacion y acceder a la plataforma, "
+"SecureApprove.\\n\\nPara aceptar la invitación y acceder a la plataforma, "
 "haz clic en el siguiente enlace:\\n\\n%(url)s\\n\\nSi no esperabas esta "
-"invitacion, puedes ignorar este correo."
+"invitación, puedes ignorar este correo."
 
-msgid "Invitation created successfully for %(email)s."
-msgstr "Invitacion creada correctamente para %(email)s."
-
-msgid "Invitation updated for %(email)s."
-msgstr "Invitacion actualizada para %(email)s."
-
-msgid "Invitation for %(email)s has been cancelled."
-msgstr "La invitacion para %(email)s ha sido cancelada."
 
 msgid "This invitation is no longer valid."
-msgstr "Esta invitacion ya no es valida."
+msgstr "Esta invitación ya no es válida."
 
 msgid "This tenant has no available seats. Please contact the administrator."
 msgstr ""
@@ -2138,11 +2121,11 @@ msgid ""
 "This email is already associated with a different tenant. Please contact "
 "support."
 msgstr ""
-"Este correo ya esta asociado a un tenant diferente. Por favor contacta al "
+"Este correo ya está asociado a un tenant diferente. Por favor contacta al "
 "soporte."
 
 msgid "Welcome! Your invitation has been accepted and your account is ready."
-msgstr "Bienvenido. Tu invitacion ha sido aceptada y tu cuenta esta lista."
+msgstr "Bienvenido. Tu invitación ha sido aceptada y tu cuenta está lista."
 
 msgid "Pair a New Device - SecureApprove"
 msgstr "Pair a New Device - SecureApprove"
@@ -2260,3 +2243,58 @@ msgid ""
 "An unexpected error occurred while adding this device. Please try again."
 msgstr ""
 "An unexpected error occurred while adding this device. Please try again."
+
+
+msgid "Approvers"
+msgstr "Aprobadores"
+
+msgid "Invite User"
+msgstr "Invitar Usuario"
+
+msgid "Invite"
+msgstr "Invitar"
+
+msgid "seats available"
+msgstr "asientos disponibles"
+
+msgid "Active Users"
+msgstr "Usuarios Activos"
+
+msgid "Pending Invitations"
+msgstr "Invitaciones Pendientes"
+
+msgid "Expires"
+msgstr "Expira"
+
+msgid "Cancel Invitation"
+msgstr "Cancelar Invitación"
+
+msgid "No users found."
+msgstr "No se encontraron usuarios."
+
+msgid "Invalid role selected."
+msgstr "Rol seleccionado inválido."
+
+msgid "User updated successfully."
+msgstr "Usuario actualizado exitosamente."
+
+msgid "Email is required to invite a user."
+msgstr "El correo es obligatorio para invitar a un usuario."
+
+msgid "You have reached the maximum number of users for your current seats. Please upgrade your subscription to add more users."
+msgstr "Has alcanzado el número máximo de usuarios para tus asientos actuales. Por favor actualiza tu suscripción para agregar más usuarios."
+
+msgid "Your current subscription does not allow adding more users this month."
+msgstr "Tu suscripción actual no permite agregar más usuarios este mes."
+
+msgid "Invitation created successfully for %(email)s."
+msgstr "Invitación creada exitosamente para %(email)s."
+
+msgid "Invitation updated for %(email)s."
+msgstr "Invitación actualizada para %(email)s."
+
+msgid "Invitation for %(email)s has been cancelled."
+msgstr "La invitación para %(email)s ha sido cancelada."
+
+msgid "%(available)s seats available (%(used)s of %(total)s used)"
+msgstr "%(available)s asientos disponibles (%(used)s de %(total)s usados)"

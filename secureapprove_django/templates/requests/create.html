@@ -5,58 +5,107 @@
 
 {% block extra_css %}
 <style>
-.dynamic-group {
-    transition: all 0.3s ease;
-}
+    .dynamic-group {
+        transition: all 0.3s ease;
+    }
 
-.field-error {
-    border-color: #dc3545 !important;
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-}
+    .field-error {
+        border-color: var(--danger-color) !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25) !important;
+    }
 
-.category-description {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-top: 0.25rem;
-}
+    .category-description {
+        font-size: var(--font-xs);
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
 
-.form-section {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
+    .form-section {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
 
-.preview-card {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-}
+    .preview-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .category-item {
+        padding: 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+
+    .category-item:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .category-item.active {
+        background-color: rgba(79, 70, 229, 0.05);
+        border-color: rgba(79, 70, 229, 0.2);
+    }
+
+    /* Subtle form controls */
+    .form-control, .form-select {
+        font-size: var(--font-sm);
+        padding: 0.6rem 0.85rem;
+        border-radius: 8px;
+    }
+
+    .form-label {
+        font-size: var(--font-sm);
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+    }
+
+    .card {
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="h3 mb-0">{% trans "New Request" %}</h1>
-                    <p class="text-muted mb-0">{% trans "Submit a new approval request" %}</p>
+                    <h1 class="h3 mb-1 fw-bold">{% trans "New Request" %}</h1>
+                    <p class="text-muted mb-0" style="font-size: var(--font-sm);">{% trans "Submit a new approval request for review" %}</p>
                 </div>
-                <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">
+                <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
                     <i class="bi bi-arrow-left"></i>
                     {% trans "Back to Requests" %}
                 </a>
             </div>
 
-            <div class="row">
+            <div class="row g-4">
                 <div class="col-lg-8">
                     <!-- Main Form -->
-                    <div class="card shadow-sm">
+                    <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <form method="post" id="request-form" novalidate>
                                 {% csrf_token %}
@@ -68,53 +117,71 @@
 
                 <div class="col-lg-4">
                     <!-- Help Card -->
-                    <div class="card shadow-sm">
+                    <div class="card border-0 shadow-sm mb-4">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="bi bi-info-circle"></i>
+                            <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
+                                <i class="bi bi-info-circle text-primary"></i>
                                 {% trans "Request Categories" %}
                             </h5>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-2">
                             <div class="category-help">
-                                <div class="category-item mb-3" data-category="expense">
-                                    <strong>{% trans "Expense" %}</strong>
-                                    <p class="category-description">
+                                <div class="category-item mb-1" data-category="expense">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-receipt text-muted"></i>
+                                        <strong style="font-size: var(--font-sm);">{% trans "Expense" %}</strong>
+                                    </div>
+                                    <p class="category-description mb-0">
                                         {% trans "Business expenses like meals, transportation, office supplies" %}
                                     </p>
                                 </div>
                                 
-                                <div class="category-item mb-3" data-category="purchase">
-                                    <strong>{% trans "Purchase" %}</strong>
-                                    <p class="category-description">
+                                <div class="category-item mb-1" data-category="purchase">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-cart text-muted"></i>
+                                        <strong style="font-size: var(--font-sm);">{% trans "Purchase" %}</strong>
+                                    </div>
+                                    <p class="category-description mb-0">
                                         {% trans "Equipment, software, or service purchases" %}
                                     </p>
                                 </div>
                                 
-                                <div class="category-item mb-3" data-category="travel">
-                                    <strong>{% trans "Travel" %}</strong>
-                                    <p class="category-description">
+                                <div class="category-item mb-1" data-category="travel">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-airplane text-muted"></i>
+                                        <strong style="font-size: var(--font-sm);">{% trans "Travel" %}</strong>
+                                    </div>
+                                    <p class="category-description mb-0">
                                         {% trans "Travel arrangements and related expenses" %}
                                     </p>
                                 </div>
                                 
-                                <div class="category-item mb-3" data-category="contract">
-                                    <strong>{% trans "Contract" %}</strong>
-                                    <p class="category-description">
+                                <div class="category-item mb-1" data-category="contract">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-file-text text-muted"></i>
+                                        <strong style="font-size: var(--font-sm);">{% trans "Contract" %}</strong>
+                                    </div>
+                                    <p class="category-description mb-0">
                                         {% trans "Contract approvals and vendor agreements" %}
                                     </p>
                                 </div>
                                 
-                                <div class="category-item mb-3" data-category="document">
-                                    <strong>{% trans "Document" %}</strong>
-                                    <p class="category-description">
+                                <div class="category-item mb-1" data-category="document">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-file-earmark text-muted"></i>
+                                        <strong style="font-size: var(--font-sm);">{% trans "Document" %}</strong>
+                                    </div>
+                                    <p class="category-description mb-0">
                                         {% trans "Document approvals and reviews" %}
                                     </p>
                                 </div>
                                 
                                 <div class="category-item mb-0" data-category="other">
-                                    <strong>{% trans "Other" %}</strong>
-                                    <p class="category-description">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-three-dots text-muted"></i>
+                                        <strong style="font-size: var(--font-sm);">{% trans "Other" %}</strong>
+                                    </div>
+                                    <p class="category-description mb-0">
                                         {% trans "Any other type of approval request" %}
                                     </p>
                                 </div>
@@ -123,10 +190,10 @@
                     </div>
 
                     <!-- Preview Card -->
-                    <div class="card shadow-sm mt-4" id="preview-card" style="display: none;">
+                    <div class="card border-0 shadow-sm" id="preview-card" style="display: none;">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="bi bi-eye"></i>
+                            <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
+                                <i class="bi bi-eye text-primary"></i>
                                 {% trans "Preview" %}
                             </h5>
                         </div>
@@ -190,12 +257,20 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show/hide amount field
         if (config.show_amount) {
-            amountField.style.display = 'block';
-            document.getElementById('id_amount').required = true;
+            if (amountField) {
+                amountField.style.display = 'block';
+                const amountInput = document.getElementById('id_amount');
+                if (amountInput) amountInput.required = true;
+            }
         } else {
-            amountField.style.display = 'none';
-            document.getElementById('id_amount').required = false;
-            document.getElementById('id_amount').value = '';
+            if (amountField) {
+                amountField.style.display = 'none';
+                const amountInput = document.getElementById('id_amount');
+                if (amountInput) {
+                    amountInput.required = false;
+                    amountInput.value = '';
+                }
+            }
         }
         
         // Show/hide dynamic field groups
@@ -226,13 +301,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.category-item').forEach(item => {
             const itemCategory = item.getAttribute('data-category');
             if (itemCategory === category) {
-                item.style.backgroundColor = '#e3f2fd';
-                item.style.borderLeft = '4px solid #2196f3';
-                item.style.paddingLeft = '12px';
+                item.classList.add('active');
+                item.style.backgroundColor = 'rgba(79, 70, 229, 0.05)';
+                item.style.borderColor = 'rgba(79, 70, 229, 0.2)';
             } else {
+                item.classList.remove('active');
                 item.style.backgroundColor = '';
-                item.style.borderLeft = '';
-                item.style.paddingLeft = '';
+                item.style.borderColor = 'transparent';
             }
         });
         
@@ -257,21 +332,21 @@ document.addEventListener('DOMContentLoaded', function() {
         let previewHtml = '';
         
         if (title) {
-            previewHtml += `<h6>${title}</h6>`;
+            previewHtml += `<h6 class="fw-bold mb-1" style="font-size: var(--font-base);">${title}</h6>`;
         }
         
         if (description) {
-            previewHtml += `<p class="text-muted mb-2">${description}</p>`;
+            previewHtml += `<p class="text-muted mb-3" style="font-size: var(--font-sm);">${description}</p>`;
         }
         
-        previewHtml += '<div class="row">';
+        previewHtml += '<div class="row g-2">';
         
         if (category) {
             const categoryDisplay = categoryField.options[categoryField.selectedIndex].text;
             previewHtml += `
                 <div class="col-6">
-                    <small class="text-muted">{% trans "Category" %}</small><br>
-                    <span class="badge bg-primary">${categoryDisplay}</span>
+                    <small class="text-muted d-block mb-1" style="font-size: var(--font-xs);">{% trans "Category" %}</small>
+                    <span class="badge bg-primary-custom fw-normal" style="font-size: var(--font-xs);">${categoryDisplay}</span>
                 </div>
             `;
         }
@@ -279,11 +354,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (priority) {
             const prioritySelect = document.getElementById('id_priority');
             const priorityDisplay = prioritySelect.options[prioritySelect.selectedIndex].text;
-            const priorityClass = priority === 'high' ? 'bg-danger' : (priority === 'medium' ? 'bg-warning' : 'bg-success');
+            let priorityClass = 'bg-success';
+            if (priority === 'high') priorityClass = 'bg-danger';
+            else if (priority === 'medium') priorityClass = 'bg-warning text-dark';
+            
             previewHtml += `
                 <div class="col-6">
-                    <small class="text-muted">{% trans "Priority" %}</small><br>
-                    <span class="badge ${priorityClass}">${priorityDisplay}</span>
+                    <small class="text-muted d-block mb-1" style="font-size: var(--font-xs);">{% trans "Priority" %}</small>
+                    <span class="badge ${priorityClass} fw-normal" style="font-size: var(--font-xs);">${priorityDisplay}</span>
                 </div>
             `;
         }
@@ -292,9 +370,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (amount && categoryConfigs[category]?.show_amount) {
             previewHtml += `
-                <div class="mt-2">
-                    <small class="text-muted">{% trans "Amount" %}</small><br>
-                    <strong>$${parseFloat(amount).toLocaleString()}</strong>
+                <div class="mt-3 pt-2 border-top">
+                    <small class="text-muted d-block mb-1" style="font-size: var(--font-xs);">{% trans "Amount" %}</small>
+                    <strong class="text-dark" style="font-size: var(--font-lg);">$${parseFloat(amount).toLocaleString()}</strong>
                 </div>
             `;
         }
@@ -303,38 +381,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Event listeners
-    categoryField.addEventListener('change', updateFormFields);
+    if (categoryField) {
+        categoryField.addEventListener('change', updateFormFields);
+    }
     
     // Update preview on form changes
-    form.addEventListener('input', updatePreview);
-    form.addEventListener('change', updatePreview);
-    
-    // Form validation
-    form.addEventListener('submit', function(e) {
-        const category = categoryField.value;
-        const config = categoryConfigs[category] || categoryConfigs['other'];
+    if (form) {
+        form.addEventListener('input', updatePreview);
+        form.addEventListener('change', updatePreview);
         
-        let hasErrors = false;
-        
-        // Validate required fields
-        config.required_fields.forEach(fieldName => {
-            const field = document.getElementById('id_' + fieldName);
-            if (field && !field.value.trim()) {
-                field.classList.add('field-error');
-                hasErrors = true;
-            } else if (field) {
-                field.classList.remove('field-error');
+        // Form validation
+        form.addEventListener('submit', function(e) {
+            const category = categoryField.value;
+            const config = categoryConfigs[category] || categoryConfigs['other'];
+            
+            let hasErrors = false;
+            
+            // Validate required fields
+            config.required_fields.forEach(fieldName => {
+                const field = document.getElementById('id_' + fieldName);
+                if (field && !field.value.trim()) {
+                    field.classList.add('field-error');
+                    hasErrors = true;
+                } else if (field) {
+                    field.classList.remove('field-error');
+                }
+            });
+            
+            if (hasErrors) {
+                e.preventDefault();
+                // Optional: Show a toast or alert
+                // alert('{% trans "Please fill in all required fields." %}');
             }
         });
-        
-        if (hasErrors) {
-            e.preventDefault();
-            alert('{% trans "Please fill in all required fields." %}');
-        }
-    });
+    }
     
     // Initialize form
-    updateFormFields();
+    if (categoryField) {
+        updateFormFields();
+    }
 });
 </script>
 {% endblock %}

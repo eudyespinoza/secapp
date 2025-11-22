@@ -184,6 +184,18 @@
                     }
                     break;
 
+                case 'notification_approval_request':
+                    if (this.callbacks.onApprovalRequest) {
+                        this.callbacks.onApprovalRequest(data);
+                    }
+                    break;
+
+                case 'notification_approval_status':
+                    if (this.callbacks.onApprovalStatus) {
+                        this.callbacks.onApprovalStatus(data);
+                    }
+                    break;
+
                 case 'pong':
                     // Health check response
                     break;
@@ -690,6 +702,16 @@
             this.i18n = i18n;
             this.ui = ui;
             this.permissionRequested = localStorage.getItem(CONFIG.NOTIFICATION_PERMISSION_KEY) === 'true';
+            this.sound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); // Simple notification sound
+        }
+
+        playSound() {
+            try {
+                this.sound.currentTime = 0;
+                this.sound.play().catch(e => console.warn('Audio play failed:', e));
+            } catch (e) {
+                console.warn('Audio error:', e);
+            }
         }
 
         async requestPermission() {
@@ -718,6 +740,7 @@
 
         show(title, body, icon = null) {
             let shown = false;
+            this.playSound();
 
             if (this.canNotify()) {
                 try {
@@ -794,6 +817,8 @@
                 onMessage: (data) => this.handleWebSocketMessage(data),
                 onTyping: (data) => this.handleWebSocketTyping(data),
                 onPresence: (data) => this.handleWebSocketPresence(data),
+                onApprovalRequest: (data) => this.handleApprovalRequest(data),
+                onApprovalStatus: (data) => this.handleApprovalStatus(data),
             });
 
             this.pollingInterval = null;
@@ -1260,6 +1285,22 @@
         handleWebSocketPresence(data) {
             // Refresh presence list
             this.loadPresence();
+        }
+
+        handleApprovalRequest(data) {
+            console.log('[CHAT] Approval Request Notification:', data);
+            this.notifications.show(
+                data.title || 'New Approval Request',
+                data.message || 'You have a new request to review.'
+            );
+        }
+
+        handleApprovalStatus(data) {
+            console.log('[CHAT] Approval Status Notification:', data);
+            this.notifications.show(
+                data.title || 'Request Update',
+                data.message || `Your request is now ${data.status}.`
+            );
         }
 
         // Polling fallback

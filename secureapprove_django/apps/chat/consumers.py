@@ -74,6 +74,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             self.tenant_group_name,
             self.channel_name
         )
+
+        # Join user-specific group for targeted notifications
+        self.user_group_name = f"user_{user.id}"
+        await self.channel_layer.group_add(
+            self.user_group_name,
+            self.channel_name
+        )
         
         # Update user presence
         await self.update_user_presence()
@@ -109,6 +116,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             self.tenant_group_name,
             self.channel_name
         )
+
+        # Leave user group
+        if hasattr(self, 'user_group_name'):
+            await self.channel_layer.group_discard(
+                self.user_group_name,
+                self.channel_name
+            )
 
         logger.info(
             "[CHAT] WebSocket disconnected for user %s (code=%s)",
@@ -215,6 +229,32 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             "type": "presence",
             "user_id": event.get("user_id"),
             "is_online": event.get("is_online"),
+        })
+
+    async def notification_approval_request(self, event: Dict[str, Any]) -> None:
+        """
+        Handler for "notification.approval_request" events.
+        Sent to approvers when a new request is created.
+        """
+        await self.send_json({
+            "type": "notification_approval_request",
+            "request_id": event.get("request_id"),
+            "title": event.get("title"),
+            "requester_name": event.get("requester_name"),
+            "message": event.get("message"),
+        })
+
+    async def notification_approval_status(self, event: Dict[str, Any]) -> None:
+        """
+        Handler for "notification.approval_status" events.
+        Sent to requester when request is approved/rejected.
+        """
+        await self.send_json({
+            "type": "notification_approval_status",
+            "request_id": event.get("request_id"),
+            "title": event.get("title"),
+            "status": event.get("status"),
+            "message": event.get("message"),
         })
 
     @database_sync_to_async
