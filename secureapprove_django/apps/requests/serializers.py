@@ -4,11 +4,22 @@
 
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
 from .models import ApprovalRequest
+
+User = get_user_model()
+
+class UserSerializer(serializers.ModelSerializer):
+    """Minimal user serializer for embedding"""
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'full_name']
 
 class ApprovalRequestSerializer(serializers.ModelSerializer):
     """Serializer for ApprovalRequest model"""
     
+    requester = UserSerializer(read_only=True)
+    approver = UserSerializer(read_only=True)
     requester_name = serializers.CharField(source='requester.full_name', read_only=True)
     approved_by_name = serializers.CharField(source='approver.full_name', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
