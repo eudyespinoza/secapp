@@ -475,11 +475,14 @@
 
         .tenant-chat-panel {
             position: fixed;
-            bottom: 110px;
+            bottom: 92px;
             right: 20px;
             width: 380px;
-            max-height: clamp(420px, 72vh, 560px);
+            height: clamp(450px, 70vh, 600px);
+            max-height: calc(100vh - 182px);
             z-index: 1090;
+            display: flex;
+            flex-direction: column;
         }
 
         .tenant-chat-panel .card {
@@ -488,25 +491,37 @@
             box-shadow: 0 28px 60px rgba(0, 0, 0, 0.22);
             overflow: hidden;
             background: linear-gradient(180deg, rgba(79, 70, 229, 0.03), rgba(16, 185, 129, 0.02));
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .tenant-chat-panel .card-header {
             background-color: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
 
         .tenant-chat-panel .card-body {
-            max-height: calc(clamp(420px, 72vh, 560px) - 96px);
-            height: calc(clamp(420px, 72vh, 560px) - 96px);
+            flex: 1;
             overflow: hidden;
             background: var(--card-bg);
             font-size: 0.92rem;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tenant-chat-panel .tab-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .tenant-chat-panel .tab-pane {
             display: none;
             flex-direction: column;
-            min-height: calc(clamp(420px, 72vh, 560px) - 140px);
+            height: 100%;
         }
 
         .tenant-chat-panel .tab-pane.active.show {
@@ -515,16 +530,18 @@
 
         .tenant-chat-active-window {
             position: fixed;
-            bottom: 16px;
+            bottom: 92px;
             right: calc(20px + 380px + 12px);
             width: 420px;
-            max-height: clamp(420px, 72vh, 560px);
+            height: clamp(450px, 70vh, 600px);
+            max-height: calc(100vh - 182px);
             z-index: 1095;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             box-shadow: 0 28px 60px rgba(0, 0, 0, 0.22);
             display: none;
+            flex-direction: column;
         }
 
         .tenant-chat-active-window .tenant-chat-topline {
@@ -712,15 +729,14 @@
         }
 
         .tenant-chat-messages {
-            height: 260px;
-            max-height: calc(clamp(420px, 72vh, 560px) - 190px);
-            min-height: 200px;
+            flex: 1;
             overflow-y: auto;
             background: var(--bg-secondary);
             border-radius: 0.75rem;
             border: 1px solid var(--border-color);
             padding: 0.65rem;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
         }
 
         .tenant-chat-message {
@@ -813,8 +829,8 @@
         #widgetConversationList,
         #widgetUserList {
             flex: 1;
-            min-height: 240px;
-            max-height: calc(clamp(420px, 72vh, 560px) - 180px);
+            min-height: 0;
+            max-height: none;
             overflow-y: auto;
         }
 

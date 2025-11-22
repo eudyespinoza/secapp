@@ -304,6 +304,10 @@ def export_requests(request):
         tenant=request.user.tenant
     ).select_related('requester', 'approver')
     
+    # Filter by role: only admins and approvers can see all requests
+    if request.user.role not in ['admin', 'approver']:
+        requests_qs = requests_qs.filter(requester=request.user)
+    
     # Apply filters
     if status_filter:
         requests_qs = requests_qs.filter(status=status_filter)

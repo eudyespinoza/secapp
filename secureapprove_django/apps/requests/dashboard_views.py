@@ -27,6 +27,10 @@ def dashboard(request):
     # Get user's tenant requests
     requests_qs = ApprovalRequest.objects.filter(tenant=request.user.tenant)
     
+    # Filter by role: only admins and approvers can see all requests
+    if request.user.role not in ['admin', 'approver']:
+        requests_qs = requests_qs.filter(requester=request.user)
+    
     # Basic stats
     stats = {
         'total_requests': requests_qs.count(),
@@ -100,6 +104,10 @@ def dashboard_api_stats(request):
     """API endpoint for dashboard statistics"""
     
     requests_qs = ApprovalRequest.objects.filter(tenant=request.user.tenant)
+    
+    # Filter by role: only admins and approvers can see all requests
+    if request.user.role not in ['admin', 'approver']:
+        requests_qs = requests_qs.filter(requester=request.user)
     
     # Basic stats
     stats = {

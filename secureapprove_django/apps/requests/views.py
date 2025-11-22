@@ -31,6 +31,10 @@ def request_list(request):
         tenant=request.user.tenant
     ).select_related('requester', 'approver').order_by('-created_at')
     
+    # Filter by role: only admins and approvers can see all requests
+    if request.user.role not in ['admin', 'approver']:
+        requests_qs = requests_qs.filter(requester=request.user)
+    
     # Apply filters
     status_filter = request.GET.get('status')
     category_filter = request.GET.get('category')
@@ -254,9 +258,15 @@ class ApprovalRequestViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter requests by user's tenant"""
-        return ApprovalRequest.objects.filter(
+        qs = ApprovalRequest.objects.filter(
             tenant=self.request.user.tenant
         ).select_related('requester', 'approver')
+        
+        # Filter by role: only admins and approvers can see all requests
+        if self.request.user.role not in ['admin', 'approver']:
+            qs = qs.filter(requester=self.request.user)
+            
+        return qs
     
     def perform_create(self, serializer):
         """Set requester and tenant when creating"""

@@ -504,7 +504,7 @@
 
         showActiveWindow(visible) {
             if (this.elements.activeWindow) {
-                this.elements.activeWindow.style.display = visible ? 'block' : 'none';
+                this.elements.activeWindow.style.display = visible ? 'flex' : 'none';
             }
         }
 
@@ -539,6 +539,9 @@
             
             const wrapper = document.createElement('div');
             wrapper.className = 'tenant-chat-message ' + (isMine ? 'me' : 'other');
+            if (message.id) {
+                wrapper.dataset.messageId = message.id;
+            }
 
             const bubble = document.createElement('div');
             bubble.className = 'tenant-chat-bubble';
@@ -599,6 +602,10 @@
 
             // Render messages
             messages.forEach(msg => {
+                // Prevent duplicates
+                if (msg.id && this.elements.messageContainer.querySelector(`[data-message-id="${msg.id}"]`)) {
+                    return;
+                }
                 const element = this.renderMessage(msg, currentUserId);
                 this.elements.messageContainer.appendChild(element);
             });
