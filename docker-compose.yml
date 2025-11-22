@@ -95,6 +95,7 @@ services:
       - "traefik.http.routers.secureapprove-web.entrypoints=websecure"
       - "traefik.http.routers.secureapprove-web.tls=true"
       - "traefik.http.services.secureapprove-web.loadbalancer.server.port=8005"
+      - "traefik.docker.network=traefik_proxy"
 
 volumes:
   postgres_data:
