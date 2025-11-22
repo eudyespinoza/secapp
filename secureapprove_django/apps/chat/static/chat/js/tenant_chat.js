@@ -1293,6 +1293,9 @@
                 data.title || 'New Approval Request',
                 data.message || 'You have a new request to review.'
             );
+            
+            // Dispatch custom event for other components
+            window.dispatchEvent(new CustomEvent('approval-request-received', { detail: data }));
         }
 
         handleApprovalStatus(data) {
@@ -1301,6 +1304,9 @@
                 data.title || 'Request Update',
                 data.message || `Your request is now ${data.status}.`
             );
+
+            // Dispatch custom event for other components
+            window.dispatchEvent(new CustomEvent('approval-status-received', { detail: data }));
         }
 
         // Polling fallback

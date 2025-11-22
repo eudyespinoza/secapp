@@ -16,6 +16,7 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
     priority_display = serializers.CharField(source='get_priority_display', read_only=True)
     created_at_formatted = serializers.SerializerMethodField()
     approved_at_formatted = serializers.SerializerMethodField()
+    can_approve = serializers.SerializerMethodField()
     
     class Meta:
         model = ApprovalRequest
@@ -24,13 +25,25 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
             'priority', 'priority_display', 'amount', 'status', 'status_display',
             'requester', 'requester_name', 'approver', 'approved_by_name',
             'metadata', 'rejection_reason', 'created_at', 'created_at_formatted',
-            'approved_at', 'approved_at_formatted', 'tenant'
+            'approved_at', 'approved_at_formatted', 'tenant', 'can_approve'
         ]
         read_only_fields = [
             'id', 'requester', 'approver', 'status', 'approved_at', 
-            'rejection_reason', 'created_at', 'tenant'
+            'rejection_reason', 'created_at', 'tenant', 'can_approve'
         ]
     
+    def get_can_approve(self, obj):
+        """Check if current user can approve this request"""
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+            
+        return (
+            request.user.role in ['admin', 'approver'] and 
+            obj.status == 'pending' and
+            obj.requester != request.user
+        )
+
     def get_created_at_formatted(self, obj):
         """Format created_at for display"""
         return obj.created_at.strftime('%Y-%m-%d %H:%M')
