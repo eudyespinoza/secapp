@@ -364,6 +364,42 @@
         </div>
     </div>
 </div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="actionConfirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalTitle">{% trans "Confirm Action" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationModalBody" class="mb-3"></p>
+                <div id="rejectionReasonContainer" class="d-none">
+                    <label for="modalRejectionReason" class="form-label">{% trans "Reason for rejection" %} <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="modalRejectionReason" rows="3" placeholder="{% trans 'Please explain why you are rejecting this request...' %}"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" id="confirmActionBtn">{% trans "Confirm" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="actionToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i id="toastIcon" class="bi me-2"></i>
+                <span id="toastMessage"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -371,34 +407,70 @@
 document.addEventListener('DOMContentLoaded', function () {
     const approveForm = document.getElementById('approveForm');
     const rejectForm = document.getElementById('rejectForm');
+    
+    // UI Elements
+    const confirmationModalEl = document.getElementById('actionConfirmationModal');
+    const confirmationModal = new bootstrap.Modal(confirmationModalEl);
+    const modalTitle = document.getElementById('confirmationModalTitle');
+    const modalBody = document.getElementById('confirmationModalBody');
+    const confirmBtn = document.getElementById('confirmActionBtn');
+    const modalRejectionContainer = document.getElementById('rejectionReasonContainer');
+    
+    const toastEl = document.getElementById('actionToast');
+    const toast = new bootstrap.Toast(toastEl);
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastBody = toastEl.querySelector('.toast-body'); // For changing background color if needed, though we use bg classes on toastEl usually
+
+    let pendingAction = null;
 
     if (!approveForm && !rejectForm) {
         return;
     }
 
     {% get_current_language as REQ_LANG %}
-    const langPrefix = '/{{ REQ_LANG }}';
     const approvalId = '{{ request_obj.pk }}';
+    const webauthnOptionsUrl = "{% url 'requests:approval-webauthn-options' request_obj.pk %}";
+    const webauthnVerifyUrl = "{% url 'requests:approval-webauthn-verify' request_obj.pk %}";
+
+    // Helper to show toast
+    function showToast(message, type = 'success') {
+        toastMessage.textContent = message;
+        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+        
+        if (type === 'success') {
+            toastEl.classList.add('bg-success');
+            toastIcon.className = 'bi bi-check-circle me-2';
+        } else if (type === 'error') {
+            toastEl.classList.add('bg-danger');
+            toastIcon.className = 'bi bi-exclamation-circle me-2';
+        } else if (type === 'warning') {
+            toastEl.classList.add('bg-warning');
+            toastIcon.className = 'bi bi-exclamation-triangle me-2';
+        } else {
+            toastEl.classList.add('bg-info');
+            toastIcon.className = 'bi bi-info-circle me-2';
+        }
+        
+        toast.show();
+    }
 
     // Check WebAuthn support
     if (!navigator.credentials || !navigator.credentials.get) {
         console.error('WebAuthn not supported');
+        const warningMsg = `
+            <div class="alert alert-warning small">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {% trans "WebAuthn authentication is required. This device/browser does not support it." %}
+            </div>
+        `;
+        
         if (approveForm) {
-            approveForm.insertAdjacentHTML('beforebegin', `
-                <div class="alert alert-warning small">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    {% trans "WebAuthn authentication is required to approve requests. This device/browser does not support it." %}
-                </div>
-            `);
+            approveForm.insertAdjacentHTML('beforebegin', warningMsg);
             approveForm.querySelector('button').disabled = true;
         }
         if (rejectForm) {
-            rejectForm.insertAdjacentHTML('beforebegin', `
-                <div class="alert alert-warning small">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    {% trans "WebAuthn authentication is required to reject requests. This device/browser does not support it." %}
-                </div>
-            `);
+            rejectForm.insertAdjacentHTML('beforebegin', warningMsg);
             rejectForm.querySelector('button').disabled = true;
         }
         return;
@@ -413,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
     async function performApprovalWebAuthn(action, extraData = {}) {
         try {
             // Step 1: Get WebAuthn challenge for this specific approval
-            const optionsResponse = await fetch(`${langPrefix}/approvals/${approvalId}/webauthn/options/`, {
+            const optionsResponse = await fetch(webauthnOptionsUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -470,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ...extraData
             };
 
-            const verifyResponse = await fetch(`${langPrefix}/approvals/${approvalId}/webauthn/verify/`, {
+            const verifyResponse = await fetch(webauthnVerifyUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -504,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorMsg = '{% trans "This device does not support the required authentication method." %}';
             }
             
-            alert(errorMsg);
+            showToast(errorMsg, 'error');
             return false;
         }
     }
@@ -531,94 +603,97 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle Approve form
     if (approveForm) {
-        approveForm.addEventListener('submit', async function (e) {
+        approveForm.addEventListener('submit', function (e) {
             e.preventDefault();
-
-            if (!confirm('{% trans "Are you sure you want to approve this request? This action requires biometric confirmation." %}')) {
-                return;
-            }
-
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnContent = submitBtn.innerHTML;
             
-            try {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="bi bi-fingerprint me-2"></i>{% trans "Authenticating..." %}';
-
-                const success = await performApprovalWebAuthn('approve', {
-                    comment: '' // Could add a comment field if needed
-                });
-
-                if (success) {
-                    submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>{% trans "Approved!" %}';
-                    submitBtn.classList.remove('btn-success');
-                    submitBtn.classList.add('btn-success', 'disabled');
-                    
-                    // Show success message and reload after 2 seconds
-                    alert('{% trans "Request approved successfully!" %}');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnContent;
-                }
-            } catch (error) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnContent;
-            }
+            pendingAction = { type: 'approve' };
+            
+            modalTitle.textContent = '{% trans "Approve Request" %}';
+            modalBody.textContent = '{% trans "Are you sure you want to approve this request? This action requires biometric confirmation." %}';
+            modalRejectionContainer.classList.add('d-none');
+            confirmBtn.classList.remove('btn-danger');
+            confirmBtn.classList.add('btn-success');
+            confirmBtn.textContent = '{% trans "Approve" %}';
+            
+            confirmationModal.show();
         });
     }
 
     // Handle Reject form
     if (rejectForm) {
-        rejectForm.addEventListener('submit', async function (e) {
+        rejectForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const reasonField = document.getElementById('rejection_reason');
             const reason = reasonField.value.trim();
 
             if (!reason) {
-                alert('{% trans "Please provide a reason for rejection." %}');
+                showToast('{% trans "Please provide a reason for rejection." %}', 'warning');
                 reasonField.focus();
                 return;
             }
-
-            if (!confirm('{% trans "Are you sure you want to reject this request? This action requires biometric confirmation." %}')) {
-                return;
-            }
-
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnContent = submitBtn.innerHTML;
             
-            try {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="bi bi-fingerprint me-2"></i>{% trans "Authenticating..." %}';
-
-                const success = await performApprovalWebAuthn('reject', {
-                    reason: reason
-                });
-
-                if (success) {
+            pendingAction = { type: 'reject', reason: reason };
+            
+            modalTitle.textContent = '{% trans "Reject Request" %}';
+            modalBody.textContent = '{% trans "Are you sure you want to reject this request? This action requires biometric confirmation." %}';
+            modalRejectionContainer.classList.add('d-none'); // Reason is already in the main form
+            confirmBtn.classList.remove('btn-success');
+            confirmBtn.classList.add('btn-danger');
+            confirmBtn.textContent = '{% trans "Reject" %}';
+            
+            confirmationModal.show();
+        });
+    }
+    
+    // Handle Modal Confirmation
+    confirmBtn.addEventListener('click', async function() {
+        if (!pendingAction) return;
+        
+        confirmationModal.hide();
+        
+        let submitBtn;
+        let originalBtnContent;
+        
+        if (pendingAction.type === 'approve') {
+            submitBtn = approveForm.querySelector('button[type="submit"]');
+        } else {
+            submitBtn = rejectForm.querySelector('button[type="submit"]');
+        }
+        
+        originalBtnContent = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-fingerprint me-2"></i>{% trans "Authenticating..." %}';
+        
+        try {
+            const success = await performApprovalWebAuthn(pendingAction.type, pendingAction.type === 'reject' ? { reason: pendingAction.reason } : {});
+            
+            if (success) {
+                if (pendingAction.type === 'approve') {
+                    submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>{% trans "Approved!" %}';
+                    submitBtn.classList.remove('btn-success');
+                    submitBtn.classList.add('btn-success', 'disabled');
+                    showToast('{% trans "Request approved successfully!" %}', 'success');
+                } else {
                     submitBtn.innerHTML = '<i class="bi bi-x-circle me-2"></i>{% trans "Rejected" %}';
                     submitBtn.classList.remove('btn-danger');
                     submitBtn.classList.add('btn-secondary', 'disabled');
-                    
-                    // Show success message and reload after 2 seconds
-                    alert('{% trans "Request rejected successfully." %}');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnContent;
+                    showToast('{% trans "Request rejected successfully." %}', 'success');
                 }
-            } catch (error) {
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnContent;
             }
-        });
-    }
+        } catch (error) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnContent;
+            showToast(error.message || '{% trans "An error occurred" %}', 'error');
+        }
+    });
 });
 </script>
 {% endblock %}
