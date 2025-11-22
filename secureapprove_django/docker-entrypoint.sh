@@ -120,7 +120,7 @@ except Exception as e:
 EOF
 
 echo "[*] Initialization complete!"
-echo "[*] Access the application at: http://localhost:8000"
+echo "[*] Access the application at: http://localhost:8005"
 echo "[*] Admin login: admin@secureapprove.com / admin123"
 echo "[*] Your WebAuthn admin login: eudyespinoza@gmail.com"
 

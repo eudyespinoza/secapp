@@ -59,14 +59,14 @@ RUN chown -R django:django /app && \
 USER django
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8005
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health/ || exit 1
+    CMD curl -f http://localhost:8005/health/ || exit 1
 
 # Set entrypoint
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # Run the application with ASGI server (Daphne) to support WebSockets
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8005", "config.asgi:application"]

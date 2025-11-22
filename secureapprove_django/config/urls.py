@@ -5,6 +5,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+print(f"DEBUG: urls.py loaded. LANGUAGES={settings.LANGUAGES}")
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.http import JsonResponse, HttpResponseRedirect
@@ -32,11 +33,16 @@ def custom_set_language(request):
         next_url = request.POST.get("next", request.META.get("HTTP_REFERER", "/"))
 
         if lang_code and lang_code in dict(settings.LANGUAGES):
+            # Translate the current URL to the new language prefix
+            # We must do this BEFORE activating the new language, because resolve()
+            # depends on the current language matching the URL prefix.
+            try:
+                next_translated = translate_url(next_url, lang_code)
+            except Exception:
+                next_translated = next_url
+
             # Activate language in this request
             activate(lang_code)
-
-            # Translate the current URL to the new language prefix
-            next_translated = translate_url(next_url, lang_code)
 
             # Build redirect response
             response = HttpResponseRedirect(next_translated)
@@ -99,7 +105,7 @@ urlpatterns = [
 ]
 
 # Internationalized URLs
-urlpatterns += i18n_patterns(
+i18n_urls = i18n_patterns(
     # Landing page as main page
     path('', include('apps.landing.urls')),
     
@@ -116,6 +122,10 @@ urlpatterns += i18n_patterns(
     
     prefix_default_language=True,
 )
+
+print(f"DEBUG: i18n_patterns result: {i18n_urls}")
+
+urlpatterns += i18n_urls
 
 # Static and media files
 if settings.DEBUG:

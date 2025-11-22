@@ -2,13 +2,15 @@
 {% get_current_language as CURRENT_LANG %}
 <!DOCTYPE html>
 <html lang="{{ CURRENT_LANG }}" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SecureApprove{% endblock %}</title>
-    <meta name="description" content="{% block description %}Sistema de aprobaciones seguras con autenticación biométrica{% endblock %}">
+    <meta name="description"
+        content="{% block description %}Sistema de aprobaciones seguras con autenticación biométrica{% endblock %}">
     <script>
-        (function() {
+        (function () {
             var storedTheme = 'system';
             try {
                 storedTheme = localStorage.getItem('theme') || 'system';
@@ -28,13 +30,13 @@
             }
         })();
     </script>
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    
+
     <!-- Global Theme and Common Styles -->
     <style>
         :root {
@@ -46,7 +48,7 @@
             --danger-color: #dc2626;
             --info-color: #0ea5e9;
         }
-        
+
         /* Theme Variables */
         [data-theme="light"] {
             --bg-color: #ffffff;
@@ -61,7 +63,7 @@
             --input-bg: #ffffff;
             --input-border: #d1d5db;
         }
-        
+
         [data-theme="dark"] {
             --bg-color: #111827;
             --bg-secondary: #1f2937;
@@ -75,7 +77,7 @@
             --input-bg: #374151;
             --input-border: #4b5563;
         }
-        
+
         /* Global Styles */
         body {
             background-color: var(--bg-color);
@@ -83,135 +85,138 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
+
         .bg-primary-custom {
             background-color: var(--primary-color) !important;
         }
-        
+
         .text-primary-custom {
             color: var(--primary-color) !important;
         }
-        
+
         .btn-primary-custom {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
             color: white;
         }
-        
+
         .btn-primary-custom:hover {
             background-color: var(--primary-dark);
             border-color: var(--primary-dark);
             color: white;
         }
-        
+
         /* Override Bootstrap defaults */
         .bg-white {
             background-color: var(--card-bg) !important;
         }
-        
+
         .bg-light {
             background-color: var(--bg-secondary) !important;
         }
-        
+
         .bg-secondary-custom {
             background-color: var(--bg-secondary) !important;
         }
-        
+
         .text-dark {
             color: var(--text-color) !important;
         }
-        
+
         .text-muted {
             color: var(--text-muted) !important;
         }
-        
+
         .text-muted-custom {
             color: var(--text-muted) !important;
         }
-        
+
         .border {
             border-color: var(--border-color) !important;
         }
-        
+
         /* Card Adaptations */
         .card {
             background-color: var(--card-bg);
             border-color: var(--border-color);
             box-shadow: 0 1px 3px var(--card-shadow);
         }
-        
+
         .card-header {
             background-color: var(--bg-secondary);
             border-bottom-color: var(--border-color);
             color: var(--text-color);
         }
-        
+
         /* Form Elements */
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             background-color: var(--input-bg);
             border-color: var(--input-border);
             color: var(--text-color);
         }
-        
-        .form-control:focus, .form-select:focus {
+
+        .form-control:focus,
+        .form-select:focus {
             background-color: var(--input-bg);
             border-color: var(--primary-color);
             color: var(--text-color);
             box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
         }
-        
+
         .form-control::placeholder {
             color: var(--text-muted);
         }
-        
+
         /* Button Overrides */
         .btn-outline-primary {
             color: var(--primary-color);
             border-color: var(--primary-color);
         }
-        
+
         .btn-outline-primary:hover {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
             color: white;
         }
-        
+
         /* Dropdown Styles */
         .dropdown-menu {
             background-color: var(--card-bg);
             border-color: var(--border-color);
             box-shadow: 0 10px 25px var(--card-shadow);
         }
-        
+
         .dropdown-item {
             color: var(--text-color);
         }
-        
-        .dropdown-item:hover, .dropdown-item:focus {
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
             background-color: var(--hover-bg);
             color: var(--text-color);
         }
-        
+
         .dropdown-item.active {
             background-color: var(--primary-color);
             color: white;
         }
-        
+
         /* Navbar */
         .navbar {
             background-color: var(--card-bg) !important;
             border-bottom: 1px solid var(--border-color);
             z-index: 1070;
         }
-        
+
         .navbar-brand {
             color: var(--text-color) !important;
         }
-        
+
         .nav-link {
             color: var(--text-color) !important;
         }
-        
+
         .nav-link:hover {
             color: var(--primary-color) !important;
         }
@@ -232,14 +237,14 @@
             filter: invert(1) contrast(1.15);
             opacity: 0.95;
         }
-        
+
         /* Theme and Language Controls */
         .theme-language-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
+
         .control-button {
             background: none;
             border: 1px solid var(--border-color);
@@ -254,83 +259,83 @@
             justify-content: space-between;
             text-decoration: none;
         }
-        
+
         .control-button:hover {
             background-color: var(--hover-bg);
             border-color: var(--primary-color);
             color: var(--text-color);
             text-decoration: none;
         }
-        
+
         /* Alert Adaptations */
         .alert {
             border-color: var(--border-color);
             background-color: var(--bg-secondary);
             color: var(--text-color);
         }
-        
+
         /* Table Adaptations */
         .table {
             color: var(--text-color);
         }
-        
-        .table-striped > tbody > tr:nth-of-type(odd) > td,
-        .table-striped > tbody > tr:nth-of-type(odd) > th {
+
+        .table-striped>tbody>tr:nth-of-type(odd)>td,
+        .table-striped>tbody>tr:nth-of-type(odd)>th {
             background-color: var(--bg-secondary);
         }
-        
+
         .table th {
             border-color: var(--border-color);
             color: var(--text-secondary);
         }
-        
+
         .table td {
             border-color: var(--border-color);
         }
-        
+
         /* Modal Adaptations */
         .modal-content {
             background-color: var(--card-bg);
             color: var(--text-color);
         }
-        
+
         .modal-header {
             border-bottom-color: var(--border-color);
         }
-        
+
         .modal-footer {
             border-top-color: var(--border-color);
         }
-        
+
         /* Badge Adaptations */
         .badge {
             color: white;
         }
-        
+
         /* List Group */
         .list-group-item {
             background-color: var(--card-bg);
             color: var(--text-color);
             border-color: var(--border-color);
         }
-        
+
         /* Utilities */
         .text-muted-custom {
             color: var(--text-muted) !important;
         }
-        
+
         .text-secondary-custom {
             color: var(--text-secondary) !important;
         }
-        
+
         .bg-secondary-custom {
             background-color: var(--bg-secondary) !important;
         }
-        
+
         .border-custom {
             border-color: var(--border-color) !important;
         }
-        
+
         /* Chat Widget */
         :root {
             --chat-bar-height: 90px;
@@ -451,7 +456,7 @@
 
         .tenant-chat-panel {
             position: fixed;
-            bottom: calc(var(--chat-bar-height) + 5px);
+            bottom: 110px;
             right: 20px;
             width: 380px;
             max-height: clamp(420px, 72vh, 560px);
@@ -491,7 +496,7 @@
 
         .tenant-chat-active-window {
             position: fixed;
-            bottom: calc(var(--chat-bar-height) + 5px);
+            bottom: 16px;
             right: calc(20px + 380px + 12px);
             width: 420px;
             max-height: clamp(420px, 72vh, 560px);
@@ -570,7 +575,9 @@
             border: 1px solid var(--border-color);
         }
 
-        .tenant-chat-tabs::-webkit-scrollbar { display: none; }
+        .tenant-chat-tabs::-webkit-scrollbar {
+            display: none;
+        }
 
         .tenant-chat-tabs .nav-link {
             position: relative;
@@ -664,12 +671,25 @@
             animation: bounce 1.2s infinite ease-in-out;
         }
 
-        .tenant-chat-typing .dot:nth-child(2) { animation-delay: 0.15s; }
-        .tenant-chat-typing .dot:nth-child(3) { animation-delay: 0.3s; }
+        .tenant-chat-typing .dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .tenant-chat-typing .dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
 
         @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
         }
 
         .tenant-chat-messages {
@@ -865,930 +885,917 @@
                 flex-direction: column;
                 gap: 5px;
             }
-            
+
             .control-button {
                 min-width: 120px;
             }
         }
     </style>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
-    {% block header %}
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'landing:index' %}">
-                <i class="bi bi-shield-check me-2 fs-4"></i>
-                <span class="fw-bold">SecureApprove</span>
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="ms-auto theme-language-controls">
-                    <!-- Theme Switcher -->
-                    <div class="dropdown">
-                        <button class="control-button" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-sun" id="themeIcon"></i>
-                            <span id="themeText">{% trans "Light" %}</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="themeDropdown">
-                            <li><button class="dropdown-item" onclick="setTheme('light')" data-theme-option="light">
-                                <i class="bi bi-sun me-2"></i> {% trans "Light" %}
-                            </button></li>
-                            <li><button class="dropdown-item" onclick="setTheme('dark')" data-theme-option="dark">
-                                <i class="bi bi-moon me-2"></i> {% trans "Dark" %}
-                            </button></li>
-                            <li><button class="dropdown-item" onclick="setTheme('system')" data-theme-option="system">
-                                <i class="bi bi-display me-2"></i> {% trans "System" %}
-                            </button></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Language Switcher -->
-                    <div class="dropdown">
-                        <button class="control-button" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span id="currentFlag" class="badge bg-secondary text-dark border">{{ CURRENT_LANG|upper }}</span>
-                            <span id="currentLang">{{ CURRENT_LANG|upper }}</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                            {% get_available_languages as LANGUAGES %}
-                            {% get_current_language as LANGUAGE_CODE %}
-                            {% for lang_code, lang_name in LANGUAGES %}
-                            <li>
-                                <form action="{% url 'set_language' %}" method="post" class="d-inline">
-                                    {% csrf_token %}
-                                    <input name="next" type="hidden" value="{{ request.get_full_path }}" />
-                                    <input name="language" type="hidden" value="{{ lang_code }}" />
-                                    <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == lang_code %}active{% endif %}" data-lang="{{ lang_code }}">
-                                        {% if lang_code == 'es' %}<span class="badge bg-secondary text-dark me-2">ES</span> Español
-                                        {% elif lang_code == 'en' %}<span class="badge bg-secondary text-dark me-2">EN</span> English
-                                        {% elif lang_code == 'pt-br' %}<span class="badge bg-secondary text-dark me-2">PT</span> Português
-                                        {% endif %}
+                            {% block header %}
+                            <!-- Navigation -->
+                            <nav class="navbar navbar-expand-lg fixed-top">
+                                <div class="container">
+                                    <a class="navbar-brand d-flex align-items-center" href="{% url 'landing:index' %}">
+                                        <i class="bi bi-shield-check me-2 fs-4"></i>
+                                        <span class="fw-bold">SecureApprove</span>
+                                    </a>
+
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#navbarNav">
+                                        <span class="navbar-toggler-icon"></span>
                                     </button>
-                                </form>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
 
-                    {% if user.is_authenticated %}
-                    <!-- User Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-primary-custom dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle me-1"></i>{{ user.email }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{% url 'requests:dashboard' %}">
-                                    <i class="bi bi-speedometer2 me-2"></i>{% trans "Dashboard" %}
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'requests:list' %}">
-                                    <i class="bi bi-list-check me-2"></i>{% trans "Requests" %}
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'authentication:profile' %}">
-                                    <i class="bi bi-person me-2"></i>{% trans "Profile" %}
-                                </a></li>
-                                {% if user.can_admin_tenant or user.is_staff or user.is_superuser %}
-                                {% get_current_language as CURRENT_MENU_LANG %}
-                                <li><a class="dropdown-item" href="{% url 'tenants:settings' %}">
-                                    <i class="bi bi-building-gear me-2"></i>
-                                    {% if CURRENT_MENU_LANG == 'es' %}
-                                        Configuracion del Tenant
-                                    {% elif CURRENT_MENU_LANG == 'pt-br' %}
-                                        Configuracao do Tenant
-                                    {% else %}
-                                        Tenant Settings
-                                    {% endif %}
-                                </a></li>
-                                {% endif %}
-                                {% if user.is_staff or user.is_superuser %}
-                                <li><a class="dropdown-item" href="/admin/">
-                                    <i class="bi bi-gear me-2"></i>{% trans "Administration" %}
-                                </a></li>
-                                {% endif %}
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="post" action="{% url 'authentication:logout' %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
+                                    <div class="collapse navbar-collapse" id="navbarNav">
+                                        <div class="ms-auto theme-language-controls">
+                                            <!-- Theme Switcher -->
+                                            <div class="dropdown">
+                                                <button class="control-button" type="button" id="themeDropdown"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-sun" id="themeIcon"></i>
+                                                    <span id="themeText">{% trans "Light" %}</span>
+                                                    <i class="bi bi-chevron-down"></i>
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="themeDropdown">
+                                                    <li><button class="dropdown-item" onclick="setTheme('light')"
+                                                            data-theme-option="light">
+                                                            <i class="bi bi-sun me-2"></i> {% trans "Light" %}
+                                                        </button></li>
+                                                    <li><button class="dropdown-item" onclick="setTheme('dark')"
+                                                            data-theme-option="dark">
+                                                            <i class="bi bi-moon me-2"></i> {% trans "Dark" %}
+                                                        </button></li>
+                                                    <li><button class="dropdown-item" onclick="setTheme('system')"
+                                                            data-theme-option="system">
+                                                            <i class="bi bi-display me-2"></i> {% trans "System" %}
+                                                        </button></li>
+                                                </ul>
+                                            </div>
+
+                                            <!-- Language Switcher -->
+                                            <div class="dropdown">
+                                                <button class="control-button" type="button" id="languageDropdown"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <span id="currentFlag" class="fs-5">
+                                                        {% if CURRENT_LANG == 'es' %}🇪🇸{% elif CURRENT_LANG == 'en' %}🇺🇸{% elif CURRENT_LANG == 'pt-br' %}🇧🇷{% endif %}
+                                                    </span>
+                                                    <span id="currentLang" class="fw-medium">{{ CURRENT_LANG|upper }}</span>
+                                                    <i class="bi bi-chevron-down small opacity-50"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0"
+                                                    aria-labelledby="languageDropdown">
+                                                    {% get_available_languages as LANGUAGES %}
+                                                    {% get_current_language as LANGUAGE_CODE %}
+                                                    {% for lang_code, lang_name in LANGUAGES %}
+                                                    <li>
+                                                        <form action="{% url 'set_language' %}" method="post"
+                                                            class="d-inline">
+                                                            {% csrf_token %}
+                                                            <input name="next" type="hidden"
+                                                                value="{{ request.get_full_path }}" />
+                                                            <input name="language" type="hidden"
+                                                                value="{{ lang_code }}" />
+                                                            <button type="submit"
+                                                                class="dropdown-item d-flex align-items-center gap-2 py-2 {% if LANGUAGE_CODE == lang_code %}active fw-bold{% endif %}"
+                                                                data-lang="{{ lang_code }}">
+                                                                {% if lang_code == 'es' %}<span class="fs-5">🇪🇸</span> <span>Español</span>{% elif lang_code == 'en' %}<span class="fs-5">🇺🇸</span> <span>English</span>{% elif lang_code == 'pt-br' %}<span class="fs-5">🇧🇷</span> <span>Português</span>{% endif %}
+                                                                {% if LANGUAGE_CODE == lang_code %}
+                                                                <i class="bi bi-check-lg ms-auto"></i>
+                                                                {% endif %}
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+
+                                            {% if user.is_authenticated %}
+                                            <!-- User Dropdown -->
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary-custom dropdown-toggle" type="button"
+                                                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-person-circle me-1"></i>{{ user.email }}
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end"
+                                                    aria-labelledby="userDropdown">
+                                                    <li><a class="dropdown-item" href="{% url 'requests:dashboard' %}">
+                                                            <i class="bi bi-speedometer2 me-2"></i>{% trans "Dashboard" %}
+                                                        </a></li>
+                                                    <li><a class="dropdown-item" href="{% url 'requests:list' %}">
+                                                            <i class="bi bi-list-check me-2"></i>{% trans "Requests" %}
+                                                        </a></li>
+                                                    <li><a class="dropdown-item"
+                                                            href="{% url 'authentication:profile' %}">
+                                                            <i class="bi bi-person me-2"></i>{% trans "Profile" %}
+                                                        </a></li>
+                                                    {% if user.can_admin_tenant or user.is_staff or user.is_superuser %}
+                                                    {% get_current_language as CURRENT_MENU_LANG %}
+                                                    <li><a class="dropdown-item" href="{% url 'tenants:settings' %}">
+                                                            <i class="bi bi-building-gear me-2"></i>
+                                                            {% if CURRENT_MENU_LANG == 'es' %}Configuracion del Tenant{% elif CURRENT_MENU_LANG == 'pt-br' %}Configuracao do Tenant{% else %}Tenant Settings{% endif %}
+                                                        </a></li>
+                                                    {% endif %}
+                                                    {% if user.is_staff or user.is_superuser %}
+                                                    <li><a class="dropdown-item" href="/admin/">
+                                                            <i class="bi bi-gear me-2"></i>{% trans "Administration" %}
+                                                        </a></li>
+                                                    {% endif %}
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li>
+                                                        <form method="post" action="{% url 'authentication:logout' %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {% else %}
+                                            <!-- Guest Menu -->
+                                            <a href="{% url 'authentication:webauthn_login' %}"
+                                                class="btn btn-outline-primary">
+                                                <i class="bi bi-fingerprint me-1"></i>{% trans "Login" %}
+                                            </a>
+                                            <a href="{% url 'billing:select_plan' %}" class="btn btn-primary-custom">
+                                                <i class="bi bi-star me-1"></i>{% trans "Subscribe" %}
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </nav>
+
+                            <!-- Main content with padding for fixed navbar -->
+                            <div style="padding-top: 80px;">
+                                {% endblock %}
+
+                                {% block content %}
+                                {% endblock %}
+
+                                {% block footer %}
+                            </div>
+
+                            {% if user.is_authenticated %}
+                            <!-- Tenant Chat Bar -->
+                            <div id="tenantChatBar" class="tenant-chat-bar">
+                                <div class="tenant-chat-bar-left">
+                                    <div class="tenant-chat-icon">
+                                        <i class="bi bi-shield-lock"></i>
+                                    </div>
+                                    <div>
+                                        <div class="tenant-chat-bar-title">{% trans "Chat" %}</div>
+                                        <div id="widgetBarStatus" class="tenant-chat-bar-status"></div>
+                                    </div>
+                                </div>
+                                <div class="tenant-chat-bar-right">
+                                    <div class="tenant-chat-pill">
+                                        <span class="tenant-chat-dot"></span>
+                                        <span class="tenant-chat-pill-text">{% trans "Chats" %}</span>
+                                    </div>
+                                    <span id="widgetNewMessagesBadge" class="badge" style="display:none;"></span>
+                                    <div class="tenant-chat-chevron">
+                                        <i id="widgetChatChevron" class="bi bi-chevron-up"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tenant Chat Panel -->
+                            <div id="tenantChatPanel" class="tenant-chat-panel" style="display:none;">
+                                <div class="card">
+                                    <div class="card-header py-3">
+                                        <div class="tenant-chat-header">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="tenant-chat-icon">
+                                                    <i class="bi bi-chat-dots"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="tenant-chat-eyebrow">{% trans "Chat" %}</div>
+                                                    <div class="tenant-chat-bar-title">{% trans "Chats" %}</div>
+                                                </div>
+                                            </div>
+                                            <div class="tenant-chat-pill">
+                                                <span class="tenant-chat-dot"></span>
+                                                <span id="widgetPresenceSummary"
+                                                    class="tenant-chat-pill-text small"></span>
+                                            </div>
+                                        </div>
+                                        <ul class="nav nav-tabs card-header-tabs tenant-chat-tabs" id="tenantChatTabs"
+                                            role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="chat-conversations-tab"
+                                                    data-bs-toggle="tab" data-bs-target="#chat-conversations"
+                                                    type="button" role="tab">
+                                                    <i class="bi bi-inboxes"></i>
+                                                    {% trans "Chats" %}
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="chat-users-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#chat-users" type="button" role="tab">
+                                                    <i class="bi bi-people"></i>
+                                                    {% trans "Users & Groups" %}
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade show active" id="chat-conversations"
+                                                role="tabpanel">
+                                                <h6 class="mb-2">{% trans "Conversations" %}</h6>
+                                                <ul id="widgetConversationList"
+                                                    class="list-group list-group-flush small tenant-chat-list"></ul>
+                                            </div>
+                                            <div class="tab-pane fade" id="chat-users" role="tabpanel">
+                                                <h6 class="mb-2">{% trans "Contacts" %}</h6>
+                                                <ul id="widgetUserList"
+                                                    class="list-group list-group-flush small tenant-chat-list"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Active Conversation Window -->
+                            <div id="tenantChatActiveWindow" class="tenant-chat-active-window">
+                                <div class="tenant-chat-topline">
+                                    <div>
+                                        <div class="tenant-chat-conversation-title" id="widgetCurrentConversationTitle">
+                                        </div>
+                                        <div id="widgetTypingIndicator" class="tenant-chat-typing"
+                                            style="display:none;">
+                                            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                            <span>{% trans "Typing..." %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="tenant-chat-toolbar">
+                                        <div class="tenant-chat-pill">
+                                            <span class="tenant-chat-dot"></span>
+                                        </div>
+                                        <button id="widgetCloseConversation" type="button" class="tenant-chat-close"
+                                            aria-label="{% trans 'Close' %}">
+                                            <i class="bi bi-x-lg"></i>
                                         </button>
+                                    </div>
+                                </div>
+                                <div id="widgetChatAlerts" class="px-3"></div>
+                                <div id="widgetMessageContainer" class="tenant-chat-messages mx-3"></div>
+                                <div class="tenant-chat-form-shell mx-3 mb-3">
+                                    <form id="widgetMessageForm" class="tenant-chat-form" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="mb-2">
+                                            <textarea id="widgetMessageInput" class="form-control form-control-sm"
+                                                rows="2" placeholder="{% trans 'Write a message' %}"></textarea>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-2">
+                                            <div class="flex-grow-1">
+                                                <input type="file" id="widgetAttachmentInput" name="attachments"
+                                                    multiple class="form-control form-control-sm">
+                                                <small class="text-muted-custom d-block mt-1">
+                                                    {% trans "Max 25MB. Any file type is allowed." %}
+                                                </small>
+                                            </div>
+                                            <button id="widgetSendButton" type="submit" class="btn btn-sm btn-primary">
+                                                {% trans "Send" %}
+                                            </button>
+                                        </div>
                                     </form>
-                                </li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <!-- Guest Menu -->
-                        <a href="{% url 'authentication:webauthn_login' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-fingerprint me-1"></i>{% trans "Login" %}
-                        </a>
-                        <a href="{% url 'billing:select_plan' %}" class="btn btn-primary-custom">
-                            <i class="bi bi-star me-1"></i>{% trans "Subscribe" %}
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </nav>
-    
-    <!-- Main content with padding for fixed navbar -->
-    <div style="padding-top: 80px;">
-    {% endblock %}
-    
-    {% block content %}
-    {% endblock %}
-    
-    {% block footer %}
-    </div>
+                                </div>
+                            </div>
 
-    {% if user.is_authenticated %}
-    <!-- Tenant Chat Bar -->
-    <div id="tenantChatBar" class="tenant-chat-bar">
-        <div class="tenant-chat-bar-left">
-            <div class="tenant-chat-icon">
-                <i class="bi bi-shield-lock"></i>
-            </div>
-            <div>
-                <div class="tenant-chat-bar-title">{% trans "Chat" %}</div>
-                <div id="widgetBarStatus" class="tenant-chat-bar-status"></div>
-            </div>
-        </div>
-        <div class="tenant-chat-bar-right">
-            <div class="tenant-chat-pill">
-                <span class="tenant-chat-dot"></span>
-                <span class="tenant-chat-pill-text">{% trans "Chats" %}</span>
-            </div>
-            <span id="widgetNewMessagesBadge" class="badge" style="display:none;"></span>
-            <div class="tenant-chat-chevron">
-                <i id="widgetChatChevron" class="bi bi-chevron-up"></i>
-            </div>
-        </div>
-    </div>
+                            <div id="tenantChatToastContainer" class="tenant-chat-toast-container"></div>
+                            {% endif %}
 
-    <!-- Tenant Chat Panel -->
-    <div id="tenantChatPanel" class="tenant-chat-panel" style="display:none;">
-        <div class="card">
-            <div class="card-header py-3">
-                <div class="tenant-chat-header">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="tenant-chat-icon">
-                            <i class="bi bi-chat-dots"></i>
-                        </div>
-                        <div>
-                            <div class="tenant-chat-eyebrow">{% trans "Chat" %}</div>
-                            <div class="tenant-chat-bar-title">{% trans "Chats" %}</div>
-                        </div>
-                    </div>
-                    <div class="tenant-chat-pill">
-                        <span class="tenant-chat-dot"></span>
-                        <span id="widgetPresenceSummary" class="tenant-chat-pill-text small"></span>
-                    </div>
-                </div>
-                <ul class="nav nav-tabs card-header-tabs tenant-chat-tabs" id="tenantChatTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="chat-conversations-tab" data-bs-toggle="tab"
-                                data-bs-target="#chat-conversations" type="button" role="tab">
-                            <i class="bi bi-inboxes"></i>
-                            {% trans "Chats" %}
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="chat-users-tab" data-bs-toggle="tab"
-                                data-bs-target="#chat-users" type="button" role="tab">
-                            <i class="bi bi-people"></i>
-                            {% trans "Users & Groups" %}
-                        </button>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body p-3">
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="chat-conversations" role="tabpanel">
-                        <h6 class="mb-2">{% trans "Conversations" %}</h6>
-                        <ul id="widgetConversationList" class="list-group list-group-flush small tenant-chat-list"></ul>
-                    </div>
-                    <div class="tab-pane fade" id="chat-users" role="tabpanel">
-                        <h6 class="mb-2">{% trans "Contacts" %}</h6>
-                        <ul id="widgetUserList" class="list-group list-group-flush small tenant-chat-list"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                            {% endblock %}
 
-    <!-- Active Conversation Window -->
-    <div id="tenantChatActiveWindow" class="tenant-chat-active-window">
-        <div class="tenant-chat-topline">
-            <div>
-                <div class="tenant-chat-conversation-title" id="widgetCurrentConversationTitle"></div>
-                <div id="widgetTypingIndicator" class="tenant-chat-typing" style="display:none;">
-                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                    <span>{% trans "Typing..." %}</span>
-                </div>
-            </div>
-            <div class="tenant-chat-toolbar">
-                <div class="tenant-chat-pill">
-                    <span class="tenant-chat-dot"></span>
-                </div>
-                <button id="widgetCloseConversation" type="button" class="tenant-chat-close" aria-label="{% trans 'Close' %}">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-        </div>
-        <div id="widgetChatAlerts" class="px-3"></div>
-        <div id="widgetMessageContainer" class="tenant-chat-messages mx-3"></div>
-        <div class="tenant-chat-form-shell mx-3 mb-3">
-            <form id="widgetMessageForm" class="tenant-chat-form" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="mb-2">
-                    <textarea id="widgetMessageInput"
-                              class="form-control form-control-sm"
-                              rows="2"
-                              placeholder="{% trans 'Write a message' %}"></textarea>
-                </div>
-                <div class="d-flex justify-content-between align-items-center gap-2">
-                    <div class="flex-grow-1">
-                        <input type="file"
-                               id="widgetAttachmentInput"
-                               name="attachments"
-                               multiple
-                               class="form-control form-control-sm">
-                        <small class="text-muted-custom d-block mt-1">
-                            {% trans "Max 25MB. Any file type is allowed." %}
-                        </small>
-                    </div>
-                    <button id="widgetSendButton" type="submit" class="btn btn-sm btn-primary">
-                        {% trans "Send" %}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+                            <!-- Bootstrap 5 JS -->
+                            <script
+                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <div id="tenantChatToastContainer" class="tenant-chat-toast-container"></div>
-    {% endif %}
-
-    {% endblock %}
-    
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Global Theme and Language Management -->
-    <script>
-        // Theme Management
-        function getSystemTheme() {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        
-        function applyTheme(theme) {
-            const root = document.documentElement;
-            const body = document.body;
-            const resolvedTheme = theme === 'system' ? getSystemTheme() : theme;
-
-            if (root) {
-                root.setAttribute('data-theme', resolvedTheme);
-                root.style.colorScheme = resolvedTheme === 'dark' ? 'dark' : 'light';
-            }
-
-            if (body) {
-                body.setAttribute('data-theme', resolvedTheme);
-                body.style.colorScheme = resolvedTheme === 'dark' ? 'dark' : 'light';
-            }
-
-            updateThemeUI(theme);
-        }
-        
-        function updateThemeUI(theme) {
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            const dropdownItems = document.querySelectorAll('[data-theme-option]');
-            
-            if (!themeIcon || !themeText) return;
-            
-            // Remove active class from all items
-            dropdownItems.forEach(item => item.classList.remove('active'));
-            
-            // Update UI based on theme
-                    switch(theme) {
-                        case 'light':
-                            themeIcon.className = 'bi bi-sun';
-                            themeText.textContent = '{% trans "Light" %}';
-                            break;
-                case 'dark':
-                    themeIcon.className = 'bi bi-moon';
-                    themeText.textContent = '{% trans "Dark" %}';
-                    break;
-                case 'system':
-                    themeIcon.className = 'bi bi-display';
-                    themeText.textContent = '{% trans "System" %}';
-                    break;
-            }
-            
-            // Add active class to current theme
-            const currentItem = document.querySelector(`[data-theme-option="${theme}"]`);
-            if (currentItem) {
-                currentItem.classList.add('active');
-            }
-        }
-        
-        function setTheme(theme) {
-            localStorage.setItem('theme', theme);
-            applyTheme(theme);
-        }
-        
-                // Language Management
-        function updateLanguageUI() {
-            const currentFlag = document.getElementById('currentFlag');
-            const currentLang = document.getElementById('currentLang');
-            const dropdownItems = document.querySelectorAll('[data-lang]');
-            
-            if (!currentFlag || !currentLang) return;
-            
-            // Remove active class from all language items
-            dropdownItems.forEach(item => item.classList.remove('active'));
-            
-            // Get current language from Django context
-            {% get_current_language as CURRENT_LANGUAGE %}
-            let detectedLang = '{{ CURRENT_LANGUAGE }}';
-            
-            // Normalize language code
-            if (detectedLang) {
-                detectedLang = detectedLang.replace('_', '-').toLowerCase();
-            }
-            
-            switch(detectedLang) {
-                case 'en':
-                    currentFlag.textContent = 'EN';
-                    currentLang.textContent = 'EN';
-                    break;
-                case 'pt-br':
-                    currentFlag.textContent = 'PT';
-                    currentLang.textContent = 'PT';
-                    break;
-                default: // 'es'
-                    currentFlag.textContent = 'ES';
-                    currentLang.textContent = 'ES';
-            }
-            
-            // Mark active language
-            const activeItem = document.querySelector(`[data-lang="${detectedLang}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-            }
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-	            // Initialize theme
-	            const savedTheme = localStorage.getItem('theme') || 'system';
-	            applyTheme(savedTheme);
-	            
-	            // Initialize language UI
-	            updateLanguageUI();
-	            
-	            // Listen for system theme changes
-	            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
-	                const currentTheme = localStorage.getItem('theme') || 'system';
-	                if (currentTheme === 'system') {
-	                    applyTheme('system');
-	                }
-	            });
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        {% if user.is_authenticated %}
-        // Chat Widget Configuration
-        window.CHAT_CURRENT_USER_ID = {{ user.id|default:'null' }};
-        window.CHAT_I18N = {
-            newMessage: '{% trans "New chat message" %}',
-            newMessages: '{% trans "New chat messages" %}',
-            unreadMessages: '{% trans "unread messages" %}',
-            usersOnline: '{% trans "users online" %}',
-            noUsersOnline: '{% trans "No users online" %}',
-            online: '{% trans "Online" %}',
-            offline: '{% trans "Offline" %}',
-            serviceUnavailable: '{% trans "Chat service unavailable" %}',
-            noMessages: '{% trans "No messages yet. Start the conversation." %}',
-            conversation: '{% trans "Conversation" %}',
-            newConversation: '{% trans "New conversation" %}',
-            attachment: '{% trans "Attachment" %}',
-            error: '{% trans "Error" %}',
-            errorStartingConversation: '{% trans "Could not start conversation" %}',
-            errorLoadingMessages: '{% trans "Could not load messages" %}',
-            errorSendingMessage: '{% trans "Could not send message" %}',
-            fileTooLarge: '{% trans "File is too large (max 25MB)" %}',
-            fileTypeNotAllowed: '{% trans "File type not allowed" %}',
-            loadingMessages: '{% trans "Loading messages..." %}',
-            unknownUser: '{% trans "Unknown user" %}',
-        };
-        {% endif %}
-
-        {% comment %}
-        Old inline chat code removed - now using external tenant_chat.js
-        {% if user.is_authenticated %}
-        (function() {
-            const chatBar = document.getElementById('tenantChatBar');
-            const chatPanel = document.getElementById('tenantChatPanel');
-            const chatChevron = document.getElementById('widgetChatChevron');
-            const newMessagesBadge = document.getElementById('widgetNewMessagesBadge');
-            const barStatus = document.getElementById('widgetBarStatus');
-            const conversationList = document.getElementById('widgetConversationList');
-            const userList = document.getElementById('widgetUserList');
-            const messageContainer = document.getElementById('widgetMessageContainer');
-            const messageForm = document.getElementById('widgetMessageForm');
-            const messageInput = document.getElementById('widgetMessageInput');
-            const attachmentInput = document.getElementById('widgetAttachmentInput');
-            const typingIndicator = document.getElementById('widgetTypingIndicator');
-            const presenceSummary = document.getElementById('widgetPresenceSummary');
-            const currentConversationTitle = document.getElementById('widgetCurrentConversationTitle');
-            const CURRENT_USER_ID = {{ user.id|default:'null' }};
-
-	            if (!chatBar || !chatPanel || !conversationList || !messageForm) {
-	                return;
-	            }
-
-            let currentConversationId = null;
-            let lastMessageId = null;
-            let typingTimeout = null;
-            let panelVisible = false;
-            let panelInitialized = false;
-            let chatSocket = null;
-            let chatSocketConnected = false;
-
-            const csrfInput = messageForm.querySelector('[name=csrfmiddlewaretoken]');
-            const csrfToken = csrfInput ? csrfInput.value : '';
-
-            async function apiGet(url) {
-                const response = await fetch(url, {credentials: 'same-origin'});
-                let data = null;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    console.error('Failed to parse JSON from', url, e);
-                }
-                if (!response.ok) {
-                    console.error('Chat API error', url, response.status, data);
-                    if (data && data.error) {
-                        throw new Error(data.error);
-                    } else {
-                        throw new Error(`Request failed (${response.status})`);
-                    }
-                }
-                return data;
-            }
-
-            async function apiPost(url, body, isForm) {
-                const options = {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {}
-                };
-                if (isForm) {
-                    options.body = body;
-                } else {
-                    options.headers['Content-Type'] = 'application/json';
-                    options.body = JSON.stringify(body);
-                }
-                if (csrfToken) {
-                    options.headers['X-CSRFToken'] = csrfToken;
-                }
-                const response = await fetch(url, options);
-                let data = null;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    console.error('Failed to parse JSON from', url, e);
-                }
-                if (!response.ok) {
-                    console.error('Chat API error', url, response.status, data);
-                    if (data && data.error) {
-                        throw new Error(data.error);
-                    } else {
-                        throw new Error(`Request failed (${response.status})`);
-                    }
-                }
-                return data;
-            }
-
-            function connectChatSocket() {
-                if (!('WebSocket' in window)) {
-                    return;
-                }
-                const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-                const url = `${scheme}://${window.location.host}/ws/chat/`;
-                try {
-                    chatSocket = new WebSocket(url);
-                } catch (e) {
-                    console.error('Failed to open chat WebSocket', e);
-                    chatSocketConnected = false;
-                    chatSocket = null;
-                    return;
-                }
-
-                chatSocket.onopen = function () {
-                    chatSocketConnected = true;
-                };
-
-                chatSocket.onclose = function () {
-                    chatSocketConnected = false;
-                    chatSocket = null;
-                };
-
-                chatSocket.onerror = function (e) {
-                    console.error('Chat WebSocket error', e);
-                    chatSocketConnected = false;
-                };
-
-                chatSocket.onmessage = function (event) {
-                    let data;
-                    try {
-                        data = JSON.parse(event.data);
-                    } catch (e) {
-                        console.error('Invalid chat WebSocket payload', e);
-                        return;
-                    }
-                    if (!data || !data.type) {
-                        return;
-                    }
-
-                    if (data.type === 'message_created') {
-                        const convId = data.conversation_id;
-                        const msg = data.message;
-                        if (!convId || !msg) {
-                            return;
-                        }
-                        if (currentConversationId && convId === currentConversationId) {
-                            renderMessages([msg]);
-                            // Mark as read for the active conversation
-                            apiPost(`/api/chat/conversations/${currentConversationId}/mark_read/`, {});
-                        }
-                        // Keep conversation list and unread counters in sync
-                        loadConversations();
-                    }
-                };
-            }
-
-            function setPanelVisible(visible) {
-                panelVisible = visible;
-                chatPanel.style.display = visible ? 'block' : 'none';
-                if (chatChevron) {
-                    chatChevron.className = visible ? 'bi bi-chevron-down' : 'bi bi-chevron-up';
-                }
-            }
-
-            let lastTotalUnread = 0;
-
-            function renderConversations(conversations) {
-                conversationList.innerHTML = '';
-                let totalUnread = 0;
-                conversations.forEach(c => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                    li.dataset.id = c.id;
-                    const rawPreview = c.last_message && c.last_message.content ? c.last_message.content : '';
-                    const preview = rawPreview.length > 60 ? `${rawPreview.slice(0, 57)}…` : rawPreview;
-                    let title;
-                    if (c.title) {
-                        title = c.title;
-                        if (preview) {
-                            title += ` · ${preview}`;
-                        }
-                    } else if (c.last_message) {
-                        const baseSender = c.last_message.sender_name || '';
-                        if (preview) {
-                            title = `${baseSender}: ${preview}`;
-                        } else {
-                            title = baseSender || '{{ _("New conversation") }}';
-                        }
-                    } else {
-                        title = '{{ _("New conversation") }}';
-                    }
-                    const unread = c.unread_count || 0;
-                    totalUnread += unread;
-                    li.innerHTML = `<span class="text-truncate">${title}</span>` +
-                        (unread ? `<span class="badge bg-danger ms-2">${unread}</span>` : '');
-                    li.addEventListener('click', () => openConversation(c.id, c.title));
-                    conversationList.appendChild(li);
-                });
-
-                if (newMessagesBadge) {
-                    if (totalUnread > 0) {
-                        // Show badge and send push-style notification if new unread messages arrived
-                        if (totalUnread > lastTotalUnread && 'Notification' in window) {
-                            if (Notification.permission === 'granted') {
-                                const diff = totalUnread - lastTotalUnread;
-                                const title = diff === 1
-                                    ? '{{ _("New chat message") }}'
-                                    : '{{ _("New chat messages") }}';
-                                try {
-                                    new Notification(title, {
-                                        body: `${totalUnread} {{ _("unread messages") }}`,
-                                        icon: '/static/favicon.ico'
-                                    });
-                                } catch (e) {
-                                    console.warn('Notification error', e);
+                            <!-- Global Theme and Language Management -->
+                            <script>
+                                // Theme Management
+                                function getSystemTheme() {
+                                    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                                 }
-                            }
-                        }
-                        newMessagesBadge.style.display = 'inline-block';
-                        newMessagesBadge.textContent = totalUnread;
-                    } else {
-                        newMessagesBadge.style.display = 'none';
-                        newMessagesBadge.textContent = '';
-                    }
-                }
 
-                lastTotalUnread = totalUnread;
-            }
+                                function applyTheme(theme) {
+                                    const root = document.documentElement;
+                                    const body = document.body;
+                                    const resolvedTheme = theme === 'system' ? getSystemTheme() : theme;
 
-            function renderUsers(users) {
-                if (!userList) return;
-                userList.innerHTML = '';
-                {% get_current_language as CHAT_LANG %}
-                const chatLang = '{{ CHAT_LANG }}';
-                users.forEach(u => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                    li.dataset.id = u.id;
-                    const displayName = u.name || u.email;
-                    const online = !!u.is_online;
-                    let statusText;
-                    if (chatLang === 'es') {
-                        statusText = online ? 'En linea' : 'Desconectado';
-                    } else if (chatLang === 'pt-br') {
-                        statusText = online ? 'Online' : 'Offline';
-                    } else {
-                        statusText = online ? 'Online' : 'Offline';
-                    }
-                    const statusClass = online ? 'text-success' : 'text-muted';
-                    li.innerHTML = `<span>${displayName}</span><small class="${statusClass}">${statusText}</small>`;
-                    li.addEventListener('click', () => startConversation(u.id));
-                    userList.appendChild(li);
-                });
-            }
+                                    if (root) {
+                                        root.setAttribute('data-theme', resolvedTheme);
+                                        root.style.colorScheme = resolvedTheme === 'dark' ? 'dark' : 'light';
+                                    }
 
-            function formatChatTime(value) {
-                if (!value) return '';
-                try {
-                    const d = new Date(value);
-                    if (Number.isNaN(d.getTime())) {
-                        return '';
-                    }
-                    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                } catch (e) {
-                    return '';
-                }
-            }
+                                    if (body) {
+                                        body.setAttribute('data-theme', resolvedTheme);
+                                        body.style.colorScheme = resolvedTheme === 'dark' ? 'dark' : 'light';
+                                    }
 
-            function renderMessages(messages) {
-                if (!Array.isArray(messages) || messages.length === 0) {
-                    if (!messageContainer.children.length) {
-                        const empty = document.createElement('div');
-                        empty.className = 'tenant-chat-empty-state';
-                        empty.textContent = '{{ _("No messages yet. Start the conversation.") }}';
-                        messageContainer.appendChild(empty);
-                    }
-                    return;
-                }
+                                    updateThemeUI(theme);
+                                }
 
-                // If we had shown an empty state previously, remove it on first real message
-                const firstChild = messageContainer.firstElementChild;
-                if (firstChild && firstChild.classList.contains('tenant-chat-empty-state')) {
-                    messageContainer.removeChild(firstChild);
-                }
+                                function updateThemeUI(theme) {
+                                    const themeIcon = document.getElementById('themeIcon');
+                                    const themeText = document.getElementById('themeText');
+                                    const dropdownItems = document.querySelectorAll('[data-theme-option]');
 
-                messages.forEach(msg => {
-                    const isMine = CURRENT_USER_ID !== null && msg.sender_id === CURRENT_USER_ID;
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'tenant-chat-message ' + (isMine ? 'me' : 'other');
+                                    if (!themeIcon || !themeText) return;
 
-                    const bubble = document.createElement('div');
-                    bubble.className = 'tenant-chat-bubble';
+                                    // Remove active class from all items
+                                    dropdownItems.forEach(item => item.classList.remove('active'));
 
-                    const header = document.createElement('div');
-                    header.className = 'fw-semibold';
-                    header.textContent = msg.sender_name || '';
+                                    // Update UI based on theme
+                                    switch (theme) {
+                                        case 'light':
+                                            themeIcon.className = 'bi bi-sun';
+                                            themeText.textContent = '{% trans "Light" %}';
+                                            break;
+                                        case 'dark':
+                                            themeIcon.className = 'bi bi-moon';
+                                            themeText.textContent = '{% trans "Dark" %}';
+                                            break;
+                                        case 'system':
+                                            themeIcon.className = 'bi bi-display';
+                                            themeText.textContent = '{% trans "System" %}';
+                                            break;
+                                    }
 
-                    if (msg.content) {
-                        const body = document.createElement('div');
-                        body.textContent = msg.content;
-                        bubble.appendChild(body);
-                    }
+                                    // Add active class to current theme
+                                    const currentItem = document.querySelector(`[data-theme-option="${theme}"]`);
+                                    if (currentItem) {
+                                        currentItem.classList.add('active');
+                                    }
+                                }
 
-                    const attachments = Array.isArray(msg.attachments) ? msg.attachments : [];
-                    if (attachments.length) {
-                        const attachmentsContainer = document.createElement('div');
-                        attachmentsContainer.className = 'tenant-chat-attachments mt-1';
-                        attachments.forEach(att => {
-                            if (!att || !att.file) return;
-                            const link = document.createElement('a');
-                            link.href = att.file;
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-                            link.textContent = att.filename || '{{ _("Attachment") }}';
-                            attachmentsContainer.appendChild(link);
-                        });
-                        bubble.appendChild(attachmentsContainer);
-                    }
+                                function setTheme(theme) {
+                                    localStorage.setItem('theme', theme);
+                                    applyTheme(theme);
+                                }
 
-                    const meta = document.createElement('div');
-                    meta.className = 'tenant-chat-meta';
-                    const timeLabel = formatChatTime(msg.created_at);
-                    const statusLabel = msg.status || '';
-                    meta.textContent = [timeLabel, statusLabel].filter(Boolean).join(' · ');
+                                // Language Management
+                                function updateLanguageUI() {
+                                    // Logic moved to server-side rendering for better performance and SEO
+                                    // This function is kept for potential client-side updates if needed
+                                }
 
-                    bubble.prepend(header);
-                    bubble.appendChild(meta);
+                                // Initialize on page load
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    // Initialize theme
+                                    const savedTheme = localStorage.getItem('theme') || 'system';
+                                    applyTheme(savedTheme);
 
-                    wrapper.appendChild(bubble);
-                    messageContainer.appendChild(wrapper);
-                    lastMessageId = msg.id;
-                });
-                if (messages.length) {
-                    messageContainer.scrollTop = messageContainer.scrollHeight;
-                }
-            }
+                                    // Initialize language UI
+                                    updateLanguageUI();
 
-            async function loadConversations() {
-                try {
-                    const data = await apiGet('/api/chat/conversations/');
-                    const conversations = Array.isArray(data) ? data : [];
-                    // Sort by last message date desc if available
-                    conversations.sort((a, b) => {
-                        const da = a.last_message && a.last_message.created_at ? new Date(a.last_message.created_at) : new Date(0);
-                        const db = b.last_message && b.last_message.created_at ? new Date(b.last_message.created_at) : new Date(0);
-                        return db - da;
-                    });
-	                renderConversations(conversations);
-                } catch (e) {
-                    console.error('Error loading conversations', e);
-                    if (barStatus) {
-                        barStatus.textContent = '{{ _("Chat service unavailable") }}';
-                    }
-                }
-            }
+                                    // Listen for system theme changes
+                                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+                                        const currentTheme = localStorage.getItem('theme') || 'system';
+                                        if (currentTheme === 'system') {
+                                            applyTheme('system');
+                                        }
+                                    });
+                                });
 
-            async function startConversation(userId) {
-                try {
-                    const data = await apiPost('/api/chat/conversations/start/', {
-                        participant_id: userId
-                    });
-                    if (data && data.id) {
-                        await loadConversations();
-                        await openConversation(data.id, data.title);
-                    }
-                } catch (e) {
-                    // Silently ignore for now; could add toast
-                    console.error('Error starting conversation', e);
-                }
-            }
+                                // Smooth scrolling for anchor links
+                                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                                    anchor.addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        const target = document.querySelector(this.getAttribute('href'));
+                                        if (target) {
+                                            target.scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'start'
+                                            });
+                                        }
+                                    });
+                                });
 
-            async function openConversation(id, title) {
-                currentConversationId = id;
-                lastMessageId = null;
-                messageContainer.innerHTML = '';
-                if (title) {
-                    currentConversationTitle.textContent = title;
-                } else {
-                    currentConversationTitle.textContent = '{{ _("Conversation") }} ' + id.substring(0, 8);
-                }
-                await loadMessages();
-            }
+                                {% if user.is_authenticated %}
+                                // Chat Widget Configuration
+                                window.CHAT_CURRENT_USER_ID = {% if user.id %}{{ user.id }}{% else %}null{% endif %};
+                                window.CHAT_I18N = {
+                                    newMessage: '{% trans "New chat message" %}',
+                                    newMessages: '{% trans "New chat messages" %}',
+                                    unreadMessages: '{% trans "unread messages" %}',
+                                    usersOnline: '{% trans "users online" %}',
+                                    noUsersOnline: '{% trans "No users online" %}',
+                                    online: '{% trans "Online" %}',
+                                    offline: '{% trans "Offline" %}',
+                                    serviceUnavailable: '{% trans "Chat service unavailable" %}',
+                                    noMessages: '{% trans "No messages yet. Start the conversation." %}',
+                                    conversation: '{% trans "Conversation" %}',
+                                    newConversation: '{% trans "New conversation" %}',
+                                    attachment: '{% trans "Attachment" %}',
+                                    error: '{% trans "Error" %}',
+                                    errorStartingConversation: '{% trans "Could not start conversation" %}',
+                                    errorLoadingMessages: '{% trans "Could not load messages" %}',
+                                    errorSendingMessage: '{% trans "Could not send message" %}',
+                                    fileTooLarge: '{% trans "File is too large (max 25MB)" %}',
+                                    fileTypeNotAllowed: '{% trans "File type not allowed" %}',
+                                    loadingMessages: '{% trans "Loading messages..." %}',
+                                    unknownUser: '{% trans "Unknown user" %}',
+                                };
+                                {% endif %}
 
-            async function loadMessages() {
-                if (!currentConversationId) return;
-                let url = `/api/chat/conversations/${currentConversationId}/messages/`;
-                if (lastMessageId) {
-                    url += `?since_id=${lastMessageId}`;
-                }
-                try {
-                    const data = await apiGet(url);
-                    const messages = Array.isArray(data) ? data : [];
-                    renderMessages(messages);
-                    // Mark messages as read for current user
-                    await apiPost(`/api/chat/conversations/${currentConversationId}/mark_read/`, {});
-                    await loadConversations();
-                } catch (e) {
-                    console.error('Error loading messages', e);
-                }
-            }
+                                {% comment %}
+        Old inline chat code removed - now using external tenant_chat.js
+                                {% if user.is_authenticated %}
+                                (function () {
+                                    const chatBar = document.getElementById('tenantChatBar');
+                                    const chatPanel = document.getElementById('tenantChatPanel');
+                                    const chatChevron = document.getElementById('widgetChatChevron');
+                                    const newMessagesBadge = document.getElementById('widgetNewMessagesBadge');
+                                    const barStatus = document.getElementById('widgetBarStatus');
+                                    const conversationList = document.getElementById('widgetConversationList');
+                                    const userList = document.getElementById('widgetUserList');
+                                    const messageContainer = document.getElementById('widgetMessageContainer');
+                                    const messageForm = document.getElementById('widgetMessageForm');
+                                    const messageInput = document.getElementById('widgetMessageInput');
+                                    const attachmentInput = document.getElementById('widgetAttachmentInput');
+                                    const typingIndicator = document.getElementById('widgetTypingIndicator');
+                                    const presenceSummary = document.getElementById('widgetPresenceSummary');
+                                    const currentConversationTitle = document.getElementById('widgetCurrentConversationTitle');
+                                    const CURRENT_USER_ID = {% if user.id %}{{ user.id }}{% else %}null{% endif %};
+                                }};
 
-            async function loadPresence() {
-                try {
-                    const data = await apiGet('/api/chat/conversations/presence/');
-                    const users = Array.isArray(data) ? data : [];
-                    const online = users.filter(u => u.is_online);
-                    renderUsers(users);
-                    if (online.length) {
-                        presenceSummary.textContent = `${online.length} {{ _("users online") }}`;
-                    } else {
-                        presenceSummary.textContent = '{{ _("No users online") }}';
-                    }
-                    if (barStatus) {
-                        if (online.length) {
-                            barStatus.textContent = `${online.length} {{ _("users online") }}`;
-                        } else {
-                            barStatus.textContent = '{{ _("No users online") }}';
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error loading presence', e);
-                    if (barStatus) {
-                        barStatus.textContent = '{{ _("Chat service unavailable") }}';
-                    }
-                    if (presenceSummary) {
-                        presenceSummary.textContent = '{{ _("Chat service unavailable") }}';
-                    }
-                }
-            }
+                                if (!chatBar || !chatPanel || !conversationList || !messageForm) {
+                                    return;
+                                }
 
-	            // Initial load for bar data (online users + unread) even if panel is closed
-	            loadPresence();
-	            loadConversations();
-                connectChatSocket();
+                                let currentConversationId = null;
+                                let lastMessageId = null;
+                                let typingTimeout = null;
+                                let panelVisible = false;
+                                let panelInitialized = false;
+                                let chatSocket = null;
+                                let chatSocketConnected = false;
 
-	            // Polling
-	            setInterval(() => {
-	                // Presence and unread counts should always stay fresh
-	                loadPresence();
-	                loadConversations();
-	                // Only fetch messages when panel is visible and a conversation is selected.
-                    // When WebSocket is connected we rely on push events instead.
-	                if (panelVisible && currentConversationId && !chatSocketConnected) {
-	                    loadMessages();
-	                }
-	            }, 5000);
+                                const csrfInput = messageForm.querySelector('[name=csrfmiddlewaretoken]');
+                                const csrfToken = csrfInput ? csrfInput.value : '';
 
-            // Typing
-            messageInput.addEventListener('input', function () {
-                if (!currentConversationId) return;
-                apiPost(`/api/chat/conversations/${currentConversationId}/typing/`, {});
-                typingIndicator.style.display = 'block';
-                if (typingTimeout) clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => {
-                    typingIndicator.style.display = 'none';
-                }, 1500);
+                                async function apiGet(url) {
+                                    const response = await fetch(url, { credentials: 'same-origin' });
+                                    let data = null;
+                                    try {
+                                        data = await response.json();
+                                    } catch (e) {
+                                        console.error('Failed to parse JSON from', url, e);
+                                    }
+                                    if (!response.ok) {
+                                        console.error('Chat API error', url, response.status, data);
+                                        if (data && data.error) {
+                                            throw new Error(data.error);
+                                        } else {
+                                            throw new Error(`Request failed (${response.status})`);
+                                        }
+                                    }
+                                    return data;
+                                }
+
+                                async function apiPost(url, body, isForm) {
+                                    const options = {
+                                        method: 'POST',
+                                        credentials: 'same-origin',
+                                        headers: {}
+                                    };
+                                    if (isForm) {
+                                        options.body = body;
+                                    } else {
+                                        options.headers['Content-Type'] = 'application/json';
+                                        options.body = JSON.stringify(body);
+                                    }
+                                    if (csrfToken) {
+                                        options.headers['X-CSRFToken'] = csrfToken;
+                                    }
+                                    const response = await fetch(url, options);
+                                    let data = null;
+                                    try {
+                                        data = await response.json();
+                                    } catch (e) {
+                                        console.error('Failed to parse JSON from', url, e);
+                                    }
+                                    if (!response.ok) {
+                                        console.error('Chat API error', url, response.status, data);
+                                        if (data && data.error) {
+                                            throw new Error(data.error);
+                                        } else {
+                                            throw new Error(`Request failed (${response.status})`);
+                                        }
+                                    }
+                                    return data;
+                                }
+
+                                function connectChatSocket() {
+                                    if (!('WebSocket' in window)) {
+                                        return;
+                                    }
+                                    const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+                                    const url = `${scheme}://${window.location.host}/ws/chat/`;
+                                    try {
+                                        chatSocket = new WebSocket(url);
+                                    } catch (e) {
+                                        console.error('Failed to open chat WebSocket', e);
+                                        chatSocketConnected = false;
+                                        chatSocket = null;
+                                        return;
+                                    }
+
+                                    chatSocket.onopen = function () {
+                                        chatSocketConnected = true;
+                                    };
+
+                                    chatSocket.onclose = function () {
+                                        chatSocketConnected = false;
+                                        chatSocket = null;
+                                    };
+
+                                    chatSocket.onerror = function (e) {
+                                        console.error('Chat WebSocket error', e);
+                                        chatSocketConnected = false;
+                                    };
+
+                                    chatSocket.onmessage = function (event) {
+                                        let data;
+                                        try {
+                                            data = JSON.parse(event.data);
+                                        } catch (e) {
+                                            console.error('Invalid chat WebSocket payload', e);
+                                            return;
+                                        }
+                                        if (!data || !data.type) {
+                                            return;
+                                        }
+
+                                        if (data.type === 'message_created') {
+                                            const convId = data.conversation_id;
+                                            const msg = data.message;
+                                            if (!convId || !msg) {
+                                                return;
+                                            }
+                                            if (currentConversationId && convId === currentConversationId) {
+                                                renderMessages([msg]);
+                                                // Mark as read for the active conversation
+                                                apiPost(`/api/chat/conversations/${currentConversationId}/mark_read/`, {});
+                                            }
+                                            // Keep conversation list and unread counters in sync
+                                            loadConversations();
+                                        }
+                                    };
+                                }
+
+                                function setPanelVisible(visible) {
+                                    panelVisible = visible;
+                                    chatPanel.style.display = visible ? 'block' : 'none';
+                                    if (chatChevron) {
+                                        chatChevron.className = visible ? 'bi bi-chevron-down' : 'bi bi-chevron-up';
+                                    }
+                                }
+
+                                let lastTotalUnread = 0;
+
+                                function renderConversations(conversations) {
+                                    conversationList.innerHTML = '';
+                                    let totalUnread = 0;
+                                    conversations.forEach(c => {
+                                        const li = document.createElement('li');
+                                        li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                                        li.dataset.id = c.id;
+                                        const rawPreview = c.last_message && c.last_message.content ? c.last_message.content : '';
+                                        const preview = rawPreview.length > 60 ? `${rawPreview.slice(0, 57)}…` : rawPreview;
+                                        let title;
+                                        if (c.title) {
+                                            title = c.title;
+                                            if (preview) {
+                                                title += ` · ${preview}`;
+                                            }
+                                        } else if (c.last_message) {
+                                            const baseSender = c.last_message.sender_name || '';
+                                            if (preview) {
+                                                title = `${baseSender}: ${preview}`;
+                                            } else {
+                                                title = baseSender || '{{ _("New conversation") }}';
+                                            }
+                                        } else {
+                                            title = '{{ _("New conversation") }}';
+                                        }
+                                        const unread = c.unread_count || 0;
+                                        totalUnread += unread;
+                                        li.innerHTML = `<span class="text-truncate">${title}</span>` +
+                                            (unread ? `<span class="badge bg-danger ms-2">${unread}</span>` : '');
+                                        li.addEventListener('click', () => openConversation(c.id, c.title));
+                                        conversationList.appendChild(li);
+                                    });
+
+                                    if (newMessagesBadge) {
+                                        if (totalUnread > 0) {
+                                            // Show badge and send push-style notification if new unread messages arrived
+                                            if (totalUnread > lastTotalUnread && 'Notification' in window) {
+                                                if (Notification.permission === 'granted') {
+                                                    const diff = totalUnread - lastTotalUnread;
+                                                    const title = diff === 1
+                                                        ? '{{ _("New chat message") }}'
+                                                        : '{{ _("New chat messages") }}';
+                                                    try {
+                                                        new Notification(title, {
+                                                            body: `${totalUnread} {{ _("unread messages") }}`,
+                                                            icon: '/static/favicon.ico'
+                                                        });
+                                                    } catch (e) {
+                                                        console.warn('Notification error', e);
+                                                    }
+                                                }
+                                            }
+                                            newMessagesBadge.style.display = 'inline-block';
+                                            newMessagesBadge.textContent = totalUnread;
+                                        } else {
+                                            newMessagesBadge.style.display = 'none';
+                                            newMessagesBadge.textContent = '';
+                                        }
+                                    }
+
+                                    lastTotalUnread = totalUnread;
+                                }
+
+                                function renderUsers(users) {
+                                    if (!userList) return;
+                                    userList.innerHTML = '';
+                                    {% get_current_language as CHAT_LANG %}
+                                    const chatLang = '{{ CHAT_LANG }}';
+                                    users.forEach(u => {
+                                        const li = document.createElement('li');
+                                        li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                                        li.dataset.id = u.id;
+                                        const displayName = u.name || u.email;
+                                        const online = !!u.is_online;
+                                        let statusText;
+                                        if (chatLang === 'es') {
+                                            statusText = online ? 'En linea' : 'Desconectado';
+                                        } else if (chatLang === 'pt-br') {
+                                            statusText = online ? 'Online' : 'Offline';
+                                        } else {
+                                            statusText = online ? 'Online' : 'Offline';
+                                        }
+                                        const statusClass = online ? 'text-success' : 'text-muted';
+                                        li.innerHTML = `<span>${displayName}</span><small class="${statusClass}">${statusText}</small>`;
+                                        li.addEventListener('click', () => startConversation(u.id));
+                                        userList.appendChild(li);
+                                    });
+                                }
+
+                                function formatChatTime(value) {
+                                    if (!value) return '';
+                                    try {
+                                        const d = new Date(value);
+                                        if (Number.isNaN(d.getTime())) {
+                                            return '';
+                                        }
+                                        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                    } catch (e) {
+                                        return '';
+                                    }
+                                }
+
+                                function renderMessages(messages) {
+                                    if (!Array.isArray(messages) || messages.length === 0) {
+                                        if (!messageContainer.children.length) {
+                                            const empty = document.createElement('div');
+                                            empty.className = 'tenant-chat-empty-state';
+                                            empty.textContent = '{{ _("No messages yet. Start the conversation.") }}';
+                                            messageContainer.appendChild(empty);
+                                        }
+                                        return;
+                                    }
+
+                                    // If we had shown an empty state previously, remove it on first real message
+                                    const firstChild = messageContainer.firstElementChild;
+                                    if (firstChild && firstChild.classList.contains('tenant-chat-empty-state')) {
+                                        messageContainer.removeChild(firstChild);
+                                    }
+
+                                    messages.forEach(msg => {
+                                        const isMine = CURRENT_USER_ID !== null && msg.sender_id === CURRENT_USER_ID;
+                                        const wrapper = document.createElement('div');
+                                        wrapper.className = 'tenant-chat-message ' + (isMine ? 'me' : 'other');
+
+                                        const bubble = document.createElement('div');
+                                        bubble.className = 'tenant-chat-bubble';
+
+                                        const header = document.createElement('div');
+                                        header.className = 'fw-semibold';
+                                        header.textContent = msg.sender_name || '';
+
+                                        if (msg.content) {
+                                            const body = document.createElement('div');
+                                            body.textContent = msg.content;
+                                            bubble.appendChild(body);
+                                        }
+
+                                        const attachments = Array.isArray(msg.attachments) ? msg.attachments : [];
+                                        if (attachments.length) {
+                                            const attachmentsContainer = document.createElement('div');
+                                            attachmentsContainer.className = 'tenant-chat-attachments mt-1';
+                                            attachments.forEach(att => {
+                                                if (!att || !att.file) return;
+                                                const link = document.createElement('a');
+                                                link.href = att.file;
+                                                link.target = '_blank';
+                                                link.rel = 'noopener noreferrer';
+                                                link.textContent = att.filename || '{{ _("Attachment") }}';
+                                                attachmentsContainer.appendChild(link);
+                                            });
+                                            bubble.appendChild(attachmentsContainer);
+                                        }
+
+                                        const meta = document.createElement('div');
+                                        meta.className = 'tenant-chat-meta';
+                                        const timeLabel = formatChatTime(msg.created_at);
+                                        const statusLabel = msg.status || '';
+                                        meta.textContent = [timeLabel, statusLabel].filter(Boolean).join(' · ');
+
+                                        bubble.prepend(header);
+                                        bubble.appendChild(meta);
+
+                                        wrapper.appendChild(bubble);
+                                        messageContainer.appendChild(wrapper);
+                                        lastMessageId = msg.id;
+                                    });
+                                    if (messages.length) {
+                                        messageContainer.scrollTop = messageContainer.scrollHeight;
+                                    }
+                                }
+
+                                async function loadConversations() {
+                                    try {
+                                        const data = await apiGet('/api/chat/conversations/');
+                                        const conversations = Array.isArray(data) ? data : [];
+                                        // Sort by last message date desc if available
+                                        conversations.sort((a, b) => {
+                                            const da = a.last_message && a.last_message.created_at ? new Date(a.last_message.created_at) : new Date(0);
+                                            const db = b.last_message && b.last_message.created_at ? new Date(b.last_message.created_at) : new Date(0);
+                                            return db - da;
+                                        });
+                                        renderConversations(conversations);
+                                    } catch (e) {
+                                        console.error('Error loading conversations', e);
+                                        if (barStatus) {
+                                            barStatus.textContent = '{{ _("Chat service unavailable") }}';
+                                        }
+                                    }
+                                }
+
+                                async function startConversation(userId) {
+                                    try {
+                                        const data = await apiPost('/api/chat/conversations/start/', {
+                                            participant_id: userId
+                                        });
+                                        if (data && data.id) {
+                                            await loadConversations();
+                                            await openConversation(data.id, data.title);
+                                        }
+                                    } catch (e) {
+                                        // Silently ignore for now; could add toast
+                                        console.error('Error starting conversation', e);
+                                    }
+                                }
+
+                                async function openConversation(id, title) {
+                                    currentConversationId = id;
+                                    lastMessageId = null;
+                                    messageContainer.innerHTML = '';
+                                    if (title) {
+                                        currentConversationTitle.textContent = title;
+                                    } else {
+                                        currentConversationTitle.textContent = '{{ _("Conversation") }} ' + id.substring(0, 8);
+                                    }
+                                    await loadMessages();
+                                }
+
+                                async function loadMessages() {
+                                    if (!currentConversationId) return;
+                                    let url = `/api/chat/conversations/${currentConversationId}/messages/`;
+                                    if (lastMessageId) {
+                                        url += `?since_id=${lastMessageId}`;
+                                    }
+                                    try {
+                                        const data = await apiGet(url);
+                                        const messages = Array.isArray(data) ? data : [];
+                                        renderMessages(messages);
+                                        // Mark messages as read for current user
+                                        await apiPost(`/api/chat/conversations/${currentConversationId}/mark_read/`, {});
+                                        await loadConversations();
+                                    } catch (e) {
+                                        console.error('Error loading messages', e);
+                                    }
+                                }
+
+                                async function loadPresence() {
+                                    try {
+                                        const data = await apiGet('/api/chat/conversations/presence/');
+                                        const users = Array.isArray(data) ? data : [];
+                                        const online = users.filter(u => u.is_online);
+                                        renderUsers(users);
+                                        if (online.length) {
+                                            presenceSummary.textContent = `${online.length} {{ _("users online") }}`;
+                                        } else {
+                                            presenceSummary.textContent = '{{ _("No users online") }}';
+                                        }
+                                        if (barStatus) {
+                                            if (online.length) {
+                                                barStatus.textContent = `${online.length} {{ _("users online") }}`;
+                                            } else {
+                                                barStatus.textContent = '{{ _("No users online") }}';
+                                            }
+                                        }
+                                    } catch (e) {
+                                        console.error('Error loading presence', e);
+                                        if (barStatus) {
+                                            barStatus.textContent = '{{ _("Chat service unavailable") }}';
+                                        }
+                                        if (presenceSummary) {
+                                            presenceSummary.textContent = '{{ _("Chat service unavailable") }}';
+                                        }
+                                    }
+                                }
+
+                                // Initial load for bar data (online users + unread) even if panel is closed
+                                loadPresence();
+                                loadConversations();
+                                connectChatSocket();
+
+                                // Polling
+                                setInterval(() => {
+                                    // Presence and unread counts should always stay fresh
+                                    loadPresence();
+                                    loadConversations();
+                                    // Only fetch messages when panel is visible and a conversation is selected.
+                                    // When WebSocket is connected we rely on push events instead.
+                                    if (panelVisible && currentConversationId && !chatSocketConnected) {
+                                        loadMessages();
+                                    }
+                                }, 5000);
+
+                                // Typing
+                                messageInput.addEventListener('input', function () {
+                                    if (!currentConversationId) return;
+                                    apiPost(`/api/chat/conversations/${currentConversationId}/typing/`, {});
+                                    typingIndicator.style.display = 'block';
+                                    if (typingTimeout) clearTimeout(typingTimeout);
+                                    typingTimeout = setTimeout(() => {
+                                        typingIndicator.style.display = 'none';
+                                    }, 1500);
+                                });
+
+                                // Send message
+                                messageForm.addEventListener('submit', async function (e) {
+                                    e.preventDefault();
+                                    if (!currentConversationId) return;
+                                    const formData = new FormData();
+                                    formData.append('content', messageInput.value);
+                                    for (const file of attachmentInput.files) {
+                                        formData.append('attachments', file);
+                                    }
+                                    try {
+                                        await apiPost(`/api/chat/conversations/${currentConversationId}/messages/`, formData, true);
+                                        messageInput.value = '';
+                                        attachmentInput.value = '';
+                                        await loadMessages();
+                                    } catch (error) {
+                                        console.error('Error sending chat message', error);
+                                    }
+                                });
+
+                                // Initial load when modal opens
+                                chatBar.addEventListener('click', async function () {
+                                    const nextVisible = !panelVisible;
+                                    setPanelVisible(nextVisible);
+                                    if (nextVisible && !panelInitialized) {
+                                        panelInitialized = true;
+                                        await loadConversations();
+                                        await loadPresence();
+                                    }
+                                }
             });
+        }) ();
+                                {% endif %}
+                                {% endcomment %}
+                            </script>
 
-            // Send message
-            messageForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                if (!currentConversationId) return;
-                const formData = new FormData();
-                formData.append('content', messageInput.value);
-                for (const file of attachmentInput.files) {
-                    formData.append('attachments', file);
-                }
-                try {
-                    await apiPost(`/api/chat/conversations/${currentConversationId}/messages/`, formData, true);
-                    messageInput.value = '';
-                    attachmentInput.value = '';
-                    await loadMessages();
-                } catch (error) {
-                    console.error('Error sending chat message', error);
-                }
-            });
+                            {% if user.is_authenticated %}
+                            <!-- Tenant Chat Widget -->
+                            <script src="{% static 'chat/js/tenant_chat.js' %}"></script>
+                            {% endif %}
 
-            // Initial load when modal opens
-            chatBar.addEventListener('click', async function () {
-                const nextVisible = !panelVisible;
-                setPanelVisible(nextVisible);
-                if (nextVisible && !panelInitialized) {
-                    panelInitialized = true;
-                    await loadConversations();
-                    await loadPresence();
-                }
-                }
-            });
-        })();
-        {% endif %}
-        {% endcomment %}
-    </script>
-    
-    {% if user.is_authenticated %}
-    <!-- Tenant Chat Widget -->
-    <script src="{% static 'chat/js/tenant_chat.js' %}"></script>
-    {% endif %}
-    
-    {% block extra_js %}{% endblock %}
-</body>
+                            {% block extra_js %}{% endblock %}
+                        </body>
+
 </html>
