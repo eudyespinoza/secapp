@@ -88,6 +88,13 @@ services:
       - ./logs:/app/logs
     networks:
       - internal
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.secureapprove-web.rule=Host(`secureapprove.com`) || Host(`www.secureapprove.com`)"
+      - "traefik.http.routers.secureapprove-web.entrypoints=websecure"
+      - "traefik.http.routers.secureapprove-web.tls=true"
+      - "traefik.http.services.secureapprove-web.loadbalancer.server.port=8005"
 
 volumes:
   postgres_data:
