@@ -8,7 +8,7 @@ from django.conf import settings
 print(f"DEBUG: urls.py loaded. LANGUAGES={settings.LANGUAGES}")
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.i18n import set_language
 from django.utils.translation import activate
@@ -18,6 +18,17 @@ from drf_yasg import openapi
 from rest_framework import permissions
 
 from django.views.generic import TemplateView
+import os
+
+# Custom view for Service Worker to avoid TemplateView issues
+def service_worker(request):
+    path = os.path.join(settings.BASE_DIR, 'templates', 'service_worker.js')
+    try:
+        with open(path, 'r') as f:
+            content = f.read()
+        return HttpResponse(content, content_type='application/javascript')
+    except FileNotFoundError:
+        return HttpResponse("/* Service Worker Not Found */", content_type='application/javascript', status=404)
 
 # Health check endpoint
 def health_check(request):
@@ -99,7 +110,7 @@ urlpatterns = [
     path('health/', health_check, name='health'),
     
     # Service Worker
-    path('service-worker.js', TemplateView.as_view(template_name='service_worker.js', content_type='application/javascript'), name='service-worker'),
+    path('service-worker.js', service_worker, name='service-worker'),
     path('webpush/', include('webpush.urls')),
 
     # i18n URLs (custom set_language with URL translation, CSRF-exempt for proxy issues)

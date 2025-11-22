@@ -21,12 +21,22 @@
         }
 
         getVapidKey() {
-            const meta = document.querySelector(`meta[name="${CONFIG.VAPID_META_NAME}"]`);
+            const meta = document.querySelector(`meta[name="${CONFIG.VAPID_META_NAME}"]`) || 
+                         document.getElementById(CONFIG.VAPID_META_NAME);
             return meta ? meta.content : null;
         }
 
         init() {
             if (!this.subscribeButton) return;
+
+            // Check for Secure Context
+            if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                console.warn('[Push] Secure Context (HTTPS) required for Service Workers');
+                this.subscribeButton.addEventListener('click', () => {
+                    alert('Error: Push Notifications require HTTPS. You are accessing via an insecure connection.');
+                });
+                return;
+            }
             
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 console.warn('[Push] Push messaging is not supported');
@@ -36,6 +46,8 @@
 
             if (!this.vapidKey) {
                 console.warn('[Push] VAPID key not found');
+                // Alert for debugging purposes since the user reported "nothing happens"
+                console.error('VAPID key missing. Check {% webpush_header %} in base.html');
                 return;
             }
 

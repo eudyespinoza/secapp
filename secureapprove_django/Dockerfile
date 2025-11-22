@@ -38,6 +38,7 @@ RUN mkdir -p staticfiles media logs
 
 # Verify tenant_chat.js exists before collectstatic
 RUN ls -la apps/chat/static/chat/js/ || echo "Warning: chat/js directory not found"
+RUN ls -la apps/requests/static/requests/js/ || echo "Warning: requests/js directory not found"
 
 # Collect static files (includes tenant_chat.js and all new files)
 RUN python manage.py collectstatic --noinput --clear && \
@@ -47,6 +48,11 @@ RUN python manage.py collectstatic --noinput --clear && \
 RUN ls -la staticfiles/chat/js/tenant_chat.js && \
     echo "✓ tenant_chat.js found in staticfiles" || \
     echo "✗ WARNING: tenant_chat.js NOT found in staticfiles!"
+
+# Verify notifications.js was collected
+RUN ls -la staticfiles/requests/js/notifications.js && \
+    echo "✓ notifications.js found in staticfiles" || \
+    echo "✗ WARNING: notifications.js NOT found in staticfiles!"
 
 # Create non-root user
 RUN adduser --disabled-password --gecos '' django
