@@ -86,6 +86,7 @@ services:
     volumes:
       - ./secureapprove_django/media:/app/media
       - ./logs:/app/logs
+    networks:
       - internal
 
 volumes:
