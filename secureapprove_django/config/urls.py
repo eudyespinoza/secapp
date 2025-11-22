@@ -17,6 +17,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 
+from django.views.generic import TemplateView
+
 # Health check endpoint
 def health_check(request):
     return JsonResponse({"status": "healthy", "service": "secureapprove-django"})
@@ -96,6 +98,10 @@ urlpatterns = [
     # Health check (no i18n)
     path('health/', health_check, name='health'),
     
+    # Service Worker
+    path('service-worker.js', TemplateView.as_view(template_name='service_worker.js', content_type='application/javascript'), name='service-worker'),
+    path('webpush/', include('webpush.urls')),
+
     # i18n URLs (custom set_language with URL translation, CSRF-exempt for proxy issues)
     path('i18n/setlang/', csrf_exempt(custom_set_language), name='set_language'),
     path('i18n/', include('django.conf.urls.i18n')),

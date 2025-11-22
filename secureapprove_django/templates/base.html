@@ -1,9 +1,10 @@
-{% load i18n static %}
+{% load i18n static webpush_notifications %}
 {% get_current_language as CURRENT_LANG %}
 <!DOCTYPE html>
 <html lang="{{ CURRENT_LANG }}" data-theme="light">
 
 <head>
+    {% webpush_header %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SecureApprove{% endblock %}</title>
@@ -1045,6 +1046,9 @@
                                                             href="{% url 'authentication:profile' %}">
                                                             <i class="bi bi-person me-2"></i>{% trans "Profile" %}
                                                         </a></li>
+                                                    <li><button id="webpush-subscribe-button" class="dropdown-item" type="button">
+                                                            <i class="bi bi-bell me-2"></i>{% trans "Enable Notifications" %}
+                                                        </button></li>
                                                     {% if user.can_admin_tenant or user.is_staff or user.is_superuser %}
                                                     {% get_current_language as CURRENT_MENU_LANG %}
                                                     <li><a class="dropdown-item" href="{% url 'tenants:settings' %}">
