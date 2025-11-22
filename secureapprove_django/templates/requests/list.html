@@ -605,19 +605,49 @@
         console.log('Status update received:', data);
         
         // Find the card
-        // We need to find the card that calls openRequestModal(event, id)
         const links = document.querySelectorAll(`a[onclick*="openRequestModal(event, ${data.request_id})"]`);
         if (links.length > 0) {
             const card = links[0].closest('.card');
             if (card) {
+                // 1. Update Status Badge
                 const badge = card.querySelector('.status-badge');
                 if (badge) {
                     badge.className = `status-badge badge bg-${getStatusColor(data.status)}`;
-                    badge.textContent = data.status;
+                    // Capitalize first letter
+                    badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
                 }
                 
-                // Update footer if approved/rejected
-                // This is harder without re-rendering, but we can try
+                // 2. Update Footer
+                const footerDiv = card.querySelector('.mt-auto');
+                if (footerDiv) {
+                    // Remove existing status footer if any
+                    const existingStatusFooter = footerDiv.querySelector('.text-muted.small.mt-1, .text-danger.small.mt-1');
+                    if (existingStatusFooter) {
+                        existingStatusFooter.remove();
+                    }
+
+                    const newFooter = document.createElement('div');
+                    newFooter.className = 'small mt-1';
+                    
+                    if (data.status === 'approved') {
+                        newFooter.className += ' text-muted';
+                        const approverText = data.approver_name ? ` by ${data.approver_name}` : '';
+                        newFooter.innerHTML = `<i class="bi bi-check-circle"></i> Approved${approverText}`;
+                    } else if (data.status === 'rejected') {
+                        newFooter.className += ' text-danger';
+                        newFooter.innerHTML = `<i class="bi bi-x-circle"></i> Rejected`;
+                    }
+                    
+                    footerDiv.appendChild(newFooter);
+                }
+
+                // 3. Visual Highlight
+                card.style.transition = 'background-color 0.5s ease';
+                const originalBg = card.style.backgroundColor;
+                card.style.backgroundColor = '#fff3cd'; // Light yellow highlight
+                setTimeout(() => {
+                    card.style.backgroundColor = originalBg;
+                }, 2000);
             }
         }
     });

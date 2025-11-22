@@ -254,6 +254,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             "request_id": event.get("request_id"),
             "title": event.get("title"),
             "status": event.get("status"),
+            "approver_name": event.get("approver_name"),
             "message": event.get("message"),
         })
 

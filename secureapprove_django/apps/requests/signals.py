@@ -39,6 +39,7 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
     else:
         # Notify requester of status change
         if instance.status in ['approved', 'rejected']:
+            approver_name = instance.approver.get_full_name() if instance.approver else None
             async_to_sync(channel_layer.group_send)(
                 f"user_{instance.requester.id}",
                 {
@@ -46,6 +47,7 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     "request_id": instance.id,
                     "title": instance.title,
                     "status": instance.status,
+                    "approver_name": approver_name,
                     "message": f"Your request '{instance.title}' has been {instance.get_status_display().lower()}."
                 }
             )
