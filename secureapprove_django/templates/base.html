@@ -1850,6 +1850,8 @@
                             {% if user.is_authenticated %}
                             <!-- Tenant Chat Widget -->
                             <script src="{% static 'chat/js/tenant_chat.js' %}"></script>
+                            <!-- Web Push Notifications -->
+                            <script src="{% static 'requests/js/notifications.js' %}"></script>
                             {% endif %}
 
                             {% block extra_js %}{% endblock %}
