@@ -107,7 +107,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h6 class="text-muted mb-1">{% trans "Total Requests" %}</h6>
-                            <h3 class="mb-0">{{ stats.total_requests }}</h3>
+                            <h3 class="mb-0" id="stats-total">{{ stats.total_requests }}</h3>
                         </div>
                         <div class="stats-icon bg-primary text-white">
                             <i class="bi bi-file-text"></i>
@@ -123,7 +123,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h6 class="text-muted mb-1">{% trans "Pending" %}</h6>
-                            <h3 class="mb-0 text-warning">{{ stats.pending_requests }}</h3>
+                            <h3 class="mb-0 text-warning" id="stats-pending">{{ stats.pending_requests }}</h3>
                         </div>
                         <div class="stats-icon bg-warning text-dark">
                             <i class="bi bi-clock"></i>
@@ -139,7 +139,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h6 class="text-muted mb-1">{% trans "Approved" %}</h6>
-                            <h3 class="mb-0 text-success">{{ stats.approved_requests }}</h3>
+                            <h3 class="mb-0 text-success" id="stats-approved">{{ stats.approved_requests }}</h3>
                         </div>
                         <div class="stats-icon bg-success text-white">
                             <i class="bi bi-check-circle"></i>
@@ -155,7 +155,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h6 class="text-muted mb-1">{% trans "My Requests" %}</h6>
-                            <h3 class="mb-0 text-info">{{ stats.my_requests }}</h3>
+                            <h3 class="mb-0 text-info" id="stats-my">{{ stats.my_requests }}</h3>
                         </div>
                         <div class="stats-icon bg-info text-white">
                             <i class="bi bi-person"></i>
@@ -415,6 +415,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
+        }
+    });
+
+    // Real-time Updates
+    window.addEventListener('approval-request-received', function(event) {
+        const data = event.detail;
+        console.log('Dashboard: New request received', data);
+        
+        // Update stats
+        const totalEl = document.getElementById('stats-total');
+        const pendingEl = document.getElementById('stats-pending');
+        
+        if (totalEl) totalEl.textContent = parseInt(totalEl.textContent || 0) + 1;
+        if (pendingEl) pendingEl.textContent = parseInt(pendingEl.textContent || 0) + 1;
+
+        // Reload page after a short delay to update lists and charts
+        // Or we could fetch updated stats via API
+        setTimeout(() => {
+            // Optional: Reload to refresh everything
+            // window.location.reload();
+        }, 2000);
+    });
+
+    window.addEventListener('approval-status-received', function(event) {
+        const data = event.detail;
+        console.log('Dashboard: Status update received', data);
+        
+        // Update stats logic (simplified)
+        const pendingEl = document.getElementById('stats-pending');
+        const approvedEl = document.getElementById('stats-approved');
+        
+        if (data.status === 'approved') {
+            if (pendingEl) pendingEl.textContent = Math.max(0, parseInt(pendingEl.textContent || 0) - 1);
+            if (approvedEl) approvedEl.textContent = parseInt(approvedEl.textContent || 0) + 1;
+        } else if (data.status === 'rejected') {
+            if (pendingEl) pendingEl.textContent = Math.max(0, parseInt(pendingEl.textContent || 0) - 1);
         }
     });
 });

@@ -330,7 +330,7 @@
         requestModal.show();
 
         // Fetch details
-        fetch(`/requests/api/requests/${requestId}/`)
+        fetch(`/dashboard/api/requests/${requestId}/`)
             .then(response => response.json())
             .then(data => {
                 // Populate Modal
@@ -548,7 +548,7 @@
         console.log('New request notification received:', notificationData);
         
         // Fetch full details to render the card correctly
-        fetch(`/requests/api/requests/${notificationData.request_id}/`)
+        fetch(`/dashboard/api/requests/${notificationData.request_id}/`)
             .then(response => response.json())
             .then(data => {
                 const container = document.querySelector('.row') || document.getElementById('requests-container');
