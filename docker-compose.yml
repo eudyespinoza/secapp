@@ -97,6 +97,58 @@ services:
       - "traefik.http.services.secureapprove-web.loadbalancer.server.port=8005"
       - "traefik.docker.network=traefik_proxy"
 
+  # Celery Worker
+  celery:
+    build: 
+      context: ./secureapprove_django
+      dockerfile: Dockerfile
+    container_name: secureapprove_celery
+    command: celery -A config worker -l info
+    restart: unless-stopped
+    environment:
+      # Database
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: secureapprove
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      
+      # Redis
+      REDIS_URL: redis://redis:6379/1
+      
+      # Django
+      DEBUG: "False"
+      SECRET_KEY: "sdkfnklnrvknlrberggerg"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
+      
+      # Security
+      WEBAUTHN_RP_NAME: "SecureApprove"
+      WEBAUTHN_RP_ID: "secureapprove.com"
+      WEBAUTHN_ORIGIN: "https://secureapprove.com"
+      
+      # Email
+      EMAIL_HOST: "smtp.gmail.com"
+      EMAIL_PORT: "587"
+      EMAIL_USE_TLS: "True"
+      EMAIL_HOST_USER: ""
+      EMAIL_HOST_PASSWORD: ""
+      DEFAULT_FROM_EMAIL: "noreply@secureapprove.com"
+      
+      # Billing
+      MERCADOPAGO_ACCESS_TOKEN: ""
+      MERCADOPAGO_WEBHOOK_URL: "https://api.secureapprove.com/api/billing/webhooks/mercadopago/"
+    
+    volumes:
+      - ./secureapprove_django/media:/app/media
+      - ./logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+
 volumes:
   postgres_data:
     driver: local

@@ -305,6 +305,14 @@ WEBPUSH_SETTINGS = {
     "VAPID_ADMIN_EMAIL": config('VAPID_ADMIN_EMAIL', default='admin@secureapprove.com'),
 }
 
+# Celery Configuration
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
 # Environment-specific settings
 if DEBUG:
     INSTALLED_APPS += ['django_extensions', 'debug_toolbar']

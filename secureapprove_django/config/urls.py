@@ -30,6 +30,16 @@ def service_worker(request):
     except FileNotFoundError:
         return HttpResponse("/* Service Worker Not Found */", content_type='application/javascript', status=404)
 
+# Custom view for Manifest
+def manifest(request):
+    path = os.path.join(settings.BASE_DIR, 'templates', 'manifest.json')
+    try:
+        with open(path, 'r') as f:
+            content = f.read()
+        return HttpResponse(content, content_type='application/manifest+json')
+    except FileNotFoundError:
+        return HttpResponse("{}", content_type='application/manifest+json', status=404)
+
 # Health check endpoint
 def health_check(request):
     return JsonResponse({"status": "healthy", "service": "secureapprove-django"})
@@ -111,6 +121,7 @@ urlpatterns = [
     
     # Service Worker
     path('service-worker.js', service_worker, name='service-worker'),
+    path('manifest.json', manifest, name='manifest'),
     path('webpush/', include('webpush.urls')),
 
     # i18n URLs (custom set_language with URL translation, CSRF-exempt for proxy issues)

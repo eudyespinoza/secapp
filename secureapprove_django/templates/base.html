@@ -5,6 +5,7 @@
 
 <head>
     {% webpush_header %}
+    <link rel="manifest" href="/manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SecureApprove{% endblock %}</title>
@@ -1640,221 +1641,127 @@
                                     }
 
                                     messages.forEach(msg => {
-                                        const isMine = CURRENT_USER_ID !== null && msg.sender_id === CURRENT_USER_ID;
-                                        const wrapper = document.createElement('div');
-                                        wrapper.className = 'tenant-chat-message ' + (isMine ? 'me' : 'other');
-
+                                        const isMe = msg.sender_id === CURRENT_USER_ID;
                                         const bubble = document.createElement('div');
-                                        bubble.className = 'tenant-chat-bubble';
-
-                                        const header = document.createElement('div');
-                                        header.className = 'fw-semibold';
-                                        header.textContent = msg.sender_name || '';
-
-                                        if (msg.content) {
-                                            const body = document.createElement('div');
-                                            body.textContent = msg.content;
-                                            bubble.appendChild(body);
-                                        }
-
-                                        const attachments = Array.isArray(msg.attachments) ? msg.attachments : [];
-                                        if (attachments.length) {
-                                            const attachmentsContainer = document.createElement('div');
-                                            attachmentsContainer.className = 'tenant-chat-attachments mt-1';
-                                            attachments.forEach(att => {
-                                                if (!att || !att.file) return;
-                                                const link = document.createElement('a');
-                                                link.href = att.file;
-                                                link.target = '_blank';
-                                                link.rel = 'noopener noreferrer';
-                                                link.textContent = att.filename || '{{ _("Attachment") }}';
-                                                attachmentsContainer.appendChild(link);
-                                            });
-                                            bubble.appendChild(attachmentsContainer);
-                                        }
-
-                                        const meta = document.createElement('div');
-                                        meta.className = 'tenant-chat-meta';
-                                        const timeLabel = formatChatTime(msg.created_at);
-                                        const statusLabel = msg.status || '';
-                                        meta.textContent = [timeLabel, statusLabel].filter(Boolean).join(' · ');
-
-                                        bubble.prepend(header);
-                                        bubble.appendChild(meta);
-
-                                        wrapper.appendChild(bubble);
-                                        messageContainer.appendChild(wrapper);
-                                        lastMessageId = msg.id;
-                                    });
-                                    if (messages.length) {
-                                        messageContainer.scrollTop = messageContainer.scrollHeight;
-                                    }
-                                }
-
-                                async function loadConversations() {
-                                    try {
-                                        const data = await apiGet('/api/chat/conversations/');
-                                        const conversations = Array.isArray(data) ? data : [];
-                                        // Sort by last message date desc if available
-                                        conversations.sort((a, b) => {
-                                            const da = a.last_message && a.last_message.created_at ? new Date(a.last_message.created_at) : new Date(0);
-                                            const db = b.last_message && b.last_message.created_at ? new Date(b.last_message.created_at) : new Date(0);
-                                            return db - da;
-                                        });
-                                        renderConversations(conversations);
-                                    } catch (e) {
-                                        console.error('Error loading conversations', e);
-                                        if (barStatus) {
-                                            barStatus.textContent = '{{ _("Chat service unavailable") }}';
-                                        }
-                                    }
-                                }
-
-                                async function startConversation(userId) {
-                                    try {
-                                        const data = await apiPost('/api/chat/conversations/start/', {
-                                            participant_id: userId
-                                        });
-                                        if (data && data.id) {
-                                            await loadConversations();
-                                            await openConversation(data.id, data.title);
-                                        }
-                                    } catch (e) {
-                                        // Silently ignore for now; could add toast
-                                        console.error('Error starting conversation', e);
-                                    }
-                                }
-
-                                async function openConversation(id, title) {
-                                    currentConversationId = id;
-                                    lastMessageId = null;
-                                    messageContainer.innerHTML = '';
-                                    if (title) {
-                                        currentConversationTitle.textContent = title;
-                                    } else {
-                                        currentConversationTitle.textContent = '{{ _("Conversation") }} ' + id.substring(0, 8);
-                                    }
-                                    await loadMessages();
-                                }
-
-                                async function loadMessages() {
-                                    if (!currentConversationId) return;
-                                    let url = `/api/chat/conversations/${currentConversationId}/messages/`;
-                                    if (lastMessageId) {
-                                        url += `?since_id=${lastMessageId}`;
-                                    }
-                                    try {
-                                        const data = await apiGet(url);
-                                        const messages = Array.isArray(data) ? data : [];
-                                        renderMessages(messages);
-                                        // Mark messages as read for current user
-                                        await apiPost(`/api/chat/conversations/${currentConversationId}/mark_read/`, {});
-                                        await loadConversations();
-                                    } catch (e) {
-                                        console.error('Error loading messages', e);
-                                    }
-                                }
-
-                                async function loadPresence() {
-                                    try {
-                                        const data = await apiGet('/api/chat/conversations/presence/');
-                                        const users = Array.isArray(data) ? data : [];
-                                        const online = users.filter(u => u.is_online);
-                                        renderUsers(users);
-                                        if (online.length) {
-                                            presenceSummary.textContent = `${online.length} {{ _("users online") }}`;
+                                        bubble.className = `tenant-chat-bubble ${isMe ? 'me' : 'other'}`;
+                                        bubble.innerHTML = `
+                                            <div class="tenant-chat-message-content">
+                                                ${msg.content}
+                                            </div>
+                                            <div class="tenant-chat-meta">
+                                                ${formatChatTime(msg.created_at)}
+                                            </div>
+                                        `;
+                                        if (isMe) {
+                                            bubble.classList.add('me');
                                         } else {
-                                            presenceSummary.textContent = '{{ _("No users online") }}';
+                                            bubble.classList.remove('me');
                                         }
-                                        if (barStatus) {
-                                            if (online.length) {
-                                                barStatus.textContent = `${online.length} {{ _("users online") }}`;
-                                            } else {
-                                                barStatus.textContent = '{{ _("No users online") }}';
+                                        messageContainer.appendChild(bubble);
+                                    });
+
+                                    // Scroll to the bottom of the messages container
+                                    messageContainer.scrollTop = messageContainer.scrollHeight;
+                                }
+
+                                function openConversation(convId, convTitle) {
+                                    if (currentConversationId === convId) {
+                                        // If the conversation is already open, do nothing
+                                        return;
+                                    }
+
+                                    currentConversationId = convId;
+                                    const isGroup = convTitle && convTitle.includes(',');
+                                    const title = isGroup ? convTitle.split(',')[0] : convTitle;
+
+                                    // Update the active conversation title
+                                    const titleElement = document.getElementById('widgetCurrentConversationTitle');
+                                    if (titleElement) {
+                                        titleElement.textContent = title || '{{ _("Conversation") }}';
+                                    }
+
+                                    // Show typing indicator
+                                    const typingIndicator = document.getElementById('widgetTypingIndicator');
+                                    if (typingIndicator) {
+                                        typingIndicator.style.display = 'flex';
+                                    }
+
+                                    // Load messages for the selected conversation
+                                    apiGet(`/api/chat/conversations/${convId}/messages/`)
+                                        .then(data => {
+                                            renderMessages(data.messages);
+                                            // Hide typing indicator
+                                            if (typingIndicator) {
+                                                typingIndicator.style.display = 'none';
                                             }
-                                        }
-                                    } catch (e) {
-                                        console.error('Error loading presence', e);
-                                        if (barStatus) {
-                                            barStatus.textContent = '{{ _("Chat service unavailable") }}';
-                                        }
-                                        if (presenceSummary) {
-                                            presenceSummary.textContent = '{{ _("Chat service unavailable") }}';
-                                        }
-                                    }
+                                        })
+                                        .catch(err => {
+                                            console.error('Error loading messages', err);
+                                            // Hide typing indicator on error
+                                            if (typingIndicator) {
+                                                typingIndicator.style.display = 'none';
+                                            }
+                                        });
+
+                                    // Mark conversation as read
+                                    apiPost(`/api/chat/conversations/${convId}/mark_read/`, {});
+
+                                    // Update URL without reloading the page
+                                    history.pushState(null, '', `?conversation=${convId}`);
                                 }
 
-                                // Initial load for bar data (online users + unread) even if panel is closed
-                                loadPresence();
-                                loadConversations();
-                                connectChatSocket();
-
-                                // Polling
-                                setInterval(() => {
-                                    // Presence and unread counts should always stay fresh
-                                    loadPresence();
-                                    loadConversations();
-                                    // Only fetch messages when panel is visible and a conversation is selected.
-                                    // When WebSocket is connected we rely on push events instead.
-                                    if (panelVisible && currentConversationId && !chatSocketConnected) {
-                                        loadMessages();
+                                // Initial load: check if a conversation ID is in the URL
+                                (function () {
+                                    const urlParams = new URLSearchParams(window.location.search);
+                                    const convId = urlParams.get('conversation');
+                                    if (convId) {
+                                        openConversation(convId);
                                     }
-                                }, 5000);
-
-                                // Typing
-                                messageInput.addEventListener('input', function () {
-                                    if (!currentConversationId) return;
-                                    apiPost(`/api/chat/conversations/${currentConversationId}/typing/`, {});
-                                    typingIndicator.style.display = 'block';
-                                    if (typingTimeout) clearTimeout(typingTimeout);
-                                    typingTimeout = setTimeout(() => {
-                                        typingIndicator.style.display = 'none';
-                                    }, 1500);
-                                });
-
-                                // Send message
-                                messageForm.addEventListener('submit', async function (e) {
-                                    e.preventDefault();
-                                    if (!currentConversationId) return;
-                                    const formData = new FormData();
-                                    formData.append('content', messageInput.value);
-                                    for (const file of attachmentInput.files) {
-                                        formData.append('attachments', file);
-                                    }
-                                    try {
-                                        await apiPost(`/api/chat/conversations/${currentConversationId}/messages/`, formData, true);
-                                        messageInput.value = '';
-                                        attachmentInput.value = '';
-                                        await loadMessages();
-                                    } catch (error) {
-                                        console.error('Error sending chat message', error);
-                                    }
-                                });
-
-                                // Initial load when modal opens
-                                chatBar.addEventListener('click', async function () {
-                                    const nextVisible = !panelVisible;
-                                    setPanelVisible(nextVisible);
-                                    if (nextVisible && !panelInitialized) {
-                                        panelInitialized = true;
-                                        await loadConversations();
-                                        await loadPresence();
-                                    }
-                                }
-            });
-        }) ();
-                                {% endif %}
-                                {% endcomment %}
+                                })();
                             </script>
 
-                            {% if user.is_authenticated %}
-                            <!-- Tenant Chat Widget -->
-                            <script src="{% static 'chat/js/tenant_chat.js' %}"></script>
                             <!-- Web Push Notifications -->
                             <script src="{% static 'requests/js/notifications.js' %}"></script>
+                            
+                            <!-- iOS PWA Prompt -->
+                            <script>
+                                // Detect iOS
+                                const isIos = () => {
+                                    const userAgent = window.navigator.userAgent.toLowerCase();
+                                    return /iphone|ipad|ipod/.test(userAgent);
+                                }
+                                // Detects if device is in standalone mode
+                                const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+                                if (isIos() && !isInStandaloneMode()) {
+                                    // Show "Add to Home Screen" prompt
+                                    const toastContainer = document.getElementById('tenantChatToastContainer') || document.body;
+                                    const toastHtml = `
+                                        <div class="tenant-chat-toast show" style="position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 9999; background: white; border: 1px solid #e5e7eb; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                                            <div class="tenant-chat-toast-icon">
+                                                <i class="bi bi-share"></i>
+                                            </div>
+                                            <div>
+                                                <div class="tenant-chat-toast-title">Install App</div>
+                                                <div class="tenant-chat-toast-body">
+                                                    Tap <i class="bi bi-share"></i> then "Add to Home Screen" for the best experience.
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn-close ms-auto" onclick="this.parentElement.remove()"></button>
+                                        </div>
+                                    `;
+                                    
+                                    if (document.getElementById('tenantChatToastContainer')) {
+                                        document.getElementById('tenantChatToastContainer').insertAdjacentHTML('beforeend', toastHtml);
+                                    } else {
+                                        const div = document.createElement('div');
+                                        div.innerHTML = toastHtml;
+                                        document.body.appendChild(div);
+                                    }
+                                }
+                            </script>
                             {% endif %}
 
                             {% block extra_js %}{% endblock %}
                         </body>
-
-</html>
+                    </html>
