@@ -9,6 +9,9 @@ from crispy_forms.layout import Layout, Fieldset, Row, Column, Submit, HTML
 from crispy_forms.bootstrap import Field
 from .models import ApprovalRequest
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
 class DynamicRequestForm(forms.ModelForm):
     """
     Dynamic form that shows/hides fields based on request category
@@ -91,6 +94,13 @@ class DynamicRequestForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Explain the reason for this request')})
     )
     
+    attachments = forms.FileField(
+        label=_('Attachments'),
+        required=False,
+        widget=MultipleFileInput(attrs={'multiple': True, 'class': 'form-control'}),
+        help_text=_('You can select multiple files. Max size 25MB per file.')
+    )
+    
     class Meta:
         model = ApprovalRequest
         fields = ['title', 'description', 'category', 'priority', 'amount']
@@ -146,7 +156,7 @@ class DynamicRequestForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'needs-validation'
-        self.helper.attrs = {'novalidate': True}
+        self.helper.attrs = {'novalidate': True, 'enctype': 'multipart/form-data'}
         
         self.helper.layout = Layout(
             Fieldset(
@@ -160,6 +170,7 @@ class DynamicRequestForm(forms.ModelForm):
                     Column('category', css_class='col-md-6'),
                     Column('amount', css_class='col-md-6', css_id='amount-field'),
                 ),
+                'attachments',
             ),
             
             # Dynamic fields container
@@ -277,6 +288,13 @@ class DynamicRequestForm(forms.ModelForm):
             if start_date and end_date and start_date > end_date:
                 self.add_error('end_date', _('End date must be after start date.'))
         
+        # Validate attachments size
+        if self.files:
+            attachments = self.files.getlist('attachments')
+            for file in attachments:
+                if file.size > 25 * 1024 * 1024:
+                    self.add_error('attachments', _('File {} is too large. Max size is 25MB.').format(file.name))
+
         return cleaned_data
     
     def save(self, commit=True):

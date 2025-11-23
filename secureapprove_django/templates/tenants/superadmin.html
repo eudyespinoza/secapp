@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Super Admin - Tenant Management" %} - SecureApprove{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">{% trans "Tenant Administration" %}</h1>
+            <p class="text-muted mb-0">{% trans "Manage tenants, plans, and administrators." %}</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTenantModal">
+            <i class="bi bi-plus-lg me-2"></i>{% trans "Create Tenant" %}
+        </button>
+    </div>
+
+    <!-- Pricing Info Card (Collapsible) -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent py-2 d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#pricingInfo" style="cursor: pointer;">
+            <h6 class="mb-0 text-primary"><i class="bi bi-info-circle me-2"></i>{% trans "Pricing Reference" %}</h6>
+            <i class="bi bi-chevron-down text-muted"></i>
+        </div>
+        <div class="collapse" id="pricingInfo">
+            <div class="card-body bg-light">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded bg-white">
+                            <h6 class="fw-bold">2 - 6 {% trans "Users" %}</h6>
+                            <div class="display-6 text-primary">$60</div>
+                            <small class="text-muted">{% trans "USD / user / month" %}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded bg-white">
+                            <h6 class="fw-bold">7 - 12 {% trans "Users" %}</h6>
+                            <div class="display-6 text-primary">$55</div>
+                            <small class="text-muted">{% trans "USD / user / month" %}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded bg-white">
+                            <h6 class="fw-bold">12+ {% trans "Users" %}</h6>
+                            <div class="display-6 text-primary">$50</div>
+                            <small class="text-muted">{% trans "USD / user / month" %}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tenants Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3">{% trans "Tenant" %}</th>
+                            <th class="py-3">{% trans "Plan" %}</th>
+                            <th class="py-3">{% trans "Status" %}</th>
+                            <th class="py-3">{% trans "Seats" %}</th>
+                            <th class="py-3">{% trans "Approvers" %}</th>
+                            <th class="text-end pe-4 py-3">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tenant in tenants %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: bold;">
+                                        {{ tenant.name|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ tenant.name }}</div>
+                                        <small class="text-muted font-monospace">{{ tenant.key }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border fw-normal">{{ tenant.plan_display }}</span>
+                            </td>
+                            <td>
+                                <span class="badge {% if tenant.status == 'active' %}bg-success{% else %}bg-secondary{% endif %} bg-opacity-10 text-{% if tenant.status == 'active' %}success{% else %}secondary{% endif %} border border-{% if tenant.status == 'active' %}success{% else %}secondary{% endif %} border-opacity-25">
+                                    {{ tenant.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 6px; width: 60px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {% widthratio tenant.used_seats tenant.seats 100 %}%;" aria-valuenow="{{ tenant.used_seats }}" aria-valuemin="0" aria-valuemax="{{ tenant.seats }}"></div>
+                                    </div>
+                                    <small class="text-muted">{{ tenant.used_seats }}/{{ tenant.seats }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ tenant.approvers_count }} / 
+                                    {% if tenant.approver_limit > 100 %}∞{% else %}{{ tenant.approver_limit }}{% endif %}
+                                </small>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        <li>
+                                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editTenantModal{{ tenant.id }}">
+                                                <i class="bi bi-pencil me-2 text-muted"></i>{% trans "Edit Tenant" %}
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#inviteModal{{ tenant.id }}">
+                                                <i class="bi bi-envelope me-2 text-muted"></i>{% trans "Invite Admin" %}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Edit Modal -->
+                                <div class="modal fade text-start" id="editTenantModal{{ tenant.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{% trans "Edit Tenant" %}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form method="post">
+                                                <div class="modal-body">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="edit_tenant">
+                                                    <input type="hidden" name="tenant_id" value="{{ tenant.id }}">
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label">{% trans "Name" %}</label>
+                                                        <input type="text" name="name" class="form-control" value="{{ tenant.name }}" required>
+                                                    </div>
+                                                    
+                                                    <div class="row g-3 mb-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">{% trans "Plan" %}</label>
+                                                            <select name="plan_id" class="form-select">
+                                                                {% for code, label in plans %}
+                                                                    <option value="{{ code }}" {% if tenant.plan_id == code %}selected{% endif %}>{{ label }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">{% trans "Status" %}</label>
+                                                            <select name="status" class="form-select">
+                                                                {% for code, label in statuses %}
+                                                                    <option value="{{ code }}" {% if tenant.status == code %}selected{% endif %}>{{ label }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">{% trans "Max Users (Seats)" %}</label>
+                                                        <input type="number" name="seats" class="form-control" value="{{ tenant.seats }}" min="1" required>
+                                                        <div class="form-text">{% trans "Manually set the maximum number of users allowed." %}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                                    <button type="submit" class="btn btn-primary">{% trans "Save Changes" %}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Invite Modal -->
+                                <div class="modal fade text-start" id="inviteModal{{ tenant.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{% trans "Invite Primary Admin" %}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form method="post">
+                                                <div class="modal-body">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="invite_primary">
+                                                    <input type="hidden" name="tenant_id" value="{{ tenant.id }}">
+                                                    
+                                                    <p>{% trans "Invite a user to be the Tenant Admin for" %} <strong>{{ tenant.name }}</strong>.</p>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label">{% trans "Email Address" %}</label>
+                                                        <input type="email" name="email" class="form-control" required>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                                    <button type="submit" class="btn btn-primary">{% trans "Send Invitation" %}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-building display-4 mb-3 d-block opacity-50"></i>
+                                {% trans "No tenants found." %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Tenant Modal -->
+<div class="modal fade" id="createTenantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Create New Tenant" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_tenant">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Name" %}</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Key (Slug)" %}</label>
+                        <input type="text" name="key" class="form-control" required pattern="[a-z0-9-_]+" title="Lowercase letters, numbers, hyphens and underscores only">
+                        <div class="form-text">{% trans "Unique identifier for the tenant (e.g. company-name)" %}</div>
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Plan" %}</label>
+                            <select name="plan_id" class="form-select">
+                                {% for code, label in plans %}
+                                    <option value="{{ code }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Status" %}</label>
+                            <select name="status" class="form-select">
+                                {% for code, label in statuses %}
+                                    <option value="{{ code }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Max Users (Seats)" %}</label>
+                        <input type="number" name="seats" class="form-control" value="5" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Create Tenant" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

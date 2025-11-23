@@ -73,9 +73,23 @@ def create_request(request):
     """Create a new approval request"""
     
     if request.method == 'POST':
-        form = DynamicRequestForm(request.POST, user=request.user)
+        form = DynamicRequestForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             approval_request = form.save()
+            
+            # Handle attachments
+            files = request.FILES.getlist('attachments')
+            from .models import RequestAttachment
+            
+            for f in files:
+                RequestAttachment.objects.create(
+                    request=approval_request,
+                    file=f,
+                    filename=f.name,
+                    file_size=f.size,
+                    content_type=f.content_type
+                )
+            
             messages.success(
                 request, 
                 _('Your request "{}" has been submitted successfully.').format(approval_request.title)

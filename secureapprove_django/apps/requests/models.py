@@ -207,3 +207,28 @@ class ApprovalRequest(models.Model):
         
         self.status = 'cancelled'
         self.save()
+
+
+class RequestAttachment(models.Model):
+    """
+    Attachment for an approval request
+    """
+    request = models.ForeignKey(
+        ApprovalRequest,
+        on_delete=models.CASCADE,
+        related_name='attachments',
+        verbose_name=_('Request')
+    )
+    file = models.FileField(_('File'), upload_to='attachments/%Y/%m/%d/')
+    filename = models.CharField(_('Filename'), max_length=255)
+    file_size = models.PositiveIntegerField(_('File Size'))
+    content_type = models.CharField(_('Content Type'), max_length=100)
+    uploaded_at = models.DateTimeField(_('Uploaded At'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Request Attachment')
+        verbose_name_plural = _('Request Attachments')
+        ordering = ['uploaded_at']
+
+    def __str__(self):
+        return self.filename

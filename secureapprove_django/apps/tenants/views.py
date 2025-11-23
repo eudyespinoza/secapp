@@ -11,7 +11,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.requests.models import ApprovalRequest
-from .models import TenantUserInvite
+from .models import Tenant, TenantUserInvite
 from .utils import ensure_user_tenant
 
 User = get_user_model()
@@ -312,3 +312,140 @@ class TenantInviteAcceptView(View):
             _("Welcome! Your invitation has been accepted and your account is ready."),
         )
         return redirect("requests:dashboard")
+
+
+class SuperAdminTenantView(LoginRequiredMixin, View):
+    """
+    Super Admin view to manage tenants and invite primary users.
+    Restricted to specific superadmin email.
+    """
+    template_name = "tenants/superadmin.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        # Hardcoded security check as requested
+        if request.user.email != "eudyespinoza@gmail.com":
+             return redirect("landing:index")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        tenants = Tenant.objects.all().order_by("-created_at")
+        return render(request, self.template_name, {
+            "tenants": tenants,
+            "plans": Tenant.PLAN_CHOICES,
+            "statuses": Tenant.STATUS_CHOICES,
+        })
+
+    def post(self, request):
+        action = request.POST.get("action")
+        
+        if action == "create_tenant":
+            name = request.POST.get("name")
+            key = request.POST.get("key")
+            plan_id = request.POST.get("plan_id")
+            status = request.POST.get("status")
+            seats = request.POST.get("seats")
+            
+            if not all([name, key, plan_id, status, seats]):
+                messages.error(request, _("All fields are required."))
+                return redirect("tenants:superadmin")
+                
+            if Tenant.objects.filter(key=key).exists():
+                messages.error(request, _("Tenant key already exists."))
+                return redirect("tenants:superadmin")
+                
+            # Set limits based on plan
+            approver_limit = 2
+            if plan_id == 'growth':
+                approver_limit = 6
+            elif plan_id == 'scale':
+                approver_limit = 999
+                
+            Tenant.objects.create(
+                name=name,
+                key=key,
+                plan_id=plan_id,
+                status=status,
+                seats=int(seats),
+                approver_limit=approver_limit,
+                is_active=(status == 'active')
+            )
+            messages.success(request, _("Tenant created successfully."))
+
+        elif action == "edit_tenant":
+            tenant_id = request.POST.get("tenant_id")
+            name = request.POST.get("name")
+            plan_id = request.POST.get("plan_id")
+            status = request.POST.get("status")
+            seats = request.POST.get("seats")
+            
+            tenant = get_object_or_404(Tenant, id=tenant_id)
+            tenant.name = name
+            tenant.plan_id = plan_id
+            tenant.status = status
+            if seats:
+                tenant.seats = int(seats)
+            tenant.is_active = (status == 'active')
+            
+            # Update approver limit based on plan
+            if plan_id == 'starter':
+                tenant.approver_limit = 2
+            elif plan_id == 'growth':
+                tenant.approver_limit = 6
+            elif plan_id == 'scale':
+                tenant.approver_limit = 999
+                
+            tenant.save()
+            messages.success(request, _("Tenant updated successfully."))
+            
+        elif action == "invite_primary":
+            tenant_id = request.POST.get("tenant_id")
+            email = request.POST.get("email")
+            
+            if not all([tenant_id, email]):
+                messages.error(request, _("Tenant and Email are required."))
+                return redirect("tenants:superadmin")
+                
+            tenant = get_object_or_404(Tenant, id=tenant_id)
+            
+            from secrets import token_urlsafe
+            
+            invite, created = TenantUserInvite.objects.update_or_create(
+                tenant=tenant,
+                email=email,
+                status="pending",
+                defaults={
+                    "role": "tenant_admin", # Primary user is admin
+                    "token": token_urlsafe(32),
+                    "expires_at": timezone.now() + timezone.timedelta(days=7),
+                    "created_by": request.user,
+                },
+            )
+            
+            # Send email
+            invite_url = request.build_absolute_uri(
+                reverse("tenants:invite_accept", args=[invite.token])
+            )
+            
+            if getattr(settings, "EMAIL_HOST", None):
+                from django.core.mail import send_mail
+                subject = _("You have been invited to manage '%(tenant)s'") % {"tenant": tenant.name}
+                message = _(
+                    "You have been invited to be the administrator for tenant '%(tenant)s' on SecureApprove.\n\n"
+                    "To accept the invitation and set up your account, please click the following link:\n\n"
+                    "%(url)s\n\n"
+                ) % {"tenant": tenant.name, "url": invite_url}
+                
+                try:
+                    send_mail(
+                        subject,
+                        message,
+                        getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@secureapprove.com"),
+                        [email],
+                        fail_silently=True,
+                    )
+                except Exception:
+                    pass
+            
+            messages.success(request, _("Invitation sent to %(email)s") % {"email": email})
+
+        return redirect("tenants:superadmin")

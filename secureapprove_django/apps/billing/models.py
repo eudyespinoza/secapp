@@ -18,6 +18,9 @@ class Plan(models.Model):
         ('starter', _('Starter')),
         ('growth', _('Growth')),
         ('scale', _('Scale')),
+        ('tier_1', _('Small Team')),
+        ('tier_2', _('Medium Team')),
+        ('tier_3', _('Large Team')),
     ]
     
     name = models.CharField(max_length=100, choices=PLAN_TYPES, unique=True)

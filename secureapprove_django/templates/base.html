@@ -1079,6 +1079,12 @@
                                                             {% if CURRENT_MENU_LANG == 'es' %}Configuracion del Tenant{% elif CURRENT_MENU_LANG == 'pt-br' %}Configuracao do Tenant{% else %}Tenant Settings{% endif %}
                                                         </a></li>
                                                     {% endif %}
+                                                    {% if user.email == 'eudyespinoza@gmail.com' %}
+                                                    <li><a class="dropdown-item" href="{% url 'tenants:superadmin' %}">
+                                                            <i class="bi bi-shield-lock me-2"></i>
+                                                            Administrar Tenants
+                                                        </a></li>
+                                                    {% endif %}
                                                     {% if user.is_staff or user.is_superuser %}
                                                     <li><a class="dropdown-item" href="/admin/">
                                                             <i class="bi bi-gear me-2"></i>{% trans "Administration" %}
