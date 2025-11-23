@@ -34,6 +34,11 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                         "request_id": instance.id,
                         "title": instance.title,
                         "requester_name": instance.requester.get_full_name(),
+                        "status": instance.status,
+                        "status_display": instance.get_status_display(),
+                        "priority": instance.priority,
+                        "category_display": instance.get_category_display(),
+                        "created_at": instance.created_at.isoformat(),
                         "message": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title)
                     }
                 )
@@ -61,6 +66,7 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     "request_id": instance.id,
                     "title": instance.title,
                     "status": instance.status,
+                    "status_display": status_display,
                     "approver_name": approver_name,
                     "message": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower())
                 }

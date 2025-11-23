@@ -241,6 +241,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             "request_id": event.get("request_id"),
             "title": event.get("title"),
             "requester_name": event.get("requester_name"),
+            "status": event.get("status"),
+            "status_display": event.get("status_display"),
+            "priority": event.get("priority"),
+            "category_display": event.get("category_display"),
+            "created_at": event.get("created_at"),
             "message": event.get("message"),
         })
 
@@ -254,6 +259,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             "request_id": event.get("request_id"),
             "title": event.get("title"),
             "status": event.get("status"),
+            "status_display": event.get("status_display"),
             "approver_name": event.get("approver_name"),
             "message": event.get("message"),
         })

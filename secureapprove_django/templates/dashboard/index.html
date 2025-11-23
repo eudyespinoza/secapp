@@ -247,9 +247,9 @@
                         {% trans "Recent Requests" %}
                     </h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body" id="recent-requests-container">
                     {% for request in recent_requests %}
-                        <div class="recent-request-item {{ request.status }}">
+                        <div class="recent-request-item {{ request.status }}" id="request-{{ request.pk }}">
                             <div class="d-flex justify-content-between align-items-start mb-1">
                                 <h6 class="mb-0">
                                     <a href="{% url 'requests:detail' request.pk %}" class="text-decoration-none">
@@ -266,7 +266,7 @@
                             <div class="priority-bar priority-{{ request.priority }}"></div>
                         </div>
                     {% empty %}
-                        <div class="text-center py-3">
+                        <div class="text-center py-3" id="no-requests-message">
                             <i class="bi bi-inbox display-4 text-muted"></i>
                             <p class="text-muted mb-0">{% trans "No requests yet" %}</p>
                         </div>
@@ -430,12 +430,46 @@ document.addEventListener('DOMContentLoaded', function() {
         if (totalEl) totalEl.textContent = parseInt(totalEl.textContent || 0) + 1;
         if (pendingEl) pendingEl.textContent = parseInt(pendingEl.textContent || 0) + 1;
 
-        // Reload page after a short delay to update lists and charts
-        // Or we could fetch updated stats via API
-        setTimeout(() => {
-            // Optional: Reload to refresh everything
-            // window.location.reload();
-        }, 2000);
+        // Add to Recent Requests list
+        const container = document.getElementById('recent-requests-container');
+        const noRequestsMsg = document.getElementById('no-requests-message');
+        
+        if (container) {
+            if (noRequestsMsg) {
+                noRequestsMsg.remove();
+            }
+            
+            const statusClass = data.status === 'approved' ? 'success' : (data.status === 'rejected' ? 'danger' : 'warning');
+            const priorityClass = data.priority || 'medium';
+            const title = data.title.length > 25 ? data.title.substring(0, 25) + '...' : data.title;
+            
+            const newItemHtml = `
+                <div class="recent-request-item ${data.status || 'pending'}" id="request-${data.request_id}">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h6 class="mb-0">
+                            <a href="/dashboard/requests/${data.request_id}/" class="text-decoration-none">
+                                ${title}
+                            </a>
+                        </h6>
+                        <span class="badge bg-${statusClass} ms-2">
+                            ${data.status_display || 'Pending'}
+                        </span>
+                    </div>
+                    <small class="text-muted">
+                        ${data.category_display || 'General'} • {% trans "Just now" %}
+                    </small>
+                    <div class="priority-bar priority-${priorityClass}"></div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('afterbegin', newItemHtml);
+            
+            // Limit to 5 items (optional, but good for UI)
+            const items = container.querySelectorAll('.recent-request-item');
+            if (items.length > 5) {
+                items[items.length - 1].remove();
+            }
+        }
     });
 
     window.addEventListener('approval-status-received', function(event) {
@@ -451,6 +485,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (approvedEl) approvedEl.textContent = parseInt(approvedEl.textContent || 0) + 1;
         } else if (data.status === 'rejected') {
             if (pendingEl) pendingEl.textContent = Math.max(0, parseInt(pendingEl.textContent || 0) - 1);
+        }
+        
+        // Update Recent Requests list item
+        const requestItem = document.getElementById(`request-${data.request_id}`);
+        if (requestItem) {
+            // Update class
+            requestItem.className = `recent-request-item ${data.status}`;
+            
+            // Update badge
+            const badge = requestItem.querySelector('.badge');
+            if (badge) {
+                const statusClass = data.status === 'approved' ? 'success' : (data.status === 'rejected' ? 'danger' : 'warning');
+                badge.className = `badge bg-${statusClass} ms-2`;
+                badge.textContent = data.status_display;
+            }
         }
     });
 });
