@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Terms and Conditions - SecureApprove" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <h1 class="mb-4">{% trans "Terms and Conditions" %}</h1>
+                    <p class="text-muted mb-5">{% trans "Last updated: November 23, 2025" %}</p>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "1. Introduction" %}</h2>
+                        <p>{% trans "Welcome to SecureApprove. By accessing or using our website and services, you agree to be bound by these Terms and Conditions and our Privacy Policy." %}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "2. Biometric Data Privacy" %}</h2>
+                        <div class="alert alert-info border-0 bg-info bg-opacity-10">
+                            <i class="bi bi-shield-lock-fill me-2"></i>
+                            <strong>{% trans "Important Privacy Notice:" %}</strong> 
+                            {% trans "We do not collect, store, or transmit your biometric data." %}
+                        </div>
+                        <p>{% trans "SecureApprove utilizes WebAuthn standards for passwordless authentication. This means:" %}</p>
+                        <ul>
+                            <li>{% trans "Your biometric data (fingerprint, face scan, etc.) remains exclusively on your personal device." %}</li>
+                            <li>{% trans "We never receive or store your raw biometric information." %}</li>
+                            <li>{% trans "Our servers only receive a cryptographic proof that you have successfully authenticated with your device." %}</li>
+                            <li>{% trans "You retain full control over your biometric credentials and can remove them from your device at any time." %}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "3. Data Usage and Sharing" %}</h2>
+                        <p>{% trans "We are committed to protecting your privacy and data security:" %}</p>
+                        <ul>
+                            <li>{% trans "We do not sell, trade, or rent your personal identification information to others." %}</li>
+                            <li>{% trans "We do not share your data with third parties for marketing purposes." %}</li>
+                            <li>{% trans "Your data is used solely for the purpose of providing the SecureApprove service, including processing approvals and managing your account." %}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "4. User Responsibilities" %}</h2>
+                        <p>{% trans "You are responsible for maintaining the confidentiality of your account and for restricting access to your devices. You agree to accept responsibility for all activities that occur under your account." %}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "5. Limitation of Liability" %}</h2>
+                        <p>{% trans "SecureApprove shall not be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service." %}</p>
+                    </section>
+
+                    <div class="mt-5 pt-4 border-top">
+                        <a href="{% url 'landing:index' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left me-2"></i>{% trans "Back to Home" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

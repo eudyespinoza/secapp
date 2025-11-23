@@ -22,17 +22,13 @@
             background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
         }
 
-        .profile-container {
-            max-width: 800px;
-            margin: 2rem auto;
-        }
-
         .profile-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 8px 25px var(--card-shadow);
             transition: all 0.3s ease;
+            margin: 2rem 0;
         }
 
         .profile-card:hover {
@@ -115,15 +111,19 @@
 {% block content %}
 <section class="hero-section">
     <div class="container">
-        <div class="profile-container">
-            <!-- Profile Header -->
-            <div class="profile-card">
-                <div class="profile-header">
-                    <div class="profile-avatar">
-                        <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
-                    </div>
-                    <h2 class="fw-bold mb-2">{{ user.get_full_name|default:user.email }}</h2>
-                    <p class="opacity-75 mb-0">
+        <!-- Profile Header -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="bi bi-person-fill" style="font-size: 2rem;"></i>
+                </div>
+                <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+                    <h2 class="fw-bold mb-0">{{ user.get_full_name|default:user.email }}</h2>
+                    <a href="{% url 'authentication:profile_edit' %}" class="btn btn-sm btn-outline-light border-0" title="{% trans 'Edit Name' %}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+                <p class="opacity-75 mb-0">
                         {% if user.is_superuser %}
                             {% trans "Administrator" %}
                         {% elif user.is_staff %}
@@ -250,7 +250,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </section>
 

@@ -100,3 +100,24 @@ def assign_tenant_from_reservation(user):
     invite.status = "accepted"
     invite.accepted_at = timezone.now()
     invite.save(update_fields=["status", "accepted_at"])
+
+
+def generate_unique_slug(name):
+    """Generate a unique tenant key slug from a name"""
+    from django.utils.text import slugify
+    import random
+    import string
+
+    base_slug = slugify(name)
+    if not base_slug:
+        base_slug = "tenant"
+
+    slug = base_slug
+    counter = 1
+
+    while Tenant.objects.filter(key=slug).exists():
+        suffix = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
+        slug = f"{base_slug}-{suffix}"
+        counter += 1
+
+    return slug

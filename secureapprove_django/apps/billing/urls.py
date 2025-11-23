@@ -39,4 +39,5 @@ urlpatterns = [
     
     # DRF API
     path('api/', include(router.urls)),
+    path('trial/', views.start_trial, name='start_trial'),
 ]

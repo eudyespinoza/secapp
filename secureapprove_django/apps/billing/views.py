@@ -16,12 +16,19 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from datetime import timedelta
+from secrets import token_urlsafe
 import json
 import logging
 
 from .models import Plan, Subscription, Payment, Invoice
 from .services import get_billing_service, get_mp_service
 from .serializers import PlanSerializer, SubscriptionSerializer, PaymentSerializer
+from apps.tenants.models import Tenant, TenantUserInvite
+from apps.tenants.utils import generate_unique_slug
+
+from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -256,6 +263,78 @@ def invoice_detail(request, invoice_id):
     }
     
     return render(request, 'billing/invoice_detail.html', context)
+
+def start_trial(request):
+    """Start a 3-day trial"""
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        
+        if not name or not email:
+            messages.error(request, _('Name and email are required.'))
+            return render(request, 'billing/start_trial.html')
+            
+        # Check if user already exists
+        User = get_user_model()
+        if User.objects.filter(email=email).exists():
+            messages.info(request, _('User already exists. Please log in.'))
+            return redirect('authentication:webauthn_login')
+            
+        # Check if invite already exists
+        if TenantUserInvite.objects.filter(email=email, status='pending').exists():
+             messages.info(request, _('You already have a pending invitation. Please register.'))
+             return redirect('authentication:webauthn_register')
+
+        try:
+            # Create Tenant
+            slug = generate_unique_slug(name)
+            tenant = Tenant.objects.create(
+                name=f"{name}'s Team",
+                key=slug,
+                plan_id='starter',
+                seats=4,
+                status='trial',
+                is_active=True
+            )
+            
+            # Create Subscription
+            # Ensure starter plan exists, otherwise fallback to first available
+            plan = Plan.objects.filter(name='starter').first()
+            if not plan:
+                plan = Plan.objects.first()
+                
+            trial_end = timezone.now() + timedelta(days=3)
+            
+            Subscription.objects.create(
+                tenant=tenant,
+                plan=plan,
+                status='trialing',
+                billing_cycle='monthly',
+                current_period_start=timezone.now(),
+                current_period_end=trial_end,
+                trial_end=trial_end
+            )
+            
+            # Create Invite
+            token = token_urlsafe(32)
+            TenantUserInvite.objects.create(
+                tenant=tenant,
+                email=email,
+                role='tenant_admin',
+                token=token,
+                status='pending',
+                expires_at=trial_end
+            )
+            
+            # Redirect to success page
+            return render(request, 'billing/trial_success.html', {'email': email})
+            
+        except Exception as e:
+            logger.error(f"Error creating trial: {e}")
+            messages.error(request, _('An error occurred. Please try again.'))
+            return render(request, 'billing/start_trial.html')
+            
+    return render(request, 'billing/start_trial.html')
 
 # ==================================================
 # API Views (Django REST Framework)

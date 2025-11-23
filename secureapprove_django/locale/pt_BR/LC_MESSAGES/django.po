@@ -2594,3 +2594,27 @@ msgid ""
 "An unexpected error occurred while adding this device. Please try again."
 msgstr ""
 "An unexpected error occurred while adding this device. Please try again."
+
+# ================================================
+# 3-Day Free Trial
+# ================================================
+msgid "Start Your 3-Day Free Trial"
+msgstr "Comece seu teste gratuito de 3 dias"
+
+msgid "No credit card required. Full access for 3 days."
+msgstr "Não é necessário cartão de crédito. Acesso total por 3 dias."
+
+msgid "Work Email"
+msgstr "E-mail corporativo"
+
+msgid "Start Trial"
+msgstr "Começar teste"
+
+msgid "By signing up, you agree to our Terms of Service and Privacy Policy."
+msgstr "Ao se inscrever, você concorda com nossos Termos de Serviço e Política de Privacidade."
+
+msgid "Already have an account?"
+msgstr "Já tem uma conta?"
+
+msgid "Log in"
+msgstr "Entrar"

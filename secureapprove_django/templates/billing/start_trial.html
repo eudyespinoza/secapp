@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Start Free Trial - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --indigo-50: #eef2ff;
+        --purple-50: #faf5ff;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, var(--indigo-50) 0%, var(--bg-color) 50%, var(--purple-50) 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    [data-theme="dark"] .hero-section {
+        background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+    }
+
+    .form-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px var(--card-shadow);
+        padding: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">{% trans "Start Your 3-Day Free Trial" %}</h2>
+                    <p class="text-muted">{% trans "No credit card required. Full access for 3 days." %}</p>
+                </div>
+                
+                <div class="form-card">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">{% trans "Full Name" %}</label>
+                            <input type="text" class="form-control" id="name" name="name" required placeholder="{% trans 'John Doe' %}">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="email" class="form-label">{% trans "Work Email" %}</label>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="{% trans 'john@company.com' %}">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="termsCheck" required>
+                                <label class="form-check-label text-muted-custom small" for="termsCheck">
+                                    {% trans "I have read and agree to the" %} 
+                                    <a href="{% url 'landing:terms' %}" target="_blank" class="text-primary-custom text-decoration-none">{% trans "Terms and Conditions" %}</a>
+                                    {% trans "and" %} 
+                                    <a href="#" class="text-primary-custom text-decoration-none">{% trans "Privacy Policy" %}</a>.
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary-custom btn-lg">
+                                {% trans "Start Trial" %}
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <!-- Removed old text as it is now covered by the checkbox -->
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted-custom">
+                        {% trans "Already have an account?" %} 
+                        <a href="{% url 'authentication:webauthn_login' %}" class="text-primary-custom text-decoration-none">{% trans "Log in" %}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

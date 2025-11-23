@@ -59,3 +59,7 @@ class DemoPageView(TemplateView):
         
         context['demo_request'] = demo_request
         return context
+
+class TermsView(TemplateView):
+    """Terms and Conditions page"""
+    template_name = 'legal/terms.html'

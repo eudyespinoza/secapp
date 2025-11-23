@@ -2352,3 +2352,108 @@ msgstr "Tipo de archivo no permitido"
 
 msgid "Unknown user"
 msgstr "Usuario desconocido"
+
+msgid "Start Your 3-Day Free Trial"
+msgstr "Comienza tu prueba gratuita de 3 días"
+
+msgid "No credit card required. Full access for 3 days."
+msgstr "No se requiere tarjeta de crédito. Acceso completo por 3 días."
+
+msgid "Work Email"
+msgstr "Correo electrónico de trabajo"
+
+msgid "Start Trial"
+msgstr "Comenzar prueba"
+
+msgid "By signing up, you agree to our Terms of Service and Privacy Policy."
+msgstr "Al registrarte, aceptas nuestros Términos de servicio y Política de privacidad."
+
+msgid "Already have an account?"
+msgstr "¿Ya tienes una cuenta?"
+
+msgid "Log in"
+msgstr "Iniciar sesión"
+
+# ================================================
+# Terms and Conditions - SecureApprove
+# ================================================
+msgid "Terms and Conditions - SecureApprove"
+msgstr "Términos y Condiciones - SecureApprove"
+
+msgid "Terms and Conditions"
+msgstr "Términos y Condiciones"
+
+msgid "Last updated: November 23, 2025"
+msgstr "Última actualización: 23 de Noviembre de 2025"
+
+msgid "1. Introduction"
+msgstr "1. Introducción"
+
+msgid "Welcome to SecureApprove. By accessing or using our website and services, you agree to be bound by these Terms and Conditions and our Privacy Policy."
+msgstr "Bienvenido a SecureApprove. Al acceder o utilizar nuestro sitio web y servicios, usted acepta estar sujeto a estos Términos y Condiciones y nuestra Política de Privacidad."
+
+msgid "2. Biometric Data Privacy"
+msgstr "2. Privacidad de Datos Biométricos"
+
+msgid "Important Privacy Notice:"
+msgstr "Aviso de Privacidad Importante:"
+
+msgid "We do not collect, store, or transmit your biometric data."
+msgstr "No recopilamos, almacenamos ni transmitimos sus datos biométricos."
+
+msgid "SecureApprove utilizes WebAuthn standards for passwordless authentication. This means:"
+msgstr "SecureApprove utiliza estándares WebAuthn para la autenticación sin contraseña. Esto significa:"
+
+msgid "Your biometric data (fingerprint, face scan, etc.) remains exclusively on your personal device."
+msgstr "Sus datos biométricos (huella digital, escaneo facial, etc.) permanecen exclusivamente en su dispositivo personal."
+
+msgid "We never receive or store your raw biometric information."
+msgstr "Nunca recibimos ni almacenamos su información biométrica sin procesar."
+
+msgid "Our servers only receive a cryptographic proof that you have successfully authenticated with your device."
+msgstr "Nuestros servidores solo reciben una prueba criptográfica de que se ha autenticado exitosamente con su dispositivo."
+
+msgid "You retain full control over your biometric credentials and can remove them from your device at any time."
+msgstr "Usted conserva el control total sobre sus credenciales biométricas y puede eliminarlas de su dispositivo en cualquier momento."
+
+msgid "3. Data Usage and Sharing"
+msgstr "3. Uso y Compartición de Datos"
+
+msgid "We are committed to protecting your privacy and data security:"
+msgstr "Estamos comprometidos a proteger su privacidad y seguridad de datos:"
+
+msgid "We do not sell, trade, or rent your personal identification information to others."
+msgstr "No vendemos, intercambiamos ni alquilamos su información de identificación personal a terceros."
+
+msgid "We do not share your data with third parties for marketing purposes."
+msgstr "No compartimos sus datos con terceros con fines de marketing."
+
+msgid "Your data is used solely for the purpose of providing the SecureApprove service, including processing approvals and managing your account."
+msgstr "Sus datos se utilizan únicamente con el fin de proporcionar el servicio SecureApprove, incluido el procesamiento de aprobaciones y la gestión de su cuenta."
+
+msgid "4. User Responsibilities"
+msgstr "4. Responsabilidades del Usuario"
+
+msgid "You are responsible for maintaining the confidentiality of your account and for restricting access to your devices. You agree to accept responsibility for all activities that occur under your account."
+msgstr "Usted es responsable de mantener la confidencialidad de su cuenta y de restringir el acceso a sus dispositivos. Acepta asumir la responsabilidad de todas las actividades que ocurran bajo su cuenta."
+
+msgid "5. Limitation of Liability"
+msgstr "5. Limitación de Responsabilidad"
+
+msgid "SecureApprove shall not be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service."
+msgstr "SecureApprove no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo, incluyendo, entre otros, pérdida de ganancias, datos, uso, buena voluntad u otras pérdidas intangibles, resultantes de su acceso o uso o incapacidad para acceder o usar el servicio."
+
+msgid "Back to Home"
+msgstr "Volver al Inicio"
+
+msgid "Terms & Conditions"
+msgstr "Términos y Condiciones"
+
+msgid "Privacy Policy"
+msgstr "Política de Privacidad"
+
+msgid "I have read and agree to the"
+msgstr "He leído y acepto los"
+
+msgid "and"
+msgstr "y"

@@ -177,7 +177,7 @@
                                     </span>
                                     <span>
                                         <i class="bi bi-calendar"></i>
-                                        {{ request_obj.created_at|date:"M d, Y" }}
+                                        <span class="local-date" data-iso="{{ request_obj.created_at|date:'c' }}">{{ request_obj.created_at|date:"M d, Y" }}</span>
                                     </span>
                                 </div>
                                 
@@ -384,6 +384,21 @@
                     card.style.backgroundColor = originalBg;
                 }, 2000);
             }
+    });
+
+    // Format dates to local time
+    document.querySelectorAll('.local-date').forEach(function(element) {
+        const isoDate = element.getAttribute('data-iso');
+        if (isoDate) {
+            const date = new Date(isoDate);
+            if (!isNaN(date.getTime())) {
+                element.textContent = date.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+        }
     });
 </script>
 {% endblock %}

@@ -1,1 +1,41 @@
-<!-- profile_edit template placeholder -->
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Edit Profile - SecureApprove" %}{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-transparent border-0 pt-4 pb-2 text-center">
+                        <h4 class="card-title fw-bold">{% trans "Edit Profile" %}</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="id_name" class="form-label">{% trans "Full Name" %}</label>
+                                <input type="text" class="form-control" id="id_name" name="name" value="{{ user.name }}" required>
+                                <div class="form-text">{% trans "This name will be displayed in chats and other interactions." %}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{% trans "Email Address" %}</label>
+                                <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                                <div class="form-text">{% trans "Email address cannot be changed." %}</div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="{% url 'authentication:profile' %}" class="btn btn-outline-secondary me-md-2">{% trans "Cancel" %}</a>
+                                <button type="submit" class="btn btn-primary">{% trans "Save Changes" %}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

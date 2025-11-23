@@ -208,7 +208,7 @@
 
                         <div class="mt-4 text-center">
                             {# Reuse the middle plan as the entry point; backend pricing is per-seat #}
-                            <a href="{% url 'billing:subscribe' 'tier_1' %}" class="btn-plan btn-plan-primary">
+                            <a href="{% url 'billing:start_trial' %}" class="btn-plan btn-plan-primary">
                                 {% trans "Start Free Trial" %}
                             </a>
                         </div>

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Trial Started - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #eef2ff 0%, var(--bg-color) 50%, #faf5ff 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    [data-theme="dark"] .hero-section {
+        background: linear-gradient(135deg, #1e1b4b 0%, var(--bg-color) 50%, #4c1d95 100%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h1 class="fw-bold mb-3">{% trans "Your Trial is Ready!" %}</h1>
+                <p class="lead text-muted mb-4">
+                    {% trans "We have created your account and workspace." %}
+                </p>
+                
+                <div class="card border-0 shadow-sm p-4 mb-4 mx-auto" style="max-width: 500px;">
+                    <p class="mb-3">
+                        {% trans "Please proceed to registration to set up your biometric credentials." %}
+                    </p>
+                    <p class="fw-bold text-primary mb-0">{{ email }}</p>
+                </div>
+                
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{% url 'authentication:webauthn_register' %}" class="btn btn-primary btn-lg px-4">
+                        {% trans "Register Now" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
