@@ -6,8 +6,10 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 from .models import ApprovalRequest
 from .tasks import send_webpush_notification
+import logging
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=ApprovalRequest)
 def notify_approval_request_update(sender, instance, created, **kwargs):
@@ -22,6 +24,8 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                 is_active=True
             )
             
+            logger.info(f"New request {instance.id}: Found {approvers.count()} approvers to notify.")
+
             for approver in approvers:
                 # Don't notify the requester if they are also an approver
                 if approver == instance.requester:
@@ -51,6 +55,7 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     "color": "#4f46e5",
                     "url": f"/dashboard/requests/{instance.id}/"
                 }
+                logger.info(f"Sending WebPush for request {instance.id} to user {approver.id}")
                 send_webpush_notification.delay(user_id=approver.id, payload=payload, ttl=1000)
                 
     else:

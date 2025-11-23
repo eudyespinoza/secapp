@@ -12,9 +12,11 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.utils.translation import gettext as _
 
 from apps.authentication.models import User
 from apps.tenants.utils import ensure_user_tenant
+from apps.requests.tasks import send_webpush_notification
 from .models import (
     ChatConversation,
     ChatParticipant,
@@ -329,168 +331,14 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
                 recipient.unread_count += 1
                 recipient.save(update_fields=['unread_count'])
 
-        # Serialize response
-        serializer = ChatMessageSerializer(msg, context={'request': request})
-
-        logger.info(
-            "[CHAT] Sending WS message_created conversation=%s tenant=%s message=%s",
-            conv.id,
-            conv.tenant_id,
-            msg.id,
-        )
-
-        # Broadcast via WebSocket
-        broadcast_to_conversation(
-            conv,
-            "chat_message_created",
-            {
-                "conversation_id": str(conv.id),
-                "message": serializer.data,
-            },
-        )
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-    @action(detail=True, methods=['post'])
-    def mark_read(self, request, pk=None):
-        """
-        Mark all messages in conversation as read for current user.
-        Updates delivery records and resets unread counter.
-        """
-        conv = self.get_object()
-        user = request.user
-        now = timezone.now()
-
-        with transaction.atomic():
-            # Mark all unread deliveries as read
-            updated_count = ChatMessageDelivery.objects.filter(
-                message__conversation=conv,
-                recipient=user,
-                read_at__isnull=True,
-            ).update(read_at=now, delivered_at=now)
-
-            # Reset unread count and update last read message for this participant
-            last_message = conv.messages.order_by('-created_at').first()
-            update_kwargs = {'unread_count': 0}
-            if last_message:
-                update_kwargs['last_read_message'] = last_message
-
-            ChatParticipant.objects.filter(
-                conversation=conv,
-                user=user,
-            ).update(**update_kwargs)
-
-        return Response({
-            'status': 'ok',
-            'marked_read': updated_count,
-        })
-
-    @action(detail=True, methods=['post'])
-    def typing(self, request, pk=None):
-        """
-        Notify other participants that user is typing.
-        Broadcasts a typing event via WebSocket.
-        """
-        conv = self.get_object()
-        user = request.user
-
-        # Verify user is participant
-        if not conv.participant_set.filter(user=user).exists():
-            return Response(
-                {'error': 'You are not a participant in this conversation'},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        # Update presence
-        UserPresence.mark_user_online(user)
-        cache.set(f"user:last_activity:{user.pk}", timezone.now(), timeout=3600)
-
-        # Broadcast typing event
-        broadcast_to_conversation(
-            conv,
-            "chat_typing",
-            {
-                "conversation_id": str(conv.id),
-                "user_id": user.id,
-                "user_name": user.get_full_name() or user.email,
-            },
-        )
-
-        return Response({'status': 'ok'})
-
-    @action(detail=False, methods=['get'])
-    def presence(self, request):
-        """
-        Get presence info for all users in the same tenant.
-        Returns list with online/offline status.
-        """
-        user = request.user
-        tenant = ensure_user_tenant(user)
-        if not tenant:
-            return Response([], status=status.HTTP_200_OK)
-
-        # Update user presence computation
-        UserPresence.compute_online_status(threshold_seconds=120)
-
-        # Get all active users in tenant
-        qs = User.objects.filter(
-            tenant=tenant,
-            is_active=True,
-        ).select_related('chat_presence').order_by('email')
-
-        serializer = UserPresenceSerializer(qs, many=True, context={'request': request})
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['patch'])
-    def archive(self, request, pk=None):
-        """Archive conversation for current user."""
-        conv = self.get_object()
-        user = request.user
-
-        ChatParticipant.objects.filter(
-            conversation=conv,
-            user=user,
-        ).update(is_archived=True)
-
-        return Response({'status': 'archived'})
-
-    @action(detail=True, methods=['patch'])
-    def unarchive(self, request, pk=None):
-        """Unarchive conversation for current user."""
-        conv = self.get_object()
-        user = request.user
-
-        ChatParticipant.objects.filter(
-            conversation=conv,
-            user=user,
-        ).update(is_archived=False)
-
-        return Response({'status': 'unarchived'})
-
-    @action(detail=True, methods=['patch'])
-    def mute(self, request, pk=None):
-        """Mute notifications for conversation."""
-        conv = self.get_object()
-        user = request.user
-
-        ChatParticipant.objects.filter(
-            conversation=conv,
-            user=user,
-        ).update(is_muted=True)
-
-        return Response({'status': 'muted'})
-
-    @action(detail=True, methods=['patch'])
-    def unmute(self, request, pk=None):
-        """Unmute notifications for conversation."""
-        conv = self.get_object()
-        user = request.user
-
-        ChatParticipant.objects.filter(
-            conversation=conv,
-            user=user,
-        ).update(is_muted=False)
-
-        return Response({'status': 'unmuted'})
-
+                # Send Web Push Notification
+                if not recipient.is_muted:
+                    payload = {
+                        "title": _("New message from {name}").format(name=user.get_full_name() or user.email),
+                        "body": content[:100] if content else _("Sent an attachment"),
+                        "icon": "/static/img/logo.png",
+                        "tag": f"chat-{conv.id}",
+                        "url": f"/dashboard/?chat_id={conv.id}"
+                    }
+                    send_webpush_notification.delay(user_id=recipient.user.id, payload=payload, ttl=1000)
+       
