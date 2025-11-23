@@ -8,7 +8,7 @@
 
     const CONFIG = {
         SERVICE_WORKER_PATH: '/service-worker.js',
-        SUBSCRIBE_ENDPOINT: '/webpush/save_information/',
+        SUBSCRIBE_ENDPOINT: '/webpush/save_information',
         VAPID_META_NAME: 'vapid-key',
     };
 
