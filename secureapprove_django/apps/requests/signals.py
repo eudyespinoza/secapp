@@ -68,6 +68,8 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     "status": instance.status,
                     "status_display": status_display,
                     "approver_name": approver_name,
+                    "created_at": instance.created_at.isoformat(),
+                    "category_display": instance.get_category_display(),
                     "message": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower())
                 }
             )

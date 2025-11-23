@@ -261,6 +261,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             "status": event.get("status"),
             "status_display": event.get("status_display"),
             "approver_name": event.get("approver_name"),
+            "created_at": event.get("created_at"),
+            "category_display": event.get("category_display"),
             "message": event.get("message"),
         })
 

@@ -214,6 +214,7 @@
                         <span class="badge bg-warning">{{ pending_for_approval|length }}</span>
                     </div>
                     <div class="card-body">
+                        <div id="pending-approvals-container">
                         {% for request in pending_for_approval %}
                             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                                 <div class="flex-grow-1">
@@ -232,6 +233,7 @@
                                 </span>
                             </div>
                         {% endfor %}
+                        </div>
                         <a href="{% url 'requests:list' %}?status=pending" class="btn btn-outline-primary btn-sm w-100">
                             {% trans "View All Pending" %}
                         </a>
@@ -329,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Category Chart
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
     
-    new Chart(categoryCtx, {
+    window.categoryChart = new Chart(categoryCtx, {
         type: 'doughnut',
         data: {
             labels: categoryData.map(item => item.category || 'Other'),
@@ -361,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Activity Chart
     const activityCtx = document.getElementById('activityChart').getContext('2d');
     
-    new Chart(activityCtx, {
+    window.activityChart = new Chart(activityCtx, {
         type: 'line',
         data: {
             labels: dailyData.map(item => {
@@ -470,6 +472,74 @@ document.addEventListener('DOMContentLoaded', function() {
                 items[items.length - 1].remove();
             }
         }
+
+        // Add to Pending Approvals list (if container exists)
+        const pendingContainer = document.getElementById('pending-approvals-container');
+        if (pendingContainer) {
+            const priorityClass = data.priority || 'medium';
+            const title = data.title.length > 30 ? data.title.substring(0, 30) + '...' : data.title;
+            
+            const newPendingHtml = `
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">
+                            <a href="/dashboard/requests/${data.request_id}/" class="text-decoration-none">
+                                ${title}
+                            </a>
+                        </h6>
+                        <small class="text-muted">
+                            ${data.requester_name}
+                            • {% trans "Just now" %}
+                        </small>
+                    </div>
+                    <span class="badge bg-${priorityClass}">
+                        ${data.priority || 'Medium'}
+                    </span>
+                </div>
+            `;
+            pendingContainer.insertAdjacentHTML('afterbegin', newPendingHtml);
+            
+            // Limit to 5 items
+            const items = pendingContainer.children;
+            if (items.length > 5) {
+                items[items.length - 1].remove();
+            }
+        }
+
+        // Update Category Chart
+        if (window.categoryChart) {
+            const chart = window.categoryChart;
+            const category = data.category_display || 'Other';
+            const index = chart.data.labels.indexOf(category);
+            
+            if (index !== -1) {
+                chart.data.datasets[0].data[index]++;
+            } else {
+                chart.data.labels.push(category);
+                chart.data.datasets[0].data.push(1);
+            }
+            chart.update();
+        }
+
+        // Update Activity Chart
+        if (window.activityChart) {
+            const chart = window.activityChart;
+            const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const index = chart.data.labels.indexOf(today);
+            
+            if (index !== -1) {
+                chart.data.datasets[0].data[index]++; // Total
+                chart.data.datasets[2].data[index]++; // Pending
+            } else {
+                // Add new day if not exists (unlikely if initialized correctly)
+                // But for robustness:
+                // chart.data.labels.push(today);
+                // chart.data.datasets[0].data.push(1);
+                // chart.data.datasets[1].data.push(0);
+                // chart.data.datasets[2].data.push(1);
+            }
+            chart.update();
+        }
     });
 
     window.addEventListener('approval-status-received', function(event) {
@@ -500,6 +570,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 badge.className = `badge bg-${statusClass} ms-2`;
                 badge.textContent = data.status_display;
             }
+        }
+
+        // Update Activity Chart
+        if (window.activityChart && data.created_at) {
+            const chart = window.activityChart;
+            const createdDate = new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const index = chart.data.labels.indexOf(createdDate);
+            
+            if (index !== -1) {
+                // Decrement pending
+                if (chart.data.datasets[2].data[index] > 0) {
+                    chart.data.datasets[2].data[index]--;
+                }
+                
+                // Increment approved/rejected
+                if (data.status === 'approved') {
+                    chart.data.datasets[1].data[index]++;
+                }
+                // Note: We don't have a rejected dataset in the chart config above, only Total, Approved, Pending.
+                // If we want to track rejected, we should add a dataset. But for now, just updating Approved/Pending is fine.
+            }
+            chart.update();
         }
     });
 });
