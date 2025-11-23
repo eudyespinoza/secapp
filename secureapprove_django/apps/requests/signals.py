@@ -57,6 +57,23 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                 }
                 logger.info(f"Sending WebPush for request {instance.id} to user {approver.id}")
                 send_webpush_notification.delay(user_id=approver.id, payload=payload, ttl=1000)
+
+            # Notify the requester as well (so their dashboard updates in real-time)
+            async_to_sync(channel_layer.group_send)(
+                f"user_{instance.requester.id}",
+                {
+                    "type": "notification_approval_request",
+                    "request_id": instance.id,
+                    "title": instance.title,
+                    "requester_name": instance.requester.get_full_name(),
+                    "status": instance.status,
+                    "status_display": instance.get_status_display(),
+                    "priority": instance.priority,
+                    "category_display": instance.get_category_display(),
+                    "created_at": instance.created_at.isoformat(),
+                    "message": _("Request created: {title}").format(title=instance.title)
+                }
+            )
                 
     else:
         # Notify requester of status change

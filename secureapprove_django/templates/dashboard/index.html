@@ -263,7 +263,7 @@
                                 </span>
                             </div>
                             <small class="text-muted">
-                                {{ request.get_category_display }} • {{ request.created_at|timesince }} {% trans "ago" %}
+                                {{ request.requester.get_full_name }} • {{ request.get_category_display }} • {{ request.created_at|timesince }} {% trans "ago" %}
                             </small>
                             <div class="priority-bar priority-{{ request.priority }}"></div>
                         </div>
@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </span>
                     </div>
                     <small class="text-muted">
-                        ${data.category_display || 'General'} • {% trans "Just now" %}
+                        ${data.requester_name} • ${data.category_display || 'General'} • {% trans "Just now" %}
                     </small>
                     <div class="priority-bar priority-${priorityClass}"></div>
                 </div>
