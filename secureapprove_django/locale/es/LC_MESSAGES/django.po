@@ -2302,8 +2302,53 @@ msgstr "%(available)s asientos disponibles (%(used)s de %(total)s usados)"
 msgid "New request from {name}: {title}"
 msgstr "Nueva solicitud de {name}: {title}"
 
+msgid "Request created: {title}"
+msgstr "Solicitud creada: {title}"
+
 msgid "Request {status}"
 msgstr "Solicitud {status}"
 
 msgid "Your request '{title}' has been {status}."
 msgstr "Tu solicitud '{title}' ha sido {status}."
+
+msgid "New message from {name}"
+msgstr "Nuevo mensaje de {name}"
+
+msgid "Sent an attachment"
+msgstr "Envió un archivo adjunto"
+
+msgid "New chat message"
+msgstr "Nuevo mensaje de chat"
+
+msgid "New chat messages"
+msgstr "Nuevos mensajes de chat"
+
+msgid "unread messages"
+msgstr "mensajes no leídos"
+
+msgid "Chat service unavailable"
+msgstr "Servicio de chat no disponible"
+
+msgid "No messages yet. Start the conversation."
+msgstr "Aún no hay mensajes. Inicia la conversación."
+
+msgid "Attachment"
+msgstr "Adjunto"
+
+msgid "Could not start conversation"
+msgstr "No se pudo iniciar la conversación"
+
+msgid "Could not load messages"
+msgstr "No se pudieron cargar los mensajes"
+
+msgid "Could not send message"
+msgstr "No se pudo enviar el mensaje"
+
+msgid "File is too large (max 25MB)"
+msgstr "El archivo es demasiado grande (máx 25MB)"
+
+msgid "File type not allowed"
+msgstr "Tipo de archivo no permitido"
+
+msgid "Unknown user"
+msgstr "Usuario desconocido"

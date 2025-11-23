@@ -1273,7 +1273,7 @@ msgstr "¡Autenticação exitosa! Bienvenido de vuelta."
 
 #: templates/authentication/webauthn_login.html:449
 msgid "No biometric authentication set up for this account."
-msgstr "No hay autenticação biométrica configurada para esta cuenta."
+msgstr "No hay autenticação biométrica configurada para esta conta."
 
 #: templates/authentication/webauthn_login.html:501
 msgid ""
@@ -1484,7 +1484,7 @@ msgstr "10 miembros do equipo"
 
 #: templates/billing/select_plan.html:178 templates/billing/subscribe.html:140
 msgid "Basic workflow templates"
-msgstr "Plantillas de flujo de trabajo básicas"
+msgstr "Plantillas de flujo de trabalho básicas"
 
 #: templates/billing/select_plan.html:179
 msgid "Email notifications"
@@ -1517,7 +1517,7 @@ msgstr "25 miembros do equipo"
 
 #: templates/billing/select_plan.html:202 templates/billing/subscribe.html:144
 msgid "Advanced workflow automation"
-msgstr "Automatização de flujo de trabajo avanzada"
+msgstr "Automatização de flujo de trabalho avanzada"
 
 #: templates/billing/select_plan.html:203
 msgid "Slack & Teams integration"
@@ -1589,11 +1589,11 @@ msgstr "Hospedaje em a Nube"
 
 #: templates/billing/select_plan.html:253
 msgid "Secure, reliable cloud infrastructure"
-msgstr "Infraestructura em a nube segura e confiable"
+msgstr "Infraestrutura em a nube segura e confiable"
 
 #: templates/billing/select_plan.html:257
 msgid "Mobile Ready"
-msgstr "Listo para Móviles"
+msgstr "Listo para Móveis"
 
 #: templates/billing/select_plan.html:258
 msgid "Works perfectly on any device"
@@ -1681,7 +1681,7 @@ msgstr "Prueba Gratis de 14 Días"
 
 #: templates/billing/subscribe.html:186
 msgid "No charge for the first 14 days. Cancel anytime."
-msgstr "Sin cargo os primeros 14 días. Cancela em cualquier momento."
+msgstr "Sin cargo os primeros 14 días. Cancela em qualquer momento."
 
 #: templates/billing/subscribe.html:195
 msgid "Processing..."
@@ -1956,7 +1956,7 @@ msgid "Autenticación Biométrica"
 msgstr "Autenticação Biométrica"
 
 #: templates/landing/index.html:198
-msgid "Seguridad avanzada con WebAuthn y autenticación biométrica"
+msgid "Seguridad avanzada com WebAuthn e autenticación biométrica"
 msgstr "Segurança avançada com WebAuthn e autenticação biométrica"
 
 #: templates/landing/index.html:209
