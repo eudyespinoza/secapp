@@ -1371,6 +1371,9 @@
                             </script>
 
                             <script src="{% static 'js/notifications.js' %}"></script>
+                            {% if user.is_authenticated %}
+                            <script src="{% static 'js/tenant_chat.js' %}"></script>
+                            {% endif %}
                             {% block extra_js %}{% endblock %}
                         </body>
                     </html>
