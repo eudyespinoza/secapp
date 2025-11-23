@@ -123,10 +123,6 @@ if [ "$SKIP_MIGRATIONS" = false ]; then
         echo 'Database is ready!'
     "
     
-    # Ensure all migrations are created (fixes issues with apps like webpush having unmigrated changes)
-    echo "Creating missing migrations..."
-    $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec -T web python manage.py makemigrations --noinput
-
     # Run standard migrations
     echo "Running standard migrations..."
     $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec -T web python manage.py migrate --noinput

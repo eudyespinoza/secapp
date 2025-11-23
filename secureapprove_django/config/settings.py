@@ -314,6 +314,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
+# Override webpush migrations location to allow generating missing migrations locally
+MIGRATION_MODULES = {
+    'webpush': 'webpush_migrations'
+}
+
 # Environment-specific settings
 if DEBUG:
     INSTALLED_APPS += ['django_extensions', 'debug_toolbar']
