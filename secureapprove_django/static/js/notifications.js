@@ -127,8 +127,15 @@
 
             this.subscribeButton.addEventListener('click', () => this.subscribe());
             
-            // Check current status
+            // Check current status and auto-subscribe if permission is granted
             this.checkSubscriptionStatus();
+            
+            if (Notification.permission === 'granted') {
+                // Attempt to ensure we have a valid push subscription
+                // This might fail if user gesture is strictly required by browser, 
+                // but it's worth trying for seamless experience.
+                this.subscribe().catch(e => console.log('[Push] Auto-subscribe failed (likely needs gesture):', e));
+            }
         }
 
         async checkSubscriptionStatus() {
