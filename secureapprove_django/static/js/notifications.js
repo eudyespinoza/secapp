@@ -15,6 +15,7 @@
     const I18N = {
         en: {
             httpsRequired: 'Error: Push Notifications require HTTPS. You are accessing via an insecure connection.',
+            permissionDenied: 'Notifications are blocked. Please enable them in your browser settings (click the lock icon in the address bar).',
             success: 'Notifications enabled successfully!',
             error: 'Failed to enable notifications: ',
             titleSuccess: 'Success',
@@ -22,6 +23,7 @@
         },
         es: {
             httpsRequired: 'Error: Las notificaciones Push requieren HTTPS. Estás accediendo a través de una conexión insegura.',
+            permissionDenied: 'Las notificaciones están bloqueadas. Por favor, habilítalas en la configuración de tu navegador (haz clic en el candado de la barra de direcciones).',
             success: '¡Notificaciones activadas con éxito!',
             error: 'Error al activar las notificaciones: ',
             titleSuccess: 'Éxito',
@@ -29,6 +31,7 @@
         },
         'pt-br': {
             httpsRequired: 'Erro: Notificações Push requerem HTTPS. Você está acessando via conexão insegura.',
+            permissionDenied: 'As notificações estão bloqueadas. Por favor, ative-as nas configurações do seu navegador (clique no cadeado na barra de endereços).',
             success: 'Notificações ativadas com sucesso!',
             error: 'Falha ao ativar notificações: ',
             titleSuccess: 'Sucesso',
@@ -167,6 +170,12 @@
 
         async subscribe() {
             try {
+                // Check permission first
+                if (Notification.permission === 'denied') {
+                    this.showToast(this.t('permissionDenied'), 'error');
+                    return;
+                }
+
                 // 1. Register Service Worker
                 const registration = await navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH);
                 await navigator.serviceWorker.ready;
@@ -197,7 +206,15 @@
 
             } catch (e) {
                 console.error('[Push] Subscription failed:', e);
-                this.showToast(this.t('error') + e.message, 'error');
+                
+                let errorMsg = e.message;
+                if (errorMsg.includes('permission denied') || errorMsg.includes('Permission denied')) {
+                    errorMsg = this.t('permissionDenied');
+                } else {
+                    errorMsg = this.t('error') + errorMsg;
+                }
+                
+                this.showToast(errorMsg, 'error');
             }
         }
 
