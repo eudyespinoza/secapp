@@ -314,7 +314,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/chart.js' %}"></script>
 
 <!-- Dashboard Data -->
 {{ category_stats|json_script:"category-data" }}
