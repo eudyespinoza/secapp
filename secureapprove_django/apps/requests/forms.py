@@ -161,14 +161,14 @@ class DynamicRequestForm(forms.ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 _('Request Information'),
+                'category',
                 Row(
                     Column('title', css_class='col-md-8'),
                     Column('priority', css_class='col-md-4'),
                 ),
                 'description',
                 Row(
-                    Column('category', css_class='col-md-6'),
-                    Column('amount', css_class='col-md-6', css_id='amount-field'),
+                    Column('amount', css_class='col-md-12', css_id='amount-field'),
                 ),
                 'attachments',
             ),
