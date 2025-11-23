@@ -62,7 +62,7 @@ services:
       REDIS_URL: redis://redis:6379/1
       
       # Django
-      DEBUG: "False"
+      DEBUG: "True"
       SECRET_KEY: "sdkfnklnrvknlrberggerg"
       ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
       
