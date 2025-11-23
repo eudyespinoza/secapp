@@ -36,6 +36,12 @@ docker compose up -d
 echo -e "\n${YELLOW}[5/6] Waiting for services to be ready...${NC}"
 sleep 10
 
+echo -e "\n${YELLOW}[5.5/6] Running database migrations...${NC}"
+echo "Creating missing migrations..."
+docker compose exec -T web python manage.py makemigrations --noinput
+echo "Applying migrations..."
+docker compose exec -T web python manage.py migrate --noinput
+
 echo -e "\n${YELLOW}[6/6] Verifying deployment...${NC}"
 
 # Check if web is running
