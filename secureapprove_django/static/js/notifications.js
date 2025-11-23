@@ -12,12 +12,83 @@
         VAPID_META_NAME: 'vapid-key',
     };
 
+    const I18N = {
+        en: {
+            httpsRequired: 'Error: Push Notifications require HTTPS. You are accessing via an insecure connection.',
+            success: 'Notifications enabled successfully!',
+            error: 'Failed to enable notifications: ',
+            titleSuccess: 'Success',
+            titleError: 'Error'
+        },
+        es: {
+            httpsRequired: 'Error: Las notificaciones Push requieren HTTPS. Estás accediendo a través de una conexión insegura.',
+            success: '¡Notificaciones activadas con éxito!',
+            error: 'Error al activar las notificaciones: ',
+            titleSuccess: 'Éxito',
+            titleError: 'Error'
+        },
+        'pt-br': {
+            httpsRequired: 'Erro: Notificações Push requerem HTTPS. Você está acessando via conexão insegura.',
+            success: 'Notificações ativadas com sucesso!',
+            error: 'Falha ao ativar notificações: ',
+            titleSuccess: 'Sucesso',
+            titleError: 'Erro'
+        }
+    };
+
     class NotificationManager {
         constructor() {
             this.subscribeButton = document.getElementById('webpush-subscribe-button');
             this.vapidKey = this.getVapidKey();
             
+            // Detect language
+            this.lang = document.documentElement.lang.toLowerCase() || 'en';
+            // Handle cases like 'es-es' -> 'es', but keep 'pt-br'
+            if (this.lang !== 'pt-br' && this.lang.includes('-')) {
+                this.lang = this.lang.split('-')[0];
+            }
+            if (!I18N[this.lang]) this.lang = 'en';
+
             this.init();
+        }
+
+        t(key) {
+            return I18N[this.lang][key] || I18N['en'][key];
+        }
+
+        showToast(message, type = 'info') {
+            const toastEl = document.getElementById('systemToast');
+            const toastTitle = document.getElementById('systemToastTitle');
+            const toastBody = document.getElementById('systemToastBody');
+            const toastIcon = document.getElementById('systemToastIcon');
+            
+            if (!toastEl || !toastTitle || !toastBody) {
+                // Fallback if toast elements are missing
+                alert(message);
+                return;
+            }
+
+            toastBody.textContent = message;
+            
+            if (type === 'success') {
+                toastTitle.textContent = this.t('titleSuccess');
+                toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
+            } else if (type === 'error') {
+                toastTitle.textContent = this.t('titleError');
+                toastIcon.className = 'bi bi-exclamation-triangle-fill me-2 text-danger';
+            } else {
+                toastTitle.textContent = 'Notification';
+                toastIcon.className = 'bi bi-bell-fill me-2 text-primary';
+            }
+
+            // Use Bootstrap's Toast API
+            // Assuming bootstrap is available globally as per base.html
+            if (typeof bootstrap !== 'undefined') {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            } else {
+                alert(message);
+            }
         }
 
         getVapidKey() {
@@ -33,7 +104,7 @@
             if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
                 console.warn('[Push] Secure Context (HTTPS) required for Service Workers');
                 this.subscribeButton.addEventListener('click', () => {
-                    alert('Error: Push Notifications require HTTPS. You are accessing via an insecure connection.');
+                    this.showToast(this.t('httpsRequired'), 'error');
                 });
                 return;
             }
@@ -122,11 +193,11 @@
                 await this.sendSubscriptionToServer(subscription);
                 
                 this.updateButtonState(true);
-                alert('Notifications enabled successfully!');
+                this.showToast(this.t('success'), 'success');
 
             } catch (e) {
                 console.error('[Push] Subscription failed:', e);
-                alert('Failed to enable notifications: ' + e.message);
+                this.showToast(this.t('error') + e.message, 'error');
             }
         }
 
@@ -140,7 +211,8 @@
                 body: JSON.stringify({
                     status_type: 'subscribe',
                     subscription: subscription.toJSON(),
-                    browser: navigator.userAgent
+                    browser: this.getBrowserName(),
+                    user_agent: navigator.userAgent
                 }),
             });
 
@@ -163,6 +235,17 @@
                 }
             }
             return cookieValue;
+        }
+
+        getBrowserName() {
+            const agent = navigator.userAgent.toLowerCase();
+            if (agent.indexOf('edge') > -1) return 'Edge';
+            if (agent.indexOf('edg') > -1) return 'Edge';
+            if (agent.indexOf('opr') > -1) return 'Opera';
+            if (agent.indexOf('chrome') > -1) return 'Chrome';
+            if (agent.indexOf('firefox') > -1) return 'Firefox';
+            if (agent.indexOf('safari') > -1) return 'Safari';
+            return 'Other';
         }
     }
 

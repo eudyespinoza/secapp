@@ -328,6 +328,27 @@
             border-top-color: var(--border-color);
         }
 
+        /* Toast Adaptations */
+        .toast {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .toast-header {
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+            border-bottom-color: var(--border-color);
+        }
+
+        .btn-close {
+            filter: var(--btn-close-filter, none);
+        }
+
+        [data-theme="dark"] .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
         /* Badge Adaptations */
         .badge {
             color: white;
@@ -1230,6 +1251,18 @@
 
                             <div id="tenantChatToastContainer" class="tenant-chat-toast-container"></div>
                             {% endif %}
+
+                            <!-- System Toast Container -->
+                            <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+                                <div id="systemToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <div class="toast-header">
+                                        <i class="bi bi-bell me-2" id="systemToastIcon"></i>
+                                        <strong class="me-auto" id="systemToastTitle">Notification</strong>
+                                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                    </div>
+                                    <div class="toast-body" id="systemToastBody"></div>
+                                </div>
+                            </div>
 
                             {% endblock %}
 
