@@ -5,6 +5,8 @@ self.addEventListener('push', function(event) {
       body: data.body,
       icon: data.icon || '/static/img/logo.png',
       badge: data.badge || '/static/img/logo.png',
+      image: data.image,
+      color: data.color || '#4f46e5',
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),

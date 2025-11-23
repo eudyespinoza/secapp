@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext as _
 from .models import ApprovalRequest
 from .tasks import send_webpush_notification
 
@@ -33,15 +34,16 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                         "request_id": instance.id,
                         "title": instance.title,
                         "requester_name": instance.requester.get_full_name(),
-                        "message": f"New request from {instance.requester.get_full_name()}: {instance.title}"
+                        "message": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title)
                     }
                 )
 
                 # Web Push Notification (Async)
                 payload = {
-                    "head": "New Request",
-                    "body": f"New request from {instance.requester.get_full_name()}: {instance.title}",
+                    "title": _("New Request"),
+                    "body": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title),
                     "icon": "/static/img/logo.png",
+                    "color": "#4f46e5",
                     "url": f"/dashboard/requests/{instance.id}/"
                 }
                 send_webpush_notification.delay(user_id=approver.id, payload=payload, ttl=1000)
@@ -50,6 +52,8 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
         # Notify requester of status change
         if instance.status in ['approved', 'rejected']:
             approver_name = instance.approver.get_full_name() if instance.approver else None
+            status_display = instance.get_status_display()
+            
             async_to_sync(channel_layer.group_send)(
                 f"user_{instance.requester.id}",
                 {
@@ -58,15 +62,16 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     "title": instance.title,
                     "status": instance.status,
                     "approver_name": approver_name,
-                    "message": f"Your request '{instance.title}' has been {instance.get_status_display().lower()}."
+                    "message": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower())
                 }
             )
 
             # Web Push Notification (Async)
             payload = {
-                "head": f"Request {instance.get_status_display()}",
-                "body": f"Your request '{instance.title}' has been {instance.get_status_display().lower()}.",
+                "title": _("Request {status}").format(status=status_display),
+                "body": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower()),
                 "icon": "/static/img/logo.png",
+                "color": "#4f46e5",
                 "url": f"/dashboard/requests/{instance.id}/"
             }
             send_webpush_notification.delay(user_id=instance.requester.id, payload=payload, ttl=1000)

@@ -2298,3 +2298,12 @@ msgstr "La invitación para %(email)s ha sido cancelada."
 
 msgid "%(available)s seats available (%(used)s of %(total)s used)"
 msgstr "%(available)s asientos disponibles (%(used)s de %(total)s usados)"
+
+msgid "New request from {name}: {title}"
+msgstr "Nueva solicitud de {name}: {title}"
+
+msgid "Request {status}"
+msgstr "Solicitud {status}"
+
+msgid "Your request '{title}' has been {status}."
+msgstr "Tu solicitud '{title}' ha sido {status}."
