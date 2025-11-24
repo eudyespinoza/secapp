@@ -304,7 +304,7 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@secureapprove
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY": config('VAPID_PUBLIC_KEY', default='BHvvFPiU7qxIZvqlnEnjlCoBhOs6Ol2AwflSRt136q0iCIN3zpradCi0MHta8LOST0cGg1W3Iix-WC0zbbEQbi4'),
     "VAPID_PRIVATE_KEY": config('VAPID_PRIVATE_KEY', default='cdfs9Acrz0eR953kiuo0vjPkS9rveSK7CirfL0E96lU'),
-    "VAPID_ADMIN_EMAIL": config('VAPID_ADMIN_EMAIL', default='admin@secureapprove.com'),
+    "VAPID_ADMIN_EMAIL": config('VAPID_ADMIN_EMAIL', default='mailto:admin@secureapprove.com'),
 }
 
 # Celery Configuration

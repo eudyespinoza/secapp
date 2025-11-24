@@ -49,11 +49,28 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
 
                 # Web Push Notification (Async)
                 payload = {
-                    "title": _("New Request"),
+                    "head": _("New Request"),
                     "body": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title),
-                    "icon": "/static/img/logo.png",
-                    "color": "#4f46e5",
-                    "url": f"/dashboard/requests/{instance.id}/"
+                    "icon": "/static/img/logo-push-192.png",
+                    "badge": "/static/img/badge-mono.png",
+                    "image": None,
+                    "url": f"/dashboard/requests/{instance.id}/",
+                    "tag": f"req-{instance.id}",
+                    "renotify": True,
+                    "requireInteraction": True,
+                    "vibrate": [200, 100, 200],
+                    "actions": [
+                        {
+                            "action": "ver",
+                            "title": _("View"),
+                            "icon": "/static/img/icono-verde.png"
+                        },
+                        {
+                            "action": "cerrar",
+                            "title": _("Close"),
+                            "icon": "/static/img/icono-cerrar.png"
+                        }
+                    ]
                 }
                 logger.info(f"Sending WebPush for request {instance.id} to user {approver.id}")
                 send_webpush_notification.delay(user_id=approver.id, payload=payload, ttl=1000)
@@ -98,10 +115,27 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
 
             # Web Push Notification (Async)
             payload = {
-                "title": _("Request {status}").format(status=status_display),
+                "head": _("Request {status}").format(status=status_display),
                 "body": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower()),
-                "icon": "/static/img/logo.png",
-                "color": "#4f46e5",
-                "url": f"/dashboard/requests/{instance.id}/"
+                "icon": "/static/img/logo-push-192.png",
+                "badge": "/static/img/badge-mono.png",
+                "image": None,
+                "url": f"/dashboard/requests/{instance.id}/",
+                "tag": f"req-{instance.id}",
+                "renotify": True,
+                "requireInteraction": True,
+                "vibrate": [200, 100, 200],
+                "actions": [
+                    {
+                        "action": "ver",
+                        "title": _("View"),
+                        "icon": "/static/img/icono-verde.png"
+                    },
+                    {
+                        "action": "cerrar",
+                        "title": _("Close"),
+                        "icon": "/static/img/icono-cerrar.png"
+                    }
+                ]
             }
             send_webpush_notification.delay(user_id=instance.requester.id, payload=payload, ttl=1000)
