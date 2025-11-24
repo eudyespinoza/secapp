@@ -18,7 +18,7 @@
         <div class="col-lg-4">
             <!-- Tenant Info Card -->
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent py-3">
+                <div class="card-header py-3">
                     <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
                         <i class="bi bi-building text-primary"></i>
                         {% trans "Tenant Information" %}
@@ -61,7 +61,7 @@
 
             <!-- Categories Card -->
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-transparent py-3">
+                <div class="card-header py-3">
                     <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
                         <i class="bi bi-tags text-primary"></i>
                         {% trans "Request Categories" %}
@@ -89,7 +89,7 @@
         <div class="col-lg-8">
             <!-- Invite User Card -->
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent py-3">
+                <div class="card-header py-3">
                     <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
                         <i class="bi bi-person-plus text-primary"></i>
                         {% trans "Invite User" %}
@@ -131,7 +131,7 @@
 
             <!-- Users List -->
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
                         <i class="bi bi-people text-primary"></i>
                         {% trans "Active Users" %}
@@ -152,7 +152,7 @@
                                         {{ u.email|first|upper }}
                                     </div>
                                     <div class="text-truncate">
-                                        <div class="fw-medium text-dark" style="font-size: var(--font-sm);">{{ u.email }}</div>
+                                        <div class="fw-medium" style="font-size: var(--font-sm);">{{ u.email }}</div>
                                         {% if u.name %}
                                         <small class="text-muted" style="font-size: var(--font-xs);">{{ u.name }}</small>
                                         {% endif %}
@@ -192,7 +192,7 @@
             <!-- Pending Invites -->
             {% if invites %}
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-transparent py-3">
+                <div class="card-header py-3">
                     <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
                         <i class="bi bi-envelope text-primary"></i>
                         {% trans "Pending Invitations" %}

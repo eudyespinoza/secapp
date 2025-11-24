@@ -1204,7 +1204,7 @@ msgid "Plans"
 msgstr "Planes"
 
 msgid "Cancelled"
-msgstr "Cancelled"
+msgstr "Cancelado"
 
 msgid "Past Due"
 msgstr "Vencido"
@@ -1991,9 +1991,17 @@ msgid ""
 "\n"
 "                    %(total)s request\n"
 "                "
-msgstr ""
+msgid_plural ""
 "\n"
-"                    %(total)s de solicitudes\n"
+"                    %(total)s requests\n"
+"                "
+msgstr[0] ""
+"\n"
+"                    %(total)s solicitud\n"
+"                "
+msgstr[1] ""
+"\n"
+"                    %(total)s solicitudes\n"
 "                "
 
 msgid "All Statuses"
@@ -2457,3 +2465,21 @@ msgstr "He leído y acepto los"
 
 msgid "and"
 msgstr "y"
+
+msgid "Just now"
+msgstr "Justo ahora"
+
+msgid "General"
+msgstr "General"
+
+
+msgid "Total"
+msgstr "Total"
+
+
+msgid "Clear Filters"
+msgstr "Borrar Filtros"
+
+msgid "Search by title or description..."
+msgstr "Buscar por título o descripción..."
+

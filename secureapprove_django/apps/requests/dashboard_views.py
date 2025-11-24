@@ -37,6 +37,7 @@ def dashboard(request):
         'pending_requests': requests_qs.filter(status='pending').count(),
         'approved_requests': requests_qs.filter(status='approved').count(),
         'rejected_requests': requests_qs.filter(status='rejected').count(),
+        'cancelled_requests': requests_qs.filter(status='cancelled').count(),
         'my_requests': requests_qs.filter(requester=request.user).count(),
     }
     
@@ -75,6 +76,7 @@ def dashboard(request):
             'pending': day_requests.filter(status='pending').count(),
             'approved': day_requests.filter(status='approved').count(),
             'rejected': day_requests.filter(status='rejected').count(),
+            'cancelled': day_requests.filter(status='cancelled').count(),
         })
     
     # Pending requests requiring user's attention (if approver)
@@ -84,7 +86,7 @@ def dashboard(request):
             status='pending'
         ).exclude(
             requester=request.user
-        ).select_related('requester').order_by('-created_at')[:5]
+        ).select_related('requester').order_by('-created_at')[:50]
     
     context = {
         'stats': stats,
@@ -115,6 +117,7 @@ def dashboard_api_stats(request):
         'pending': requests_qs.filter(status='pending').count(),
         'approved': requests_qs.filter(status='approved').count(),
         'rejected': requests_qs.filter(status='rejected').count(),
+        'cancelled': requests_qs.filter(status='cancelled').count(),
         'my_requests': requests_qs.filter(requester=request.user).count(),
     }
     
@@ -155,6 +158,7 @@ def dashboard_api_stats(request):
             'pending': day_requests.filter(status='pending').count(),
             'approved': day_requests.filter(status='approved').count(),
             'rejected': day_requests.filter(status='rejected').count(),
+            'cancelled': day_requests.filter(status='cancelled').count(),
         })
     
     # Approval metrics (if user is approver)

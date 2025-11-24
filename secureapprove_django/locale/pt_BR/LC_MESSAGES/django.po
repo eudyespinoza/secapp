@@ -495,7 +495,7 @@ msgstr "Plano"
 #: apps/billing/models.py:363 apps/requests/models.py:36
 #: apps/tenants/models.py:22
 msgid "Cancelled"
-msgstr "Cancelar"
+msgstr "Cancelado"
 
 #: apps/billing/models.py:155
 msgid "Past Due"
@@ -2290,7 +2290,13 @@ msgid_plural ""
 "                    %(total)s requests\n"
 "                "
 msgstr[0] ""
+"\n"
+"                    %(total)s solicitação\n"
+"                "
 msgstr[1] ""
+"\n"
+"                    %(total)s solicitações\n"
+"                "
 
 #: templates/requests/list.html:89
 msgid "All Statuses"
@@ -2618,3 +2624,21 @@ msgstr "Já tem uma conta?"
 
 msgid "Log in"
 msgstr "Entrar"
+
+msgid "Just now"
+msgstr "Agora mesmo"
+
+msgid "General"
+msgstr "Geral"
+
+
+msgid "Total"
+msgstr "Total"
+
+
+msgid "Clear Filters"
+msgstr "Limpar Filtros"
+
+msgid "Search by title or description..."
+msgstr "Pesquisar por título ou descrição..."
+

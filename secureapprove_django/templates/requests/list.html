@@ -74,18 +74,17 @@
                 {% endblocktrans %}
             </p>
         </div>
-        <a href="{% url 'requests:create' %}" class="btn btn-primary">
+        <a href="{% url 'requests:create' %}" class="btn btn-primary" title="{% trans 'New Request' %}">
             <i class="bi bi-plus-lg"></i>
-            {% trans "New Request" %}
         </a>
     </div>
 
     <!-- Filters -->
     <div class="filter-card">
-        <form method="get" class="row g-3">
+        <form method="get" class="row g-3 align-items-end">
             <div class="col-md-3">
                 <label class="form-label">{% trans "Status" %}</label>
-                <select name="status" class="form-select">
+                <select name="status" class="form-select" onchange="this.form.submit()">
                     <option value="all" {% if not status_filter or status_filter == 'all' %}selected{% endif %}>{% trans "All Statuses" %}</option>
                     {% for value, label in statuses %}
                         <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
@@ -95,7 +94,7 @@
             
             <div class="col-md-3">
                 <label class="form-label">{% trans "Category" %}</label>
-                <select name="category" class="form-select">
+                <select name="category" class="form-select" onchange="this.form.submit()">
                     <option value="all" {% if not category_filter or category_filter == 'all' %}selected{% endif %}>{% trans "All Categories" %}</option>
                     {% for value, label in categories %}
                         <option value="{{ value }}" {% if category_filter == value %}selected{% endif %}>{{ label }}</option>
@@ -109,12 +108,12 @@
             </div>
             
             <div class="col-md-2">
-                <label class="form-label">&nbsp;</label>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-outline-primary">
-                        <i class="bi bi-search"></i>
-                        {% trans "Filter" %}
-                    </button>
+                <div class="d-flex gap-2 justify-content-end">
+                    {% if status_filter != 'all' or category_filter != 'all' or search_query %}
+                        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary" title="{% trans 'Clear Filters' %}">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </form>
