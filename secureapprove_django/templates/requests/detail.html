@@ -101,13 +101,12 @@
                 </span>
                 <small class="text-muted">
                     <i class="bi bi-calendar"></i>
-                    {% trans "Created" %} <span class="local-datetime" data-iso="{{ request_obj.created_at|date:'c' }}">{{ request_obj.created_at|date:"F d, Y \a\t H:i" }}</span>
+                    {% trans "Created" %} <span class="local-datetime" data-iso="{{ request_obj.created_at|date:'c' }}">{{ request_obj.created_at }}</span>
                 </small>
             </div>
         </div>
-        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary" title="{% trans 'Back to Requests' %}">
             <i class="bi bi-arrow-left"></i>
-            {% trans "Back to Requests" %}
         </a>
     </div>
 
@@ -133,7 +132,7 @@
                             {% if request_obj.status == 'pending' %}
                                 {% trans "This request is waiting for approval from an administrator." %}
                             {% elif request_obj.status == 'approved' %}
-                                {% trans "This request was approved on" %} <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}</span>
+                                {% trans "This request was approved on" %} <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at }}</span>
                                 {% trans "by" %} {{ request_obj.approver.get_full_name }}.
                             {% elif request_obj.status == 'rejected' %}
                                 {% trans "This request was rejected." %}
@@ -232,7 +231,7 @@
                             <div>
                                 <strong>{% trans "Request Created" %}</strong>
                                 <div class="text-muted small">
-                                    <span class="local-datetime" data-iso="{{ request_obj.created_at|date:'c' }}">{{ request_obj.created_at|date:"F d, Y \a\t H:i" }}</span>
+                                    <span class="local-datetime" data-iso="{{ request_obj.created_at|date:'c' }}">{{ request_obj.created_at }}</span>
                                     {% trans "by" %} {{ request_obj.requester.get_full_name }}
                                 </div>
                             </div>
@@ -247,7 +246,7 @@
                                 <div>
                                     <strong>{% trans "Request Approved" %}</strong>
                                     <div class="text-muted small">
-                                        <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}</span>
+                                        <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at }}</span>
                                         {% trans "by" %} {{ request_obj.approver.get_full_name }}
                                     </div>
                                 </div>
@@ -260,7 +259,7 @@
                                 <div>
                                     <strong>{% trans "Request Rejected" %}</strong>
                                     <div class="text-muted small">
-                                        <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at|date:"F d, Y \a\t H:i" }}</span>
+                                        <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at }}</span>
                                     </div>
                                     {% if request_obj.rejection_reason %}
                                         <div class="mt-1">
