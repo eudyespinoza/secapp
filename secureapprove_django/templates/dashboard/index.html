@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="recent-request-item ${data.status || 'pending'}" id="request-${data.request_id}">
                     <div class="d-flex justify-content-between align-items-start mb-1">
                         <h6 class="mb-0">
-                            <a href="/dashboard/requests/${data.request_id}/" class="text-decoration-none">
+                            <a href="/dashboard/${data.request_id}/" class="text-decoration-none">
                                 ${title}
                             </a>
                         </h6>
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                     <div class="flex-grow-1">
                         <h6 class="mb-1">
-                            <a href="/dashboard/requests/${data.request_id}/" class="text-decoration-none">
+                            <a href="/dashboard/${data.request_id}/" class="text-decoration-none">
                                 ${title}
                             </a>
                         </h6>
