@@ -49,10 +49,11 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
 
                 # Web Push Notification (Async)
                 payload = {
-                    "head": _("New Request"),
+                    "title": _("New Request"),
                     "body": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title),
                     "icon": "/static/img/logo-push-192.png",
                     "badge": "/static/img/badge-mono.png",
+                    "color": "#4f46e5",
                     "image": None,
                     "url": f"/dashboard/{instance.id}/",
                     "tag": f"req-{instance.id}",
@@ -115,10 +116,11 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
 
             # Web Push Notification (Async)
             payload = {
-                "head": _("Request {status}").format(status=status_display),
+                "title": _("Request {status}").format(status=status_display),
                 "body": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower()),
                 "icon": "/static/img/logo-push-192.png",
                 "badge": "/static/img/badge-mono.png",
+                "color": "#4f46e5",
                 "image": None,
                 "url": f"/dashboard/{instance.id}/",
                 "tag": f"req-{instance.id}",
