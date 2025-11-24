@@ -1091,11 +1091,13 @@
             this.ui.showActiveWindow(false);
         }
 
-        async loadMessages() {
+        async loadMessages(showLoading = true) {
             if (!this.state.currentConversationId) return;
 
             try {
-                this.ui.showMessageLoading();
+                if (showLoading) {
+                    this.ui.showMessageLoading();
+                }
                 const messages = await this.api.getMessages(
                     this.state.currentConversationId,
                     this.state.lastMessageId
@@ -1106,7 +1108,7 @@
                     : [];
 
                 if (normalizedMessages.length === 0) {
-                    if (!this.state.lastMessageId) {
+                    if (!this.state.lastMessageId && showLoading) {
                         this.ui.showEmptyState();
                     }
                     return;
@@ -1125,9 +1127,13 @@
                 await this.loadConversations();
             } catch (e) {
                 console.error('Error loading messages:', e);
-                this.ui.showError(this.i18n.errorLoadingMessages);
+                if (showLoading) {
+                    this.ui.showError(this.i18n.errorLoadingMessages);
+                }
             } finally {
-                this.ui.hideMessageLoading();
+                if (showLoading) {
+                    this.ui.hideMessageLoading();
+                }
             }
         }
 
@@ -1167,8 +1173,8 @@
                 this.elements.attachmentInput.value = '';
                 this.updateSendButtonState();
 
-                // Reload messages
-                await this.loadMessages();
+                // Reload messages silently
+                await this.loadMessages(false);
             } catch (e) {
                 console.error('Error sending message:', e);
                 this.ui.showError(this.i18n.errorSendingMessage);
@@ -1363,7 +1369,7 @@
 
                 // Keep active conversation fresh even if WebSocket is connected
                 if (this.state.panelVisible && this.state.currentConversationId) {
-                    this.loadMessages();
+                    this.loadMessages(false);
                 }
 
                 // If socket got disconnected silently, attempt reconnect
