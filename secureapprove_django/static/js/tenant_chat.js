@@ -944,6 +944,12 @@
             // Typing indicator
             this.elements.messageInput.addEventListener('input', () => {
                 this.handleTyping();
+                this.updateSendButtonState();
+            });
+
+            // File input change
+            this.elements.attachmentInput.addEventListener('change', () => {
+                this.updateSendButtonState();
             });
 
             // Prevent form submission on Enter (except with Shift+Enter)
@@ -957,6 +963,20 @@
             if (this.elements.closeConversation) {
                 this.elements.closeConversation.addEventListener('click', () => this.closeConversation());
             }
+            
+            // Initialize button state
+            this.updateSendButtonState();
+        }
+
+        updateSendButtonState() {
+            if (!this.elements.sendButton) return;
+            
+            const content = this.elements.messageInput.value.trim();
+            const files = this.elements.attachmentInput.files;
+            const hasContent = content.length > 0;
+            const hasFiles = files && files.length > 0;
+            
+            this.elements.sendButton.disabled = !(hasContent || hasFiles);
         }
 
         togglePanel() {
@@ -1130,22 +1150,41 @@
             try {
                 if (sendButton) {
                     sendButton.disabled = true;
+                    // Change text to indicate loading/sending
+                    const originalText = sendButton.innerHTML;
+                    sendButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+                    
+                    await this.api.sendMessage(this.state.currentConversationId, content, files);
+                    
+                    // Restore text
+                    sendButton.innerHTML = originalText;
+                } else {
+                    await this.api.sendMessage(this.state.currentConversationId, content, files);
                 }
-                await this.api.sendMessage(this.state.currentConversationId, content, files);
 
                 // Clear inputs
                 this.elements.messageInput.value = '';
                 this.elements.attachmentInput.value = '';
+                this.updateSendButtonState();
 
                 // Reload messages
                 await this.loadMessages();
             } catch (e) {
                 console.error('Error sending message:', e);
                 this.ui.showError(this.i18n.errorSendingMessage);
-            } finally {
                 if (sendButton) {
-                    sendButton.disabled = false;
+                    sendButton.innerHTML = this.i18n.send || 'Send'; // Fallback if original text lost
                 }
+            } finally {
+                // Button state will be updated by updateSendButtonState, but we need to re-enable it first if it was disabled for sending
+                // Actually updateSendButtonState will disable it if inputs are empty, which is correct.
+                // But we need to remove the "sending" disabled state if it failed?
+                // The updateSendButtonState checks inputs. If inputs are cleared (success), it disables.
+                // If inputs are NOT cleared (failure), it enables (if content exists).
+                
+                // We just need to make sure we don't leave it permanently disabled if we manually disabled it.
+                // updateSendButtonState handles the logic based on content.
+                this.updateSendButtonState();
             }
         }
 
