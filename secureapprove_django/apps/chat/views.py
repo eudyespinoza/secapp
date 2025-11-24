@@ -294,75 +294,86 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # Create message with attachments
-        with transaction.atomic():
-            msg = ChatMessage.objects.create(
-                conversation=conv,
-                sender=user,
-                content=content,
-                has_attachments=bool(files),
+        try:
+            # Create message with attachments
+            with transaction.atomic():
+                msg = ChatMessage.objects.create(
+                    conversation=conv,
+                    sender=user,
+                    content=content,
+                    has_attachments=bool(files),
+                )
+
+                # Create attachments
+                for f in files:
+                    ChatAttachment.objects.create(
+                        message=msg,
+                        file=f,
+                        filename=f.name,
+                        size=f.size,
+                        content_type=getattr(f, 'content_type', ''),
+                    )
+
+                # Create delivery records for all participants except sender
+                recipients = conv.participant_set.exclude(user=user).select_related('user')
+                now = timezone.now()
+                deliveries = [
+                    ChatMessageDelivery(
+                        message=msg,
+                        recipient=recipient.user,
+                        sent_at=now,
+                    )
+                    for recipient in recipients
+                ]
+                ChatMessageDelivery.objects.bulk_create(deliveries)
+
+                # Update unread counts for recipients
+                for recipient in recipients:
+                    recipient.unread_count += 1
+                    recipient.save(update_fields=['unread_count'])
+
+                    # Send Web Push Notification
+                    if not recipient.is_muted:
+                        payload = {
+                            "title": _("New message from {name}").format(name=user.get_full_name() or user.email),
+                            "body": content[:100] if content else _("Sent an attachment"),
+                            "icon": "/static/img/logo.png",
+                            "tag": f"chat-{conv.id}",
+                            "url": f"/dashboard/?chat_id={conv.id}"
+                        }
+                        try:
+                            send_webpush_notification.delay(user_id=recipient.user.id, payload=payload, ttl=1000)
+                        except Exception as e:
+                            logger.error(f"Failed to queue webpush notification: {e}")
+
+            # Serialize response
+            serializer = ChatMessageSerializer(msg, context={'request': request})
+
+            logger.info(
+                "[CHAT] Sending WS message_created conversation=%s tenant=%s message=%s",
+                conv.id,
+                conv.tenant_id,
+                msg.id,
             )
 
-            # Create attachments
-            for f in files:
-                ChatAttachment.objects.create(
-                    message=msg,
-                    file=f,
-                    filename=f.name,
-                    size=f.size,
-                    content_type=getattr(f, 'content_type', ''),
-                )
+            # Broadcast via WebSocket
+            broadcast_to_conversation(
+                conv,
+                "chat_message_created",
+                {
+                    "conversation_id": str(conv.id),
+                    "message": serializer.data,
+                },
+            )
 
-            # Create delivery records for all participants except sender
-            recipients = conv.participant_set.exclude(user=user).select_related('user')
-            now = timezone.now()
-            deliveries = [
-                ChatMessageDelivery(
-                    message=msg,
-                    recipient=recipient.user,
-                    sent_at=now,
-                )
-                for recipient in recipients
-            ]
-            ChatMessageDelivery.objects.bulk_create(deliveries)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            # Update unread counts for recipients
-            for recipient in recipients:
-                recipient.unread_count += 1
-                recipient.save(update_fields=['unread_count'])
-
-                # Send Web Push Notification
-                if not recipient.is_muted:
-                    payload = {
-                        "title": _("New message from {name}").format(name=user.get_full_name() or user.email),
-                        "body": content[:100] if content else _("Sent an attachment"),
-                        "icon": "/static/img/logo.png",
-                        "tag": f"chat-{conv.id}",
-                        "url": f"/dashboard/?chat_id={conv.id}"
-                    }
-                    send_webpush_notification.delay(user_id=recipient.user.id, payload=payload, ttl=1000)
-
-        # Serialize response
-        serializer = ChatMessageSerializer(msg, context={'request': request})
-
-        logger.info(
-            "[CHAT] Sending WS message_created conversation=%s tenant=%s message=%s",
-            conv.id,
-            conv.tenant_id,
-            msg.id,
-        )
-
-        # Broadcast via WebSocket
-        broadcast_to_conversation(
-            conv,
-            "chat_message_created",
-            {
-                "conversation_id": str(conv.id),
-                "message": serializer.data,
-            },
-        )
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error(f"Error creating message: {e}", exc_info=True)
+            return Response(
+                {'error': f'Internal server error: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
     @action(detail=True, methods=['post'])
