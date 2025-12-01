@@ -7,6 +7,10 @@ set -e
 
 echo "[*] Starting SecureApprove initialization..."
 
+# Ensure media directories exist and are writable
+echo "[*] Ensuring media directories exist..."
+mkdir -p /app/media/chat_attachments /app/media/attachments /app/logs 2>/dev/null || true
+
 # Wait for database
 echo "[*] Waiting for PostgreSQL on ${DB_HOST}:${DB_PORT}..."
 while ! nc -z "$DB_HOST" "$DB_PORT"; do

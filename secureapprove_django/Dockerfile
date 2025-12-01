@@ -33,8 +33,8 @@ RUN chmod +x docker-entrypoint.sh
 # Compile translation messages
 RUN python manage.py compilemessages || echo "No translations to compile"
 
-# Create directories first
-RUN mkdir -p staticfiles media logs
+# Create directories first (including chat attachments subdirectory)
+RUN mkdir -p staticfiles media/chat_attachments media/attachments logs
 
 # Verify tenant_chat.js exists before collectstatic
 RUN ls -la apps/chat/static/chat/js/ || echo "Warning: chat/js directory not found"

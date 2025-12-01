@@ -105,14 +105,21 @@ fi
 echo -e "${GREEN}[2/8] Pulling latest images${NC}"
 $DOCKER_COMPOSE -f "$COMPOSE_FILE" pull
 
-echo -e "${GREEN}[3/8] Building services${NC}"
+echo -e "${GREEN}[3/8] Ensuring media directories with proper permissions${NC}"
+# Create media directories if they don't exist
+mkdir -p secureapprove_django/media/chat_attachments secureapprove_django/media/attachments logs
+# Set permissions (777 to ensure container can write, or use chown 1000:1000 for more security)
+chmod -R 777 secureapprove_django/media 2>/dev/null || true
+echo "Media directories created with write permissions"
+
+echo -e "${GREEN}[4/8] Building services${NC}"
 $DOCKER_COMPOSE -f "$COMPOSE_FILE" build
 
 echo -e "${GREEN}[*] Applying new containers with updated image/config${NC}"
 $DOCKER_COMPOSE -f "$COMPOSE_FILE" up -d
 
 if [ "$SKIP_MIGRATIONS" = false ]; then
-    echo -e "${GREEN}[4/8] Running database migrations${NC}"
+    echo -e "${GREEN}[5/9] Running database migrations${NC}"
     
     # Wait for database to be ready
     echo "Waiting for database..."
@@ -147,7 +154,7 @@ if [ "$SKIP_MIGRATIONS" = false ]; then
         fi
     fi
 else
-    echo -e "${YELLOW}[4/8] Skipping migrations (--skip-migrations flag)${NC}"
+    echo -e "${YELLOW}[5/9] Skipping migrations (--skip-migrations flag)${NC}"
 fi
 
 echo -e "${GREEN}[5/8] Collecting static files${NC}"
