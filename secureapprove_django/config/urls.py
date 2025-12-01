@@ -162,8 +162,11 @@ print(f"DEBUG: i18n_patterns result: {i18n_urls}")
 urlpatterns += i18n_urls
 
 # Static and media files
+# Always serve media files (needed for user uploads like chat attachments)
+# In production, consider using a CDN or nginx for better performance
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     
     # Debug toolbar
