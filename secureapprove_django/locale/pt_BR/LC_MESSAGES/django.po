@@ -701,6 +701,12 @@ msgstr "Descrição detalhada do seu pedido"
 msgid "Request Information"
 msgstr "Informações da Solicitação"
 
+msgid "Attachments"
+msgstr "Anexos"
+
+msgid "You can select multiple files. Max size 25MB per file."
+msgstr "Você pode selecionar vários arquivos. Tamanho máximo de 25MB por arquivo."
+
 # ================================================
 # Request Actions
 # ================================================
@@ -2630,15 +2636,3 @@ msgstr "Agora mesmo"
 
 msgid "General"
 msgstr "Geral"
-
-
-msgid "Total"
-msgstr "Total"
-
-
-msgid "Clear Filters"
-msgstr "Limpar Filtros"
-
-msgid "Search by title or description..."
-msgstr "Pesquisar por título ou descrição..."
-

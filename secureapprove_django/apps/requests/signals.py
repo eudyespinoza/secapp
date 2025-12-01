@@ -53,12 +53,15 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     "body": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title),
                     "icon": "/static/img/logo-push-192.png",
                     "badge": "/static/img/badge-mono.png",
-                    "color": "#4f46e5",
+                    "color": "#4f46e5",  # Primary indigo color
                     "image": None,
                     "url": f"/dashboard/{instance.id}/",
-                    "tag": f"req-{instance.id}",
+                    "tag": f"req-{instance.id}-new",
                     "renotify": True,
                     "requireInteraction": True,
+                    "notificationType": "new_request",
+                    "status": "pending",
+                    "requestId": str(instance.id),
                     "vibrate": [200, 100, 200],
                     "actions": [
                         {
@@ -115,17 +118,22 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
             )
 
             # Web Push Notification (Async)
+            # Use appropriate color based on status
+            notification_color = "#059669" if instance.status == 'approved' else "#dc2626"  # success or danger
             payload = {
                 "title": _("Request {status}").format(status=status_display),
                 "body": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower()),
                 "icon": "/static/img/logo-push-192.png",
                 "badge": "/static/img/badge-mono.png",
-                "color": "#4f46e5",
+                "color": notification_color,
                 "image": None,
                 "url": f"/dashboard/{instance.id}/",
-                "tag": f"req-{instance.id}",
+                "tag": f"req-{instance.id}-{instance.status}",
                 "renotify": True,
                 "requireInteraction": True,
+                "notificationType": instance.status,
+                "status": instance.status,
+                "requestId": str(instance.id),
                 "vibrate": [200, 100, 200],
                 "actions": [
                     {

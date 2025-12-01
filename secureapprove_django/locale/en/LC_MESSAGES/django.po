@@ -751,6 +751,12 @@ msgstr "Detailed description of your request"
 msgid "Request Information"
 msgstr "Request Information"
 
+msgid "Attachments"
+msgstr "Attachments"
+
+msgid "You can select multiple files. Max size 25MB per file."
+msgstr "You can select multiple files. Max size 25MB per file."
+
 # ================================================
 # Request Actions
 # ================================================

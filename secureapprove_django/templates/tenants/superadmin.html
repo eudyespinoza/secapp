@@ -3,6 +3,195 @@
 
 {% block title %}{% trans "Super Admin - Tenant Management" %} - SecureApprove{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Dark mode styles */
+    [data-theme="dark"] .bg-light {
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .table-hover tbody tr:hover {
+        background-color: var(--hover-bg) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .badge.bg-light {
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-color) !important;
+        border: 1px solid var(--border-color);
+    }
+    
+    /* Cards */
+    [data-theme="dark"] .card {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .card-header {
+        background-color: var(--bg-secondary) !important;
+        border-bottom-color: var(--border-color) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .card-body {
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+    }
+    
+    /* Tables */
+    [data-theme="dark"] .table {
+        color: var(--text-color) !important;
+        --bs-table-bg: var(--card-bg);
+        --bs-table-striped-bg: var(--bg-secondary);
+        --bs-table-hover-bg: var(--hover-bg);
+    }
+    [data-theme="dark"] .table thead th {
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-color) !important;
+        border-color: var(--border-color) !important;
+    }
+    [data-theme="dark"] .table tbody td {
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        border-color: var(--border-color) !important;
+    }
+    [data-theme="dark"] .table-bordered {
+        border-color: var(--border-color) !important;
+    }
+    
+    /* Modals */
+    [data-theme="dark"] .modal-content {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .modal-header {
+        background-color: var(--bg-secondary) !important;
+        border-bottom-color: var(--border-color) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .modal-header .modal-title {
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .modal-header .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+    [data-theme="dark"] .modal-body {
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .modal-footer {
+        background-color: var(--bg-secondary) !important;
+        border-top-color: var(--border-color) !important;
+    }
+    
+    /* Forms */
+    [data-theme="dark"] .form-control {
+        background-color: var(--input-bg) !important;
+        border-color: var(--input-border) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .form-control:focus {
+        background-color: var(--input-bg) !important;
+        border-color: #0d6efd !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .form-select {
+        background-color: var(--input-bg) !important;
+        border-color: var(--input-border) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .form-label {
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .form-text {
+        color: var(--text-muted) !important;
+    }
+    
+    /* Text colors */
+    [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, 
+    [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] p {
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .text-muted {
+        color: var(--text-muted) !important;
+    }
+    [data-theme="dark"] small {
+        color: var(--text-muted) !important;
+    }
+    [data-theme="dark"] strong {
+        color: var(--text-color) !important;
+    }
+    
+    /* Dropdown menu */
+    [data-theme="dark"] .dropdown-menu {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+    }
+    [data-theme="dark"] .dropdown-item {
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .dropdown-item:hover,
+    [data-theme="dark"] .dropdown-item:focus {
+        background-color: var(--hover-bg) !important;
+        color: var(--text-color) !important;
+    }
+    [data-theme="dark"] .dropdown-divider {
+        border-color: var(--border-color) !important;
+    }
+    
+    /* Buttons */
+    [data-theme="dark"] .btn-outline-secondary {
+        color: var(--text-color) !important;
+        border-color: var(--border-color) !important;
+    }
+    [data-theme="dark"] .btn-outline-secondary:hover {
+        background-color: var(--hover-bg) !important;
+    }
+    
+    /* Badge styles for status */
+    [data-theme="dark"] .badge.bg-success {
+        background-color: #198754 !important;
+    }
+    [data-theme="dark"] .badge.bg-warning {
+        background-color: #ffc107 !important;
+        color: #000 !important;
+    }
+    [data-theme="dark"] .badge.bg-danger {
+        background-color: #dc3545 !important;
+    }
+    [data-theme="dark"] .badge.bg-secondary {
+        background-color: #6c757d !important;
+    }
+    
+    /* Links */
+    [data-theme="dark"] a:not(.btn):not(.dropdown-item):not(.nav-link) {
+        color: #6ea8fe !important;
+    }
+    [data-theme="dark"] a:not(.btn):not(.dropdown-item):not(.nav-link):hover {
+        color: #8bb9fe !important;
+    }
+    
+    /* Border utilities */
+    [data-theme="dark"] .border {
+        border-color: var(--border-color) !important;
+    }
+    [data-theme="dark"] .border-0 {
+        border-color: transparent !important;
+    }
+    [data-theme="dark"] .rounded {
+        border-color: var(--border-color) !important;
+    }
+    
+    /* Pricing cards */
+    [data-theme="dark"] .p-3.border.rounded {
+        background-color: var(--bg-secondary) !important;
+        border-color: var(--border-color) !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <!-- Header -->

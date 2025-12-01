@@ -12,6 +12,22 @@ from .models import ApprovalRequest
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
+
+class MultipleFileField(forms.FileField):
+    """Custom file field that handles multiple files"""
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+
 class DynamicRequestForm(forms.ModelForm):
     """
     Dynamic form that shows/hides fields based on request category
@@ -94,7 +110,7 @@ class DynamicRequestForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Explain the reason for this request')})
     )
     
-    attachments = forms.FileField(
+    attachments = MultipleFileField(
         label=_('Attachments'),
         required=False,
         widget=MultipleFileInput(attrs={'multiple': True, 'class': 'form-control'}),
@@ -154,6 +170,7 @@ class DynamicRequestForm(forms.ModelForm):
         
         # Setup crispy forms helper
         self.helper = FormHelper()
+        self.helper.form_tag = False  # We use our own form tag in the template
         self.helper.form_method = 'post'
         self.helper.form_class = 'needs-validation'
         self.helper.attrs = {'novalidate': True, 'enctype': 'multipart/form-data'}

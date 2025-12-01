@@ -127,6 +127,9 @@
 
             this.subscribeButton.addEventListener('click', () => this.subscribe());
             
+            // Register Service Worker immediately to keep it alive for background notifications
+            this.registerServiceWorker();
+            
             // Check current status and auto-subscribe if permission is granted
             this.checkSubscriptionStatus();
             
@@ -135,6 +138,41 @@
                 // This might fail if user gesture is strictly required by browser, 
                 // but it's worth trying for seamless experience.
                 this.subscribe().catch(e => console.log('[Push] Auto-subscribe failed (likely needs gesture):', e));
+            }
+        }
+
+        async registerServiceWorker() {
+            try {
+                const registration = await navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH, {
+                    updateViaCache: 'none'
+                });
+                console.log('[Push] Service Worker registered on page load');
+                
+                // Check for updates periodically
+                registration.update();
+                
+                // Handle service worker updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    console.log('[Push] New Service Worker found, installing...');
+                    
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New service worker is installed but waiting
+                            // Tell it to activate immediately
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                    });
+                });
+                
+                // Listen for controller change to reload if needed
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    console.log('[Push] Service Worker controller changed');
+                });
+                
+                return registration;
+            } catch (e) {
+                console.error('[Push] Service Worker registration failed:', e);
             }
         }
 
@@ -183,10 +221,22 @@
                     return;
                 }
 
-                // 1. Register Service Worker
-                const registration = await navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH);
+                // 1. Register Service Worker with updateViaCache: 'none' to ensure fresh SW
+                const registration = await navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH, {
+                    updateViaCache: 'none'
+                });
+                
+                // Wait for the service worker to be ready
                 await navigator.serviceWorker.ready;
                 console.log('[Push] Service Worker registered');
+
+                // Check for updates and force activation
+                registration.update();
+                
+                // If there's a waiting service worker, tell it to activate immediately
+                if (registration.waiting) {
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                }
 
                 // 2. Check if already subscribed
                 let subscription = await registration.pushManager.getSubscription();

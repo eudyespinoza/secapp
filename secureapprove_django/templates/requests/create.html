@@ -107,7 +107,7 @@
                     <!-- Main Form -->
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
-                            <form method="post" id="request-form" novalidate>
+                            <form method="post" id="request-form" novalidate enctype="multipart/form-data">
                                 {% csrf_token %}
                                 {% crispy form %}
                             </form>

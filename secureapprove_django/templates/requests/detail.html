@@ -9,16 +9,23 @@
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    color: #212529;
 }
 
 .status-pending { background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); }
 .status-approved { background: linear-gradient(135deg, #d1edff 0%, #a8e6cf 100%); }
 .status-rejected { background: linear-gradient(135deg, #f8d7da 0%, #ffb3ba 100%); }
 
+.status-card h5,
+.status-card p,
+.status-card .amount-display {
+    color: #212529 !important;
+}
+
 .timeline-item {
     position: relative;
     padding-left: 2rem;
-    border-left: 2px solid #dee2e6;
+    border-left: 2px solid var(--border-color, #dee2e6);
     margin-bottom: 1rem;
 }
 
@@ -40,26 +47,31 @@
 }
 
 .metadata-table th {
-    background-color: #f8f9fa;
+    background-color: var(--bg-secondary, #f8f9fa);
     font-weight: 600;
     width: 30%;
+    color: var(--text-primary, #212529);
+}
+
+.metadata-table td {
+    color: var(--text-primary, #212529);
 }
 
 .action-card {
-    background: #f8f9fa;
+    background: var(--bg-secondary, #f8f9fa);
     border-radius: 8px;
     padding: 1.5rem;
 }
 
 .approval-form {
-    background: #fff;
+    background: var(--card-bg, #fff);
     border: 2px solid #28a745;
     border-radius: 8px;
     padding: 1.5rem;
 }
 
 .rejection-form {
-    background: #fff;
+    background: var(--card-bg, #fff);
     border: 2px solid #dc3545;
     border-radius: 8px;
     padding: 1.5rem;
@@ -80,10 +92,108 @@
     font-size: 2rem;
     font-weight: 700;
     color: #2c3e50;
-    background: #f8f9fa;
+    background: var(--bg-secondary, #f8f9fa);
     padding: 1rem;
     border-radius: 8px;
     text-align: center;
+}
+
+/* Dark mode support */
+[data-theme="dark"] .status-card {
+    color: #212529 !important;
+}
+
+[data-theme="dark"] .status-card h5,
+[data-theme="dark"] .status-card p,
+[data-theme="dark"] .status-card strong,
+[data-theme="dark"] .status-card .amount-display {
+    color: #212529 !important;
+}
+
+[data-theme="dark"] .metadata-table {
+    --bs-table-bg: var(--card-bg);
+}
+
+[data-theme="dark"] .metadata-table th {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .metadata-table td {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .card-header {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .card-body {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .card-body h6 {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .card-body p {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .card-body .fw-bold {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .list-group-item {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .approval-form {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .rejection-form {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .action-card {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+[data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .timeline-item {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .table {
+    --bs-table-bg: var(--card-bg);
+    --bs-table-color: var(--text-color);
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table td {
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-muted) !important;
 }
 </style>
 {% endblock %}

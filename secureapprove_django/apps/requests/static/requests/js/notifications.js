@@ -53,8 +53,44 @@
 
             this.subscribeButton.addEventListener('click', () => this.subscribe());
             
+            // Register Service Worker immediately to keep it alive for background notifications
+            this.registerServiceWorker();
+            
             // Check current status
             this.checkSubscriptionStatus();
+            
+            // Auto-subscribe if permission is already granted
+            if (Notification.permission === 'granted') {
+                this.subscribe().catch(e => console.log('[Push] Auto-subscribe failed:', e));
+            }
+        }
+
+        async registerServiceWorker() {
+            try {
+                const registration = await navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH, {
+                    updateViaCache: 'none'
+                });
+                console.log('[Push] Service Worker registered on page load');
+                
+                // Check for updates periodically
+                registration.update();
+                
+                // Handle service worker updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    console.log('[Push] New Service Worker found, installing...');
+                    
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                    });
+                });
+                
+                return registration;
+            } catch (e) {
+                console.error('[Push] Service Worker registration failed:', e);
+            }
         }
 
         async checkSubscriptionStatus() {
@@ -96,10 +132,25 @@
 
         async subscribe() {
             try {
-                // 1. Register Service Worker
-                const registration = await navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH);
+                // Check permission first
+                if (Notification.permission === 'denied') {
+                    alert('Notifications are blocked. Please enable them in your browser settings.');
+                    return;
+                }
+
+                // 1. Register Service Worker with updateViaCache: 'none'
+                const registration = await navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH, {
+                    updateViaCache: 'none'
+                });
                 await navigator.serviceWorker.ready;
                 console.log('[Push] Service Worker registered');
+
+                // Force update and activation
+                registration.update();
+                
+                if (registration.waiting) {
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                }
 
                 // 2. Check if already subscribed
                 let subscription = await registration.pushManager.getSubscription();

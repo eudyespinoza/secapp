@@ -422,6 +422,12 @@ msgstr "ID del Documento"
 msgid "Reason"
 msgstr "Motivo"
 
+msgid "Attachments"
+msgstr "Adjuntos"
+
+msgid "You can select multiple files. Max size 25MB per file."
+msgstr "Puedes seleccionar varios archivos. Tamaño máximo 25MB por archivo."
+
 # ================================================
 # Request Actions
 # ================================================
@@ -2376,9 +2382,6 @@ msgstr "Comenzar prueba"
 msgid "By signing up, you agree to our Terms of Service and Privacy Policy."
 msgstr "Al registrarte, aceptas nuestros Términos de servicio y Política de privacidad."
 
-msgid "Already have an account?"
-msgstr "¿Ya tienes una cuenta?"
-
 msgid "Log in"
 msgstr "Iniciar sesión"
 
@@ -2451,9 +2454,6 @@ msgstr "5. Limitación de Responsabilidad"
 msgid "SecureApprove shall not be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service."
 msgstr "SecureApprove no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo, incluyendo, entre otros, pérdida de ganancias, datos, uso, buena voluntad u otras pérdidas intangibles, resultantes de su acceso o uso o incapacidad para acceder o usar el servicio."
 
-msgid "Back to Home"
-msgstr "Volver al Inicio"
-
 msgid "Terms & Conditions"
 msgstr "Términos y Condiciones"
 
@@ -2471,15 +2471,3 @@ msgstr "Justo ahora"
 
 msgid "General"
 msgstr "General"
-
-
-msgid "Total"
-msgstr "Total"
-
-
-msgid "Clear Filters"
-msgstr "Borrar Filtros"
-
-msgid "Search by title or description..."
-msgstr "Buscar por título o descripción..."
-

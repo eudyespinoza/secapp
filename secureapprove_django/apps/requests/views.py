@@ -71,30 +71,48 @@ def request_list(request):
 @login_required
 def create_request(request):
     """Create a new approval request"""
+    import logging
+    logger = logging.getLogger(__name__)
     
     if request.method == 'POST':
+        logger.info(f"[CREATE_REQUEST] POST received. FILES keys: {list(request.FILES.keys())}")
+        logger.info(f"[CREATE_REQUEST] FILES: {request.FILES}")
+        
         form = DynamicRequestForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             approval_request = form.save()
             
-            # Handle attachments
-            files = request.FILES.getlist('attachments')
+            # Handle attachments - get from cleaned_data or FILES
+            files = form.cleaned_data.get('attachments', [])
+            if not files:
+                files = request.FILES.getlist('attachments')
+            
+            # Ensure files is a list
+            if files and not isinstance(files, (list, tuple)):
+                files = [files]
+            
+            logger.info(f"[CREATE_REQUEST] Attachments count: {len(files) if files else 0}")
+            
             from .models import RequestAttachment
             
             for f in files:
-                RequestAttachment.objects.create(
-                    request=approval_request,
-                    file=f,
-                    filename=f.name,
-                    file_size=f.size,
-                    content_type=f.content_type
-                )
+                if f:  # Check file is not None/empty
+                    logger.info(f"[CREATE_REQUEST] Saving attachment: {f.name}, size: {f.size}")
+                    RequestAttachment.objects.create(
+                        request=approval_request,
+                        file=f,
+                        filename=f.name,
+                        file_size=f.size,
+                        content_type=f.content_type
+                    )
             
             messages.success(
                 request, 
                 _('Your request "{}" has been submitted successfully.').format(approval_request.title)
             )
             return redirect('requests:detail', pk=approval_request.pk)
+        else:
+            logger.error(f"[CREATE_REQUEST] Form errors: {form.errors}")
     else:
         form = DynamicRequestForm(user=request.user)
     

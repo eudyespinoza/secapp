@@ -26,7 +26,13 @@ def service_worker(request):
     try:
         with open(path, 'r') as f:
             content = f.read()
-        return HttpResponse(content, content_type='application/javascript')
+        response = HttpResponse(content, content_type='application/javascript')
+        # Prevent caching of service worker for proper updates
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        response['Service-Worker-Allowed'] = '/'
+        return response
     except FileNotFoundError:
         return HttpResponse("/* Service Worker Not Found */", content_type='application/javascript', status=404)
 

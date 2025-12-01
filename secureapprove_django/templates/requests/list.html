@@ -12,9 +12,19 @@
     margin-bottom: 1.5rem;
 }
 
+[data-theme="dark"] .filter-card {
+    background: #2b3035;
+    border: 1px solid #495057;
+}
+
 .request-card {
     transition: all 0.2s ease;
     border: 1px solid #dee2e6;
+}
+
+[data-theme="dark"] .request-card {
+    background-color: #212529;
+    border-color: #495057;
 }
 
 .request-card:hover {
@@ -47,6 +57,10 @@
     color: #2c3e50;
 }
 
+[data-theme="dark"] .amount-display {
+    color: #e9ecef;
+}
+
 .metadata-pill {
     background: #e9ecef;
     color: #495057;
@@ -56,6 +70,11 @@
     margin-right: 0.25rem;
     margin-bottom: 0.25rem;
     display: inline-block;
+}
+
+[data-theme="dark"] .metadata-pill {
+    background: #343a40;
+    color: #dee2e6;
 }
 </style>
 {% endblock %}
@@ -104,7 +123,7 @@
             
             <div class="col-md-4">
                 <label class="form-label">{% trans "Search" %}</label>
-                <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title or description...' %}" value="{{ search_query|default:'' }}">
+                <input type="text" name="q" id="searchInput" class="form-control" placeholder="{% trans 'Search by title or description...' %}" value="{{ search_query|default:'' }}">
             </div>
             
             <div class="col-md-2">
@@ -121,9 +140,9 @@
 
     <!-- Requests List -->
     {% if page_obj.object_list %}
-        <div class="row">
+        <div class="row" id="requestsContainer">
             {% for request_obj in page_obj.object_list %}
-                <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="col-lg-6 col-xl-4 mb-4 request-item" data-title="{{ request_obj.title|lower }}" data-description="{{ request_obj.description|lower }}">
                     <div class="card request-card h-100 position-relative" data-request-id="{{ request_obj.pk }}">
                         <!-- Priority Indicator -->
                         <div class="priority-indicator priority-{{ request_obj.priority }}"></div>
@@ -399,5 +418,43 @@
             }
         }
     });
+
+    // Dynamic search - client-side filtering
+    const searchInput = document.getElementById('searchInput');
+    const requestItems = document.querySelectorAll('.request-item');
+    
+    if (searchInput && requestItems.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            
+            requestItems.forEach(item => {
+                const title = item.dataset.title || '';
+                const description = item.dataset.description || '';
+                
+                if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no results message
+            const visibleItems = document.querySelectorAll('.request-item:not([style*="display: none"])');
+            let noResultsMsg = document.getElementById('noSearchResults');
+            
+            if (visibleItems.length === 0 && searchTerm !== '') {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.id = 'noSearchResults';
+                    noResultsMsg.className = 'col-12 text-center py-5 text-muted';
+                    noResultsMsg.innerHTML = '<i class="bi bi-search display-4 mb-3 d-block opacity-50"></i>{% trans "No requests match your search." %}';
+                    document.getElementById('requestsContainer').appendChild(noResultsMsg);
+                }
+                noResultsMsg.style.display = '';
+            } else if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+        });
+    }
 </script>
 {% endblock %}
