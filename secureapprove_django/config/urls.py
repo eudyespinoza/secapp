@@ -3,12 +3,12 @@
 # ==================================================
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 print(f"DEBUG: urls.py loaded. LANGUAGES={settings.LANGUAGES}")
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.i18n import set_language
 from django.utils.translation import activate
@@ -19,6 +19,16 @@ from rest_framework import permissions
 
 from django.views.generic import TemplateView
 import os
+import mimetypes
+
+# Serve media files (works in production with DEBUG=False)
+def serve_media(request, path):
+    """Serve media files for user uploads (chat attachments, etc.)"""
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        content_type, _ = mimetypes.guess_type(file_path)
+        return FileResponse(open(file_path, 'rb'), content_type=content_type or 'application/octet-stream')
+    raise Http404("File not found")
 
 # Custom view for Service Worker to avoid TemplateView issues
 def service_worker(request):
@@ -161,10 +171,11 @@ print(f"DEBUG: i18n_patterns result: {i18n_urls}")
 
 urlpatterns += i18n_urls
 
-# Static and media files
-# Always serve media files (needed for user uploads like chat attachments)
-# In production, consider using a CDN or nginx for better performance
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve media files (always, even in production)
+# This custom view works with DEBUG=False unlike django.conf.urls.static
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve_media, name='serve_media'),
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
