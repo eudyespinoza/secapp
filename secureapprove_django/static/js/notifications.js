@@ -125,7 +125,7 @@
                 return;
             }
 
-            this.subscribeButton.addEventListener('click', () => this.subscribe());
+            this.subscribeButton.addEventListener('click', () => this.subscribe(true));
             
             // Register Service Worker immediately to keep it alive for background notifications
             this.registerServiceWorker();
@@ -134,10 +134,35 @@
             this.checkSubscriptionStatus();
             
             if (Notification.permission === 'granted') {
-                // Attempt to ensure we have a valid push subscription
-                // This might fail if user gesture is strictly required by browser, 
-                // but it's worth trying for seamless experience.
-                this.subscribe().catch(e => console.log('[Push] Auto-subscribe failed (likely needs gesture):', e));
+                // Silently ensure subscription is valid (no toast)
+                this.ensureSubscription().catch(e => console.log('[Push] Auto-subscribe failed:', e));
+            }
+        }
+
+        async ensureSubscription() {
+            // Silent subscription check/renewal - no user feedback
+            try {
+                const registration = await navigator.serviceWorker.getRegistration(CONFIG.SERVICE_WORKER_PATH);
+                if (!registration) {
+                    await this.registerServiceWorker();
+                    return;
+                }
+                
+                let subscription = await registration.pushManager.getSubscription();
+                if (!subscription) {
+                    // Need to subscribe
+                    const convertedVapidKey = this.urlBase64ToUint8Array(this.vapidKey);
+                    subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: convertedVapidKey
+                    });
+                    // Send to server silently
+                    await this.sendSubscriptionToServer(subscription);
+                    console.log('[Push] Silent subscription successful');
+                }
+                this.updateButtonState(true);
+            } catch (e) {
+                console.log('[Push] Silent subscription check failed:', e);
             }
         }
 
@@ -213,11 +238,13 @@
             return outputArray;
         }
 
-        async subscribe() {
+        async subscribe(showFeedback = false) {
             try {
                 // Check permission first
                 if (Notification.permission === 'denied') {
-                    this.showToast(this.t('permissionDenied'), 'error');
+                    if (showFeedback) {
+                        this.showToast(this.t('permissionDenied'), 'error');
+                    }
                     return;
                 }
 
@@ -240,38 +267,46 @@
 
                 // 2. Check if already subscribed
                 let subscription = await registration.pushManager.getSubscription();
+                let isNewSubscription = false;
                 
                 if (subscription) {
-                    // Unsubscribe logic could go here if we want to toggle
-                    // For now, we'll just re-send to server to be safe
+                    // Already subscribed - just update server silently
                     console.log('[Push] Already subscribed');
                 } else {
-                    // 3. Subscribe
+                    // 3. Subscribe - this is a new subscription
                     const convertedVapidKey = this.urlBase64ToUint8Array(this.vapidKey);
                     subscription = await registration.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey: convertedVapidKey
                     });
                     console.log('[Push] Subscribed successfully');
+                    isNewSubscription = true;
                 }
 
                 // 4. Send to Server
                 await this.sendSubscriptionToServer(subscription);
                 
                 this.updateButtonState(true);
-                this.showToast(this.t('success'), 'success');
+                
+                // Only show success message if user clicked the button AND it's a new subscription
+                // OR if user explicitly clicked (showFeedback=true) regardless
+                if (showFeedback && isNewSubscription) {
+                    this.showToast(this.t('success'), 'success');
+                }
 
             } catch (e) {
                 console.error('[Push] Subscription failed:', e);
                 
-                let errorMsg = e.message;
-                if (errorMsg.includes('permission denied') || errorMsg.includes('Permission denied')) {
-                    errorMsg = this.t('permissionDenied');
-                } else {
-                    errorMsg = this.t('error') + errorMsg;
+                if (showFeedback) {
+                    let errorMsg = e.message;
+                    if (errorMsg.includes('permission denied') || errorMsg.includes('Permission denied')) {
+                        errorMsg = this.t('permissionDenied');
+                    } else {
+                        errorMsg = this.t('error') + errorMsg;
+                    }
+                    
+                    this.showToast(errorMsg, 'error');
                 }
-                
-                this.showToast(errorMsg, 'error');
             }
         }
 

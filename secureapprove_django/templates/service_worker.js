@@ -39,7 +39,7 @@ self.addEventListener('push', function(event) {
   let data = {
     title: 'SecureApprove',
     body: 'You have a new notification',
-    icon: '/static/img/logo-push-192.png',
+    icon: '/static/img/logo-push-96.png',
     badge: '/static/img/badge-mono.png',
     url: '/dashboard/'
   };
@@ -96,7 +96,7 @@ self.addEventListener('push', function(event) {
   // Build notification options with all properties for background support
   const options = {
     body: data.body || 'You have a new notification',
-    icon: data.icon || '/static/img/logo-push-192.png',
+    icon: data.icon || '/static/img/logo-push-96.png',
     badge: data.badge || '/static/img/badge-mono.png',
     image: data.image || null,
     // Tag allows replacing notifications with the same tag (prevents duplicates)

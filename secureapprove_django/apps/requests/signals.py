@@ -51,7 +51,7 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                 payload = {
                     "title": _("New Request"),
                     "body": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title),
-                    "icon": "/static/img/logo-push-192.png",
+                    "icon": "/static/img/logo-push-96.png",
                     "badge": "/static/img/badge-mono.png",
                     "color": "#4f46e5",  # Primary indigo color
                     "image": None,
@@ -123,7 +123,7 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
             payload = {
                 "title": _("Request {status}").format(status=status_display),
                 "body": _("Your request '{title}' has been {status}.").format(title=instance.title, status=status_display.lower()),
-                "icon": "/static/img/logo-push-192.png",
+                "icon": "/static/img/logo-push-96.png",
                 "badge": "/static/img/badge-mono.png",
                 "color": notification_color,
                 "image": None,

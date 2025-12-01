@@ -51,7 +51,7 @@
                 return;
             }
 
-            this.subscribeButton.addEventListener('click', () => this.subscribe());
+            this.subscribeButton.addEventListener('click', () => this.subscribe(true));
             
             // Register Service Worker immediately to keep it alive for background notifications
             this.registerServiceWorker();
@@ -59,9 +59,34 @@
             // Check current status
             this.checkSubscriptionStatus();
             
-            // Auto-subscribe if permission is already granted
+            // Silently ensure subscription if permission is already granted
             if (Notification.permission === 'granted') {
-                this.subscribe().catch(e => console.log('[Push] Auto-subscribe failed:', e));
+                this.ensureSubscription().catch(e => console.log('[Push] Silent subscription check failed:', e));
+            }
+        }
+
+        async ensureSubscription() {
+            // Silent subscription check/renewal - no user feedback
+            try {
+                const registration = await navigator.serviceWorker.getRegistration(CONFIG.SERVICE_WORKER_PATH);
+                if (!registration) {
+                    await this.registerServiceWorker();
+                    return;
+                }
+                
+                let subscription = await registration.pushManager.getSubscription();
+                if (!subscription) {
+                    const convertedVapidKey = this.urlBase64ToUint8Array(this.vapidKey);
+                    subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: convertedVapidKey
+                    });
+                    await this.sendSubscriptionToServer(subscription);
+                    console.log('[Push] Silent subscription successful');
+                }
+                this.updateButtonState(true);
+            } catch (e) {
+                console.log('[Push] Silent subscription check failed:', e);
             }
         }
 
@@ -130,11 +155,13 @@
             return outputArray;
         }
 
-        async subscribe() {
+        async subscribe(showFeedback = false) {
             try {
                 // Check permission first
                 if (Notification.permission === 'denied') {
-                    alert('Notifications are blocked. Please enable them in your browser settings.');
+                    if (showFeedback) {
+                        alert('Notifications are blocked. Please enable them in your browser settings.');
+                    }
                     return;
                 }
 
@@ -154,30 +181,36 @@
 
                 // 2. Check if already subscribed
                 let subscription = await registration.pushManager.getSubscription();
+                let isNewSubscription = false;
                 
                 if (subscription) {
-                    // Unsubscribe logic could go here if we want to toggle
-                    // For now, we'll just re-send to server to be safe
                     console.log('[Push] Already subscribed');
                 } else {
-                    // 3. Subscribe
+                    // 3. Subscribe - new subscription
                     const convertedVapidKey = this.urlBase64ToUint8Array(this.vapidKey);
                     subscription = await registration.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey: convertedVapidKey
                     });
                     console.log('[Push] Subscribed successfully');
+                    isNewSubscription = true;
                 }
 
                 // 4. Send to Server
                 await this.sendSubscriptionToServer(subscription);
                 
                 this.updateButtonState(true);
-                alert('Notifications enabled successfully!');
+                
+                // Only show success if user clicked AND it's a new subscription
+                if (showFeedback && isNewSubscription) {
+                    alert('Notifications enabled successfully!');
+                }
 
             } catch (e) {
                 console.error('[Push] Subscription failed:', e);
-                alert('Failed to enable notifications: ' + e.message);
+                if (showFeedback) {
+                    alert('Failed to enable notifications: ' + e.message);
+                }
             }
         }
 
