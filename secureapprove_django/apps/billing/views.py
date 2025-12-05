@@ -291,7 +291,7 @@ def start_trial(request):
             tenant = Tenant.objects.create(
                 name=f"{name}'s Team",
                 key=slug,
-                plan_id='starter',
+                plan_id='tier_1',
                 seats=4,
                 status='trial',
                 is_active=True

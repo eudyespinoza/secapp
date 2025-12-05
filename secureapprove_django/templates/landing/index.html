@@ -87,6 +87,99 @@
         .section-padding {
             padding: 80px 0;
         }
+
+        /* Dark mode support for landing page */
+        .text-muted-custom {
+            color: var(--text-muted) !important;
+        }
+
+        .bg-secondary-custom {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        .text-primary-custom {
+            color: var(--primary-color) !important;
+        }
+
+        /* Feature cards in dark mode */
+        [data-theme="dark"] .feature-card {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .feature-card .card-title {
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .feature-card .card-text {
+            color: var(--text-muted) !important;
+        }
+
+        /* Pricing table in dark mode */
+        [data-theme="dark"] .pricing-card .table {
+            color: var(--text-color) !important;
+            --bs-table-bg: var(--card-bg);
+        }
+
+        [data-theme="dark"] .pricing-card .table th,
+        [data-theme="dark"] .pricing-card .table td {
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .pricing-card .table thead th {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        /* Footer in dark mode */
+        [data-theme="dark"] footer.bg-light {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] footer p,
+        [data-theme="dark"] footer a {
+            color: var(--text-muted) !important;
+        }
+
+        [data-theme="dark"] footer a:hover {
+            color: var(--primary-color) !important;
+        }
+
+        /* Accordion in dark mode */
+        [data-theme="dark"] .accordion-item {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-button {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-button:not(.collapsed) {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-body {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-button::after {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        /* Headings and text in dark mode */
+        [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+        [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .lead {
+            color: var(--text-muted) !important;
+        }
 </style>
 {% endblock %}
 
@@ -255,15 +348,15 @@
                                     <tbody>
                                         <tr>
                                             <td>{% trans "De 2 a 6 usuarios" %}</td>
-                                            <td class="text-end">$60</td>
+                                            <td class="text-end">$90</td>
                                         </tr>
                                         <tr>
                                             <td>{% trans "De 7 a 12 usuarios" %}</td>
-                                            <td class="text-end">$55</td>
+                                            <td class="text-end">$75</td>
                                         </tr>
                                         <tr>
                                             <td>{% trans "Más de 12 usuarios" %}</td>
-                                            <td class="text-end">$50</td>
+                                            <td class="text-end">$65</td>
                                         </tr>
                                     </tbody>
                                 </table>

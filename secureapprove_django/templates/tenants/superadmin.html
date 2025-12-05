@@ -5,6 +5,14 @@
 
 {% block extra_css %}
 <style>
+    /* Fix modal z-index to appear above navbar (navbar has z-index: 1120) */
+    .modal {
+        z-index: 1130 !important;
+    }
+    .modal-backdrop {
+        z-index: 1125 !important;
+    }
+
     /* Dark mode styles */
     [data-theme="dark"] .bg-light {
         background-color: var(--bg-secondary) !important;
@@ -217,21 +225,21 @@
                     <div class="col-md-4">
                         <div class="p-3 border rounded card h-100">
                             <h6 class="fw-bold">2 - 6 {% trans "Users" %}</h6>
-                            <div class="display-6 text-primary">$60</div>
+                            <div class="display-6 text-primary">$90</div>
                             <small class="text-muted">{% trans "USD / user / month" %}</small>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-3 border rounded card h-100">
                             <h6 class="fw-bold">7 - 12 {% trans "Users" %}</h6>
-                            <div class="display-6 text-primary">$55</div>
+                            <div class="display-6 text-primary">$75</div>
                             <small class="text-muted">{% trans "USD / user / month" %}</small>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-3 border rounded card h-100">
                             <h6 class="fw-bold">12+ {% trans "Users" %}</h6>
-                            <div class="display-6 text-primary">$50</div>
+                            <div class="display-6 text-primary">$65</div>
                             <small class="text-muted">{% trans "USD / user / month" %}</small>
                         </div>
                     </div>

@@ -18,9 +18,9 @@ class Tenant(models.Model):
     """
     
     PLAN_CHOICES = [
-        ('starter', _('Starter - Up to 2 approvers')),
-        ('growth', _('Growth - Up to 6 approvers')),
-        ('scale', _('Scale - Unlimited approvers')),
+        ('tier_1', _('2-6 users - $90/user/month')),
+        ('tier_2', _('7-12 users - $75/user/month')),
+        ('tier_3', _('12+ users - $65/user/month')),
     ]
     
     STATUS_CHOICES = [
@@ -35,7 +35,7 @@ class Tenant(models.Model):
     name = models.CharField(_('Name'), max_length=200)
     
     # Plan and limits
-    plan_id = models.CharField(_('Plan'), max_length=20, choices=PLAN_CHOICES, default='starter')
+    plan_id = models.CharField(_('Plan'), max_length=20, choices=PLAN_CHOICES, default='tier_1')
     seats = models.PositiveIntegerField(_('Seats'), default=5)
     approver_limit = models.PositiveIntegerField(_('Approver Limit'), default=2)
     
@@ -188,3 +188,230 @@ class TenantUserInvite(models.Model):
         if self.expires_at is None:
             return False
         return self.expires_at < timezone.now()
+
+
+class ApprovalTypeConfig(models.Model):
+    """
+    Configuration for approval types per tenant.
+    Allows tenants to:
+    - Enable/disable approval types
+    - Create custom approval types
+    - Set required approvers count
+    - Assign specific approvers per type
+    """
+    
+    # Default category choices (same as ApprovalRequest)
+    DEFAULT_CATEGORIES = [
+        ('expense', _('Expense Reimbursement')),
+        ('purchase', _('Purchase Request')),
+        ('travel', _('Travel Approval')),
+        ('contract', _('Contract Approval')),
+        ('document', _('Document Withdrawal')),
+        ('other', _('Other')),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name='approval_type_configs',
+        verbose_name=_('Tenant'),
+    )
+    
+    # Category key (e.g., 'expense', 'purchase', or custom like 'vacation')
+    category_key = models.CharField(
+        _('Category Key'),
+        max_length=50,
+        help_text=_('Unique identifier for this approval type within the tenant')
+    )
+    
+    # Display name for the category
+    name = models.CharField(
+        _('Name'),
+        max_length=100,
+        help_text=_('Display name for this approval type')
+    )
+    
+    # Description
+    description = models.TextField(
+        _('Description'),
+        blank=True,
+        help_text=_('Optional description of this approval type')
+    )
+    
+    # Icon (Bootstrap Icons class name)
+    icon = models.CharField(
+        _('Icon'),
+        max_length=50,
+        default='bi-file-earmark-check',
+        help_text=_('Bootstrap Icons class (e.g., bi-cash, bi-cart)')
+    )
+    
+    # Color for UI
+    color = models.CharField(
+        _('Color'),
+        max_length=20,
+        default='primary',
+        help_text=_('Bootstrap color class (primary, success, warning, danger, info)')
+    )
+    
+    # Enable/Disable
+    is_enabled = models.BooleanField(
+        _('Enabled'),
+        default=True,
+        help_text=_('Whether this approval type is available for new requests')
+    )
+    
+    # Is this a custom type created by tenant (vs default system type)
+    is_custom = models.BooleanField(
+        _('Custom Type'),
+        default=False,
+        help_text=_('True if this is a custom type created by the tenant')
+    )
+    
+    # Approval requirements
+    required_approvers = models.PositiveIntegerField(
+        _('Required Approvers'),
+        default=1,
+        help_text=_('Number of approvers required to approve requests of this type')
+    )
+    
+    # Specific approvers for this type (if empty, any approver can approve)
+    designated_approvers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name='designated_approval_types',
+        verbose_name=_('Designated Approvers'),
+        help_text=_('Specific users who can approve this type. Leave empty for any approver.')
+    )
+    
+    # Show amount field
+    show_amount = models.BooleanField(
+        _('Show Amount Field'),
+        default=False,
+        help_text=_('Whether to show the amount field for this approval type')
+    )
+    
+    # Extra fields configuration (JSON)
+    extra_fields = models.JSONField(
+        _('Extra Fields'),
+        default=list,
+        blank=True,
+        help_text=_('Additional fields configuration for this approval type')
+    )
+    
+    # Sort order
+    sort_order = models.PositiveIntegerField(
+        _('Sort Order'),
+        default=0,
+        help_text=_('Order in which this type appears in lists')
+    )
+    
+    # Timestamps
+    created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('Updated At'), auto_now=True)
+    
+    class Meta:
+        verbose_name = _('Approval Type Configuration')
+        verbose_name_plural = _('Approval Type Configurations')
+        ordering = ['sort_order', 'name']
+        unique_together = [['tenant', 'category_key']]
+        indexes = [
+            models.Index(fields=['tenant', 'is_enabled']),
+            models.Index(fields=['tenant', 'category_key']),
+        ]
+    
+    def __str__(self):
+        status = "✓" if self.is_enabled else "✗"
+        return f"{status} {self.name} ({self.tenant.key})"
+    
+    @classmethod
+    def get_default_config(cls, category_key):
+        """Get default configuration for a category"""
+        defaults = {
+            'expense': {
+                'name': _('Expense Reimbursement'),
+                'icon': 'bi-cash-stack',
+                'color': 'success',
+                'show_amount': True,
+                'extra_fields': ['expense_category', 'receipt_ref'],
+            },
+            'purchase': {
+                'name': _('Purchase Request'),
+                'icon': 'bi-cart',
+                'color': 'primary',
+                'show_amount': True,
+                'extra_fields': ['vendor', 'cost_center'],
+            },
+            'travel': {
+                'name': _('Travel Approval'),
+                'icon': 'bi-airplane',
+                'color': 'info',
+                'show_amount': True,
+                'extra_fields': ['destination', 'start_date', 'end_date'],
+            },
+            'contract': {
+                'name': _('Contract Approval'),
+                'icon': 'bi-file-earmark-text',
+                'color': 'warning',
+                'show_amount': False,
+                'extra_fields': ['vendor', 'reason'],
+            },
+            'document': {
+                'name': _('Document Withdrawal'),
+                'icon': 'bi-file-earmark-arrow-down',
+                'color': 'secondary',
+                'show_amount': False,
+                'extra_fields': ['document_id', 'reason'],
+            },
+            'other': {
+                'name': _('Other'),
+                'icon': 'bi-three-dots',
+                'color': 'dark',
+                'show_amount': False,
+                'extra_fields': [],
+            },
+        }
+        return defaults.get(category_key, defaults['other'])
+    
+    @classmethod
+    def initialize_for_tenant(cls, tenant):
+        """
+        Initialize default approval type configurations for a new tenant.
+        Creates configs for all default categories.
+        """
+        created_configs = []
+        for idx, (key, label) in enumerate(cls.DEFAULT_CATEGORIES):
+            config_data = cls.get_default_config(key)
+            config, created = cls.objects.get_or_create(
+                tenant=tenant,
+                category_key=key,
+                defaults={
+                    'name': str(config_data['name']),
+                    'icon': config_data['icon'],
+                    'color': config_data['color'],
+                    'show_amount': config_data['show_amount'],
+                    'extra_fields': config_data['extra_fields'],
+                    'is_enabled': True,
+                    'is_custom': False,
+                    'required_approvers': 1,
+                    'sort_order': idx * 10,
+                }
+            )
+            if created:
+                created_configs.append(config)
+        return created_configs
+    
+    def get_designated_approver_ids(self):
+        """Get list of designated approver user IDs"""
+        return list(self.designated_approvers.values_list('id', flat=True))
+    
+    def can_user_approve(self, user):
+        """Check if a user can approve requests of this type"""
+        # If no designated approvers, any approver can approve
+        if not self.designated_approvers.exists():
+            return user.role in ['approver', 'tenant_admin', 'superadmin']
+        
+        # Check if user is in designated approvers
+        return self.designated_approvers.filter(id=user.id).exists()
+

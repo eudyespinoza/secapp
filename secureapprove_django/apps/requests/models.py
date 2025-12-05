@@ -207,6 +207,52 @@ class ApprovalRequest(models.Model):
         
         self.status = 'cancelled'
         self.save()
+    
+    def get_approval_type_config(self):
+        """Get the ApprovalTypeConfig for this request's category and tenant"""
+        from apps.tenants.models import ApprovalTypeConfig
+        try:
+            return ApprovalTypeConfig.objects.get(
+                tenant=self.tenant,
+                category_key=self.category
+            )
+        except ApprovalTypeConfig.DoesNotExist:
+            return None
+    
+    def can_user_approve(self, user):
+        """Check if a specific user can approve this request"""
+        # User must be an approver role
+        if user.role not in ['approver', 'tenant_admin', 'superadmin']:
+            return False
+        
+        # User must belong to the same tenant
+        if user.tenant_id != self.tenant_id:
+            return False
+        
+        # User cannot approve their own request
+        if user.id == self.requester_id:
+            return False
+        
+        # Check approval type config for designated approvers
+        config = self.get_approval_type_config()
+        if config and config.designated_approvers.exists():
+            return config.designated_approvers.filter(id=user.id).exists()
+        
+        return True
+    
+    def get_designated_approvers(self):
+        """Get list of designated approvers for this request type"""
+        config = self.get_approval_type_config()
+        if config:
+            return list(config.designated_approvers.all())
+        return []
+    
+    def get_required_approvers_count(self):
+        """Get the number of required approvers for this request type"""
+        config = self.get_approval_type_config()
+        if config:
+            return config.required_approvers
+        return 1
 
 
 class RequestAttachment(models.Model):

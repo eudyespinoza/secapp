@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import models
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -11,7 +13,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.requests.models import ApprovalRequest
-from .models import Tenant, TenantUserInvite
+from .models import Tenant, TenantUserInvite, ApprovalTypeConfig
 from .utils import ensure_user_tenant
 
 User = get_user_model()
@@ -43,6 +45,18 @@ class TenantSettingsView(LoginRequiredMixin, View):
         users = tenant.users.all().order_by("-is_active", "email")
         categories = ApprovalRequest.CATEGORY_CHOICES
         invites = TenantUserInvite.objects.filter(tenant=tenant).order_by("-created_at")
+        
+        # Get or initialize approval type configurations
+        approval_configs = ApprovalTypeConfig.objects.filter(tenant=tenant).order_by('sort_order', 'name')
+        if not approval_configs.exists():
+            ApprovalTypeConfig.initialize_for_tenant(tenant)
+            approval_configs = ApprovalTypeConfig.objects.filter(tenant=tenant).order_by('sort_order', 'name')
+        
+        # Get approvers for assignment
+        approvers = tenant.users.filter(
+            is_active=True,
+            role__in=['approver', 'tenant_admin', 'superadmin']
+        ).order_by('email')
 
         return render(
             request,
@@ -55,6 +69,8 @@ class TenantSettingsView(LoginRequiredMixin, View):
                 "roles": User.ROLE_CHOICES,
                 "used_seats": tenant.used_seats,
                 "available_seats": tenant.available_seats,
+                "approval_configs": approval_configs,
+                "approvers": approvers,
             },
         )
 
@@ -193,6 +209,151 @@ class TenantSettingsView(LoginRequiredMixin, View):
                     )
                 except TenantUserInvite.DoesNotExist:
                     pass
+
+        # ========================================
+        # Approval Type Configuration Actions
+        # ========================================
+        elif action == "toggle_approval_type":
+            config_id = request.POST.get("config_id")
+            if config_id:
+                try:
+                    config = ApprovalTypeConfig.objects.get(id=config_id, tenant=tenant)
+                    config.is_enabled = not config.is_enabled
+                    config.save(update_fields=["is_enabled"])
+                    status = _("enabled") if config.is_enabled else _("disabled")
+                    messages.success(
+                        request,
+                        _("Approval type '%(name)s' has been %(status)s.")
+                        % {"name": config.name, "status": status},
+                    )
+                except ApprovalTypeConfig.DoesNotExist:
+                    messages.error(request, _("Approval type not found."))
+
+        elif action == "update_approval_type":
+            config_id = request.POST.get("config_id")
+            if config_id:
+                try:
+                    config = ApprovalTypeConfig.objects.get(id=config_id, tenant=tenant)
+                    
+                    # Update basic fields
+                    name = request.POST.get("name", "").strip()
+                    if name:
+                        config.name = name
+                    
+                    description = request.POST.get("description", "").strip()
+                    config.description = description
+                    
+                    icon = request.POST.get("icon", "").strip()
+                    if icon:
+                        config.icon = icon
+                    
+                    color = request.POST.get("color", "").strip()
+                    if color in ['primary', 'success', 'warning', 'danger', 'info', 'secondary', 'dark']:
+                        config.color = color
+                    
+                    # Update approval requirements
+                    required_approvers = request.POST.get("required_approvers")
+                    if required_approvers:
+                        try:
+                            config.required_approvers = max(1, int(required_approvers))
+                        except ValueError:
+                            pass
+                    
+                    show_amount = request.POST.get("show_amount") == "on"
+                    config.show_amount = show_amount
+                    
+                    config.save()
+                    
+                    # Update designated approvers
+                    approver_ids = request.POST.getlist("designated_approvers")
+                    if approver_ids:
+                        approvers = tenant.users.filter(
+                            id__in=approver_ids,
+                            is_active=True,
+                            role__in=['approver', 'tenant_admin', 'superadmin']
+                        )
+                        config.designated_approvers.set(approvers)
+                    else:
+                        config.designated_approvers.clear()
+                    
+                    messages.success(
+                        request,
+                        _("Approval type '%(name)s' has been updated.")
+                        % {"name": config.name},
+                    )
+                except ApprovalTypeConfig.DoesNotExist:
+                    messages.error(request, _("Approval type not found."))
+
+        elif action == "create_approval_type":
+            name = request.POST.get("name", "").strip()
+            category_key = request.POST.get("category_key", "").strip().lower()
+            
+            if not name or not category_key:
+                messages.error(request, _("Name and key are required."))
+                return redirect("tenants:settings")
+            
+            # Sanitize category key
+            import re
+            category_key = re.sub(r'[^a-z0-9_]', '_', category_key)
+            
+            # Check if key already exists
+            if ApprovalTypeConfig.objects.filter(tenant=tenant, category_key=category_key).exists():
+                messages.error(request, _("An approval type with this key already exists."))
+                return redirect("tenants:settings")
+            
+            # Get max sort order
+            max_order = ApprovalTypeConfig.objects.filter(tenant=tenant).aggregate(
+                max_order=models.Max('sort_order')
+            )['max_order'] or 0
+            
+            # Create new config
+            config = ApprovalTypeConfig.objects.create(
+                tenant=tenant,
+                category_key=category_key,
+                name=name,
+                description=request.POST.get("description", "").strip(),
+                icon=request.POST.get("icon", "bi-file-earmark-check").strip(),
+                color=request.POST.get("color", "primary").strip(),
+                is_enabled=True,
+                is_custom=True,
+                required_approvers=max(1, int(request.POST.get("required_approvers", 1))),
+                show_amount=request.POST.get("show_amount") == "on",
+                sort_order=max_order + 10,
+            )
+            
+            # Set designated approvers if provided
+            approver_ids = request.POST.getlist("designated_approvers")
+            if approver_ids:
+                approvers = tenant.users.filter(
+                    id__in=approver_ids,
+                    is_active=True,
+                    role__in=['approver', 'tenant_admin', 'superadmin']
+                )
+                config.designated_approvers.set(approvers)
+            
+            messages.success(
+                request,
+                _("Approval type '%(name)s' has been created.")
+                % {"name": config.name},
+            )
+
+        elif action == "delete_approval_type":
+            config_id = request.POST.get("config_id")
+            if config_id:
+                try:
+                    config = ApprovalTypeConfig.objects.get(id=config_id, tenant=tenant)
+                    if not config.is_custom:
+                        messages.error(request, _("Cannot delete default approval types. You can disable them instead."))
+                    else:
+                        name = config.name
+                        config.delete()
+                        messages.success(
+                            request,
+                            _("Approval type '%(name)s' has been deleted.")
+                            % {"name": name},
+                        )
+                except ApprovalTypeConfig.DoesNotExist:
+                    messages.error(request, _("Approval type not found."))
 
         return redirect("tenants:settings")
 

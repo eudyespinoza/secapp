@@ -151,6 +151,65 @@
             margin-bottom: 1rem;
             display: inline-block;
         }
+
+        /* Dark mode support for select_plan */
+        [data-theme="dark"] .plan-card {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .plan-card.featured {
+            border-color: var(--primary-color) !important;
+        }
+
+        [data-theme="dark"] .plan-header h3,
+        [data-theme="dark"] .plan-body h3 {
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .plan-card .table {
+            color: var(--text-color) !important;
+            --bs-table-bg: var(--card-bg);
+        }
+
+        [data-theme="dark"] .plan-card .table th,
+        [data-theme="dark"] .plan-card .table td {
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .plan-card .table thead th {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .accordion-item {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-button {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-button:not(.collapsed) {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-body {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .accordion-button::after {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+        [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+            color: var(--text-color) !important;
+        }
 </style>
 {% endblock %}
 
@@ -186,15 +245,15 @@
                                 <tbody>
                                     <tr>
                                         <td>{% trans "2 to 6 users" %}</td>
-                                        <td class="text-end">$60</td>
+                                        <td class="text-end">$90</td>
                                     </tr>
                                     <tr>
                                         <td>{% trans "7 to 12 users" %}</td>
-                                        <td class="text-end">$55</td>
+                                        <td class="text-end">$75</td>
                                     </tr>
                                     <tr>
                                         <td>{% trans "More than 12 users" %}</td>
-                                        <td class="text-end">$50</td>
+                                        <td class="text-end">$65</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -270,7 +329,7 @@
                             </h2>
                             <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "Yes, we offer a 14-day free trial for all plans. No credit card required to start." %}
+                                    {% trans "Yes, we offer a 3-day free trial for all plans. No credit card required to start." %}
                                 </div>
                             </div>
                         </div>

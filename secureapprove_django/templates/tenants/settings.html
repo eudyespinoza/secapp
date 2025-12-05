@@ -61,25 +61,176 @@
 
             <!-- Categories Card -->
             <div class="card border-0 shadow-sm">
-                <div class="card-header py-3">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
                         <i class="bi bi-tags text-primary"></i>
-                        {% trans "Request Categories" %}
+                        {% trans "Approval Types" %}
                     </h5>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createApprovalTypeModal">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2">
-                        {% for code, label in categories %}
-                        <span class="badge bg-light text-dark border fw-normal">
-                            {{ label }}
-                        </span>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for config in approval_configs %}
+                        <div class="list-group-item p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi {{ config.icon }} text-{{ config.color }}"></i>
+                                    <div>
+                                        <span class="fw-medium {% if not config.is_enabled %}text-muted text-decoration-line-through{% endif %}">
+                                            {{ config.name }}
+                                        </span>
+                                        {% if config.is_custom %}
+                                        <span class="badge bg-info bg-opacity-10 text-info border-0 ms-1" style="font-size: 0.65rem;">{% trans "Custom" %}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">
+                                        {{ config.required_approvers }} {% trans "approver" %}{% if config.required_approvers > 1 %}s{% endif %}
+                                    </span>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li>
+                                                <button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#editApprovalTypeModal{{ config.id }}">
+                                                    <i class="bi bi-pencil me-2 text-muted"></i>{% trans "Edit" %}
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <form method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="toggle_approval_type">
+                                                    <input type="hidden" name="config_id" value="{{ config.id }}">
+                                                    <button type="submit" class="dropdown-item">
+                                                        {% if config.is_enabled %}
+                                                        <i class="bi bi-eye-slash me-2 text-muted"></i>{% trans "Disable" %}
+                                                        {% else %}
+                                                        <i class="bi bi-eye me-2 text-muted"></i>{% trans "Enable" %}
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            {% if config.is_custom %}
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form method="post" class="d-inline" onsubmit="return confirm('{% trans "Are you sure you want to delete this approval type?" %}');">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="delete_approval_type">
+                                                    <input type="hidden" name="config_id" value="{{ config.id }}">
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="bi bi-trash me-2"></i>{% trans "Delete" %}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if config.designated_approvers.exists %}
+                            <div class="mt-2">
+                                <small class="text-muted">{% trans "Designated approvers:" %}</small>
+                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                    {% for approver in config.designated_approvers.all %}
+                                    <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">
+                                        {{ approver.email }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Edit Modal for this config -->
+                        <div class="modal fade" id="editApprovalTypeModal{{ config.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="update_approval_type">
+                                        <input type="hidden" name="config_id" value="{{ config.id }}">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">{% trans "Edit Approval Type" %}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">{% trans "Name" %}</label>
+                                                <input type="text" name="name" class="form-control" value="{{ config.name }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">{% trans "Description" %}</label>
+                                                <textarea name="description" class="form-control" rows="2">{{ config.description }}</textarea>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-6">
+                                                    <label class="form-label">{% trans "Icon" %}</label>
+                                                    <select name="icon" class="form-select">
+                                                        <option value="bi-cash-stack" {% if config.icon == 'bi-cash-stack' %}selected{% endif %}>💵 {% trans "Cash" %}</option>
+                                                        <option value="bi-cart" {% if config.icon == 'bi-cart' %}selected{% endif %}>🛒 {% trans "Cart" %}</option>
+                                                        <option value="bi-airplane" {% if config.icon == 'bi-airplane' %}selected{% endif %}>✈️ {% trans "Travel" %}</option>
+                                                        <option value="bi-file-earmark-text" {% if config.icon == 'bi-file-earmark-text' %}selected{% endif %}>📄 {% trans "Document" %}</option>
+                                                        <option value="bi-file-earmark-arrow-down" {% if config.icon == 'bi-file-earmark-arrow-down' %}selected{% endif %}>📥 {% trans "Download" %}</option>
+                                                        <option value="bi-calendar-event" {% if config.icon == 'bi-calendar-event' %}selected{% endif %}>📅 {% trans "Calendar" %}</option>
+                                                        <option value="bi-person-badge" {% if config.icon == 'bi-person-badge' %}selected{% endif %}>👤 {% trans "Person" %}</option>
+                                                        <option value="bi-building" {% if config.icon == 'bi-building' %}selected{% endif %}>🏢 {% trans "Building" %}</option>
+                                                        <option value="bi-tools" {% if config.icon == 'bi-tools' %}selected{% endif %}>🔧 {% trans "Tools" %}</option>
+                                                        <option value="bi-laptop" {% if config.icon == 'bi-laptop' %}selected{% endif %}>💻 {% trans "Laptop" %}</option>
+                                                        <option value="bi-three-dots" {% if config.icon == 'bi-three-dots' %}selected{% endif %}>⋯ {% trans "Other" %}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">{% trans "Color" %}</label>
+                                                    <select name="color" class="form-select">
+                                                        <option value="primary" {% if config.color == 'primary' %}selected{% endif %}>🔵 {% trans "Primary" %}</option>
+                                                        <option value="success" {% if config.color == 'success' %}selected{% endif %}>🟢 {% trans "Success" %}</option>
+                                                        <option value="warning" {% if config.color == 'warning' %}selected{% endif %}>🟡 {% trans "Warning" %}</option>
+                                                        <option value="danger" {% if config.color == 'danger' %}selected{% endif %}>🔴 {% trans "Danger" %}</option>
+                                                        <option value="info" {% if config.color == 'info' %}selected{% endif %}>🔷 {% trans "Info" %}</option>
+                                                        <option value="secondary" {% if config.color == 'secondary' %}selected{% endif %}>⚫ {% trans "Secondary" %}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">{% trans "Required Approvers" %}</label>
+                                                <input type="number" name="required_approvers" class="form-control" value="{{ config.required_approvers }}" min="1" max="10">
+                                                <small class="text-muted">{% trans "Number of approvals needed to approve requests of this type" %}</small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">{% trans "Designated Approvers" %}</label>
+                                                <select name="designated_approvers" class="form-select" multiple size="4">
+                                                    {% for approver in approvers %}
+                                                    <option value="{{ approver.id }}" {% if approver in config.designated_approvers.all %}selected{% endif %}>
+                                                        {{ approver.email }}{% if approver.name %} ({{ approver.name }}){% endif %}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <small class="text-muted">{% trans "Leave empty to allow any approver. Hold Ctrl/Cmd to select multiple." %}</small>
+                                            </div>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="show_amount" id="showAmount{{ config.id }}" {% if config.show_amount %}checked{% endif %}>
+                                                <label class="form-check-label" for="showAmount{{ config.id }}">
+                                                    {% trans "Show amount field" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                            <button type="submit" class="btn btn-primary">{% trans "Save Changes" %}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="p-4 text-center text-muted">
+                            {% trans "No approval types configured." %}
+                        </div>
                         {% endfor %}
-                    </div>
-                    <div class="mt-3 p-2 bg-light rounded border">
-                        <small class="text-muted d-flex gap-2" style="font-size: var(--font-xs);">
-                            <i class="bi bi-info-circle mt-1"></i>
-                            {% trans "Request categories are currently global. Future versions will allow per-tenant customization." %}
-                        </small>
                     </div>
                 </div>
             </div>
@@ -251,7 +402,108 @@
     </div>
 </div>
 
+<!-- Create Approval Type Modal -->
+<div class="modal fade" id="createApprovalTypeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_approval_type">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle text-primary me-2"></i>
+                        {% trans "Create Approval Type" %}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Name" %} <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" placeholder="{% trans 'e.g., Vacation Request' %}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Key" %} <span class="text-danger">*</span></label>
+                        <input type="text" name="category_key" class="form-control" placeholder="{% trans 'e.g., vacation' %}" pattern="[a-z0-9_]+" required>
+                        <small class="text-muted">{% trans "Lowercase letters, numbers, and underscores only" %}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Description" %}</label>
+                        <textarea name="description" class="form-control" rows="2" placeholder="{% trans 'Optional description...' %}"></textarea>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label">{% trans "Icon" %}</label>
+                            <select name="icon" class="form-select">
+                                <option value="bi-file-earmark-check">✅ {% trans "Check" %}</option>
+                                <option value="bi-cash-stack">💵 {% trans "Cash" %}</option>
+                                <option value="bi-cart">🛒 {% trans "Cart" %}</option>
+                                <option value="bi-airplane">✈️ {% trans "Travel" %}</option>
+                                <option value="bi-file-earmark-text">📄 {% trans "Document" %}</option>
+                                <option value="bi-calendar-event">📅 {% trans "Calendar" %}</option>
+                                <option value="bi-person-badge">👤 {% trans "Person" %}</option>
+                                <option value="bi-building">🏢 {% trans "Building" %}</option>
+                                <option value="bi-tools">🔧 {% trans "Tools" %}</option>
+                                <option value="bi-laptop">💻 {% trans "Laptop" %}</option>
+                                <option value="bi-heart">❤️ {% trans "Health" %}</option>
+                                <option value="bi-mortarboard">🎓 {% trans "Education" %}</option>
+                                <option value="bi-clock">⏰ {% trans "Time" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">{% trans "Color" %}</label>
+                            <select name="color" class="form-select">
+                                <option value="primary">🔵 {% trans "Primary" %}</option>
+                                <option value="success">🟢 {% trans "Success" %}</option>
+                                <option value="warning">🟡 {% trans "Warning" %}</option>
+                                <option value="danger">🔴 {% trans "Danger" %}</option>
+                                <option value="info">🔷 {% trans "Info" %}</option>
+                                <option value="secondary">⚫ {% trans "Secondary" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Required Approvers" %}</label>
+                        <input type="number" name="required_approvers" class="form-control" value="1" min="1" max="10">
+                        <small class="text-muted">{% trans "Number of approvals needed" %}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Designated Approvers" %}</label>
+                        <select name="designated_approvers" class="form-select" multiple size="4">
+                            {% for approver in approvers %}
+                            <option value="{{ approver.id }}">
+                                {{ approver.email }}{% if approver.name %} ({{ approver.name }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">{% trans "Leave empty to allow any approver" %}</small>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="show_amount" id="newShowAmount">
+                        <label class="form-check-label" for="newShowAmount">
+                            {% trans "Show amount field" %}
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i>{% trans "Create" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <style>
+    /* Fix modal z-index to appear above navbar (navbar has z-index: 1120) */
+    .modal {
+        z-index: 1130 !important;
+    }
+    .modal-backdrop {
+        z-index: 1125 !important;
+    }
+
     .hover-opacity-100:hover { opacity: 1 !important; }
     .focus-opacity-100:focus { opacity: 1 !important; }
     .transition-opacity { transition: opacity 0.2s ease; }

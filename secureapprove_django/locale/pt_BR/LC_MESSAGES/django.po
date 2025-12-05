@@ -1638,7 +1638,7 @@ msgid ""
 "Yes, we offer a 14-day free trial for all plans. No credit card required to "
 "start."
 msgstr ""
-"Sim, oferecemos um teste gratuito de 14 dias para todos os planos.Não é "
+"Sim, oferecemos um teste gratuito de 3 dias para todos os planos. Não é "
 "necessário cartão de crédito para começar."
 
 #: templates/billing/select_plan.html:301
@@ -1683,11 +1683,11 @@ msgstr "Este correo se usará para seu cuenta e notificações de facturação"
 
 #: templates/billing/subscribe.html:185
 msgid "14-Day Free Trial"
-msgstr "Prueba Gratis de 14 Días"
+msgstr "Teste Grátis de 3 Dias"
 
 #: templates/billing/subscribe.html:186
 msgid "No charge for the first 14 days. Cancel anytime."
-msgstr "Sin cargo os primeros 14 días. Cancela em qualquer momento."
+msgstr "Sem cobrança nos primeiros 3 dias. Cancele quando quiser."
 
 #: templates/billing/subscribe.html:195
 msgid "Processing..."
@@ -2636,3 +2636,299 @@ msgstr "Agora mesmo"
 
 msgid "General"
 msgstr "Geral"
+
+# ================================================
+# Approval Type Configuration
+# ================================================
+
+msgid "Approval Types"
+msgstr "Tipos de Aprovação"
+
+msgid "Create Approval Type"
+msgstr "Criar Tipo de Aprovação"
+
+msgid "Edit Approval Type"
+msgstr "Editar Tipo de Aprovação"
+
+msgid "Custom"
+msgstr "Personalizado"
+
+msgid "approver"
+msgstr "aprovador"
+
+msgid "approvers"
+msgstr "aprovadores"
+
+msgid "Designated approvers:"
+msgstr "Aprovadores designados:"
+
+msgid "Required Approvers"
+msgstr "Aprovadores Necessários"
+
+msgid "Designated Approvers"
+msgstr "Aprovadores Designados"
+
+msgid "Number of approvals needed to approve requests of this type"
+msgstr "Número de aprovações necessárias para aprovar solicitações deste tipo"
+
+msgid "Number of approvals needed"
+msgstr "Número de aprovações necessárias"
+
+msgid "Leave empty to allow any approver. Hold Ctrl/Cmd to select multiple."
+msgstr "Deixe vazio para permitir qualquer aprovador. Segure Ctrl/Cmd para selecionar vários."
+
+msgid "Leave empty to allow any approver"
+msgstr "Deixe vazio para permitir qualquer aprovador"
+
+msgid "Show amount field"
+msgstr "Mostrar campo de valor"
+
+msgid "enabled"
+msgstr "habilitado"
+
+msgid "disabled"
+msgstr "desabilitado"
+
+msgid "Approval type '%(name)s' has been %(status)s."
+msgstr "O tipo de aprovação '%(name)s' foi %(status)s."
+
+msgid "Approval type '%(name)s' has been updated."
+msgstr "O tipo de aprovação '%(name)s' foi atualizado."
+
+msgid "Approval type '%(name)s' has been created."
+msgstr "O tipo de aprovação '%(name)s' foi criado."
+
+msgid "Approval type '%(name)s' has been deleted."
+msgstr "O tipo de aprovação '%(name)s' foi excluído."
+
+msgid "Cannot delete default approval types. You can disable them instead."
+msgstr "Não é possível excluir tipos de aprovação padrão. Você pode desativá-los."
+
+msgid "Approval type not found."
+msgstr "Tipo de aprovação não encontrado."
+
+msgid "Name and key are required."
+msgstr "Nome e chave são obrigatórios."
+
+msgid "An approval type with this key already exists."
+msgstr "Já existe um tipo de aprovação com esta chave."
+
+msgid "Lowercase letters, numbers, and underscores only"
+msgstr "Apenas letras minúsculas, números e sublinhados"
+
+msgid "e.g., Vacation Request"
+msgstr "ex., Solicitação de Férias"
+
+msgid "e.g., vacation"
+msgstr "ex., ferias"
+
+msgid "Optional description..."
+msgstr "Descrição opcional..."
+
+msgid "Cash"
+msgstr "Dinheiro"
+
+msgid "Cart"
+msgstr "Carrinho"
+
+msgid "Travel"
+msgstr "Viagem"
+
+msgid "Document"
+msgstr "Documento"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Calendar"
+msgstr "Calendário"
+
+msgid "Person"
+msgstr "Pessoa"
+
+msgid "Building"
+msgstr "Prédio"
+
+msgid "Tools"
+msgstr "Ferramentas"
+
+msgid "Laptop"
+msgstr "Notebook"
+
+msgid "Check"
+msgstr "Verificar"
+
+msgid "Health"
+msgstr "Saúde"
+
+msgid "Education"
+msgstr "Educação"
+
+msgid "Time"
+msgstr "Tempo"
+
+msgid "Primary"
+msgstr "Primário"
+
+msgid "Success"
+msgstr "Sucesso"
+
+msgid "Warning"
+msgstr "Aviso"
+
+msgid "Danger"
+msgstr "Perigo"
+
+msgid "Info"
+msgstr "Informação"
+
+msgid "Secondary"
+msgstr "Secundário"
+
+msgid "Are you sure you want to delete this approval type?"
+msgstr "Tem certeza de que deseja excluir este tipo de aprovação?"
+
+msgid "No approval types configured."
+msgstr "Nenhum tipo de aprovação configurado."
+
+msgid "Save Changes"
+msgstr "Salvar Alterações"
+
+# ================================================
+# Super Admin Translations
+# ================================================
+
+msgid "Super Admin - Tenant Management"
+msgstr "Super Admin - Gerenciamento de Locatários"
+
+msgid "Tenant Administration"
+msgstr "Administração de Locatários"
+
+msgid "Manage tenants, plans, and administrators."
+msgstr "Gerencie locatários, planos e administradores."
+
+msgid "Create Tenant"
+msgstr "Criar Locatário"
+
+msgid "Pricing Reference"
+msgstr "Referência de Preços"
+
+msgid "USD / user / month"
+msgstr "USD / usuário / mês"
+
+msgid "Edit Tenant"
+msgstr "Editar Locatário"
+
+msgid "Invite Admin"
+msgstr "Convidar Administrador"
+
+msgid "Invite Primary Admin"
+msgstr "Convidar Administrador Principal"
+
+msgid "Invite a user to be the Tenant Admin for"
+msgstr "Convidar um usuário para ser Administrador do Locatário de"
+
+msgid "Send Invitation"
+msgstr "Enviar Convite"
+
+msgid "No tenants found."
+msgstr "Nenhum locatário encontrado."
+
+msgid "Create New Tenant"
+msgstr "Criar Novo Locatário"
+
+msgid "Key (Slug)"
+msgstr "Chave (Slug)"
+
+msgid "Unique identifier for the tenant (e.g. company-name)"
+msgstr "Identificador único do locatário (ex. nome-empresa)"
+
+msgid "Max Users (Seats)"
+msgstr "Máximo de Usuários (Assentos)"
+
+msgid "Manually set the maximum number of users allowed."
+msgstr "Definir manualmente o número máximo de usuários permitidos."
+
+msgid "Terms & Conditions"
+msgstr "Termos e Condições"
+
+msgid "Privacy Policy"
+msgstr "Política de Privacidade"
+
+msgid "All rights reserved."
+msgstr "Todos os direitos reservados."
+
+# ================================================
+# Billing / Select Plan Translations
+# ================================================
+
+msgid "The tenant administrator can add as many users as needed; your subscription amount will be calculated based on the total number of seats."
+msgstr "O administrador do locatário pode adicionar quantos usuários precisar; o valor da sua assinatura será calculado com base no número total de assentos."
+
+msgid "Start Free Trial"
+msgstr "Iniciar Teste Grátis"
+
+msgid "All plans include"
+msgstr "Todos os planos incluem"
+
+msgid "WebAuthn Security"
+msgstr "Segurança WebAuthn"
+
+msgid "Passwordless biometric authentication"
+msgstr "Autenticação biométrica sem senhas"
+
+msgid "Cloud Hosting"
+msgstr "Hospedagem na Nuvem"
+
+msgid "Secure, reliable cloud infrastructure"
+msgstr "Infraestrutura de nuvem segura e confiável"
+
+msgid "Mobile Ready"
+msgstr "Pronto para Mobile"
+
+msgid "Works perfectly on any device"
+msgstr "Funciona perfeitamente em qualquer dispositivo"
+
+msgid "24/7 Support"
+msgstr "Suporte 24/7"
+
+msgid "Get help whenever you need it"
+msgstr "Obtenha ajuda quando precisar"
+
+msgid "Questions about our plans?"
+msgstr "Dúvidas sobre nossos planos?"
+
+msgid "Contact our sales team"
+msgstr "Entre em contato com nossa equipe de vendas"
+
+msgid "Simple per-user pricing"
+msgstr "Preços simples por usuário"
+
+msgid "2 to 6 users"
+msgstr "De 2 a 6 usuários"
+
+msgid "7 to 12 users"
+msgstr "De 7 a 12 usuários"
+
+msgid "More than 12 users"
+msgstr "Mais de 12 usuários"
+
+msgid "Price per user (USD / month)"
+msgstr "Preço por usuário (USD/mês)"
+
+# ================================================
+# Updated Plan Names (per-user pricing)
+# ================================================
+
+msgid "2-6 users - $90/user/month"
+msgstr "2-6 usuários - $90/usuário/mês"
+
+msgid "7-12 users - $75/user/month"
+msgstr "7-12 usuários - $75/usuário/mês"
+
+msgid "12+ users - $65/user/month"
+msgstr "12+ usuários - $65/usuário/mês"
+
+msgid "Yes, we offer a 3-day free trial for all plans. No credit card required to start."
+msgstr "Sim, oferecemos um teste gratuito de 3 dias para todos os planos. Não é necessário cartão de crédito para começar."
+

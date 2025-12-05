@@ -46,7 +46,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'apps.landing',
     'apps.authentication',
-    'apps.tenants',
+    'apps.tenants.apps.TenantsConfig',
     'apps.requests',
     'apps.billing',
     'apps.chat',

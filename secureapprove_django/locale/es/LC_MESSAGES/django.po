@@ -879,7 +879,7 @@ msgid ""
 "Yes, we offer a 14-day free trial for all plans. No credit card required to "
 "start."
 msgstr ""
-"Sí, ofrecemos una prueba gratuita de 14 días para todos los planes. No se "
+"Sí, ofrecemos una prueba gratuita de 3 días para todos los planes. No se "
 "requiere tarjeta de crédito para comenzar."
 
 msgid "What payment methods do you accept?"
@@ -916,10 +916,10 @@ msgid "This email will be used for your account and billing notifications"
 msgstr "Este correo se usará para tu cuenta y notificaciones de facturación"
 
 msgid "14-Day Free Trial"
-msgstr "Prueba Gratis de 14 Días"
+msgstr "Prueba Gratis de 3 Días"
 
 msgid "No charge for the first 14 days. Cancel anytime."
-msgstr "Sin cargo los primeros 14 días. Cancela en cualquier momento."
+msgstr "Sin cargo los primeros 3 días. Cancela en cualquier momento."
 
 msgid ""
 "Your payment is processed securely through MercadoPago. We never store your "
@@ -1036,7 +1036,7 @@ msgid "Requester"
 msgstr "Solicitante"
 
 msgid "Approver"
-msgstr "Approver"
+msgstr "Aprobador"
 
 msgid "Tenant Admin"
 msgstr "Administrador de inquilinos"
@@ -1066,7 +1066,7 @@ msgid "Updated At"
 msgstr "Actualizado en"
 
 msgid "User"
-msgstr "User"
+msgstr "Usuario"
 
 msgid "Please select a subscription plan to get started."
 msgstr "Seleccione un plan de suscripción para comenzar."
@@ -1132,7 +1132,7 @@ msgid "Challenge not found or expired"
 msgstr "Desafío no encontrado o caducado"
 
 msgid "No credentials registered for this user"
-msgstr "No credentials registered for this user"
+msgstr "No hay credenciales registradas para este usuario"
 
 msgid "Credential not found"
 msgstr "Credencial no encontrada"
@@ -1195,7 +1195,7 @@ msgid "Yearly price (optional, defaults to monthly * 10)"
 msgstr "Precio anual (opcional, por defecto es mensual * 10)"
 
 msgid "Maximum number of approvers allowed"
-msgstr "Maximum number of approvers allowed"
+msgstr "Número máximo de aprobadores permitidos"
 
 msgid "Maximum requests per month (0 = unlimited)"
 msgstr "Solicitudes máximas por mes (0 = ilimitado)"
@@ -1386,7 +1386,7 @@ msgid "Request \"{}\" has been rejected."
 msgstr "La solicitud \"{}\" ha sido rechazada."
 
 msgid "Starter - Up to 2 approvers"
-msgstr "Starter - Up to 2 approvers"
+msgstr "Inicial - Hasta 2 aprobadores"
 
 msgid "Growth - Up to 6 approvers"
 msgstr "Crecimiento: hasta 6 aprobadores"
@@ -1489,7 +1489,7 @@ msgid "Profile - SecureApprove"
 msgstr "Perfil - Aprobación segura"
 
 msgid "Administrator"
-msgstr "Administrator"
+msgstr "Administrador"
 
 msgid "Staff Member"
 msgstr "Miembro del personal"
@@ -1562,7 +1562,7 @@ msgid "Start Registration"
 msgstr "Iniciar registro"
 
 msgid "Are you sure you want to remove this device?"
-msgstr "Are you sure you want to remove this device?"
+msgstr "¿Estás seguro de que deseas eliminar este dispositivo?"
 
 msgid "Failed to remove device"
 msgstr "No se pudo eliminar el dispositivo"
@@ -2184,79 +2184,79 @@ msgstr ""
 "SecureApprove account."
 
 msgid "Device Paired Successfully!"
-msgstr "Device Paired Successfully!"
+msgstr "¡Dispositivo Emparejado Exitosamente!"
 
 msgid ""
 "You can now sign in to SecureApprove from this device using your biometric "
 "authentication."
 msgstr ""
-"You can now sign in to SecureApprove from this device using your biometric "
-"authentication."
+"Ahora puedes iniciar sesión en SecureApprove desde este dispositivo usando "
+"tu autenticación biométrica."
 
 msgid "Go to Login"
-msgstr "Go to Login"
+msgstr "Ir a Iniciar Sesión"
 
 msgid "Failed to create pairing session"
-msgstr "Failed to create pairing session"
+msgstr "Error al crear la sesión de emparejamiento"
 
 msgid "Copy link"
-msgstr "Copy link"
+msgstr "Copiar enlace"
 
 msgid "Scan this QR code with the device you want to pair."
-msgstr "Scan this QR code with the device you want to pair."
+msgstr "Escanea este código QR con el dispositivo que deseas emparejar."
 
 msgid "Close"
-msgstr "Close"
+msgstr "Cerrar"
 
 msgid "Link copied to clipboard."
-msgstr "Link copied to clipboard."
+msgstr "Enlace copiado al portapapeles."
 
 msgid "Failed to copy link."
-msgstr "Failed to copy link."
+msgstr "Error al copiar el enlace."
 
 msgid ""
 "The biometric prompt was cancelled or timed out. Please try again and make "
 "sure to confirm with your fingerprint, Face ID, or security key."
 msgstr ""
-"The biometric prompt was cancelled or timed out. Please try again and make "
-"sure to confirm with your fingerprint, Face ID, or security key."
+"El mensaje biométrico fue cancelado o expiró. Por favor inténtalo de nuevo "
+"y asegúrate de confirmar con tu huella dactilar, Face ID o llave de seguridad."
 
 msgid ""
 "A security error occurred while creating the credential. Please ensure you "
 "are accessing SecureApprove directly over HTTPS and not inside another "
 "application."
 msgstr ""
-"A security error occurred while creating the credential. Please ensure you "
-"are accessing SecureApprove directly over HTTPS and not inside another "
-"application."
+"Ocurrió un error de seguridad al crear la credencial. Por favor asegúrate "
+"de acceder a SecureApprove directamente a través de HTTPS y no dentro de "
+"otra aplicación."
 
 msgid ""
 "This browser or device does not fully support WebAuthn passkeys for this "
 "site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) "
 "with passkeys enabled."
 msgstr ""
-"This browser or device does not fully support WebAuthn passkeys for this "
-"site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) "
-"with passkeys enabled."
+"Este navegador o dispositivo no soporta completamente las passkeys de WebAuthn "
+"para este sitio. Por favor usa un navegador compatible (Chrome, Safari, Edge o "
+"Firefox) con las passkeys habilitadas."
 
 msgid ""
 "A credential for this account already exists on this device. Try signing in "
 "instead of pairing again."
 msgstr ""
-"A credential for this account already exists on this device. Try signing in "
-"instead of pairing again."
+"Ya existe una credencial para esta cuenta en este dispositivo. Intenta "
+"iniciar sesión en lugar de emparejar de nuevo."
 
 msgid ""
 "The operation either timed out or was not allowed by the browser. Please try"
 " again, and check your browser privacy settings."
 msgstr ""
-"The operation either timed out or was not allowed by the browser. Please try"
-" again, and check your browser privacy settings."
+"La operación expiró o no fue permitida por el navegador. Por favor inténtalo "
+"de nuevo y verifica la configuración de privacidad de tu navegador."
 
 msgid ""
 "An unexpected error occurred while adding this device. Please try again."
 msgstr ""
-"An unexpected error occurred while adding this device. Please try again."
+"Ocurrió un error inesperado al agregar este dispositivo. Por favor inténtalo de nuevo."
 
 
 msgid "Approvers"
@@ -2471,3 +2471,299 @@ msgstr "Justo ahora"
 
 msgid "General"
 msgstr "General"
+
+# ================================================
+# Approval Type Configuration
+# ================================================
+
+msgid "Approval Types"
+msgstr "Tipos de Aprobación"
+
+msgid "Create Approval Type"
+msgstr "Crear Tipo de Aprobación"
+
+msgid "Edit Approval Type"
+msgstr "Editar Tipo de Aprobación"
+
+msgid "Custom"
+msgstr "Personalizado"
+
+msgid "approver"
+msgstr "aprobador"
+
+msgid "approvers"
+msgstr "aprobadores"
+
+msgid "Designated approvers:"
+msgstr "Aprobadores designados:"
+
+msgid "Required Approvers"
+msgstr "Aprobadores Requeridos"
+
+msgid "Designated Approvers"
+msgstr "Aprobadores Designados"
+
+msgid "Number of approvals needed to approve requests of this type"
+msgstr "Número de aprobaciones necesarias para aprobar solicitudes de este tipo"
+
+msgid "Number of approvals needed"
+msgstr "Número de aprobaciones necesarias"
+
+msgid "Leave empty to allow any approver. Hold Ctrl/Cmd to select multiple."
+msgstr "Dejar vacío para permitir cualquier aprobador. Mantén Ctrl/Cmd para seleccionar varios."
+
+msgid "Leave empty to allow any approver"
+msgstr "Dejar vacío para permitir cualquier aprobador"
+
+msgid "Show amount field"
+msgstr "Mostrar campo de monto"
+
+msgid "enabled"
+msgstr "habilitado"
+
+msgid "disabled"
+msgstr "deshabilitado"
+
+msgid "Approval type '%(name)s' has been %(status)s."
+msgstr "El tipo de aprobación '%(name)s' ha sido %(status)s."
+
+msgid "Approval type '%(name)s' has been updated."
+msgstr "El tipo de aprobación '%(name)s' ha sido actualizado."
+
+msgid "Approval type '%(name)s' has been created."
+msgstr "El tipo de aprobación '%(name)s' ha sido creado."
+
+msgid "Approval type '%(name)s' has been deleted."
+msgstr "El tipo de aprobación '%(name)s' ha sido eliminado."
+
+msgid "Cannot delete default approval types. You can disable them instead."
+msgstr "No se pueden eliminar los tipos de aprobación predeterminados. Puedes deshabilitarlos."
+
+msgid "Approval type not found."
+msgstr "Tipo de aprobación no encontrado."
+
+msgid "Name and key are required."
+msgstr "El nombre y la clave son requeridos."
+
+msgid "An approval type with this key already exists."
+msgstr "Ya existe un tipo de aprobación con esta clave."
+
+msgid "Lowercase letters, numbers, and underscores only"
+msgstr "Solo letras minúsculas, números y guiones bajos"
+
+msgid "e.g., Vacation Request"
+msgstr "ej., Solicitud de Vacaciones"
+
+msgid "e.g., vacation"
+msgstr "ej., vacaciones"
+
+msgid "Optional description..."
+msgstr "Descripción opcional..."
+
+msgid "Cash"
+msgstr "Efectivo"
+
+msgid "Cart"
+msgstr "Carrito"
+
+msgid "Travel"
+msgstr "Viaje"
+
+msgid "Document"
+msgstr "Documento"
+
+msgid "Download"
+msgstr "Descarga"
+
+msgid "Calendar"
+msgstr "Calendario"
+
+msgid "Person"
+msgstr "Persona"
+
+msgid "Building"
+msgstr "Edificio"
+
+msgid "Tools"
+msgstr "Herramientas"
+
+msgid "Laptop"
+msgstr "Portátil"
+
+msgid "Check"
+msgstr "Verificar"
+
+msgid "Health"
+msgstr "Salud"
+
+msgid "Education"
+msgstr "Educación"
+
+msgid "Time"
+msgstr "Tiempo"
+
+msgid "Primary"
+msgstr "Primario"
+
+msgid "Success"
+msgstr "Éxito"
+
+msgid "Warning"
+msgstr "Advertencia"
+
+msgid "Danger"
+msgstr "Peligro"
+
+msgid "Info"
+msgstr "Información"
+
+msgid "Secondary"
+msgstr "Secundario"
+
+msgid "Are you sure you want to delete this approval type?"
+msgstr "¿Estás seguro de que deseas eliminar este tipo de aprobación?"
+
+msgid "No approval types configured."
+msgstr "No hay tipos de aprobación configurados."
+
+msgid "Save Changes"
+msgstr "Guardar Cambios"
+
+# ================================================
+# Super Admin Translations
+# ================================================
+
+msgid "Super Admin - Tenant Management"
+msgstr "Super Admin - Gestión de Inquilinos"
+
+msgid "Tenant Administration"
+msgstr "Administración de Inquilinos"
+
+msgid "Manage tenants, plans, and administrators."
+msgstr "Gestiona inquilinos, planes y administradores."
+
+msgid "Create Tenant"
+msgstr "Crear Inquilino"
+
+msgid "Pricing Reference"
+msgstr "Referencia de Precios"
+
+msgid "USD / user / month"
+msgstr "USD / usuario / mes"
+
+msgid "Edit Tenant"
+msgstr "Editar Inquilino"
+
+msgid "Invite Admin"
+msgstr "Invitar Administrador"
+
+msgid "Invite Primary Admin"
+msgstr "Invitar Administrador Principal"
+
+msgid "Invite a user to be the Tenant Admin for"
+msgstr "Invitar a un usuario para ser Administrador del Inquilino de"
+
+msgid "Send Invitation"
+msgstr "Enviar Invitación"
+
+msgid "No tenants found."
+msgstr "No se encontraron inquilinos."
+
+msgid "Create New Tenant"
+msgstr "Crear Nuevo Inquilino"
+
+msgid "Key (Slug)"
+msgstr "Clave (Slug)"
+
+msgid "Unique identifier for the tenant (e.g. company-name)"
+msgstr "Identificador único del inquilino (ej. nombre-empresa)"
+
+msgid "Max Users (Seats)"
+msgstr "Máximo de Usuarios (Asientos)"
+
+msgid "Manually set the maximum number of users allowed."
+msgstr "Establecer manualmente el número máximo de usuarios permitidos."
+
+msgid "Terms & Conditions"
+msgstr "Términos y Condiciones"
+
+msgid "Privacy Policy"
+msgstr "Política de Privacidad"
+
+msgid "All rights reserved."
+msgstr "Todos los derechos reservados."
+
+# ================================================
+# Billing / Select Plan Translations
+# ================================================
+
+msgid "The tenant administrator can add as many users as needed; your subscription amount will be calculated based on the total number of seats."
+msgstr "El administrador del tenant puede agregar tantos usuarios como necesite; el monto de su suscripción se calculará en base al número total de asientos."
+
+msgid "Start Free Trial"
+msgstr "Comenzar Prueba Gratis"
+
+msgid "All plans include"
+msgstr "Todos los planes incluyen"
+
+msgid "WebAuthn Security"
+msgstr "Seguridad WebAuthn"
+
+msgid "Passwordless biometric authentication"
+msgstr "Autenticación biométrica sin contraseñas"
+
+msgid "Cloud Hosting"
+msgstr "Hospedaje en la Nube"
+
+msgid "Secure, reliable cloud infrastructure"
+msgstr "Infraestructura en la nube segura y confiable"
+
+msgid "Mobile Ready"
+msgstr "Listo para Móviles"
+
+msgid "Works perfectly on any device"
+msgstr "Funciona perfectamente en cualquier dispositivo"
+
+msgid "24/7 Support"
+msgstr "Soporte 24/7"
+
+msgid "Get help whenever you need it"
+msgstr "Obtén ayuda cuando la necesites"
+
+msgid "Questions about our plans?"
+msgstr "¿Preguntas sobre nuestros planes?"
+
+msgid "Contact our sales team"
+msgstr "Contacta a nuestro equipo de ventas"
+
+msgid "Simple per-user pricing"
+msgstr "Precios simples por usuario"
+
+msgid "2 to 6 users"
+msgstr "De 2 a 6 usuarios"
+
+msgid "7 to 12 users"
+msgstr "De 7 a 12 usuarios"
+
+msgid "More than 12 users"
+msgstr "Más de 12 usuarios"
+
+msgid "Price per user (USD / month)"
+msgstr "Precio por usuario (USD/mes)"
+
+# ================================================
+# Updated Plan Names (per-user pricing)
+# ================================================
+
+msgid "2-6 users - $90/user/month"
+msgstr "2-6 usuarios - $90/usuario/mes"
+
+msgid "7-12 users - $75/user/month"
+msgstr "7-12 usuarios - $75/usuario/mes"
+
+msgid "12+ users - $65/user/month"
+msgstr "12+ usuarios - $65/usuario/mes"
+
+msgid "Yes, we offer a 3-day free trial for all plans. No credit card required to start."
+msgstr "Sí, ofrecemos una prueba gratuita de 3 días para todos los planes. No se requiere tarjeta de crédito para comenzar."
+

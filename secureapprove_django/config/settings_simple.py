@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     
     # Local apps
     'apps.authentication',
-    'apps.tenants',
+    'apps.tenants.apps.TenantsConfig',
     'apps.billing',
     'apps.landing',
 ]
