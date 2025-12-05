@@ -236,12 +236,19 @@ SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Session
+# Session and Cookie Settings
+# Note: iOS Safari requires explicit SameSite attribute for cookies to work properly
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # Required for iOS Safari compatibility
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read CSRF token
 CSRF_COOKIE_SAMESITE = 'Lax'
+
+# iOS Safari-specific: Ensure cookies work in cross-origin contexts
+# When DEBUG=True, we use 'Lax' which is compatible with iOS
+# In production with HTTPS, 'Lax' is the recommended secure default
+
 CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS', 
     default='http://localhost:8005,http://127.0.0.1:8005,http://localhost:8000,http://127.0.0.1:8000,https://secureapprove.com,https://www.secureapprove.com,https://api.secureapprove.com',

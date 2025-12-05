@@ -472,6 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get registration options from server
             const optionsResponse = await fetch(`${langPrefix}/auth/webauthn/register/begin/`, {
                 method: 'POST',
+                credentials: 'same-origin',  // Required for iOS Safari cookie handling
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
@@ -498,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Verify registration with server
             const verifyResponse = await fetch(`${langPrefix}/auth/webauthn/register/complete/`, {
                 method: 'POST',
+                credentials: 'same-origin',  // Required for iOS Safari cookie handling
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
@@ -621,6 +623,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const response = await fetch(`${langPrefix}/auth/device-pairing/create/`, {
                     method: 'POST',
+                    credentials: 'same-origin',  // Required for iOS Safari cookie handling
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value

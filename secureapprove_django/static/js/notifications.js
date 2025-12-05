@@ -313,6 +313,7 @@
         async sendSubscriptionToServer(subscription) {
             const response = await fetch(CONFIG.SUBSCRIBE_ENDPOINT, {
                 method: 'POST',
+                credentials: 'same-origin',  // Required for iOS Safari cookie handling
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': this.getCsrfToken(),
