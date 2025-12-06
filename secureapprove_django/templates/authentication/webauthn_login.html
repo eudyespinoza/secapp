@@ -309,6 +309,22 @@ document.addEventListener('DOMContentLoaded', function() {
         return btoa(binary);
     }
     
+    // Helper function to decode Base64URL to Uint8Array (handles both Base64 and Base64URL)
+    function base64ToUint8Array(base64String) {
+        // Convert Base64URL to standard Base64
+        const base64 = base64String
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+        // Add padding if needed
+        const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+        const binary = atob(padded);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+    }
+    
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -367,13 +383,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Step 3: Show touch sensor prompt
             showBiometricStep(2);
             
-            // Convert challenge from base64
-            options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+            // Convert challenge from base64 (handle both Base64 and Base64URL)
+            options.challenge = base64ToUint8Array(options.challenge);
             
             if (options.allowCredentials) {
                 options.allowCredentials = options.allowCredentials.map(cred => ({
                     ...cred,
-                    id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0))
+                    id: base64ToUint8Array(cred.id)
                 }));
             }
             
@@ -567,11 +583,12 @@ document.addEventListener('DOMContentLoaded', function() {
             showBiometricStep(2);
 
             // Build publicKey object for navigator.credentials.create
+            // Use base64ToUint8Array helper to handle both Base64 and Base64URL encoding
             const publicKey = {
-                challenge: Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0)),
+                challenge: base64ToUint8Array(options.challenge),
                 rp: options.rp,
                 user: {
-                    id: Uint8Array.from(atob(options.user.id), c => c.charCodeAt(0)),
+                    id: base64ToUint8Array(options.user.id),
                     name: options.user.name,
                     displayName: options.user.displayName
                 },
@@ -579,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 timeout: options.timeout,
                 excludeCredentials: (options.excludeCredentials || []).map(cred => ({
                     ...cred,
-                    id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0))
+                    id: base64ToUint8Array(cred.id)
                 })),
                 authenticatorSelection: options.authenticatorSelection,
                 attestation: options.attestation
