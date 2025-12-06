@@ -118,8 +118,8 @@ class WebAuthnService:
                 'displayName': options.user.display_name,
             },
             'pubKeyCredParams': [
-                {'type': 'public-key', 'alg': alg.alg}
-                for alg in options.pub_key_cred_params
+                {'type': 'public-key', 'alg': param.alg.value if hasattr(param.alg, 'value') else int(param.alg)}
+                for param in options.pub_key_cred_params
             ],
             'timeout': options.timeout,
             'excludeCredentials': [
