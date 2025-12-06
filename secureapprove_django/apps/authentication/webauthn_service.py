@@ -106,7 +106,7 @@ class WebAuthnService:
         challenge_key = f"webauthn_challenge_reg_{user.id}"
         cache.set(challenge_key, options.challenge, timeout=self.challenge_timeout)
         
-        return {
+        result = {
             'challenge': base64.b64encode(options.challenge).decode('utf-8') if isinstance(options.challenge, bytes) else base64.b64encode(options.challenge.encode('utf-8')).decode('utf-8'),
             'rp': {
                 'name': options.rp.name,
@@ -126,18 +126,21 @@ class WebAuthnService:
                 {
                     'id': base64.b64encode(cred.id).decode('utf-8') if isinstance(cred.id, bytes) else base64.b64encode(cred.id.encode()).decode('utf-8'),
                     'type': cred.type,
-                    'transports': cred.transports,
+                    'transports': list(cred.transports) if cred.transports else [],
                 }
                 for cred in options.exclude_credentials
             ],
             'authenticatorSelection': {
-                'authenticatorAttachment': options.authenticator_selection.authenticator_attachment.value if options.authenticator_selection.authenticator_attachment else None,
-                'requireResidentKey': options.authenticator_selection.resident_key == ResidentKeyRequirement.REQUIRED,
                 'residentKey': options.authenticator_selection.resident_key.value,
                 'userVerification': options.authenticator_selection.user_verification.value,
             },
             'attestation': options.attestation.value,
         }
+        
+        # Log the pubKeyCredParams for debugging
+        logger.info(f"WebAuthn registration options pubKeyCredParams: {result['pubKeyCredParams']}")
+        
+        return result
     
     def verify_registration_response(self, user: User, credential_data: Dict[str, Any]) -> Dict[str, Any]:
         """
