@@ -297,6 +297,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentUser = null;
     let currentUserId = null;
     
+    // Helper function to convert ArrayBuffer to Base64 (iOS Safari compatible)
+    function arrayBufferToBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const chunkSize = 8192; // Process in chunks to avoid stack overflow on iOS
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+            binary += String.fromCharCode.apply(null, chunk);
+        }
+        return btoa(binary);
+    }
+    
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -375,15 +387,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Step 4: Show verifying
             showBiometricStep(3);
             
-            // Prepare assertion for server
+            // Prepare assertion for server (using iOS-compatible Base64 encoding)
             const assertionData = {
                 id: assertion.id,
-                rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.rawId))),
+                rawId: arrayBufferToBase64(assertion.rawId),
                 response: {
-                    clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.clientDataJSON))),
-                    authenticatorData: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.authenticatorData))),
-                    signature: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.signature))),
-                    userHandle: assertion.response.userHandle ? btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.userHandle))) : null,
+                    clientDataJSON: arrayBufferToBase64(assertion.response.clientDataJSON),
+                    authenticatorData: arrayBufferToBase64(assertion.response.authenticatorData),
+                    signature: arrayBufferToBase64(assertion.response.signature),
+                    userHandle: assertion.response.userHandle ? arrayBufferToBase64(assertion.response.userHandle) : null,
                 },
                 type: assertion.type
             };
@@ -578,14 +590,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('{% trans "WebAuthn authentication was cancelled" %}');
             }
 
-            // Step D: verify registration
+            // Step D: verify registration (using iOS-compatible Base64 encoding)
             showBiometricStep(3);
             const attestationData = {
                 id: credential.id,
-                rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(credential.rawId))),
+                rawId: arrayBufferToBase64(credential.rawId),
                 response: {
-                    clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(credential.response.clientDataJSON))),
-                    attestationObject: btoa(String.fromCharCode.apply(null, new Uint8Array(credential.response.attestationObject)))
+                    clientDataJSON: arrayBufferToBase64(credential.response.clientDataJSON),
+                    attestationObject: arrayBufferToBase64(credential.response.attestationObject)
                 },
                 type: credential.type
             };
