@@ -43,6 +43,28 @@ class WebAuthnService:
         self.rp_id = getattr(settings, 'WEBAUTHN_RP_ID', 'localhost')
         self.origin = getattr(settings, 'WEBAUTHN_ORIGIN', 'http://localhost:8000')
         self.challenge_timeout = getattr(settings, 'WEBAUTHN_CHALLENGE_TIMEOUT', 300)  # 5 minutes
+        
+        # Build list of allowed origins (www and non-www variants)
+        self.allowed_origins = self._build_allowed_origins()
+    
+    def _build_allowed_origins(self) -> list:
+        """Build list of allowed origins including www and non-www variants"""
+        origins = [self.origin]
+        
+        # If origin contains a domain, also allow the www variant (or non-www if www)
+        if '://' in self.origin:
+            scheme, rest = self.origin.split('://', 1)
+            domain = rest.split('/')[0]  # Get domain without path
+            
+            if domain.startswith('www.'):
+                # Add non-www variant
+                non_www_domain = domain[4:]  # Remove 'www.'
+                origins.append(f"{scheme}://{non_www_domain}")
+            else:
+                # Add www variant
+                origins.append(f"{scheme}://www.{domain}")
+        
+        return origins
     
     def generate_registration_options(self, user: User) -> Dict[str, Any]:
         """
@@ -140,11 +162,11 @@ class WebAuthnService:
                 'type': credential_data['type'],
             }))
             
-            # Verify the registration
+            # Verify the registration (accept both www and non-www origins)
             verification = verify_registration_response(
                 credential=registration_credential,
                 expected_challenge=expected_challenge,
-                expected_origin=self.origin,
+                expected_origin=self.allowed_origins,
                 expected_rp_id=self.rp_id,
                 require_user_verification=True,  # Require user verification
             )
@@ -308,11 +330,11 @@ class WebAuthnService:
                 'type': credential_data['type'],
             }))
             
-            # Verify the authentication
+            # Verify the authentication (accept both www and non-www origins)
             verification = verify_authentication_response(
                 credential=authentication_credential,
                 expected_challenge=expected_challenge,
-                expected_origin=self.origin,
+                expected_origin=self.allowed_origins,
                 expected_rp_id=self.rp_id,
                 credential_public_key=base64.b64decode(user_credential['credential_public_key']),
                 credential_current_sign_count=user_credential.get('sign_count', 0),
@@ -521,11 +543,11 @@ class WebAuthnService:
                 'type': credential_data['type'],
             }))
             
-            # Verify the authentication
+            # Verify the authentication (accept both www and non-www origins)
             verification = verify_authentication_response(
                 credential=authentication_credential,
                 expected_challenge=expected_challenge,
-                expected_origin=self.origin,
+                expected_origin=self.allowed_origins,
                 expected_rp_id=self.rp_id,
                 credential_public_key=base64.b64decode(user_credential['credential_public_key']),
                 credential_current_sign_count=user_credential.get('sign_count', 0),
