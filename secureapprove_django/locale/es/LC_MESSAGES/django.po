@@ -24,9 +24,6 @@ msgstr ""
 msgid "Pricing is based on the number of users in your organization."
 msgstr "El precio se basa en la cantidad de usuarios de tu organización."
 
-msgid "Simple per-user pricing"
-msgstr "Precios simples por usuario"
-
 msgid ""
 "Choose how many users you need; the price per user adjusts automatically."
 msgstr ""
@@ -35,18 +32,6 @@ msgstr ""
 
 msgid "Users"
 msgstr "Usuarios"
-
-msgid "Price per user (USD / month)"
-msgstr "Precio por usuario (USD/mes)"
-
-msgid "2 to 6 users"
-msgstr "De 2 a 6 usuarios"
-
-msgid "7 to 12 users"
-msgstr "De 7 a 12 usuarios"
-
-msgid "More than 12 users"
-msgstr "Más de 12 usuarios"
 
 msgid "Number of users in your organization (minimum 2)."
 msgstr "Número de usuarios en tu organización (mínimo 2)."
@@ -143,12 +128,6 @@ msgstr "Cargando..."
 
 msgid "Error"
 msgstr "Error"
-
-msgid "Success"
-msgstr "Éxito"
-
-msgid "Warning"
-msgstr "Advertencia"
 
 msgid "Information"
 msgstr "Información"
@@ -778,9 +757,6 @@ msgstr "Reportes básicos"
 msgid "WebAuthn security"
 msgstr "Seguridad WebAuthn"
 
-msgid "Start Free Trial"
-msgstr "Comenzar Prueba Gratis"
-
 msgid "Ideal for growing companies"
 msgstr "Ideal para empresas en crecimiento"
 
@@ -832,32 +808,8 @@ msgstr "Garantía SLA"
 msgid "Contact Sales"
 msgstr "Contactar Ventas"
 
-msgid "All plans include"
-msgstr "Todos los planes incluyen"
-
-msgid "WebAuthn Security"
-msgstr "Seguridad WebAuthn"
-
 msgid "Passwordless biometric authentication"
 msgstr "Autenticación biométrica sin contraseña"
-
-msgid "Cloud Hosting"
-msgstr "Hospedaje en la Nube"
-
-msgid "Secure, reliable cloud infrastructure"
-msgstr "Infraestructura en la nube segura y confiable"
-
-msgid "Mobile Ready"
-msgstr "Listo para Móviles"
-
-msgid "Works perfectly on any device"
-msgstr "Funciona perfectamente en cualquier dispositivo"
-
-msgid "24/7 Support"
-msgstr "Soporte 24/7"
-
-msgid "Get help whenever you need it"
-msgstr "Obtén ayuda cuando la necesites"
 
 msgid "Frequently Asked Questions"
 msgstr "Preguntas Frecuentes"
@@ -891,12 +843,6 @@ msgid ""
 msgstr ""
 "Aceptamos todas las tarjetas de crédito principales, PayPal y transferencias"
 " bancarias a través de MercadoPago."
-
-msgid "Questions about our plans?"
-msgstr "¿Preguntas sobre nuestros planes?"
-
-msgid "Contact our sales team"
-msgstr "Contacta a nuestro equipo de ventas"
 
 msgid "Most Popular"
 msgstr "Más Popular"
@@ -956,9 +902,6 @@ msgstr ""
 
 msgid "Setup Biometric Login"
 msgstr "Configurar Inicio Biométrico"
-
-msgid "Back to Home"
-msgstr "Volver al Inicio"
 
 msgid "Need help? Contact our support team at"
 msgstr "¿Necesitas ayuda? Contacta a nuestro equipo de soporte en"
@@ -2083,8 +2026,8 @@ msgid ""
 "Request categories are currently global. Future versions will allow per-"
 "tenant customization."
 msgstr ""
-"Las categorías de solicitud son actualmente globales. Las versiones futuras"
-" permitirán personalización por tenant."
+"Las categorías de solicitud son actualmente globales. Las versiones futuras "
+"permitirán personalización por tenant."
 
 msgid "Contacts"
 msgstr "Contactos"
@@ -2107,7 +2050,6 @@ msgstr "Chats"
 msgid "Users & Groups"
 msgstr "Usuarios y grupos"
 
-
 msgid "You have been invited to SecureApprove"
 msgstr "Has sido invitado a SecureApprove"
 
@@ -2121,7 +2063,6 @@ msgstr ""
 "SecureApprove.\\n\\nPara aceptar la invitación y acceder a la plataforma, "
 "haz clic en el siguiente enlace:\\n\\n%(url)s\\n\\nSi no esperabas esta "
 "invitación, puedes ignorar este correo."
-
 
 msgid "This invitation is no longer valid."
 msgstr "Esta invitación ya no es válida."
@@ -2218,26 +2159,27 @@ msgid ""
 "The biometric prompt was cancelled or timed out. Please try again and make "
 "sure to confirm with your fingerprint, Face ID, or security key."
 msgstr ""
-"El mensaje biométrico fue cancelado o expiró. Por favor inténtalo de nuevo "
-"y asegúrate de confirmar con tu huella dactilar, Face ID o llave de seguridad."
+"El mensaje biométrico fue cancelado o expiró. Por favor inténtalo de nuevo y"
+" asegúrate de confirmar con tu huella dactilar, Face ID o llave de "
+"seguridad."
 
 msgid ""
 "A security error occurred while creating the credential. Please ensure you "
 "are accessing SecureApprove directly over HTTPS and not inside another "
 "application."
 msgstr ""
-"Ocurrió un error de seguridad al crear la credencial. Por favor asegúrate "
-"de acceder a SecureApprove directamente a través de HTTPS y no dentro de "
-"otra aplicación."
+"Ocurrió un error de seguridad al crear la credencial. Por favor asegúrate de"
+" acceder a SecureApprove directamente a través de HTTPS y no dentro de otra "
+"aplicación."
 
 msgid ""
 "This browser or device does not fully support WebAuthn passkeys for this "
 "site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) "
 "with passkeys enabled."
 msgstr ""
-"Este navegador o dispositivo no soporta completamente las passkeys de WebAuthn "
-"para este sitio. Por favor usa un navegador compatible (Chrome, Safari, Edge o "
-"Firefox) con las passkeys habilitadas."
+"Este navegador o dispositivo no soporta completamente las passkeys de "
+"WebAuthn para este sitio. Por favor usa un navegador compatible (Chrome, "
+"Safari, Edge o Firefox) con las passkeys habilitadas."
 
 msgid ""
 "A credential for this account already exists on this device. Try signing in "
@@ -2250,14 +2192,14 @@ msgid ""
 "The operation either timed out or was not allowed by the browser. Please try"
 " again, and check your browser privacy settings."
 msgstr ""
-"La operación expiró o no fue permitida por el navegador. Por favor inténtalo "
-"de nuevo y verifica la configuración de privacidad de tu navegador."
+"La operación expiró o no fue permitida por el navegador. Por favor inténtalo"
+" de nuevo y verifica la configuración de privacidad de tu navegador."
 
 msgid ""
 "An unexpected error occurred while adding this device. Please try again."
 msgstr ""
-"Ocurrió un error inesperado al agregar este dispositivo. Por favor inténtalo de nuevo."
-
+"Ocurrió un error inesperado al agregar este dispositivo. Por favor inténtalo"
+" de nuevo."
 
 msgid "Approvers"
 msgstr "Aprobadores"
@@ -2295,8 +2237,12 @@ msgstr "Usuario actualizado exitosamente."
 msgid "Email is required to invite a user."
 msgstr "El correo es obligatorio para invitar a un usuario."
 
-msgid "You have reached the maximum number of users for your current seats. Please upgrade your subscription to add more users."
-msgstr "Has alcanzado el número máximo de usuarios para tus asientos actuales. Por favor actualiza tu suscripción para agregar más usuarios."
+msgid ""
+"You have reached the maximum number of users for your current seats. Please "
+"upgrade your subscription to add more users."
+msgstr ""
+"Has alcanzado el número máximo de usuarios para tus asientos actuales. Por "
+"favor actualiza tu suscripción para agregar más usuarios."
 
 msgid "Your current subscription does not allow adding more users this month."
 msgstr "Tu suscripción actual no permite agregar más usuarios este mes."
@@ -2380,28 +2326,23 @@ msgid "Start Trial"
 msgstr "Comenzar prueba"
 
 msgid "By signing up, you agree to our Terms of Service and Privacy Policy."
-msgstr "Al registrarte, aceptas nuestros Términos de servicio y Política de privacidad."
+msgstr ""
+"Al registrarte, aceptas nuestros Términos de servicio y Política de "
+"privacidad."
 
 msgid "Log in"
 msgstr "Iniciar sesión"
 
-# ================================================
-# Terms and Conditions - SecureApprove
-# ================================================
-msgid "Terms and Conditions - SecureApprove"
-msgstr "Términos y Condiciones - SecureApprove"
-
-msgid "Terms and Conditions"
-msgstr "Términos y Condiciones"
-
 msgid "Last updated: November 23, 2025"
 msgstr "Última actualización: 23 de Noviembre de 2025"
 
-msgid "1. Introduction"
-msgstr "1. Introducción"
-
-msgid "Welcome to SecureApprove. By accessing or using our website and services, you agree to be bound by these Terms and Conditions and our Privacy Policy."
-msgstr "Bienvenido a SecureApprove. Al acceder o utilizar nuestro sitio web y servicios, usted acepta estar sujeto a estos Términos y Condiciones y nuestra Política de Privacidad."
+msgid ""
+"Welcome to SecureApprove. By accessing or using our website and services, "
+"you agree to be bound by these Terms and Conditions and our Privacy Policy."
+msgstr ""
+"Bienvenido a SecureApprove. Al acceder o utilizar nuestro sitio web y "
+"servicios, usted acepta estar sujeto a estos Términos y Condiciones y "
+"nuestra Política de Privacidad."
 
 msgid "2. Biometric Data Privacy"
 msgstr "2. Privacidad de Datos Biométricos"
@@ -2412,20 +2353,37 @@ msgstr "Aviso de Privacidad Importante:"
 msgid "We do not collect, store, or transmit your biometric data."
 msgstr "No recopilamos, almacenamos ni transmitimos sus datos biométricos."
 
-msgid "SecureApprove utilizes WebAuthn standards for passwordless authentication. This means:"
-msgstr "SecureApprove utiliza estándares WebAuthn para la autenticación sin contraseña. Esto significa:"
+msgid ""
+"SecureApprove utilizes WebAuthn standards for passwordless authentication. "
+"This means:"
+msgstr ""
+"SecureApprove utiliza estándares WebAuthn para la autenticación sin "
+"contraseña. Esto significa:"
 
-msgid "Your biometric data (fingerprint, face scan, etc.) remains exclusively on your personal device."
-msgstr "Sus datos biométricos (huella digital, escaneo facial, etc.) permanecen exclusivamente en su dispositivo personal."
+msgid ""
+"Your biometric data (fingerprint, face scan, etc.) remains exclusively on "
+"your personal device."
+msgstr ""
+"Sus datos biométricos (huella digital, escaneo facial, etc.) permanecen "
+"exclusivamente en su dispositivo personal."
 
 msgid "We never receive or store your raw biometric information."
-msgstr "Nunca recibimos ni almacenamos su información biométrica sin procesar."
+msgstr ""
+"Nunca recibimos ni almacenamos su información biométrica sin procesar."
 
-msgid "Our servers only receive a cryptographic proof that you have successfully authenticated with your device."
-msgstr "Nuestros servidores solo reciben una prueba criptográfica de que se ha autenticado exitosamente con su dispositivo."
+msgid ""
+"Our servers only receive a cryptographic proof that you have successfully "
+"authenticated with your device."
+msgstr ""
+"Nuestros servidores solo reciben una prueba criptográfica de que se ha "
+"autenticado exitosamente con su dispositivo."
 
-msgid "You retain full control over your biometric credentials and can remove them from your device at any time."
-msgstr "Usted conserva el control total sobre sus credenciales biométricas y puede eliminarlas de su dispositivo en cualquier momento."
+msgid ""
+"You retain full control over your biometric credentials and can remove them "
+"from your device at any time."
+msgstr ""
+"Usted conserva el control total sobre sus credenciales biométricas y puede "
+"eliminarlas de su dispositivo en cualquier momento."
 
 msgid "3. Data Usage and Sharing"
 msgstr "3. Uso y Compartición de Datos"
@@ -2433,32 +2391,50 @@ msgstr "3. Uso y Compartición de Datos"
 msgid "We are committed to protecting your privacy and data security:"
 msgstr "Estamos comprometidos a proteger su privacidad y seguridad de datos:"
 
-msgid "We do not sell, trade, or rent your personal identification information to others."
-msgstr "No vendemos, intercambiamos ni alquilamos su información de identificación personal a terceros."
+msgid ""
+"We do not sell, trade, or rent your personal identification information to "
+"others."
+msgstr ""
+"No vendemos, intercambiamos ni alquilamos su información de identificación "
+"personal a terceros."
 
 msgid "We do not share your data with third parties for marketing purposes."
 msgstr "No compartimos sus datos con terceros con fines de marketing."
 
-msgid "Your data is used solely for the purpose of providing the SecureApprove service, including processing approvals and managing your account."
-msgstr "Sus datos se utilizan únicamente con el fin de proporcionar el servicio SecureApprove, incluido el procesamiento de aprobaciones y la gestión de su cuenta."
+msgid ""
+"Your data is used solely for the purpose of providing the SecureApprove "
+"service, including processing approvals and managing your account."
+msgstr ""
+"Sus datos se utilizan únicamente con el fin de proporcionar el servicio "
+"SecureApprove, incluido el procesamiento de aprobaciones y la gestión de su "
+"cuenta."
 
 msgid "4. User Responsibilities"
 msgstr "4. Responsabilidades del Usuario"
 
-msgid "You are responsible for maintaining the confidentiality of your account and for restricting access to your devices. You agree to accept responsibility for all activities that occur under your account."
-msgstr "Usted es responsable de mantener la confidencialidad de su cuenta y de restringir el acceso a sus dispositivos. Acepta asumir la responsabilidad de todas las actividades que ocurran bajo su cuenta."
+msgid ""
+"You are responsible for maintaining the confidentiality of your account and "
+"for restricting access to your devices. You agree to accept responsibility "
+"for all activities that occur under your account."
+msgstr ""
+"Usted es responsable de mantener la confidencialidad de su cuenta y de "
+"restringir el acceso a sus dispositivos. Acepta asumir la responsabilidad de"
+" todas las actividades que ocurran bajo su cuenta."
 
 msgid "5. Limitation of Liability"
 msgstr "5. Limitación de Responsabilidad"
 
-msgid "SecureApprove shall not be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service."
-msgstr "SecureApprove no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo, incluyendo, entre otros, pérdida de ganancias, datos, uso, buena voluntad u otras pérdidas intangibles, resultantes de su acceso o uso o incapacidad para acceder o usar el servicio."
-
-msgid "Terms & Conditions"
-msgstr "Términos y Condiciones"
-
-msgid "Privacy Policy"
-msgstr "Política de Privacidad"
+msgid ""
+"SecureApprove shall not be liable for any indirect, incidental, special, "
+"consequential or punitive damages, including without limitation, loss of "
+"profits, data, use, goodwill, or other intangible losses, resulting from "
+"your access to or use of or inability to access or use the service."
+msgstr ""
+"SecureApprove no será responsable de ningún daño indirecto, incidental, "
+"especial, consecuente o punitivo, incluyendo, entre otros, pérdida de "
+"ganancias, datos, uso, buena voluntad u otras pérdidas intangibles, "
+"resultantes de su acceso o uso o incapacidad para acceder o usar el "
+"servicio."
 
 msgid "I have read and agree to the"
 msgstr "He leído y acepto los"
@@ -2475,7 +2451,6 @@ msgstr "General"
 # ================================================
 # Approval Type Configuration
 # ================================================
-
 msgid "Approval Types"
 msgstr "Tipos de Aprobación"
 
@@ -2504,13 +2479,16 @@ msgid "Designated Approvers"
 msgstr "Aprobadores Designados"
 
 msgid "Number of approvals needed to approve requests of this type"
-msgstr "Número de aprobaciones necesarias para aprobar solicitudes de este tipo"
+msgstr ""
+"Número de aprobaciones necesarias para aprobar solicitudes de este tipo"
 
 msgid "Number of approvals needed"
 msgstr "Número de aprobaciones necesarias"
 
 msgid "Leave empty to allow any approver. Hold Ctrl/Cmd to select multiple."
-msgstr "Dejar vacío para permitir cualquier aprobador. Mantén Ctrl/Cmd para seleccionar varios."
+msgstr ""
+"Dejar vacío para permitir cualquier aprobador. Mantén Ctrl/Cmd para "
+"seleccionar varios."
 
 msgid "Leave empty to allow any approver"
 msgstr "Dejar vacío para permitir cualquier aprobador"
@@ -2537,7 +2515,9 @@ msgid "Approval type '%(name)s' has been deleted."
 msgstr "El tipo de aprobación '%(name)s' ha sido eliminado."
 
 msgid "Cannot delete default approval types. You can disable them instead."
-msgstr "No se pueden eliminar los tipos de aprobación predeterminados. Puedes deshabilitarlos."
+msgstr ""
+"No se pueden eliminar los tipos de aprobación predeterminados. Puedes "
+"deshabilitarlos."
 
 msgid "Approval type not found."
 msgstr "Tipo de aprobación no encontrado."
@@ -2565,12 +2545,6 @@ msgstr "Efectivo"
 
 msgid "Cart"
 msgstr "Carrito"
-
-msgid "Travel"
-msgstr "Viaje"
-
-msgid "Document"
-msgstr "Documento"
 
 msgid "Download"
 msgstr "Descarga"
@@ -2632,7 +2606,6 @@ msgstr "Guardar Cambios"
 # ================================================
 # Super Admin Translations
 # ================================================
-
 msgid "Super Admin - Tenant Management"
 msgstr "Super Admin - Gestión de Inquilinos"
 
@@ -2687,18 +2660,18 @@ msgstr "Establecer manualmente el número máximo de usuarios permitidos."
 msgid "Terms & Conditions"
 msgstr "Términos y Condiciones"
 
-msgid "Privacy Policy"
-msgstr "Política de Privacidad"
-
 msgid "All rights reserved."
 msgstr "Todos los derechos reservados."
 
 # ================================================
 # Billing / Select Plan Translations
 # ================================================
-
-msgid "The tenant administrator can add as many users as needed; your subscription amount will be calculated based on the total number of seats."
-msgstr "El administrador del tenant puede agregar tantos usuarios como necesite; el monto de su suscripción se calculará en base al número total de asientos."
+msgid ""
+"The tenant administrator can add as many users as needed; your subscription "
+"amount will be calculated based on the total number of seats."
+msgstr ""
+"El administrador del tenant puede agregar tantos usuarios como necesite; el "
+"monto de su suscripción se calculará en base al número total de asientos."
 
 msgid "Start Free Trial"
 msgstr "Comenzar Prueba Gratis"
@@ -2708,9 +2681,6 @@ msgstr "Todos los planes incluyen"
 
 msgid "WebAuthn Security"
 msgstr "Seguridad WebAuthn"
-
-msgid "Passwordless biometric authentication"
-msgstr "Autenticación biométrica sin contraseñas"
 
 msgid "Cloud Hosting"
 msgstr "Hospedaje en la Nube"
@@ -2754,7 +2724,6 @@ msgstr "Precio por usuario (USD/mes)"
 # ================================================
 # Updated Plan Names (per-user pricing)
 # ================================================
-
 msgid "2-6 users - $90/user/month"
 msgstr "2-6 usuarios - $90/usuario/mes"
 
@@ -2764,6 +2733,253 @@ msgstr "7-12 usuarios - $75/usuario/mes"
 msgid "12+ users - $65/user/month"
 msgstr "12+ usuarios - $65/usuario/mes"
 
-msgid "Yes, we offer a 3-day free trial for all plans. No credit card required to start."
-msgstr "Sí, ofrecemos una prueba gratuita de 3 días para todos los planes. No se requiere tarjeta de crédito para comenzar."
+msgid ""
+"Yes, we offer a 3-day free trial for all plans. No credit card required to "
+"start."
+msgstr ""
+"Sí, ofrecemos una prueba gratuita de 3 días para todos los planes. No se "
+"requiere tarjeta de crédito para comenzar."
 
+# ================================================
+# Privacy Policy Page
+# ================================================
+msgid "Privacy Policy - SecureApprove"
+msgstr "Política de Privacidad - SecureApprove"
+
+msgid "Privacy Policy"
+msgstr "Política de Privacidad"
+
+msgid "Last updated: December 6, 2025"
+msgstr "Última actualización: 6 de diciembre de 2025"
+
+msgid "1. Introduction"
+msgstr "1. Introducción"
+
+msgid ""
+"At SecureApprove, we take your privacy seriously. This Privacy Policy "
+"explains how we collect, use, disclose, and safeguard your information when "
+"you use our service."
+msgstr ""
+"En SecureApprove, tomamos tu privacidad muy en serio. Esta Política de "
+"Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos tu "
+"información cuando utilizas nuestro servicio."
+
+msgid "2. Information We Collect"
+msgstr "2. Información que Recopilamos"
+
+msgid "We collect information that you provide directly to us:"
+msgstr "Recopilamos información que nos proporcionas directamente:"
+
+msgid "Account information: name, email address, and organization details."
+msgstr ""
+"Información de la cuenta: nombre, dirección de correo electrónico y detalles"
+" de la organización."
+
+msgid "Approval requests and related metadata."
+msgstr "Solicitudes de aprobación y metadatos relacionados."
+
+msgid "Usage data and interaction logs for service improvement."
+msgstr "Datos de uso y registros de interacción para mejorar el servicio."
+
+msgid "Important:"
+msgstr "Importante:"
+
+msgid ""
+"We do NOT collect, store, or have access to your biometric data. All "
+"biometric authentication is processed locally on your device."
+msgstr ""
+"NO recopilamos, almacenamos ni tenemos acceso a tus datos biométricos. Toda "
+"la autenticación biométrica se procesa localmente en tu dispositivo."
+
+msgid "3. Biometric Authentication"
+msgstr "3. Autenticación Biométrica"
+
+msgid ""
+"SecureApprove uses WebAuthn technology for passwordless authentication. This"
+" means:"
+msgstr ""
+"SecureApprove utiliza tecnología WebAuthn para autenticación sin contraseña."
+" Esto significa:"
+
+msgid ""
+"Your biometric data (fingerprint, face scan, etc.) never leaves your device."
+msgstr ""
+"Tus datos biométricos (huella digital, escaneo facial, etc.) nunca salen de "
+"tu dispositivo."
+
+msgid ""
+"We only receive a cryptographic signature that proves you authenticated "
+"successfully."
+msgstr ""
+"Solo recibimos una firma criptográfica que demuestra que te autenticaste "
+"exitosamente."
+
+msgid ""
+"Even if our servers were compromised, your biometric data would remain safe "
+"on your device."
+msgstr ""
+"Incluso si nuestros servidores fueran comprometidos, tus datos biométricos "
+"permanecerían seguros en tu dispositivo."
+
+msgid ""
+"You can delete your authentication credentials from your device at any time."
+msgstr ""
+"Puedes eliminar tus credenciales de autenticación de tu dispositivo en "
+"cualquier momento."
+
+msgid "4. How We Use Your Information"
+msgstr "4. Cómo Usamos Tu Información"
+
+msgid "We use the information we collect to:"
+msgstr "Usamos la información que recopilamos para:"
+
+msgid "Provide, maintain, and improve our services."
+msgstr "Proporcionar, mantener y mejorar nuestros servicios."
+
+msgid "Process and manage approval requests."
+msgstr "Procesar y gestionar solicitudes de aprobación."
+
+msgid "Send you notifications about your approvals."
+msgstr "Enviarte notificaciones sobre tus aprobaciones."
+
+msgid "Respond to your comments and questions."
+msgstr "Responder a tus comentarios y preguntas."
+
+msgid "Monitor and analyze usage patterns to improve user experience."
+msgstr ""
+"Monitorear y analizar patrones de uso para mejorar la experiencia del "
+"usuario."
+
+msgid "5. Information Sharing"
+msgstr "5. Compartición de Información"
+
+msgid ""
+"We do not sell, trade, or rent your personal information to third parties. "
+"We may share your information only in the following circumstances:"
+msgstr ""
+"No vendemos, intercambiamos ni alquilamos tu información personal a "
+"terceros. Podemos compartir tu información solo en las siguientes "
+"circunstancias:"
+
+msgid "With your consent or at your direction."
+msgstr "Con tu consentimiento o bajo tu dirección."
+
+msgid ""
+"With other members of your organization as necessary for the approval "
+"workflow."
+msgstr ""
+"Con otros miembros de tu organización según sea necesario para el flujo de "
+"aprobación."
+
+msgid "To comply with legal obligations or respond to lawful requests."
+msgstr ""
+"Para cumplir con obligaciones legales o responder a solicitudes legítimas."
+
+msgid ""
+"To protect the rights, privacy, safety, or property of SecureApprove, our "
+"users, or the public."
+msgstr ""
+"Para proteger los derechos, privacidad, seguridad o propiedad de "
+"SecureApprove, nuestros usuarios o el público."
+
+msgid "6. Data Security"
+msgstr "6. Seguridad de Datos"
+
+msgid ""
+"We implement appropriate technical and organizational measures to protect "
+"your personal information, including:"
+msgstr ""
+"Implementamos medidas técnicas y organizativas apropiadas para proteger tu "
+"información personal, incluyendo:"
+
+msgid "256-bit encryption for data in transit and at rest."
+msgstr "Cifrado de 256 bits para datos en tránsito y en reposo."
+
+msgid "Regular security audits and vulnerability assessments."
+msgstr "Auditorías de seguridad regulares y evaluaciones de vulnerabilidad."
+
+msgid "Access controls and authentication requirements for our systems."
+msgstr ""
+"Controles de acceso y requisitos de autenticación para nuestros sistemas."
+
+msgid "Secure data centers with physical security measures."
+msgstr "Centros de datos seguros con medidas de seguridad física."
+
+msgid "7. Data Retention"
+msgstr "7. Retención de Datos"
+
+msgid ""
+"We retain your personal information for as long as your account is active or"
+" as needed to provide you services. You may request deletion of your account"
+" and associated data at any time by contacting us."
+msgstr ""
+"Retenemos tu información personal mientras tu cuenta esté activa o según sea"
+" necesario para proporcionarte servicios. Puedes solicitar la eliminación de"
+" tu cuenta y datos asociados en cualquier momento contactándonos."
+
+msgid "8. Your Rights"
+msgstr "8. Tus Derechos"
+
+msgid "You have the right to:"
+msgstr "Tienes derecho a:"
+
+msgid "Access the personal information we hold about you."
+msgstr "Acceder a la información personal que tenemos sobre ti."
+
+msgid "Request correction of inaccurate information."
+msgstr "Solicitar la corrección de información inexacta."
+
+msgid "Request deletion of your personal information."
+msgstr "Solicitar la eliminación de tu información personal."
+
+msgid "Object to or restrict processing of your information."
+msgstr "Oponerte o restringir el procesamiento de tu información."
+
+msgid "Export your data in a portable format."
+msgstr "Exportar tus datos en un formato portable."
+
+msgid "9. Cookies and Tracking"
+msgstr "9. Cookies y Seguimiento"
+
+msgid ""
+"We use essential cookies to maintain your session and preferences. We do not"
+" use third-party tracking cookies or advertising trackers."
+msgstr ""
+"Usamos cookies esenciales para mantener tu sesión y preferencias. No usamos "
+"cookies de seguimiento de terceros ni rastreadores publicitarios."
+
+msgid "10. Changes to This Policy"
+msgstr "10. Cambios a Esta Política"
+
+msgid ""
+"We may update this Privacy Policy from time to time. We will notify you of "
+"any changes by posting the new Privacy Policy on this page and updating the "
+"'Last updated' date."
+msgstr ""
+"Podemos actualizar esta Política de Privacidad de vez en cuando. Te "
+"notificaremos sobre cualquier cambio publicando la nueva Política de "
+"Privacidad en esta página y actualizando la fecha de 'Última actualización'."
+
+msgid "11. Contact Us"
+msgstr "11. Contáctanos"
+
+msgid ""
+"If you have any questions about this Privacy Policy, please contact us at:"
+msgstr ""
+"Si tienes alguna pregunta sobre esta Política de Privacidad, por favor "
+"contáctanos en:"
+
+msgid "Back to Home"
+msgstr "Volver al Inicio"
+
+# ================================================
+# Terms and Conditions Page
+# ================================================
+msgid "Terms and Conditions - SecureApprove"
+msgstr "Términos y Condiciones - SecureApprove"
+
+msgid "Terms and Conditions"
+msgstr "Términos y Condiciones"
+
+msgid "Terms of Service"
+msgstr "Términos de Servicio"

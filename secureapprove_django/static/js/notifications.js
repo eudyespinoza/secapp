@@ -19,7 +19,9 @@
             success: 'Notifications enabled successfully!',
             error: 'Failed to enable notifications: ',
             titleSuccess: 'Success',
-            titleError: 'Error'
+            titleError: 'Error',
+            iosPwaRequired: 'To receive notifications on iOS, please add this app to your Home Screen: tap the Share button and select "Add to Home Screen".',
+            iosPwaTitle: 'iOS Instructions'
         },
         es: {
             httpsRequired: 'Error: Las notificaciones Push requieren HTTPS. Estás accediendo a través de una conexión insegura.',
@@ -27,7 +29,9 @@
             success: '¡Notificaciones activadas con éxito!',
             error: 'Error al activar las notificaciones: ',
             titleSuccess: 'Éxito',
-            titleError: 'Error'
+            titleError: 'Error',
+            iosPwaRequired: 'Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".',
+            iosPwaTitle: 'Instrucciones iOS'
         },
         'pt-br': {
             httpsRequired: 'Erro: Notificações Push requerem HTTPS. Você está acessando via conexão insegura.',
@@ -35,9 +39,24 @@
             success: 'Notificações ativadas com sucesso!',
             error: 'Falha ao ativar notificações: ',
             titleSuccess: 'Sucesso',
-            titleError: 'Erro'
+            titleError: 'Erro',
+            iosPwaRequired: 'Para receber notificações no iOS, adicione este app à sua tela inicial: toque no botão Compartilhar e selecione "Adicionar à Tela de Início".',
+            iosPwaTitle: 'Instruções iOS'
         }
     };
+
+    // Detect iOS Safari (not in standalone/PWA mode)
+    function isIOSSafari() {
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|OPiOS|mercury/.test(ua);
+        return isIOS && isSafari;
+    }
+
+    function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches || 
+               window.navigator.standalone === true;
+    }
 
     class NotificationManager {
         constructor() {
@@ -94,6 +113,59 @@
             }
         }
 
+        showIOSPwaInstructions() {
+            // Show a modal with iOS PWA installation instructions
+            const existingModal = document.getElementById('iosPwaModal');
+            if (existingModal) {
+                const modal = new bootstrap.Modal(existingModal);
+                modal.show();
+                return;
+            }
+
+            // Create modal dynamically
+            const modalHtml = `
+                <div class="modal fade" id="iosPwaModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-phone me-2"></i>${this.t('iosPwaTitle')}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-box-arrow-up display-4 text-primary"></i>
+                                </div>
+                                <p class="mb-3">${this.t('iosPwaRequired')}</p>
+                                <div class="d-flex justify-content-center gap-3 text-muted">
+                                    <div>
+                                        <i class="bi bi-1-circle-fill fs-4 text-primary d-block mb-1"></i>
+                                        <small>Tap <i class="bi bi-box-arrow-up"></i></small>
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-2-circle-fill fs-4 text-primary d-block mb-1"></i>
+                                        <small>Add to Home Screen</small>
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-3-circle-fill fs-4 text-primary d-block mb-1"></i>
+                                        <small>Open from Home</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('iosPwaModal'));
+            modal.show();
+        }
+
         getVapidKey() {
             const meta = document.querySelector(`meta[name="${CONFIG.VAPID_META_NAME}"]`) || 
                          document.getElementById(CONFIG.VAPID_META_NAME);
@@ -111,10 +183,26 @@
                 });
                 return;
             }
+
+            // Check for iOS Safari not in standalone mode
+            if (isIOSSafari() && !isStandalone()) {
+                console.warn('[Push] iOS Safari requires PWA mode for push notifications');
+                this.subscribeButton.addEventListener('click', () => {
+                    this.showIOSPwaInstructions();
+                });
+                // Still continue to check support in case iOS 16.4+ supports it
+            }
             
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 console.warn('[Push] Push messaging is not supported');
-                this.subscribeButton.style.display = 'none';
+                // On iOS, show instructions instead of hiding button
+                if (isIOSSafari()) {
+                    this.subscribeButton.addEventListener('click', () => {
+                        this.showIOSPwaInstructions();
+                    });
+                } else {
+                    this.subscribeButton.style.display = 'none';
+                }
                 return;
             }
 

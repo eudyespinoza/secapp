@@ -899,6 +899,7 @@
         init() {
             console.log('[CHAT] TenantChatWidget.init');
             this.setupEventListeners();
+            this.setupVisibilityHandlers();
             this.startWebSocket();
             this.startPolling();
             this.loadInitialData();
@@ -909,6 +910,55 @@
                     this.notifications.requestPermission();
                 }
             }, 3000);
+        }
+
+        setupVisibilityHandlers() {
+            // Handle page visibility change (iOS Safari freezes WebSocket in background)
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    console.log('[CHAT] Page became visible - checking WebSocket and refreshing data');
+                    this.handlePageVisible();
+                } else {
+                    console.log('[CHAT] Page became hidden');
+                }
+            });
+
+            // Handle pageshow event (more reliable on iOS for back/forward cache)
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                    console.log('[CHAT] Page restored from bfcache - reconnecting');
+                    this.handlePageVisible();
+                }
+            });
+
+            // Handle online/offline events
+            window.addEventListener('online', () => {
+                console.log('[CHAT] Network online - reconnecting WebSocket');
+                this.handlePageVisible();
+            });
+        }
+
+        handlePageVisible() {
+            // Force WebSocket reconnection if not connected
+            if (!this.ws.connected || (this.ws.socket && this.ws.socket.readyState !== WebSocket.OPEN)) {
+                console.log('[CHAT] WebSocket not connected, forcing reconnect');
+                this.ws.disconnect();
+                setTimeout(() => {
+                    this.ws.connect();
+                }, 100);
+            }
+
+            // Refresh data immediately
+            this.loadConversations();
+            this.loadPresence();
+            
+            // If there's an active conversation, refresh messages
+            if (this.state.currentConversationId) {
+                this.loadMessages(false);
+            }
+
+            // Dispatch event for other components (like request list) to refresh
+            window.dispatchEvent(new CustomEvent('app-visibility-restored'));
         }
 
         setupEventListeners() {

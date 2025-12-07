@@ -456,5 +456,37 @@
             }
         });
     }
+
+    // iOS Safari visibility handling - refresh page when returning from background
+    let lastVisibilityChange = Date.now();
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            const timeSinceHidden = Date.now() - lastVisibilityChange;
+            console.log('[Requests] Page visible after ' + timeSinceHidden + 'ms');
+            
+            // If page was hidden for more than 30 seconds, refresh to get latest data
+            if (timeSinceHidden > 30000) {
+                console.log('[Requests] Refreshing page due to long background time');
+                window.location.reload();
+            }
+        } else {
+            lastVisibilityChange = Date.now();
+        }
+    });
+
+    // Handle pageshow for iOS bfcache
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            console.log('[Requests] Page restored from bfcache - refreshing');
+            window.location.reload();
+        }
+    });
+
+    // Listen for app visibility restored event from chat widget
+    window.addEventListener('app-visibility-restored', function() {
+        console.log('[Requests] App visibility restored event received');
+        // The chat widget already reconnected WebSocket, we just need to wait for updates
+    });
 </script>
 {% endblock %}

@@ -12,6 +12,19 @@
         VAPID_META_NAME: 'vapid-key',
     };
 
+    // Detect iOS Safari (not in standalone/PWA mode)
+    function isIOSSafari() {
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|OPiOS|mercury/.test(ua);
+        return isIOS && isSafari;
+    }
+
+    function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches || 
+               window.navigator.standalone === true;
+    }
+
     class NotificationManager {
         constructor() {
             this.subscribeButton = document.getElementById('webpush-subscribe-button');
@@ -37,10 +50,26 @@
                 });
                 return;
             }
+
+            // Check for iOS Safari not in standalone mode
+            if (isIOSSafari() && !isStandalone()) {
+                console.warn('[Push] iOS Safari requires PWA mode for push notifications');
+                this.subscribeButton.addEventListener('click', () => {
+                    alert('Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".');
+                });
+                // Continue to check support
+            }
             
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 console.warn('[Push] Push messaging is not supported');
-                this.subscribeButton.style.display = 'none';
+                if (isIOSSafari()) {
+                    // Show instructions on iOS
+                    this.subscribeButton.addEventListener('click', () => {
+                        alert('Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".');
+                    });
+                } else {
+                    this.subscribeButton.style.display = 'none';
+                }
                 return;
             }
 

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Privacy Policy - SecureApprove" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Dark mode support for legal pages */
+    [data-theme="dark"] .card {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+    }
+    
+    [data-theme="dark"] .card-body {
+        color: var(--text-color) !important;
+    }
+    
+    [data-theme="dark"] h1, 
+    [data-theme="dark"] h2, 
+    [data-theme="dark"] h3, 
+    [data-theme="dark"] h4 {
+        color: var(--text-color) !important;
+    }
+    
+    [data-theme="dark"] p,
+    [data-theme="dark"] li {
+        color: var(--text-muted) !important;
+    }
+    
+    [data-theme="dark"] .text-muted {
+        color: var(--text-muted) !important;
+    }
+    
+    [data-theme="dark"] .alert-info {
+        background-color: rgba(var(--bs-info-rgb), 0.15) !important;
+        border-color: rgba(var(--bs-info-rgb), 0.3) !important;
+        color: var(--text-color) !important;
+    }
+    
+    [data-theme="dark"] .border-top {
+        border-color: var(--border-color) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <h1 class="mb-4">{% trans "Privacy Policy" %}</h1>
+                    <p class="text-muted mb-5">{% trans "Last updated: December 6, 2025" %}</p>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "1. Introduction" %}</h2>
+                        <p>{% trans "At SecureApprove, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service." %}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "2. Information We Collect" %}</h2>
+                        <p>{% trans "We collect information that you provide directly to us:" %}</p>
+                        <ul>
+                            <li>{% trans "Account information: name, email address, and organization details." %}</li>
+                            <li>{% trans "Approval requests and related metadata." %}</li>
+                            <li>{% trans "Usage data and interaction logs for service improvement." %}</li>
+                        </ul>
+                        <div class="alert alert-info border-0 bg-info bg-opacity-10 mt-3">
+                            <i class="bi bi-shield-lock-fill me-2"></i>
+                            <strong>{% trans "Important:" %}</strong> 
+                            {% trans "We do NOT collect, store, or have access to your biometric data. All biometric authentication is processed locally on your device." %}
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "3. Biometric Authentication" %}</h2>
+                        <p>{% trans "SecureApprove uses WebAuthn technology for passwordless authentication. This means:" %}</p>
+                        <ul>
+                            <li>{% trans "Your biometric data (fingerprint, face scan, etc.) never leaves your device." %}</li>
+                            <li>{% trans "We only receive a cryptographic signature that proves you authenticated successfully." %}</li>
+                            <li>{% trans "Even if our servers were compromised, your biometric data would remain safe on your device." %}</li>
+                            <li>{% trans "You can delete your authentication credentials from your device at any time." %}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "4. How We Use Your Information" %}</h2>
+                        <p>{% trans "We use the information we collect to:" %}</p>
+                        <ul>
+                            <li>{% trans "Provide, maintain, and improve our services." %}</li>
+                            <li>{% trans "Process and manage approval requests." %}</li>
+                            <li>{% trans "Send you notifications about your approvals." %}</li>
+                            <li>{% trans "Respond to your comments and questions." %}</li>
+                            <li>{% trans "Monitor and analyze usage patterns to improve user experience." %}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "5. Information Sharing" %}</h2>
+                        <p>{% trans "We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:" %}</p>
+                        <ul>
+                            <li>{% trans "With your consent or at your direction." %}</li>
+                            <li>{% trans "With other members of your organization as necessary for the approval workflow." %}</li>
+                            <li>{% trans "To comply with legal obligations or respond to lawful requests." %}</li>
+                            <li>{% trans "To protect the rights, privacy, safety, or property of SecureApprove, our users, or the public." %}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "6. Data Security" %}</h2>
+                        <p>{% trans "We implement appropriate technical and organizational measures to protect your personal information, including:" %}</p>
+                        <ul>
+                            <li>{% trans "256-bit encryption for data in transit and at rest." %}</li>
+                            <li>{% trans "Regular security audits and vulnerability assessments." %}</li>
+                            <li>{% trans "Access controls and authentication requirements for our systems." %}</li>
+                            <li>{% trans "Secure data centers with physical security measures." %}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "7. Data Retention" %}</h2>
+                        <p>{% trans "We retain your personal information for as long as your account is active or as needed to provide you services. You may request deletion of your account and associated data at any time by contacting us." %}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "8. Your Rights" %}</h2>
+                        <p>{% trans "You have the right to:" %}</p>
+                        <ul>
+                            <li>{% trans "Access the personal information we hold about you." %}</li>
+                            <li>{% trans "Request correction of inaccurate information." %}</li>
+                            <li>{% trans "Request deletion of your personal information." %}</li>
+                            <li>{% trans "Object to or restrict processing of your information." %}</li>
+                            <li>{% trans "Export your data in a portable format." %}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "9. Cookies and Tracking" %}</h2>
+                        <p>{% trans "We use essential cookies to maintain your session and preferences. We do not use third-party tracking cookies or advertising trackers." %}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "10. Changes to This Policy" %}</h2>
+                        <p>{% trans "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the 'Last updated' date." %}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">{% trans "11. Contact Us" %}</h2>
+                        <p>{% trans "If you have any questions about this Privacy Policy, please contact us at:" %}</p>
+                        <p><a href="mailto:privacy@secureapprove.com">privacy@secureapprove.com</a></p>
+                    </section>
+
+                    <div class="mt-5 pt-4 border-top">
+                        <a href="{% url 'landing:index' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left me-2"></i>{% trans "Back to Home" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

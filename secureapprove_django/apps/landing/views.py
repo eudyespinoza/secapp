@@ -63,3 +63,8 @@ class DemoPageView(TemplateView):
 class TermsView(TemplateView):
     """Terms and Conditions page"""
     template_name = 'legal/terms.html'
+
+
+class PrivacyView(TemplateView):
+    """Privacy Policy page"""
+    template_name = 'legal/privacy.html'

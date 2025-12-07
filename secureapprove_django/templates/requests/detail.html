@@ -99,15 +99,27 @@
 }
 
 /* Dark mode support */
+[data-theme="dark"] .amount-display {
+    color: #10b981 !important; /* Green for better visibility */
+    background: rgba(16, 185, 129, 0.15) !important; /* Subtle green background */
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
 [data-theme="dark"] .status-card {
     color: #212529 !important;
 }
 
 [data-theme="dark"] .status-card h5,
 [data-theme="dark"] .status-card p,
-[data-theme="dark"] .status-card strong,
-[data-theme="dark"] .status-card .amount-display {
+[data-theme="dark"] .status-card strong {
     color: #212529 !important;
+}
+
+/* Keep amount-display green in dark mode even inside status-card */
+[data-theme="dark"] .status-card .amount-display {
+    color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.15) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 [data-theme="dark"] .metadata-table {

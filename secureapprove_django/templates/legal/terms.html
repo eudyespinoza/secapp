@@ -3,6 +3,46 @@
 
 {% block title %}{% trans "Terms and Conditions - SecureApprove" %}{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Dark mode support for legal pages */
+    [data-theme="dark"] .card {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+    }
+    
+    [data-theme="dark"] .card-body {
+        color: var(--text-color) !important;
+    }
+    
+    [data-theme="dark"] h1, 
+    [data-theme="dark"] h2, 
+    [data-theme="dark"] h3, 
+    [data-theme="dark"] h4 {
+        color: var(--text-color) !important;
+    }
+    
+    [data-theme="dark"] p,
+    [data-theme="dark"] li {
+        color: var(--text-muted) !important;
+    }
+    
+    [data-theme="dark"] .text-muted {
+        color: var(--text-muted) !important;
+    }
+    
+    [data-theme="dark"] .alert-info {
+        background-color: rgba(var(--bs-info-rgb), 0.15) !important;
+        border-color: rgba(var(--bs-info-rgb), 0.3) !important;
+        color: var(--text-color) !important;
+    }
+    
+    [data-theme="dark"] .border-top {
+        border-color: var(--border-color) !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
