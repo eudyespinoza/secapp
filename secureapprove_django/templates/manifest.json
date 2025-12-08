@@ -2,10 +2,13 @@
   "name": "SecureApprove",
   "short_name": "SecureApprove",
   "start_url": "/dashboard/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
   "description": "Secure Approval Workflow System",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/static/img/logo.png",

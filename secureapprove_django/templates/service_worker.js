@@ -159,33 +159,57 @@ self.addEventListener('notificationclick', function(event) {
     return;
   }
 
-  // Open or focus the appropriate window
+  // Build absolute URL using the service worker's origin
+  const absoluteUrl = new URL(urlToOpen, self.location.origin).href;
+  console.log('[SW] Opening URL:', absoluteUrl);
+
+  // Open or focus the appropriate window - prefer standalone PWA
   const promiseChain = clients.matchAll({
     type: 'window',
     includeUncontrolled: true
   }).then(function(windowClients) {
-    // Check if there is already a window/tab with the target URL
-    for (let i = 0; i < windowClients.length; i++) {
-      const client = windowClients[i];
-      // If a matching client is found, focus it
-      if (client.url.includes(urlToOpen) && 'focus' in client) {
+    console.log('[SW] Found clients:', windowClients.length);
+    
+    // Sort clients to prefer standalone PWA windows
+    // Standalone PWA windows typically have 'standalone' in their display mode
+    // We can detect this by checking if the client is focused and in our scope
+    const sortedClients = windowClients.sort(function(a, b) {
+      // Prefer clients that are already visible/focused
+      if (a.visibilityState === 'visible' && b.visibilityState !== 'visible') return -1;
+      if (b.visibilityState === 'visible' && a.visibilityState !== 'visible') return 1;
+      return 0;
+    });
+    
+    // First, check if there is already a window/tab with the target URL
+    for (let i = 0; i < sortedClients.length; i++) {
+      const client = sortedClients[i];
+      const clientUrl = new URL(client.url);
+      const targetUrl = new URL(absoluteUrl);
+      
+      // If a matching client is found (same path), focus it
+      if (clientUrl.pathname === targetUrl.pathname && 'focus' in client) {
+        console.log('[SW] Found matching client, focusing');
         return client.focus();
       }
     }
     
-    // If no matching client, check for any open window of our app
-    for (let i = 0; i < windowClients.length; i++) {
-      const client = windowClients[i];
-      if ('focus' in client && 'navigate' in client) {
+    // If no exact match, check for any open window of our app and navigate
+    for (let i = 0; i < sortedClients.length; i++) {
+      const client = sortedClients[i];
+      // Check if client is in our scope (same origin)
+      if (client.url.startsWith(self.location.origin) && 'focus' in client && 'navigate' in client) {
+        console.log('[SW] Found app client, focusing and navigating');
         return client.focus().then(function(focusedClient) {
-          return focusedClient.navigate(urlToOpen);
+          return focusedClient.navigate(absoluteUrl);
         });
       }
     }
     
-    // If no window is open, open a new one
+    // If no window is open, open a new one with absolute URL
+    // This will open in the PWA if installed, otherwise in browser
     if (clients.openWindow) {
-      return clients.openWindow(urlToOpen);
+      console.log('[SW] Opening new window:', absoluteUrl);
+      return clients.openWindow(absoluteUrl);
     }
   });
 
