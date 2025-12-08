@@ -419,9 +419,12 @@
         }
     });
 
-    // Dynamic search - client-side filtering
+    // Dynamic search - client-side filtering with pagination update
     const searchInput = document.getElementById('searchInput');
     const requestItems = document.querySelectorAll('.request-item');
+    const paginationNav = document.querySelector('nav[aria-label]');
+    const requestCountText = document.querySelector('.text-muted.mb-0');
+    let searchTimeout = null;
     
     if (searchInput && requestItems.length > 0) {
         searchInput.addEventListener('input', function() {
@@ -438,11 +441,30 @@
                 }
             });
             
-            // Show/hide no results message
+            // Count visible items
             const visibleItems = document.querySelectorAll('.request-item:not([style*="display: none"])');
+            const visibleCount = visibleItems.length;
+            
+            // Hide/show pagination based on search
+            if (paginationNav) {
+                if (searchTerm !== '') {
+                    paginationNav.style.display = 'none';
+                } else {
+                    paginationNav.style.display = '';
+                }
+            }
+            
+            // Update count text dynamically
+            if (requestCountText && searchTerm !== '') {
+                const singularText = '{% trans "request" %}';
+                const pluralText = '{% trans "requests" %}';
+                requestCountText.textContent = visibleCount + ' ' + (visibleCount === 1 ? singularText : pluralText);
+            }
+            
+            // Show/hide no results message
             let noResultsMsg = document.getElementById('noSearchResults');
             
-            if (visibleItems.length === 0 && searchTerm !== '') {
+            if (visibleCount === 0 && searchTerm !== '') {
                 if (!noResultsMsg) {
                     noResultsMsg = document.createElement('div');
                     noResultsMsg.id = 'noSearchResults';
@@ -453,6 +475,22 @@
                 noResultsMsg.style.display = '';
             } else if (noResultsMsg) {
                 noResultsMsg.style.display = 'none';
+            }
+            
+            // Debounced server-side search for more accurate results
+            clearTimeout(searchTimeout);
+            if (searchTerm.length >= 3) {
+                searchTimeout = setTimeout(function() {
+                    // Submit form to server for full search across all pages
+                    searchInput.form.submit();
+                }, 800);
+            }
+        });
+        
+        // Clear timeout if user presses Enter manually
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                clearTimeout(searchTimeout);
             }
         });
     }
