@@ -2983,3 +2983,75 @@ msgstr "Términos y Condiciones"
 
 msgid "Terms of Service"
 msgstr "Términos de Servicio"
+
+# ================================================
+# Landing Page - Updated Features
+# ================================================
+
+msgid "Seguridad avanzada y autenticación biométrica"
+msgstr "Seguridad avanzada y autenticación biométrica"
+
+msgid "Cumplimiento de estándares de seguridad"
+msgstr "Cumplimiento de estándares de seguridad"
+
+msgid "Multiplataforma"
+msgstr "Multiplataforma"
+
+msgid "Compatible con PC, Android e iOS"
+msgstr "Compatible con PC, Android e iOS"
+
+msgid "Chat Integrado"
+msgstr "Chat Integrado"
+
+msgid "Comunicación en tiempo real entre usuarios"
+msgstr "Comunicación en tiempo real entre usuarios"
+
+msgid "Plataformas"
+msgstr "Plataformas"
+
+# ================================================
+# Demo Page - Updated Structure
+# ================================================
+msgid "Pendiente de Aprobación"
+msgstr "Pendiente de Aprobación"
+
+msgid "Esta solicitud está esperando aprobación de un administrador."
+msgstr "Esta solicitud está esperando aprobación de un administrador."
+
+msgid "Detalles de la Solicitud"
+msgstr "Detalles de la Solicitud"
+
+msgid "INFORMACIÓN ADICIONAL"
+msgstr "INFORMACIÓN ADICIONAL"
+
+msgid "Proveedor"
+msgstr "Proveedor"
+
+msgid "Centro de Costo"
+msgstr "Centro de Costo"
+
+msgid "Documentos Adjuntos"
+msgstr "Documentos Adjuntos"
+
+msgid "Historial"
+msgstr "Historial"
+
+msgid "Solicitud creada"
+msgstr "Solicitud creada"
+
+msgid "Ana García creó esta solicitud"
+msgstr "Ana García creó esta solicitud"
+
+msgid "Esperando aprobación"
+msgstr "Esperando aprobación"
+
+msgid "La solicitud está pendiente de revisión"
+msgstr "La solicitud está pendiente de revisión"
+
+msgid "Prioridad Media"
+msgstr "Prioridad Media"
+
+msgid "Compra"
+msgstr "Compra"
+
+

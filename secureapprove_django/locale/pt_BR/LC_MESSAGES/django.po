@@ -3119,3 +3119,79 @@ msgstr "Termos e Condições"
 
 msgid "Terms of Service"
 msgstr "Termos de Serviço"
+
+# ================================================
+# Landing Page - New Features (Updated)
+# ================================================
+msgid "Advanced security and biometric authentication"
+msgstr "Segurança avançada e autenticação biométrica"
+
+msgid "Compliance with security standards"
+msgstr "Conformidade com padrões de segurança"
+
+msgid "Compatible with PC, Android and iOS"
+msgstr "Compatível com PC, Android e iOS"
+
+msgid "Approve from any device"
+msgstr "Aprove de qualquer dispositivo"
+
+msgid "Instant communication with your team"
+msgstr "Comunicação instantânea com sua equipe"
+
+msgid "100%"
+msgstr "100%"
+
+msgid "Certified Security"
+msgstr "Segurança Certificada"
+
+msgid "Multi-platform Compatibility"
+msgstr "Compatibilidade Multiplataforma"
+
+msgid "Integrated Chat"
+msgstr "Chat Integrado"
+
+# ================================================
+# Demo Page - Updated Structure
+# ================================================
+msgid "Pendiente de Aprobación"
+msgstr "Aguardando Aprovação"
+
+msgid "Esta solicitud está esperando aprobación de un administrador."
+msgstr "Esta solicitação está aguardando aprovação de um administrador."
+
+msgid "Detalles de la Solicitud"
+msgstr "Detalhes da Solicitação"
+
+msgid "INFORMACIÓN ADICIONAL"
+msgstr "INFORMAÇÕES ADICIONAIS"
+
+msgid "Proveedor"
+msgstr "Fornecedor"
+
+msgid "Centro de Costo"
+msgstr "Centro de Custo"
+
+msgid "Documentos Adjuntos"
+msgstr "Documentos Anexos"
+
+msgid "Historial"
+msgstr "Histórico"
+
+msgid "Solicitud creada"
+msgstr "Solicitação criada"
+
+msgid "Ana García creó esta solicitud"
+msgstr "Ana García criou esta solicitação"
+
+msgid "Esperando aprobación"
+msgstr "Aguardando aprovação"
+
+msgid "La solicitud está pendiente de revisión"
+msgstr "A solicitação está pendente de revisão"
+
+msgid "Prioridad Media"
+msgstr "Prioridade Média"
+
+msgid "Compra"
+msgstr "Compra"
+

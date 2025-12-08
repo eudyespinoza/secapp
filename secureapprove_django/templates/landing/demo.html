@@ -7,7 +7,7 @@
 <style>
         /* Demo-specific styles */
         .demo-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
         
@@ -16,6 +16,20 @@
             border: none;
             border-radius: 12px;
             background-color: var(--card-bg);
+        }
+        
+        [data-theme="dark"] .approval-card {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        
+        [data-theme="dark"] .approval-card .card-header {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        [data-theme="dark"] .approval-card .card-body {
+            color: var(--text-color) !important;
         }
         
         .status-badge {
@@ -35,14 +49,66 @@
             color: #fbbf24;
         }
         
-        .priority-medium {
-            background: #ddd6fe;
-            color: #5b21b6;
+        .priority-badge {
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
         }
         
+        .priority-high { background: #dc3545; color: white; }
+        .priority-medium { background: #ffc107; color: #212529; }
+        .priority-low { background: #28a745; color: white; }
+        
         [data-theme="dark"] .priority-medium {
-            background: #3c1361;
-            color: #a78bfa;
+            background: #b45309;
+            color: #fef3c7;
+        }
+        
+        .category-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-card {
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #212529;
+        }
+        
+        .status-card-pending { 
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
+        }
+        
+        [data-theme="dark"] .status-card-pending {
+            background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+            color: #fef3c7 !important;
+        }
+        
+        [data-theme="dark"] .status-card-pending h5,
+        [data-theme="dark"] .status-card-pending p {
+            color: #fef3c7 !important;
+        }
+        
+        .amount-display {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2c3e50;
+            background: var(--bg-secondary, #f8f9fa);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        [data-theme="dark"] .amount-display {
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.15) !important;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
         
         .btn-approve {
@@ -57,6 +123,7 @@
         
         .btn-approve:hover {
             background: #059669;
+            color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
@@ -73,6 +140,7 @@
         
         .btn-reject:hover {
             background: #b91c1c;
+            color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
@@ -85,6 +153,119 @@
         [data-theme="dark"] .demo-note {
             background: linear-gradient(135deg, #1e3a8a, #1e40af);
             color: #dbeafe;
+        }
+        
+        [data-theme="dark"] .demo-note p {
+            color: #93c5fd !important;
+        }
+        
+        .metadata-table th {
+            background-color: var(--bg-secondary, #f8f9fa);
+            font-weight: 600;
+            width: 35%;
+            color: var(--text-primary, #212529);
+        }
+        
+        .metadata-table td {
+            color: var(--text-primary, #212529);
+        }
+        
+        [data-theme="dark"] .metadata-table {
+            --bs-table-bg: var(--card-bg);
+        }
+        
+        [data-theme="dark"] .metadata-table th {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-color) !important;
+        }
+        
+        [data-theme="dark"] .metadata-table td {
+            color: var(--text-color) !important;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid var(--border-color, #dee2e6);
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            left: -0.625rem;
+            top: 0;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+        
+        [data-theme="dark"] .timeline-item {
+            color: var(--text-color) !important;
+        }
+        
+        [data-theme="dark"] .bg-secondary-custom,
+        [data-theme="dark"] .bg-light {
+            background-color: var(--bg-secondary) !important;
+        }
+        
+        [data-theme="dark"] .text-muted-custom,
+        [data-theme="dark"] .form-label {
+            color: var(--text-muted) !important;
+        }
+        
+        [data-theme="dark"] .fw-semibold,
+        [data-theme="dark"] .fw-bold {
+            color: var(--text-color) !important;
+        }
+        
+        .detail-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .detail-section-header {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .detail-section {
+            background: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        [data-theme="dark"] .detail-section-header {
+            background: var(--bg-secondary) !important;
+        }
+        
+        [data-theme="dark"] .detail-section-header h5 {
+            color: var(--text-color) !important;
+        }
+        
+        .attachment-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .attachment-item:hover {
+            background: var(--card-hover-bg, #e9ecef);
+        }
+        
+        [data-theme="dark"] .attachment-item:hover {
+            background: var(--bg-tertiary, #3b4a5a) !important;
         }
 </style>
 {% endblock %}
@@ -137,7 +318,7 @@
                             <input name="next" type="hidden" value="{{ request.get_full_path }}" />
                             <input name="language" type="hidden" value="{{ lang_code }}" />
                             <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == lang_code %}active{% endif %}" data-lang="{{ lang_code }}">
-                                {% if lang_code == 'es' %}<span class="me-2">�🇸</span> Español
+                                {% if lang_code == 'es' %}<span class="me-2">🇪🇸</span> Español
                                 {% elif lang_code == 'en' %}<span class="me-2">🇺🇸</span> English
                                 {% elif lang_code == 'pt-br' %}<span class="me-2">🇧🇷</span> Português
                                 {% endif %}
@@ -180,68 +361,148 @@
 
             <!-- Approval Request Card -->
             <div class="card approval-card">
-                <div class="card-header py-4">
-                    <div class="d-flex justify-content-between align-items-start">
+                <!-- Header with title and badges -->
+                <div class="card-header py-3">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                         <div>
                             <h4 class="mb-2 fw-bold">{% trans "Compra de Equipos de Oficina" %}</h4>
-                            <div class="d-flex gap-2 mb-2">
-                                <span class="status-badge status-pending">
-                                    <i class="bi bi-clock me-1"></i>
-                                    {% trans "Pendiente" %}
+                            <div class="d-flex gap-2 flex-wrap">
+                                <span class="category-badge">
+                                    <i class="bi bi-cart me-1"></i>
+                                    {% trans "Compra" %}
                                 </span>
-                                <span class="status-badge priority-medium">
-                                    {% trans "Prioridad" %}: {% trans "Media" %}
+                                <span class="priority-badge priority-medium">
+                                    {% trans "Prioridad Media" %}
                                 </span>
+                                <small class="text-muted-custom d-flex align-items-center">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    {% now "d/m/Y H:i" %}
+                                </small>
                             </div>
-                        </div>
-                        <div class="text-end">
-                            <div class="h4 fw-bold text-primary-custom mb-1">$2,500</div>
-                            <small class="text-muted-custom">{% now "d/m/Y" %}</small>
                         </div>
                     </div>
                 </div>
                 
                 <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label text-muted-custom small fw-bold">{% trans "SOLICITANTE" %}</label>
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary-custom rounded-circle d-flex align-items-center justify-content-center text-white me-2" style="width: 32px; height: 32px;">
-                                        <i class="bi bi-person"></i>
+                    <!-- Status Card -->
+                    <div class="status-card status-card-pending mb-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div>
+                                <h5 class="mb-1">
+                                    <i class="bi bi-clock text-warning me-2"></i>
+                                    {% trans "Pendiente de Aprobación" %}
+                                </h5>
+                                <p class="mb-0">
+                                    {% trans "Esta solicitud está esperando aprobación de un administrador." %}
+                                </p>
+                            </div>
+                            <div class="amount-display">
+                                $2,500.00
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Request Details Section -->
+                    <div class="detail-section mb-4">
+                        <div class="detail-section-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-file-text me-2"></i>
+                                {% trans "Detalles de la Solicitud" %}
+                            </h5>
+                        </div>
+                        <div class="p-4">
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <h6 class="text-muted-custom small fw-bold mb-2">{% trans "DESCRIPCIÓN" %}</h6>
+                                    <p class="mb-0">{% trans "Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables para el nuevo equipo de trabajo remoto." %}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted-custom small fw-bold mb-2">{% trans "SOLICITANTE" %}</h6>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <span class="text-white fw-bold">A</span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{% trans "Ana García" %}</div>
+                                            <small class="text-muted-custom">ana.garcia@empresa.com</small>
+                                        </div>
                                     </div>
-                                    <span class="fw-semibold">{% trans "Ana García" %}</span>
                                 </div>
                             </div>
+
+                            <!-- Metadata Table -->
+                            <h6 class="text-muted-custom small fw-bold mb-2">{% trans "INFORMACIÓN ADICIONAL" %}</h6>
+                            <table class="table table-sm metadata-table mb-0">
+                                <tr>
+                                    <th>{% trans "Proveedor" %}</th>
+                                    <td>Ergonomic Solutions S.A.</td>
+                                </tr>
+                                <tr>
+                                    <th>{% trans "Centro de Costo" %}</th>
+                                    <td>CC-2024-045</td>
+                                </tr>
+                            </table>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label text-muted-custom small fw-bold">{% trans "DEPARTAMENTO" %}</label>
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-building text-muted-custom me-2"></i>
-                                    <span class="fw-semibold">{% trans "Recursos Humanos" %}</span>
+                    </div>
+
+                    <!-- Attachments Section -->
+                    <div class="detail-section mb-4">
+                        <div class="detail-section-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-paperclip me-2"></i>
+                                {% trans "Documentos Adjuntos" %}
+                            </h5>
+                        </div>
+                        <div class="p-4">
+                            <div class="d-flex gap-2 flex-wrap">
+                                <div class="attachment-item d-flex align-items-center">
+                                    <i class="bi bi-file-pdf text-danger me-2 fs-5"></i>
+                                    <div>
+                                        <div class="small fw-semibold">cotizacion_equipos.pdf</div>
+                                        <small class="text-muted-custom">245 KB</small>
+                                    </div>
+                                </div>
+                                <div class="attachment-item d-flex align-items-center">
+                                    <i class="bi bi-file-earmark-spreadsheet text-success me-2 fs-5"></i>
+                                    <div>
+                                        <div class="small fw-semibold">presupuesto_detalle.xlsx</div>
+                                        <small class="text-muted-custom">128 KB</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label text-muted-custom small fw-bold">{% trans "DESCRIPCIÓN" %}</label>
-                        <div class="p-3 bg-secondary-custom rounded">
-                            <p class="mb-0">{% trans "Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables para el nuevo equipo de trabajo remoto. Los equipos actuales no cumplen con los estándares ergonómicos necesarios para el trabajo prolongado." %}</p>
+                    <!-- Timeline Section -->
+                    <div class="detail-section mb-4">
+                        <div class="detail-section-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-clock-history me-2"></i>
+                                {% trans "Historial" %}
+                            </h5>
                         </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label text-muted-custom small fw-bold">{% trans "DOCUMENTOS ADJUNTOS" %}</label>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <div class="d-flex align-items-center p-2 bg-secondary-custom rounded">
-                                <i class="bi bi-file-pdf text-danger me-2"></i>
-                                <span class="small">cotizacion_equipos.pdf</span>
-                            </div>
-                            <div class="d-flex align-items-center p-2 bg-secondary-custom rounded">
-                                <i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>
-                                <span class="small">presupuesto_detalle.xlsx</span>
+                        <div class="p-4">
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-icon bg-primary text-white">
+                                        <i class="bi bi-plus"></i>
+                                    </div>
+                                    <div>
+                                        <strong>{% trans "Solicitud creada" %}</strong>
+                                        <p class="mb-0 text-muted-custom small">{% trans "Ana García creó esta solicitud" %}</p>
+                                        <small class="text-muted-custom">{% now "d/m/Y H:i" %}</small>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon bg-warning text-dark">
+                                        <i class="bi bi-clock"></i>
+                                    </div>
+                                    <div>
+                                        <strong>{% trans "Esperando aprobación" %}</strong>
+                                        <p class="mb-0 text-muted-custom small">{% trans "La solicitud está pendiente de revisión" %}</p>
+                                        <small class="text-muted-custom">{% now "d/m/Y H:i" %}</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -277,7 +538,7 @@
                         <p class="fs-5 mb-4 opacity-90">
                             {% trans "Comienza a gestionar tus aprobaciones de manera profesional" %}
                         </p>
-                        <a href="{% url 'billing:select_plan' %}" class="btn btn-light btn-lg text-primary fw-bold">
+                        <a href="{% url 'billing:select_plan' %}" class="btn btn-light btn-lg fw-bold" style="color: #4f46e5 !important;">
                             <i class="bi bi-rocket-takeoff me-2"></i>
                             {% trans "Suscribirme Ahora" %}
                         </a>

@@ -2870,3 +2870,79 @@ msgstr ""
 
 #~ msgid "December"
 #~ msgstr "December"
+
+# ================================================
+# Landing Page - New Features (Updated)
+# ================================================
+msgid "Advanced security and biometric authentication"
+msgstr "Advanced security and biometric authentication"
+
+msgid "Compliance with security standards"
+msgstr "Compliance with security standards"
+
+msgid "Compatible with PC, Android and iOS"
+msgstr "Compatible with PC, Android and iOS"
+
+msgid "Approve from any device"
+msgstr "Approve from any device"
+
+msgid "Instant communication with your team"
+msgstr "Instant communication with your team"
+
+msgid "100%"
+msgstr "100%"
+
+msgid "Certified Security"
+msgstr "Certified Security"
+
+msgid "Multi-platform Compatibility"
+msgstr "Multi-platform Compatibility"
+
+msgid "Integrated Chat"
+msgstr "Integrated Chat"
+
+# ================================================
+# Demo Page - Updated Structure
+# ================================================
+msgid "Pendiente de Aprobación"
+msgstr "Pending Approval"
+
+msgid "Esta solicitud está esperando aprobación de un administrador."
+msgstr "This request is waiting for approval from an administrator."
+
+msgid "Detalles de la Solicitud"
+msgstr "Request Details"
+
+msgid "INFORMACIÓN ADICIONAL"
+msgstr "ADDITIONAL INFORMATION"
+
+msgid "Proveedor"
+msgstr "Vendor"
+
+msgid "Centro de Costo"
+msgstr "Cost Center"
+
+msgid "Documentos Adjuntos"
+msgstr "Attached Documents"
+
+msgid "Historial"
+msgstr "History"
+
+msgid "Solicitud creada"
+msgstr "Request created"
+
+msgid "Ana García creó esta solicitud"
+msgstr "Ana García created this request"
+
+msgid "Esperando aprobación"
+msgstr "Awaiting approval"
+
+msgid "La solicitud está pendiente de revisión"
+msgstr "The request is pending review"
+
+msgid "Prioridad Media"
+msgstr "Medium Priority"
+
+msgid "Compra"
+msgstr "Purchase"
+

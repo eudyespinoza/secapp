@@ -18,7 +18,7 @@ class LandingPageView(TemplateView):
                 {
                     'icon': 'bi-fingerprint',
                     'title': 'Autenticación Biométrica',
-                    'description': 'Seguridad avanzada con WebAuthn y autenticación biométrica'
+                    'description': 'Seguridad avanzada y autenticación biométrica'
                 },
                 {
                     'icon': 'bi-lightning',
@@ -28,12 +28,22 @@ class LandingPageView(TemplateView):
                 {
                     'icon': 'bi-lock',
                     'title': 'Seguridad Empresarial',
-                    'description': 'Cifrado de 256-bit y cumplimiento de estándares de seguridad'
+                    'description': 'Cumplimiento de estándares de seguridad'
                 },
                 {
                     'icon': 'bi-graph-up',
                     'title': 'Auditoría Completa',
                     'description': 'Trazabilidad completa y reportes detallados de actividad'
+                },
+                {
+                    'icon': 'bi-phone',
+                    'title': 'Multiplataforma',
+                    'description': 'Compatible con PC, Android e iOS'
+                },
+                {
+                    'icon': 'bi-chat-dots',
+                    'title': 'Chat Integrado',
+                    'description': 'Comunicación en tiempo real entre usuarios'
                 }
             ]
         })
