@@ -28,6 +28,58 @@
         box-shadow: 0 20px 40px var(--card-shadow);
         padding: 2rem;
     }
+    
+    /* Modal styles for dark mode */
+    [data-theme="dark"] .modal-content {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+    
+    [data-theme="dark"] .modal-header {
+        border-color: var(--border-color);
+    }
+    
+    [data-theme="dark"] .modal-footer {
+        border-color: var(--border-color);
+    }
+    
+    [data-theme="dark"] .btn-close {
+        filter: invert(1);
+    }
+    
+    /* Modal positioning - ensure it appears above navbar */
+    .modal {
+        z-index: 1060 !important;
+    }
+    
+    .modal-backdrop {
+        z-index: 1055 !important;
+    }
+    
+    .modal-dialog {
+        margin-top: 80px; /* Space below navbar */
+    }
+    
+    .legal-content {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .legal-content h2 {
+        font-size: 1.1rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .legal-content p, .legal-content li {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+    
+    .legal-content .alert {
+        font-size: 0.85rem;
+    }
 </style>
 {% endblock %}
 
@@ -60,9 +112,9 @@
                                 <input class="form-check-input" type="checkbox" value="" id="termsCheck" required>
                                 <label class="form-check-label text-muted-custom small" for="termsCheck">
                                     {% trans "I have read and agree to the" %} 
-                                    <a href="{% url 'landing:terms' %}" target="_blank" class="text-primary-custom text-decoration-none">{% trans "Terms and Conditions" %}</a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-primary-custom text-decoration-none">{% trans "Terms and Conditions" %}</a>
                                     {% trans "and" %} 
-                                    <a href="#" class="text-primary-custom text-decoration-none">{% trans "Privacy Policy" %}</a>.
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal" class="text-primary-custom text-decoration-none">{% trans "Privacy Policy" %}</a>.
                                 </label>
                             </div>
                         </div>
@@ -89,4 +141,164 @@
         </div>
     </div>
 </section>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">{% trans "Terms and Conditions" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body legal-content">
+                <p class="text-muted mb-4">{% trans "Last updated: November 23, 2025" %}</p>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "1. Introduction" %}</h2>
+                    <p>{% trans "Welcome to SecureApprove. By accessing or using our website and services, you agree to be bound by these Terms and Conditions and our Privacy Policy." %}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "2. Biometric Data Privacy" %}</h2>
+                    <div class="alert alert-info border-0 bg-info bg-opacity-10">
+                        <i class="bi bi-shield-lock-fill me-2"></i>
+                        <strong>{% trans "Important Privacy Notice:" %}</strong> 
+                        {% trans "We do not collect, store, or transmit your biometric data." %}
+                    </div>
+                    <p>{% trans "SecureApprove utilizes WebAuthn standards for passwordless authentication. This means:" %}</p>
+                    <ul>
+                        <li>{% trans "Your biometric data (fingerprint, face scan, etc.) remains exclusively on your personal device." %}</li>
+                        <li>{% trans "We never receive or store your raw biometric information." %}</li>
+                        <li>{% trans "Our servers only receive a cryptographic proof that you have successfully authenticated with your device." %}</li>
+                        <li>{% trans "You retain full control over your biometric credentials and can remove them from your device at any time." %}</li>
+                    </ul>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "3. Data Usage and Sharing" %}</h2>
+                    <p>{% trans "We are committed to protecting your privacy and data security:" %}</p>
+                    <ul>
+                        <li>{% trans "We do not sell, trade, or rent your personal identification information to others." %}</li>
+                        <li>{% trans "We do not share your data with third parties for marketing purposes." %}</li>
+                        <li>{% trans "Your data is used solely for the purpose of providing the SecureApprove service, including processing approvals and managing your account." %}</li>
+                    </ul>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "4. User Responsibilities" %}</h2>
+                    <p>{% trans "You are responsible for maintaining the confidentiality of your account and for restricting access to your devices. You agree to accept responsibility for all activities that occur under your account." %}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "5. Limitation of Liability" %}</h2>
+                    <p>{% trans "SecureApprove shall not be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service." %}</p>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">{% trans "Privacy Policy" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body legal-content">
+                <p class="text-muted mb-4">{% trans "Last updated: December 6, 2025" %}</p>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "1. Introduction" %}</h2>
+                    <p>{% trans "At SecureApprove, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service." %}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "2. Information We Collect" %}</h2>
+                    <p>{% trans "We collect information that you provide directly to us:" %}</p>
+                    <ul>
+                        <li>{% trans "Account information: name, email address, and organization details." %}</li>
+                        <li>{% trans "Approval requests and related metadata." %}</li>
+                        <li>{% trans "Usage data and interaction logs for service improvement." %}</li>
+                    </ul>
+                    <div class="alert alert-info border-0 bg-info bg-opacity-10 mt-2">
+                        <i class="bi bi-shield-lock-fill me-2"></i>
+                        <strong>{% trans "Important:" %}</strong> 
+                        {% trans "We do NOT collect, store, or have access to your biometric data. All biometric authentication is processed locally on your device." %}
+                    </div>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "3. Biometric Authentication" %}</h2>
+                    <p>{% trans "SecureApprove uses WebAuthn technology for passwordless authentication. This means:" %}</p>
+                    <ul>
+                        <li>{% trans "Your biometric data (fingerprint, face scan, etc.) never leaves your device." %}</li>
+                        <li>{% trans "We only receive a cryptographic signature that proves you authenticated successfully." %}</li>
+                        <li>{% trans "Even if our servers were compromised, your biometric data would remain safe on your device." %}</li>
+                        <li>{% trans "You can delete your authentication credentials from your device at any time." %}</li>
+                    </ul>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "4. How We Use Your Information" %}</h2>
+                    <p>{% trans "We use the information we collect to:" %}</p>
+                    <ul>
+                        <li>{% trans "Provide, maintain, and improve our services." %}</li>
+                        <li>{% trans "Process and manage approval requests." %}</li>
+                        <li>{% trans "Send you notifications about your approvals." %}</li>
+                        <li>{% trans "Respond to your comments and questions." %}</li>
+                        <li>{% trans "Monitor and analyze usage patterns to improve user experience." %}</li>
+                    </ul>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "5. Information Sharing" %}</h2>
+                    <p>{% trans "We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:" %}</p>
+                    <ul>
+                        <li>{% trans "With your consent or at your direction." %}</li>
+                        <li>{% trans "With other members of your organization as necessary for the approval workflow." %}</li>
+                        <li>{% trans "To comply with legal obligations or respond to lawful requests." %}</li>
+                        <li>{% trans "To protect the rights, privacy, safety, or property of SecureApprove, our users, or the public." %}</li>
+                    </ul>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "6. Data Security" %}</h2>
+                    <p>{% trans "We implement appropriate technical and organizational measures to protect your personal information, including:" %}</p>
+                    <ul>
+                        <li>{% trans "256-bit encryption for data in transit and at rest." %}</li>
+                        <li>{% trans "Regular security audits and vulnerability assessments." %}</li>
+                        <li>{% trans "Access controls and authentication requirements for our systems." %}</li>
+                        <li>{% trans "Secure data centers with physical security measures." %}</li>
+                    </ul>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "7. Your Rights" %}</h2>
+                    <p>{% trans "You have the right to:" %}</p>
+                    <ul>
+                        <li>{% trans "Access the personal information we hold about you." %}</li>
+                        <li>{% trans "Request correction of inaccurate information." %}</li>
+                        <li>{% trans "Request deletion of your personal information." %}</li>
+                        <li>{% trans "Object to or restrict processing of your information." %}</li>
+                        <li>{% trans "Export your data in a portable format." %}</li>
+                    </ul>
+                </section>
+
+                <section class="mb-4">
+                    <h2 class="h5 mb-2">{% trans "8. Contact Us" %}</h2>
+                    <p>{% trans "If you have any questions about this Privacy Policy, please contact us at:" %}</p>
+                    <p><a href="mailto:privacy@secureapprove.com">privacy@secureapprove.com</a></p>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
