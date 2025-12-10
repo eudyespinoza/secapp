@@ -374,7 +374,7 @@
                                 </td>
                                 <td class="text-muted" style="font-size: var(--font-xs);">
                                     {% if inv.expires_at %}
-                                        {{ inv.expires_at|date:"M d, Y" }}
+                                        <span class="local-date" data-iso="{{ inv.expires_at|date:'c' }}">{{ inv.expires_at|date:"M d, Y" }}</span>
                                     {% else %}
                                         -
                                     {% endif %}
@@ -632,4 +632,23 @@
         background-color: var(--bg-secondary) !important;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Convert local dates
+    document.querySelectorAll('.local-date').forEach(function(element) {
+        const isoDate = element.getAttribute('data-iso');
+        if (isoDate) {
+            const date = new Date(isoDate);
+            if (!isNaN(date)) {
+                element.textContent = date.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -151,7 +151,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <h6 class="fw-semibold text-muted-custom mb-1">{% trans "Member Since" %}</h6>
-                            <p class="mb-0">{{ user.date_joined|date:"F Y" }}</p>
+                            <p class="mb-0"><span class="local-date" data-iso="{{ user.date_joined|date:'c' }}">{{ user.date_joined|date:"F Y" }}</span></p>
                         </div>
                     </div>
                     <!-- WebAuthn Credentials Section -->
@@ -184,12 +184,12 @@
                                         </h6>
                                         <small class="text-muted-custom d-block">
                                             {% if credential.created_at %}
-                                                {% trans "Added" %}: {{ credential.created_at|date:"M j, Y" }}
+                                                {% trans "Added" %}: <span class="local-date" data-iso="{{ credential.created_at|date:'c' }}">{{ credential.created_at|date:"M j, Y" }}</span>
                                             {% else %}
                                                 {% trans "Registered device" %}
                                             {% endif %}
                                             {% if credential.last_used_at %}
-                                                • {% trans "Last used" %}: {{ credential.last_used_at|date:"M j, Y H:i" }}
+                                                • {% trans "Last used" %}: <span class="local-datetime" data-iso="{{ credential.last_used_at|date:'c' }}">{{ credential.last_used_at|date:"M j, Y H:i" }}</span>
                                             {% endif %}
                                         </small>
                                     </div>
@@ -345,6 +345,38 @@
 document.addEventListener('DOMContentLoaded', function() {
     {% get_current_language as PROFILE_LANG %}
     const langPrefix = '/{{ PROFILE_LANG }}';
+    
+    // Convert local dates
+    document.querySelectorAll('.local-date').forEach(function(element) {
+        const isoDate = element.getAttribute('data-iso');
+        if (isoDate) {
+            const date = new Date(isoDate);
+            if (!isNaN(date)) {
+                element.textContent = date.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+        }
+    });
+    
+    // Convert local datetimes
+    document.querySelectorAll('.local-datetime').forEach(function(element) {
+        const isoDate = element.getAttribute('data-iso');
+        if (isoDate) {
+            const date = new Date(isoDate);
+            if (!isNaN(date)) {
+                element.textContent = date.toLocaleString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+    });
 
     // Initialize modal
     window.addCredentialModal = new bootstrap.Modal(document.getElementById('addCredentialModal'));

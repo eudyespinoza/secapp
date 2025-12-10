@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Demo - SecureApprove" %}{% endblock %}
 
@@ -275,7 +275,7 @@
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{% url 'landing:index' %}">
-            <i class="bi bi-shield-check me-2 fs-4"></i>
+            <img src="{% static 'img/logo.png' %}" alt="SecureApprove" height="32" class="me-2">
             <span class="fw-bold">SecureApprove</span>
             <span class="badge bg-info ms-2">DEMO</span>
         </a>
@@ -376,7 +376,7 @@
                                 </span>
                                 <small class="text-muted-custom d-flex align-items-center">
                                     <i class="bi bi-calendar me-1"></i>
-                                    {% now "d/m/Y H:i" %}
+                                    <span class="local-datetime"></span>
                                 </small>
                             </div>
                         </div>
@@ -490,7 +490,7 @@
                                     <div>
                                         <strong>{% trans "Solicitud creada" %}</strong>
                                         <p class="mb-0 text-muted-custom small">{% trans "Ana García creó esta solicitud" %}</p>
-                                        <small class="text-muted-custom">{% now "d/m/Y H:i" %}</small>
+                                        <small class="text-muted-custom local-datetime"></small>
                                     </div>
                                 </div>
                                 <div class="timeline-item">
@@ -500,7 +500,7 @@
                                     <div>
                                         <strong>{% trans "Esperando aprobación" %}</strong>
                                         <p class="mb-0 text-muted-custom small">{% trans "La solicitud está pendiente de revisión" %}</p>
-                                        <small class="text-muted-custom">{% now "d/m/Y H:i" %}</small>
+                                        <small class="text-muted-custom local-datetime"></small>
                                     </div>
                                 </div>
                             </div>
@@ -586,5 +586,23 @@
             resultDiv.style.display = 'block';
             resultDiv.scrollIntoView({ behavior: 'smooth' });
         }
+        
+        // Set local datetime for timeline items
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const options = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            const localDateTime = now.toLocaleString(undefined, options);
+            
+            document.querySelectorAll('.local-datetime').forEach(function(el) {
+                el.textContent = localDateTime;
+            });
+        });
 </script>
 {% endblock %}
