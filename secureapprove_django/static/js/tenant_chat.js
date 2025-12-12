@@ -47,6 +47,7 @@
             this.lastTotalUnread = 0;
             this.currentUserId = null;
             this.csrfToken = null;
+            this.groupMode = false;
         }
 
         reset() {
@@ -272,7 +273,7 @@
 
         async get(url) {
             const response = await fetch(url, {
-                credentials: 'same-origin',
+                credentials: 'include',
             });
 
             if (!response.ok) {
@@ -286,7 +287,7 @@
         async post(url, body, isFormData = false) {
             const options = {
                 method: 'POST',
-                credentials: 'same-origin',
+                credentials: 'include',
                 headers: {
                     'X-CSRFToken': this.csrfToken,
                 },
@@ -298,6 +299,27 @@
                 options.headers['Content-Type'] = 'application/json';
                 options.body = JSON.stringify(body);
             }
+
+            const response = await fetch(url, options);
+
+            if (!response.ok) {
+                const error = await this.parseError(response);
+                throw new Error(error);
+            }
+
+            return response.json();
+        }
+
+        async patch(url, body) {
+            const options = {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'X-CSRFToken': this.csrfToken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            };
 
             const response = await fetch(url, options);
 
@@ -326,6 +348,31 @@
         async startConversation(participantId) {
             return this.post('/api/chat/conversations/start/', {
                 participant_id: participantId,
+            });
+        }
+
+        async startGroup(participantIds, title = '') {
+            return this.post('/api/chat/conversations/start_group/', {
+                participant_ids: participantIds,
+                title: title,
+            });
+        }
+
+        async addParticipants(conversationId, participantIds) {
+            return this.post(`/api/chat/conversations/${conversationId}/add_participants/`, {
+                participant_ids: participantIds,
+            });
+        }
+
+        async removeParticipant(conversationId, participantId) {
+            return this.post(`/api/chat/conversations/${conversationId}/remove_participant/`, {
+                participant_id: participantId,
+            });
+        }
+
+        async updateGroupTitle(conversationId, title) {
+            return this.patch(`/api/chat/conversations/${conversationId}/update_title/`, {
+                title: title,
             });
         }
 
@@ -623,38 +670,75 @@
         renderConversations(conversations) {
             if (!this.elements.conversationList) return;
 
+            // Separate individual chats from group chats
+            const individualChats = conversations.filter(c => !c.is_group);
+            const groupChats = conversations.filter(c => c.is_group);
+
+            // Render individual chats
             this.elements.conversationList.innerHTML = '';
-
-            conversations.forEach(conv => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                li.dataset.id = conv.id;
-
-                // Build title with preview
-                const rawPreview = conv.last_message?.content || '';
-                const preview = rawPreview.length > 60 
-                    ? `${rawPreview.slice(0, 57)}…` 
-                    : rawPreview;
-
-                let title = conv.title || '';
-                if (!title && conv.last_message) {
-                    const sender = conv.last_message.sender_name || '';
-                    title = preview ? `${sender}: ${preview}` : sender || this.i18n.newConversation;
-                } else if (!title) {
-                    title = this.i18n.newConversation;
-                } else if (preview) {
-                    title += ` · ${preview}`;
-                }
-
-                const unread = conv.unread_count || 0;
-
-                li.innerHTML = `
-                    <span class="text-truncate">${this.escapeHtml(title)}</span>
-                    ${unread ? `<span class="badge bg-danger ms-2">${unread}</span>` : ''}
+            if (individualChats.length === 0) {
+                this.elements.conversationList.innerHTML = `
+                    <li class="list-group-item text-center text-muted small py-3">
+                        <i class="bi bi-chat-left-text d-block mb-1" style="font-size: 1.5rem;"></i>
+                        ${this.i18n.noChatsYet || 'No chats yet. Start a conversation from Users tab.'}
+                    </li>
                 `;
+            } else {
+                individualChats.forEach(conv => {
+                    const li = this.createConversationItem(conv);
+                    this.elements.conversationList.appendChild(li);
+                });
+            }
 
-                this.elements.conversationList.appendChild(li);
-            });
+            // Render group chats
+            if (this.elements.groupList) {
+                this.elements.groupList.innerHTML = '';
+                if (groupChats.length === 0) {
+                    this.elements.groupList.innerHTML = `
+                        <li class="list-group-item text-center text-muted small py-3">
+                            <i class="bi bi-people d-block mb-1" style="font-size: 1.5rem;"></i>
+                            ${this.i18n.noGroupsYet || 'No group chats yet. Create one above.'}
+                        </li>
+                    `;
+                } else {
+                    groupChats.forEach(conv => {
+                        const li = this.createConversationItem(conv, true);
+                        this.elements.groupList.appendChild(li);
+                    });
+                }
+            }
+        }
+
+        createConversationItem(conv, isGroup = false) {
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+            li.dataset.id = conv.id;
+
+            // Build title with preview
+            const rawPreview = conv.last_message?.content || '';
+            const preview = rawPreview.length > 60 
+                ? `${rawPreview.slice(0, 57)}…` 
+                : rawPreview;
+
+            let title = conv.title || '';
+            if (!title && conv.last_message) {
+                const sender = conv.last_message.sender_name || '';
+                title = preview ? `${sender}: ${preview}` : sender || this.i18n.newConversation;
+            } else if (!title) {
+                title = this.i18n.newConversation;
+            } else if (preview) {
+                title += ` · ${preview}`;
+            }
+
+            const unread = conv.unread_count || 0;
+            const icon = isGroup ? '<i class="bi bi-people-fill me-1 text-primary"></i>' : '';
+
+            li.innerHTML = `
+                <span class="text-truncate">${icon}${this.escapeHtml(title)}</span>
+                ${unread ? `<span class="badge bg-danger ms-2">${unread}</span>` : ''}
+            `;
+
+            return li;
         }
 
         renderUsers(users) {
@@ -662,22 +746,86 @@
 
             this.elements.userList.innerHTML = '';
 
+            // Separate online and offline users
+            const onlineUsers = users.filter(u => u.is_online);
+            const offlineUsers = users.filter(u => !u.is_online);
+
+            if (onlineUsers.length > 0) {
+                // Online users header
+                const onlineHeader = document.createElement('li');
+                onlineHeader.className = 'list-group-item bg-light py-1';
+                onlineHeader.innerHTML = `<small class="text-success fw-bold"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>${this.i18n.online} (${onlineUsers.length})</small>`;
+                this.elements.userList.appendChild(onlineHeader);
+
+                onlineUsers.forEach(user => {
+                    const li = this.createUserItem(user);
+                    this.elements.userList.appendChild(li);
+                });
+            }
+
+            if (offlineUsers.length > 0) {
+                // Offline users header
+                const offlineHeader = document.createElement('li');
+                offlineHeader.className = 'list-group-item bg-light py-1';
+                offlineHeader.innerHTML = `<small class="text-muted fw-bold"><i class="bi bi-circle me-1" style="font-size: 0.5rem;"></i>${this.i18n.offline} (${offlineUsers.length})</small>`;
+                this.elements.userList.appendChild(offlineHeader);
+
+                offlineUsers.forEach(user => {
+                    const li = this.createUserItem(user);
+                    this.elements.userList.appendChild(li);
+                });
+            }
+
+            if (users.length === 0) {
+                this.elements.userList.innerHTML = `
+                    <li class="list-group-item text-center text-muted small py-3">
+                        <i class="bi bi-person-x d-block mb-1" style="font-size: 1.5rem;"></i>
+                        ${this.i18n.noUsersAvailable || 'No users available'}
+                    </li>
+                `;
+            }
+        }
+
+        createUserItem(user) {
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+            li.dataset.id = user.id;
+
+            const displayName = user.name || user.email;
+            const online = !!user.is_online;
+            const statusClass = online ? 'text-success' : 'text-muted';
+            const statusIcon = online ? 'bi-circle-fill' : 'bi-circle';
+
+            li.innerHTML = `
+                <span>${this.escapeHtml(displayName)}</span>
+                <i class="bi ${statusIcon} ${statusClass}" style="font-size: 0.5rem;"></i>
+            `;
+
+            return li;
+        }
+
+        renderGroupUsers(users) {
+            if (!this.elements.groupUserList) return;
+
+            this.elements.groupUserList.innerHTML = '';
+
             users.forEach(user => {
                 const li = document.createElement('li');
-                li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                li.dataset.id = user.id;
+                li.className = 'list-group-item d-flex justify-content-between align-items-center py-1';
 
                 const displayName = user.name || user.email;
                 const online = !!user.is_online;
-                const statusText = online ? this.i18n.online : this.i18n.offline;
                 const statusClass = online ? 'text-success' : 'text-muted';
 
                 li.innerHTML = `
-                    <span>${this.escapeHtml(displayName)}</span>
-                    <small class="${statusClass}">${statusText}</small>
+                    <div class="form-check mb-0">
+                        <input class="form-check-input group-user-checkbox" type="checkbox" value="${user.id}" id="group-user-${user.id}">
+                        <label class="form-check-label small" for="group-user-${user.id}">${this.escapeHtml(displayName)}</label>
+                    </div>
+                    <small class="${statusClass}">${online ? this.i18n.online : this.i18n.offline}</small>
                 `;
 
-                this.elements.userList.appendChild(li);
+                this.elements.groupUserList.appendChild(li);
             });
         }
 
@@ -967,7 +1115,7 @@
                 this.togglePanel();
             });
 
-            // Conversation selection
+            // Conversation selection (individual chats)
             this.elements.conversationList.addEventListener('click', (e) => {
                 const item = e.target.closest('li');
                 if (item && item.dataset.id) {
@@ -977,13 +1125,60 @@
                 }
             });
 
-            // User selection
+            // Group list selection
+            if (this.elements.groupList) {
+                this.elements.groupList.addEventListener('click', (e) => {
+                    const item = e.target.closest('li');
+                    if (item && item.dataset.id) {
+                        const convId = item.dataset.id ? String(item.dataset.id) : null;
+                        const conv = this.state.conversations.find(c => c.id === convId);
+                        this.openConversation(convId, conv?.title);
+                    }
+                });
+            }
+
+            // User selection - start individual chat
             this.elements.userList.addEventListener('click', (e) => {
                 const item = e.target.closest('li');
                 if (item && item.dataset.id) {
                     this.startConversation(item.dataset.id);
                 }
             });
+
+            // Group creation controls
+            if (this.elements.toggleGroupMode) {
+                this.elements.toggleGroupMode.addEventListener('click', () => {
+                    this.toggleGroupCreationPanel(true);
+                });
+            }
+
+            if (this.elements.cancelGroupMode) {
+                this.elements.cancelGroupMode.addEventListener('click', () => {
+                    this.toggleGroupCreationPanel(false);
+                });
+            }
+
+            if (this.elements.confirmCreateGroup) {
+                this.elements.confirmCreateGroup.addEventListener('click', () => {
+                    this.createGroup();
+                });
+            }
+
+            // Group user checkbox changes
+            if (this.elements.groupUserList) {
+                this.elements.groupUserList.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('group-user-checkbox')) {
+                        this.updateCreateGroupButton();
+                    }
+                });
+            }
+
+            // Group name input
+            if (this.elements.groupNameInput) {
+                this.elements.groupNameInput.addEventListener('input', () => {
+                    this.updateCreateGroupButton();
+                });
+            }
 
             // Message form submission
             this.elements.messageForm.addEventListener('submit', (e) => {
@@ -1016,6 +1211,24 @@
             
             // Initialize button state
             this.updateSendButtonState();
+        }
+
+        toggleGroupCreationPanel(show) {
+            if (this.elements.groupCreationPanel) {
+                this.elements.groupCreationPanel.style.display = show ? 'block' : 'none';
+            }
+            if (this.elements.toggleGroupMode) {
+                this.elements.toggleGroupMode.style.display = show ? 'none' : 'block';
+            }
+            if (show) {
+                // Render users for group selection
+                this.ui.renderGroupUsers(this.state.users);
+                if (this.elements.groupNameInput) {
+                    this.elements.groupNameInput.value = '';
+                    this.elements.groupNameInput.focus();
+                }
+            }
+            this.updateCreateGroupButton();
         }
 
         updateSendButtonState() {
@@ -1119,6 +1332,52 @@
             } catch (e) {
                 console.error('Error starting conversation:', e);
                 this.ui.showError(this.i18n.errorStartingConversation);
+            }
+        }
+
+        // Group Creation Methods
+        updateCreateGroupButton() {
+            if (!this.elements.confirmCreateGroup) return;
+
+            const checkboxes = document.querySelectorAll('.group-user-checkbox:checked');
+            const groupName = this.elements.groupNameInput ? this.elements.groupNameInput.value.trim() : '';
+            
+            // Need at least 1 user selected and a group name
+            this.elements.confirmCreateGroup.disabled = checkboxes.length < 1 || !groupName;
+        }
+
+        getSelectedUserIds() {
+            const checkboxes = document.querySelectorAll('.group-user-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        async createGroup() {
+            const selectedIds = this.getSelectedUserIds();
+            if (selectedIds.length < 1) {
+                this.ui.showError(this.i18n.selectAtLeastOne || 'Select at least one user');
+                return;
+            }
+
+            const groupName = this.elements.groupNameInput ? this.elements.groupNameInput.value.trim() : '';
+            
+            if (!groupName) {
+                this.ui.showError(this.i18n.groupNameRequired);
+                if (this.elements.groupNameInput) this.elements.groupNameInput.focus();
+                return;
+            }
+
+            try {
+                const conv = await this.api.startGroup(selectedIds, groupName);
+                const normalizedConv = this.normalizeConversationData(conv);
+                if (normalizedConv && normalizedConv.id) {
+                    // Hide the creation panel
+                    this.toggleGroupCreationPanel(false);
+                    await this.loadConversations();
+                    await this.openConversation(normalizedConv.id, normalizedConv.title);
+                }
+            } catch (e) {
+                console.error('Error creating group:', e);
+                this.ui.showError(this.i18n.errorCreatingGroup || 'Error creating group');
             }
         }
 
@@ -1470,7 +1729,14 @@
             badge: document.getElementById('widgetNewMessagesBadge'),
             barStatus: document.getElementById('widgetBarStatus'),
             conversationList: document.getElementById('widgetConversationList'),
+            groupList: document.getElementById('widgetGroupList'),
             userList: document.getElementById('widgetUserList'),
+            groupUserList: document.getElementById('widgetGroupUserList'),
+            groupCreationPanel: document.getElementById('groupCreationPanel'),
+            toggleGroupMode: document.getElementById('toggleGroupMode'),
+            cancelGroupMode: document.getElementById('cancelGroupMode'),
+            confirmCreateGroup: document.getElementById('confirmCreateGroup'),
+            groupNameInput: document.getElementById('groupNameInput'),
             messageContainer: document.getElementById('widgetMessageContainer'),
             messageForm: document.getElementById('widgetMessageForm'),
             messageInput: document.getElementById('widgetMessageInput'),
@@ -1519,6 +1785,22 @@
             fileTypeNotAllowed: 'File type not allowed',
             loadingMessages: 'Loading messages...',
             unknownUser: 'Unknown user',
+            createGroup: 'Create Group',
+            cancelGroup: 'Cancel',
+            create: 'Create',
+            groupNamePlaceholder: 'Enter group name...',
+            groupNameRequired: 'Please enter a group name',
+            selectAtLeastTwo: 'Select at least 2 users for the group',
+            selectAtLeastOne: 'Select at least one user',
+            selectUsersForGroup: 'Select users for group',
+            groupCreated: 'Group created successfully',
+            errorCreatingGroup: 'Could not create group',
+            leaveGroup: 'Leave Group',
+            addParticipants: 'Add Participants',
+            groupMembers: 'Group Members',
+            noChatsYet: 'No chats yet. Start a conversation from Users tab.',
+            noGroupsYet: 'No group chats yet. Create one above.',
+            noUsersAvailable: 'No users available',
         };
 
         // Create widget

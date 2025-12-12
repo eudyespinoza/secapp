@@ -69,6 +69,19 @@ class RedirectToSubscriptionView(View):
 @csrf_exempt
 def logout_view(request):
     """Custom logout view (CSRF-exempt for proxy compatibility)"""
+    user = request.user
+    
+    # Remove push notification subscriptions for this user before logout
+    if user.is_authenticated:
+        try:
+            from webpush.models import PushInformation
+            # Delete all push subscriptions for this user
+            deleted_count, _deleted_details = PushInformation.objects.filter(user=user).delete()
+            if deleted_count > 0:
+                logger.info(f"Deleted {deleted_count} push subscription(s) for user {user.email} on logout")
+        except Exception as e:
+            logger.warning(f"Failed to delete push subscriptions on logout: {e}")
+    
     logout(request)
     messages.info(request, _('You have been successfully logged out.'))
     return redirect('authentication:webauthn_login')

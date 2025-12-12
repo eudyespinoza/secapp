@@ -17,31 +17,40 @@
             httpsRequired: 'Error: Push Notifications require HTTPS. You are accessing via an insecure connection.',
             permissionDenied: 'Notifications are blocked. Please enable them in your browser settings (click the lock icon in the address bar).',
             success: 'Notifications enabled successfully!',
+            unsubscribeSuccess: 'Notifications disabled successfully!',
             error: 'Failed to enable notifications: ',
             titleSuccess: 'Success',
             titleError: 'Error',
             iosPwaRequired: 'To receive notifications on iOS, please add this app to your Home Screen: tap the Share button and select "Add to Home Screen".',
-            iosPwaTitle: 'iOS Instructions'
+            iosPwaTitle: 'iOS Instructions',
+            enableNotifications: 'Enable Notifications',
+            disableNotifications: 'Disable Notifications'
         },
         es: {
             httpsRequired: 'Error: Las notificaciones Push requieren HTTPS. Estás accediendo a través de una conexión insegura.',
             permissionDenied: 'Las notificaciones están bloqueadas. Por favor, habilítalas en la configuración de tu navegador (haz clic en el candado de la barra de direcciones).',
             success: '¡Notificaciones activadas con éxito!',
+            unsubscribeSuccess: '¡Notificaciones desactivadas con éxito!',
             error: 'Error al activar las notificaciones: ',
             titleSuccess: 'Éxito',
             titleError: 'Error',
             iosPwaRequired: 'Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".',
-            iosPwaTitle: 'Instrucciones iOS'
+            iosPwaTitle: 'Instrucciones iOS',
+            enableNotifications: 'Habilitar Notificaciones',
+            disableNotifications: 'Deshabilitar Notificaciones'
         },
         'pt-br': {
             httpsRequired: 'Erro: Notificações Push requerem HTTPS. Você está acessando via conexão insegura.',
             permissionDenied: 'As notificações estão bloqueadas. Por favor, ative-as nas configurações do seu navegador (clique no cadeado na barra de endereços).',
             success: 'Notificações ativadas com sucesso!',
+            unsubscribeSuccess: 'Notificações desativadas com sucesso!',
             error: 'Falha ao ativar notificações: ',
             titleSuccess: 'Sucesso',
             titleError: 'Erro',
             iosPwaRequired: 'Para receber notificações no iOS, adicione este app à sua tela inicial: toque no botão Compartilhar e selecione "Adicionar à Tela de Início".',
-            iosPwaTitle: 'Instruções iOS'
+            iosPwaTitle: 'Instruções iOS',
+            enableNotifications: 'Ativar Notificações',
+            disableNotifications: 'Desativar Notificações'
         }
     };
 
@@ -62,6 +71,7 @@
         constructor() {
             this.subscribeButton = document.getElementById('webpush-subscribe-button');
             this.vapidKey = this.getVapidKey();
+            this.isSubscribed = false;
             
             // Detect language
             this.lang = document.documentElement.lang.toLowerCase() || 'en';
@@ -213,7 +223,7 @@
                 return;
             }
 
-            this.subscribeButton.addEventListener('click', () => this.subscribe(true));
+            this.subscribeButton.addEventListener('click', () => this.toggleSubscription());
             
             // Register Service Worker immediately to keep it alive for background notifications
             this.registerServiceWorker();
@@ -304,12 +314,64 @@
         }
 
         updateButtonState(isSubscribed) {
+            this.isSubscribed = isSubscribed;
             if (isSubscribed) {
-                this.subscribeButton.innerHTML = '<i class="bi bi-bell-slash me-2"></i>Disable Notifications';
+                this.subscribeButton.innerHTML = '<i class="bi bi-bell-slash me-2"></i>' + this.t('disableNotifications');
                 this.subscribeButton.classList.add('text-danger');
             } else {
-                this.subscribeButton.innerHTML = '<i class="bi bi-bell me-2"></i>Enable Notifications';
+                this.subscribeButton.innerHTML = '<i class="bi bi-bell me-2"></i>' + this.t('enableNotifications');
                 this.subscribeButton.classList.remove('text-danger');
+            }
+        }
+
+        async toggleSubscription() {
+            if (this.isSubscribed) {
+                await this.unsubscribe();
+            } else {
+                await this.subscribe(true);
+            }
+        }
+
+        async unsubscribe() {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration(CONFIG.SERVICE_WORKER_PATH);
+                if (registration) {
+                    const subscription = await registration.pushManager.getSubscription();
+                    if (subscription) {
+                        await subscription.unsubscribe();
+                        console.log('[Push] Unsubscribed successfully');
+                        
+                        // Notify server to remove subscription
+                        await this.sendUnsubscribeToServer(subscription);
+                    }
+                }
+                this.updateButtonState(false);
+                this.showToast(this.t('unsubscribeSuccess'), 'success');
+            } catch (e) {
+                console.error('[Push] Unsubscribe failed:', e);
+                this.showToast(this.t('error') + e.message, 'error');
+            }
+        }
+
+        async sendUnsubscribeToServer(subscription) {
+            try {
+                const response = await fetch(CONFIG.SUBSCRIBE_ENDPOINT, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCsrfToken(),
+                    },
+                    body: JSON.stringify({
+                        status_type: 'unsubscribe',
+                        subscription: subscription.toJSON(),
+                    }),
+                });
+                if (!response.ok) {
+                    console.warn('[Push] Server unsubscribe notification failed');
+                }
+            } catch (e) {
+                console.warn('[Push] Could not notify server of unsubscribe:', e);
             }
         }
 

@@ -3195,3 +3195,70 @@ msgstr "Prioridade Média"
 msgid "Compra"
 msgstr "Compra"
 
+# ================================================
+# Chat Group Features
+# ================================================
+msgid "Create Group"
+msgstr "Criar Grupo"
+
+msgid "Enter group name..."
+msgstr "Digite o nome do grupo..."
+
+msgid "Please enter a group name"
+msgstr "Por favor, digite um nome para o grupo"
+
+msgid "Select at least 2 users for the group"
+msgstr "Selecione pelo menos 2 usuários para o grupo"
+
+msgid "Select users for group"
+msgstr "Selecione usuários para o grupo"
+
+msgid "Group created successfully"
+msgstr "Grupo criado com sucesso"
+
+msgid "Could not create group"
+msgstr "Não foi possível criar o grupo"
+
+msgid "Leave Group"
+msgstr "Sair do Grupo"
+
+msgid "Add Participants"
+msgstr "Adicionar Participantes"
+
+msgid "Group Members"
+msgstr "Membros do Grupo"
+
+msgid "Select at least one user"
+msgstr "Selecione pelo menos um usuário"
+
+msgid "No chats yet. Start a conversation from Users tab."
+msgstr "Ainda não há chats. Inicie uma conversa na aba Usuários."
+
+msgid "No group chats yet. Create one above."
+msgstr "Ainda não há grupos. Crie um acima."
+
+msgid "No users available"
+msgstr "Nenhum usuário disponível"
+
+msgid "Groups"
+msgstr "Grupos"
+
+msgid "Messages"
+msgstr "Mensagens"
+
+msgid "Create New Group"
+msgstr "Criar Novo Grupo"
+
+msgid "Group Conversations"
+msgstr "Conversas em Grupo"
+
+# Chat UI Additional Translations
+msgid "Loading messages..."
+msgstr "Carregando mensagens..."
+
+msgid "Max 25MB. Any file type is allowed."
+msgstr "Máx 25MB. Qualquer tipo de arquivo é permitido."
+
+msgid "Select users for group:"
+msgstr "Selecionar usuários para o grupo:"
+

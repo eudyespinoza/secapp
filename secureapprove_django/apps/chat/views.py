@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.utils.translation import gettext as _
@@ -40,6 +41,15 @@ except Exception:  # pragma: no cover
     get_channel_layer = None
 
 logger = logging.getLogger(__name__)
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """
+    SessionAuthentication that doesn't enforce CSRF.
+    Used for API endpoints that are accessed via AJAX from the same origin.
+    """
+    def enforce_csrf(self, request):
+        return  # Skip CSRF check
 
 
 class ChatPageView(TemplateView):
@@ -103,6 +113,7 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = ChatConversationSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication]
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
     pagination_class = None
@@ -225,6 +236,213 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(conv)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['post'])
+    def start_group(self, request):
+        """
+        Create a new group conversation.
+        
+        Body: { 
+            "participant_ids": [<user_id>, ...],  # At least 1 other user
+            "title": "Group Name"  # Optional
+        }
+        
+        Returns the new group conversation.
+        """
+        user = request.user
+        tenant = ensure_user_tenant(user)
+        if not tenant:
+            return Response(
+                {'error': 'No tenant associated with current user'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        participant_ids = request.data.get('participant_ids', [])
+        title = request.data.get('title', '').strip()
+        
+        if not participant_ids or len(participant_ids) < 1:
+            return Response(
+                {'error': 'At least one participant is required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Validate all participants exist and are in same tenant
+        participants = []
+        for pid in participant_ids:
+            if str(pid) == str(user.id):
+                continue  # Skip current user, will be added automatically
+            try:
+                other = User.objects.get(id=pid, tenant=tenant, is_active=True)
+                participants.append(other)
+            except User.DoesNotExist:
+                return Response(
+                    {'error': f'Participant {pid} not found in your tenant'},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+        if len(participants) < 1:
+            return Response(
+                {'error': 'At least one other participant is required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            # Create group conversation
+            conv = ChatConversation.objects.create(
+                tenant=tenant,
+                is_group=True,
+                title=title or None,
+            )
+            
+            # Add current user as participant
+            ChatParticipant.objects.create(conversation=conv, user=user)
+            
+            # Add other participants
+            for participant in participants:
+                ChatParticipant.objects.create(conversation=conv, user=participant)
+
+        serializer = self.get_serializer(conv)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def add_participants(self, request, pk=None):
+        """
+        Add participants to an existing group conversation.
+        
+        Body: { "participant_ids": [<user_id>, ...] }
+        """
+        conv = self.get_object()
+        user = request.user
+        tenant = ensure_user_tenant(user)
+        
+        if not conv.is_group:
+            return Response(
+                {'error': 'Cannot add participants to a 1-to-1 conversation'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Verify user is a participant
+        if not conv.participant_set.filter(user=user).exists():
+            return Response(
+                {'error': 'You are not a participant in this conversation'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
+        participant_ids = request.data.get('participant_ids', [])
+        if not participant_ids:
+            return Response(
+                {'error': 'participant_ids is required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        added = []
+        existing_user_ids = set(conv.participant_set.values_list('user_id', flat=True))
+        
+        with transaction.atomic():
+            for pid in participant_ids:
+                if pid in existing_user_ids:
+                    continue  # Already a participant
+                try:
+                    other = User.objects.get(id=pid, tenant=tenant, is_active=True)
+                    ChatParticipant.objects.create(conversation=conv, user=other)
+                    added.append(pid)
+                except User.DoesNotExist:
+                    pass  # Skip invalid users
+        
+        serializer = self.get_serializer(conv)
+        return Response({
+            'conversation': serializer.data,
+            'added_participants': added,
+        })
+
+    @action(detail=True, methods=['post'])
+    def remove_participant(self, request, pk=None):
+        """
+        Remove a participant from a group conversation.
+        
+        Body: { "participant_id": <user_id> }
+        
+        Users can remove themselves (leave) or admins can remove others.
+        """
+        conv = self.get_object()
+        user = request.user
+        
+        if not conv.is_group:
+            return Response(
+                {'error': 'Cannot remove participants from a 1-to-1 conversation'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Verify user is a participant
+        if not conv.participant_set.filter(user=user).exists():
+            return Response(
+                {'error': 'You are not a participant in this conversation'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
+        participant_id = request.data.get('participant_id')
+        if not participant_id:
+            return Response(
+                {'error': 'participant_id is required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Users can only remove themselves (leave) unless they're admin
+        if str(participant_id) != str(user.id) and not user.is_staff:
+            return Response(
+                {'error': 'You can only remove yourself from the group'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
+        with transaction.atomic():
+            deleted_count, _ = conv.participant_set.filter(user_id=participant_id).delete()
+            
+            if deleted_count == 0:
+                return Response(
+                    {'error': 'Participant not found in this conversation'},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            
+            # If no participants left, delete the conversation
+            if conv.participant_set.count() == 0:
+                conv.delete()
+                return Response({'status': 'conversation_deleted'})
+        
+        serializer = self.get_serializer(conv)
+        return Response({
+            'conversation': serializer.data,
+            'removed_participant': participant_id,
+        })
+
+    @action(detail=True, methods=['patch'])
+    def update_title(self, request, pk=None):
+        """
+        Update the title of a group conversation.
+        
+        Body: { "title": "New Title" }
+        """
+        conv = self.get_object()
+        user = request.user
+        
+        if not conv.is_group:
+            return Response(
+                {'error': 'Cannot set title on a 1-to-1 conversation'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Verify user is a participant
+        if not conv.participant_set.filter(user=user).exists():
+            return Response(
+                {'error': 'You are not a participant in this conversation'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
+        title = request.data.get('title', '').strip()
+        conv.title = title or None
+        conv.save(update_fields=['title', 'updated_at'])
+        
+        serializer = self.get_serializer(conv)
+        return Response(serializer.data)
 
 
     @action(detail=True, methods=['get', 'post'])

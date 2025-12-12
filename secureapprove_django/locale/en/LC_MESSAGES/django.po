@@ -2946,3 +2946,36 @@ msgstr "Medium Priority"
 msgid "Compra"
 msgstr "Purchase"
 
+# ================================================
+# Chat Group Features
+# ================================================
+msgid "Create Group"
+msgstr "Create Group"
+
+msgid "Enter group name..."
+msgstr "Enter group name..."
+
+msgid "Please enter a group name"
+msgstr "Please enter a group name"
+
+msgid "Select at least 2 users for the group"
+msgstr "Select at least 2 users for the group"
+
+msgid "Select users for group"
+msgstr "Select users for group"
+
+msgid "Group created successfully"
+msgstr "Group created successfully"
+
+msgid "Could not create group"
+msgstr "Could not create group"
+
+msgid "Leave Group"
+msgstr "Leave Group"
+
+msgid "Add Participants"
+msgstr "Add Participants"
+
+msgid "Group Members"
+msgstr "Group Members"
+

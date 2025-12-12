@@ -624,15 +624,22 @@
         }
 
         .tenant-chat-tabs {
+            display: flex;
             flex-wrap: nowrap;
             white-space: nowrap;
             overflow-x: auto;
-            gap: 10px;
+            gap: 6px;
             border-bottom: none;
-            padding: 6px;
+            padding: 4px;
             border-radius: 14px;
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .tenant-chat-tabs .nav-item {
+            flex: 1;
+            display: flex;
         }
 
         .tenant-chat-tabs::-webkit-scrollbar {
@@ -641,18 +648,21 @@
 
         .tenant-chat-tabs .nav-link {
             position: relative;
-            font-size: 0.84rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            padding: 0.45rem 0.8rem;
-            border-radius: 12px;
+            padding: 0.45rem 0.5rem;
+            border-radius: 10px;
             border: 1px solid transparent;
             color: var(--text-secondary);
             background: rgba(255, 255, 255, 0.92);
             transition: all 0.18s ease;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            text-align: center;
         }
 
         [data-theme="dark"] .tenant-chat-tabs .nav-link {
@@ -679,16 +689,29 @@
         }
 
         .tenant-chat-tabs .nav-link:hover {
-            border-color: var(--border-color);
-            transform: translateY(-1px);
+            border-color: var(--primary-color);
+            background: rgba(79, 70, 229, 0.08);
+            color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .tenant-chat-tabs .nav-link:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary-color);
+            color: var(--primary-light);
         }
 
         .tenant-chat-tabs .nav-link.active {
             border-color: var(--primary-color);
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: #ffffff !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-            box-shadow: 0 10px 24px rgba(79, 70, 229, 0.32);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .tenant-chat-tabs .nav-link.active:hover {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: #ffffff !important;
         }
 
         .tenant-chat-tabs .nav-link.active::after {
@@ -845,9 +868,13 @@
         }
 
         .tenant-chat-list .list-group-item:hover {
-            transform: translateY(-1px);
             border-color: var(--primary-color);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            background-color: rgba(79, 70, 229, 0.04);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="dark"] .tenant-chat-list .list-group-item:hover {
+            background-color: rgba(99, 102, 241, 0.08);
         }
 
         #widgetConversationList,
@@ -1094,9 +1121,9 @@
                                                         <hr class="dropdown-divider">
                                                     </li>
                                                     <li>
-                                                        <form method="post" action="{% url 'authentication:logout' %}">
+                                                        <form method="post" action="{% url 'authentication:logout' %}" id="logoutForm">
                                                             {% csrf_token %}
-                                                            <button type="submit" class="dropdown-item text-danger">
+                                                            <button type="submit" class="dropdown-item text-danger" id="logoutBtn">
                                                                 <i class="bi bi-box-arrow-right me-2"></i>{% trans "Logout" %}
                                                             </button>
                                                         </form>
@@ -1118,8 +1145,8 @@
                                 </div>
                             </nav>
 
-                            <!-- Main content with padding for fixed navbar and bottom spacing for chat -->
-                            <div style="padding-top: 80px; padding-bottom: 120px;">
+                            <!-- Main content with padding for fixed navbar -->
+                            <div style="padding-top: 80px;{% if user.is_authenticated %} padding-bottom: 120px;{% endif %}">
                                 {% endblock %}
 
                                 {% block content %}
@@ -1163,7 +1190,7 @@
                                                 </div>
                                                 <div>
                                                     <div class="tenant-chat-eyebrow">{% trans "Chat" %}</div>
-                                                    <div class="tenant-chat-bar-title">{% trans "Chats" %}</div>
+                                                    <div class="tenant-chat-bar-title">{% trans "Messages" %}</div>
                                                 </div>
                                             </div>
                                             <div class="tenant-chat-pill">
@@ -1178,29 +1205,65 @@
                                                 <button class="nav-link active" id="chat-conversations-tab"
                                                     data-bs-toggle="tab" data-bs-target="#chat-conversations"
                                                     type="button" role="tab">
-                                                    <i class="bi bi-inboxes"></i>
+                                                    <i class="bi bi-chat-left-text"></i>
                                                     {% trans "Chats" %}
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="chat-groups-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#chat-groups" type="button" role="tab">
+                                                    <i class="bi bi-people-fill"></i>
+                                                    {% trans "Groups" %}
                                                 </button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="chat-users-tab" data-bs-toggle="tab"
                                                     data-bs-target="#chat-users" type="button" role="tab">
-                                                    <i class="bi bi-people"></i>
-                                                    {% trans "Users & Groups" %}
+                                                    <i class="bi bi-person"></i>
+                                                    {% trans "Users" %}
                                                 </button>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="card-body p-3">
                                         <div class="tab-content">
+                                            <!-- Chats Tab - Individual conversations -->
                                             <div class="tab-pane fade show active" id="chat-conversations"
                                                 role="tabpanel">
-                                                <h6 class="mb-2">{% trans "Conversations" %}</h6>
                                                 <ul id="widgetConversationList"
                                                     class="list-group list-group-flush small tenant-chat-list"></ul>
                                             </div>
+                                            <!-- Groups Tab - Group conversations and create group -->
+                                            <div class="tab-pane fade" id="chat-groups" role="tabpanel">
+                                                <div class="mb-3">
+                                                    <button type="button" id="toggleGroupMode" class="btn btn-sm btn-outline-primary w-100">
+                                                        <i class="bi bi-plus-circle me-1"></i>{% trans "Create New Group" %}
+                                                    </button>
+                                                </div>
+                                                <div id="groupCreationPanel" style="display:none;" class="mb-3 p-2 border rounded bg-light">
+                                                    <div class="mb-2">
+                                                        <input type="text" id="groupNameInput" class="form-control form-control-sm" 
+                                                               placeholder="{% trans 'Enter group name...' %}" maxlength="100">
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <small class="text-muted">{% trans "Select users for group:" %}</small>
+                                                    </div>
+                                                    <ul id="widgetGroupUserList" class="list-group list-group-flush small mb-2" style="max-height: 150px; overflow-y: auto;"></ul>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" id="cancelGroupMode" class="btn btn-sm btn-secondary flex-grow-1">
+                                                            <i class="bi bi-x me-1"></i>{% trans "Cancel" %}
+                                                        </button>
+                                                        <button type="button" id="confirmCreateGroup" class="btn btn-sm btn-success flex-grow-1" disabled>
+                                                            <i class="bi bi-check-lg me-1"></i>{% trans "Create" %}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <h6 class="mb-2 text-muted small">{% trans "Group Conversations" %}</h6>
+                                                <ul id="widgetGroupList"
+                                                    class="list-group list-group-flush small tenant-chat-list"></ul>
+                                            </div>
+                                            <!-- Users Tab - All users online/offline -->
                                             <div class="tab-pane fade" id="chat-users" role="tabpanel">
-                                                <h6 class="mb-2">{% trans "Contacts" %}</h6>
                                                 <ul id="widgetUserList"
                                                     class="list-group list-group-flush small tenant-chat-list"></ul>
                                             </div>
@@ -1426,6 +1489,22 @@
                                     fileTypeNotAllowed: '{% trans "File type not allowed" %}',
                                     loadingMessages: '{% trans "Loading messages..." %}',
                                     unknownUser: '{% trans "Unknown user" %}',
+                                    createGroup: '{% trans "Create Group" %}',
+                                    cancelGroup: '{% trans "Cancel" %}',
+                                    create: '{% trans "Create" %}',
+                                    groupNamePlaceholder: '{% trans "Enter group name..." %}',
+                                    groupNameRequired: '{% trans "Please enter a group name" %}',
+                                    selectAtLeastTwo: '{% trans "Select at least 2 users for the group" %}',
+                                    selectAtLeastOne: '{% trans "Select at least one user" %}',
+                                    selectUsersForGroup: '{% trans "Select users for group" %}',
+                                    groupCreated: '{% trans "Group created successfully" %}',
+                                    errorCreatingGroup: '{% trans "Could not create group" %}',
+                                    leaveGroup: '{% trans "Leave Group" %}',
+                                    addParticipants: '{% trans "Add Participants" %}',
+                                    groupMembers: '{% trans "Group Members" %}',
+                                    noChatsYet: '{% trans "No chats yet. Start a conversation from Users tab." %}',
+                                    noGroupsYet: '{% trans "No group chats yet. Create one above." %}',
+                                    noUsersAvailable: '{% trans "No users available" %}',
                                 };
                                 {% endif %}
 
@@ -1438,6 +1517,36 @@
                             {% if user.is_authenticated %}
                             <script src="{% static 'js/tenant_chat.js' %}"></script>
                             {% endif %}
+                            
+                            <!-- Push Notification Cleanup on Logout -->
+                            <script>
+                            (function() {
+                                const logoutForm = document.getElementById('logoutForm');
+                                if (logoutForm) {
+                                    logoutForm.addEventListener('submit', async function(e) {
+                                        e.preventDefault();
+                                        const form = this;
+                                        
+                                        try {
+                                            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                                                const registration = await navigator.serviceWorker.ready;
+                                                const subscription = await registration.pushManager.getSubscription();
+                                                if (subscription) {
+                                                    await subscription.unsubscribe();
+                                                    console.log('Push notifications unsubscribed successfully');
+                                                }
+                                            }
+                                        } catch (err) {
+                                            console.log('Push unsubscribe failed:', err);
+                                        }
+                                        
+                                        // Submit the form after cleanup
+                                        form.submit();
+                                    });
+                                }
+                            })();
+                            </script>
+                            
                             {% block extra_js %}{% endblock %}
                         </body>
                     </html>
