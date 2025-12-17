@@ -161,6 +161,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const name = (error && (error.name || error.code)) || '';
         const message = (error && error.message) || '';
 
+        // If the error comes from our server, show it directly
+        if (message && !name) {
+            return message;
+        }
+
         switch (name) {
             case 'NotAllowedError':
                 // User cancelled, timed out, or OS/browser rejected silently
@@ -175,6 +180,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Fallback if the browser returns a generic error
                 if (message && message.indexOf('operation either timed out or was not allowed') !== -1) {
                     return "{% trans 'The operation either timed out or was not allowed by the browser. Please try again, and check your browser privacy settings.' %}";
+                }
+                // Show the actual error message if available
+                if (message) {
+                    return message;
                 }
                 return "{% trans 'An unexpected error occurred while adding this device. Please try again.' %}";
         }

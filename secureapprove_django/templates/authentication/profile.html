@@ -147,7 +147,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <h6 class="fw-semibold text-muted-custom mb-1">{% trans "Company" %}</h6>
-                            <p class="mb-0">{{ user.company|default:"—" }}</p>
+                            <p class="mb-0">{{ user.tenant.name|default:"—" }}</p>
                         </div>
                         <div class="col-md-6 mb-3">
                             <h6 class="fw-semibold text-muted-custom mb-1">{% trans "Member Since" %}</h6>

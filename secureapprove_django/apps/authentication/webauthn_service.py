@@ -150,8 +150,14 @@ class WebAuthnService:
         challenge_key = f"webauthn_challenge_reg_{user.id}"
         expected_challenge = cache.get(challenge_key)
         
+        logger.info(f"WebAuthn verify_registration_response for user {user.id} ({user.email})")
+        logger.info(f"Challenge key: {challenge_key}, Challenge exists: {expected_challenge is not None}")
+        logger.info(f"Allowed origins: {self.allowed_origins}")
+        logger.info(f"RP ID: {self.rp_id}")
+        
         if not expected_challenge:
-            raise ValueError(_('Challenge not found or expired'))
+            logger.error(f"Challenge not found or expired for user {user.id}")
+            raise ValueError(_('Challenge not found or expired. Please try again.'))
         
         try:
             # Convert the credential data to the expected format
@@ -164,6 +170,8 @@ class WebAuthnService:
                 },
                 'type': credential_data['type'],
             }))
+            
+            logger.info(f"Attempting WebAuthn verification with origins: {self.allowed_origins}")
             
             # Verify the registration (accept both www and non-www origins)
             verification = verify_registration_response(

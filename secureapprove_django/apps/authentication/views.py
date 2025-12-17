@@ -507,8 +507,18 @@ def profile_view(request):
             except Exception:
                 webauthn_credentials = []
 
+    # Ensure tenant is loaded for the template
+    user = request.user
+    if hasattr(user, 'tenant_id') and user.tenant_id:
+        # Force select the tenant to avoid lazy loading issues
+        from apps.tenants.models import Tenant
+        try:
+            user.tenant = Tenant.objects.get(id=user.tenant_id)
+        except Tenant.DoesNotExist:
+            pass
+
     return render(request, 'authentication/profile.html', {
-        'user': request.user,
+        'user': user,
         'webauthn_credentials': webauthn_credentials,
     })
 
@@ -896,23 +906,31 @@ def device_pairing_complete(request, token):
     """
     Complete WebAuthn registration on the pairing device.
     """
+    logger.info(f"device_pairing_complete called with token: {token[:16]}...")
+    
     session = _get_valid_pairing_session(token)
     if not session:
+        logger.error(f"Pairing session not found or expired for token: {token[:16]}...")
         return JsonResponse(
             {"success": False, "error": _("Pairing session not found or expired.")},
             status=400,
         )
 
+    logger.info(f"Valid pairing session found for user: {session.user.email}")
+    
     try:
         data = json.loads(request.body)
         credential = data.get("credential")
         if not credential:
+            logger.error("No credential data in request body")
             return JsonResponse(
                 {"success": False, "error": _("Credential data is required")},
                 status=400,
             )
 
+        logger.info(f"Verifying WebAuthn registration for user: {session.user.email}")
         result = webauthn_service.verify_registration_response(session.user, credential)
+        logger.info(f"WebAuthn registration verified successfully for user: {session.user.email}")
 
         # Mark session as completed
         session.status = "completed"
@@ -929,13 +947,20 @@ def device_pairing_complete(request, token):
                 "credentialId": result.get("credential_id"),
             }
         )
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in device_pairing_complete: {e}")
         return JsonResponse(
             {"success": False, "error": _("Invalid JSON data")},
             status=400,
         )
+    except ValueError as e:
+        logger.error(f"ValueError in device_pairing_complete: {e}")
+        return JsonResponse(
+            {"success": False, "error": str(e)},
+            status=400,
+        )
     except Exception as e:
-        logger.error(f"Error completing device pairing: {e}")
+        logger.error(f"Error completing device pairing: {e}", exc_info=True)
         return JsonResponse(
             {"success": False, "error": str(e)},
             status=400,
