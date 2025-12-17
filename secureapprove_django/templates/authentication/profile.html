@@ -414,12 +414,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         location.reload(); // Reload to show the "no devices" message
                     }
                 } else {
-                    alert(data.error || '{% trans "Failed to remove device" %}');
+                    SecureNotify.error(data.error || '{% trans "Failed to remove device" %}');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('{% trans "Failed to remove device" %}');
+                SecureNotify.error('{% trans "Failed to remove device" %}');
             });
         }
     };
@@ -451,12 +451,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     credentialNameElement.textContent = data.name;
                 } else {
-                    alert(data.error || '{% trans "Failed to rename device" %}');
+                    SecureNotify.error(data.error || '{% trans "Failed to rename device" %}');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('{% trans "Failed to rename device" %}');
+                SecureNotify.error('{% trans "Failed to rename device" %}');
             });
         }
     };
@@ -486,12 +486,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reload page to reflect changes
                     location.reload();
                 } else {
-                    alert(data.error || `{% trans "Failed to" %} ${action} {% trans "device" %}`);
+                    SecureNotify.error(data.error || `{% trans "Failed to" %} ${action} {% trans "device" %}`);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert(`{% trans "Failed to" %} ${action} {% trans "device" %}`);
+                SecureNotify.error(`{% trans "Failed to" %} ${action} {% trans "device" %}`);
             });
         }
     };
@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('WebAuthn registration error:', error);
-            alert('{% trans "Failed to add device" %}: ' + error.message);
+            SecureNotify.error('{% trans "Failed to add device" %}: ' + error.message);
             resetCredentialModal();
         }
     });
@@ -645,10 +645,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     pairingLinkInput.select();
                     document.execCommand('copy');
                 }
-                alert('{% trans "Link copied to clipboard." %}');
+                SecureNotify.success('{% trans "Link copied to clipboard." %}');
             } catch (e) {
                 console.error('Copy failed', e);
-                alert('{% trans "Failed to copy link." %}');
+                SecureNotify.error('{% trans "Failed to copy link." %}');
             }
         });
     }
@@ -688,11 +688,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (pairingLinkModal) {
                     pairingLinkModal.show();
                 } else {
-                    alert(`{% trans "Pairing link created. Open this URL on the device you want to pair:" %}\n\n${pairingUrl}`);
+                    SecureNotify.info(`{% trans "Pairing link created. Open this URL on the device you want to pair:" %}\n\n${pairingUrl}`);
                 }
             } catch (error) {
                 console.error('Error creating pairing session:', error);
-                alert('{% trans "Failed to create pairing session" %}: ' + (error.message || error));
+                SecureNotify.error('{% trans "Failed to create pairing session" %}: ' + (error.message || error));
             }
         });
     }

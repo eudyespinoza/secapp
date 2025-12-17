@@ -46,7 +46,9 @@
             if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
                 console.warn('[Push] Secure Context (HTTPS) required for Service Workers');
                 this.subscribeButton.addEventListener('click', () => {
-                    alert('Error: Push Notifications require HTTPS. You are accessing via an insecure connection.');
+                    if (typeof SecureNotify !== 'undefined') {
+                        SecureNotify.error('Error: Push Notifications require HTTPS. You are accessing via an insecure connection.');
+                    }
                 });
                 return;
             }
@@ -55,7 +57,9 @@
             if (isIOSSafari() && !isStandalone()) {
                 console.warn('[Push] iOS Safari requires PWA mode for push notifications');
                 this.subscribeButton.addEventListener('click', () => {
-                    alert('Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".');
+                    if (typeof SecureNotify !== 'undefined') {
+                        SecureNotify.info('Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".');
+                    }
                 });
                 // Continue to check support
             }
@@ -65,7 +69,9 @@
                 if (isIOSSafari()) {
                     // Show instructions on iOS
                     this.subscribeButton.addEventListener('click', () => {
-                        alert('Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".');
+                        if (typeof SecureNotify !== 'undefined') {
+                            SecureNotify.info('Para recibir notificaciones en iOS, agrega esta app a tu pantalla de inicio: toca el botón Compartir y selecciona "Añadir a pantalla de inicio".');
+                        }
                     });
                 } else {
                     this.subscribeButton.style.display = 'none';
@@ -188,8 +194,8 @@
             try {
                 // Check permission first
                 if (Notification.permission === 'denied') {
-                    if (showFeedback) {
-                        alert('Notifications are blocked. Please enable them in your browser settings.');
+                    if (showFeedback && typeof SecureNotify !== 'undefined') {
+                        SecureNotify.warning('Notifications are blocked. Please enable them in your browser settings.');
                     }
                     return;
                 }
@@ -231,14 +237,14 @@
                 this.updateButtonState(true);
                 
                 // Only show success if user clicked AND it's a new subscription
-                if (showFeedback && isNewSubscription) {
-                    alert('Notifications enabled successfully!');
+                if (showFeedback && isNewSubscription && typeof SecureNotify !== 'undefined') {
+                    SecureNotify.success('Notifications enabled successfully!');
                 }
 
             } catch (e) {
                 console.error('[Push] Subscription failed:', e);
-                if (showFeedback) {
-                    alert('Failed to enable notifications: ' + e.message);
+                if (showFeedback && typeof SecureNotify !== 'undefined') {
+                    SecureNotify.error('Failed to enable notifications: ' + e.message);
                 }
             }
         }

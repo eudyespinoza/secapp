@@ -38,10 +38,133 @@
     .pairing-step.active {
         display: block;
     }
+    
+    /* Custom notification popup */
+    .pairing-notification-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .pairing-notification-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .pairing-notification {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-color);
+        max-width: 420px;
+        width: 90%;
+        padding: 1.5rem;
+        transform: scale(0.9) translateY(-20px);
+        transition: transform 0.3s ease;
+    }
+    .pairing-notification-overlay.show .pairing-notification {
+        transform: scale(1) translateY(0);
+    }
+    .pairing-notification-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+    .pairing-notification-icon.error {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #dc2626;
+    }
+    .pairing-notification-icon.warning {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #d97706;
+    }
+    .pairing-notification-icon.info {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #2563eb;
+    }
+    .pairing-notification-icon.success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #059669;
+    }
+    [data-theme="dark"] .pairing-notification-icon.error {
+        background: linear-gradient(135deg, #7f1d1d, #991b1b);
+        color: #fca5a5;
+    }
+    [data-theme="dark"] .pairing-notification-icon.warning {
+        background: linear-gradient(135deg, #78350f, #92400e);
+        color: #fcd34d;
+    }
+    [data-theme="dark"] .pairing-notification-icon.info {
+        background: linear-gradient(135deg, #1e3a8a, #1e40af);
+        color: #93c5fd;
+    }
+    [data-theme="dark"] .pairing-notification-icon.success {
+        background: linear-gradient(135deg, #064e3b, #065f46);
+        color: #6ee7b7;
+    }
+    .pairing-notification-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }
+    .pairing-notification-message {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1.25rem;
+    }
+    .pairing-notification-btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .pairing-notification-btn-primary {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+    }
+    .pairing-notification-btn-primary:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Custom Notification Popup -->
+<div id="pairingNotificationOverlay" class="pairing-notification-overlay">
+    <div class="pairing-notification">
+        <div id="pairingNotificationIcon" class="pairing-notification-icon error">
+            <i id="pairingNotificationIconI" class="bi bi-exclamation-triangle-fill" style="font-size: 24px;"></i>
+        </div>
+        <div id="pairingNotificationTitle" class="pairing-notification-title">{% trans "Error" %}</div>
+        <div id="pairingNotificationMessage" class="pairing-notification-message"></div>
+        <button type="button" id="pairingNotificationBtn" class="pairing-notification-btn pairing-notification-btn-primary">
+            {% trans "OK" %}
+        </button>
+    </div>
+</div>
+
 <section class="hero-section">
     <div class="container">
         <div class="pairing-card p-4">
@@ -97,6 +220,19 @@
                             {% trans "You can now sign in to SecureApprove from this device using your biometric authentication." %}
                         </p>
                     </div>
+
+                    <!-- Step for already paired device -->
+                    <div class="pairing-step" id="pairStepAlreadyPaired">
+                        <div class="text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-check-circle-fill text-success" style="font-size: 48px;"></i>
+                            </div>
+                            <h6 class="fw-semibold text-success mb-2">{% trans "This Device is Already Paired!" %}</h6>
+                            <p class="text-muted small mb-3">
+                                {% trans "Good news! You already have a passkey for this account on this device. You can sign in directly without needing to pair again." %}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-3" id="pairingActions">
@@ -119,6 +255,65 @@ document.addEventListener('DOMContentLoaded', function () {
     const stepsContainer = document.getElementById('pairingSteps');
     const actionsContainer = document.getElementById('pairingActions');
     const token = '{{ pairing_token }}';
+    
+    // Notification popup elements
+    const notificationOverlay = document.getElementById('pairingNotificationOverlay');
+    const notificationIcon = document.getElementById('pairingNotificationIcon');
+    const notificationIconI = document.getElementById('pairingNotificationIconI');
+    const notificationTitle = document.getElementById('pairingNotificationTitle');
+    const notificationMessage = document.getElementById('pairingNotificationMessage');
+    const notificationBtn = document.getElementById('pairingNotificationBtn');
+    
+    // Notification type configurations
+    const notificationTypes = {
+        error: {
+            icon: 'bi-exclamation-triangle-fill',
+            title: "{% trans 'Error' %}",
+            class: 'error'
+        },
+        warning: {
+            icon: 'bi-exclamation-circle-fill',
+            title: "{% trans 'Warning' %}",
+            class: 'warning'
+        },
+        info: {
+            icon: 'bi-info-circle-fill',
+            title: "{% trans 'Information' %}",
+            class: 'info'
+        },
+        success: {
+            icon: 'bi-check-circle-fill',
+            title: "{% trans 'Success' %}",
+            class: 'success'
+        }
+    };
+    
+    function showNotification(message, type = 'error', onClose = null) {
+        const config = notificationTypes[type] || notificationTypes.error;
+        
+        notificationIcon.className = 'pairing-notification-icon ' + config.class;
+        notificationIconI.className = 'bi ' + config.icon;
+        notificationTitle.textContent = config.title;
+        notificationMessage.textContent = message;
+        
+        notificationOverlay.classList.add('show');
+        
+        // Handle close
+        const closeHandler = function() {
+            notificationOverlay.classList.remove('show');
+            notificationBtn.removeEventListener('click', closeHandler);
+            if (onClose) onClose();
+        };
+        
+        notificationBtn.addEventListener('click', closeHandler);
+        
+        // Also close on overlay click
+        notificationOverlay.addEventListener('click', function(e) {
+            if (e.target === notificationOverlay) {
+                closeHandler();
+            }
+        }, { once: true });
+    }
 
     function showPairStep(stepNumber) {
         if (!stepsContainer) return;
@@ -157,6 +352,36 @@ document.addEventListener('DOMContentLoaded', function () {
         return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
+    function isAlreadyPairedError(error) {
+        const name = (error && (error.name || error.code)) || '';
+        const message = (error && error.message) || '';
+        
+        // InvalidStateError means credential already exists
+        if (name === 'InvalidStateError') return true;
+        
+        // UnknownError with "credential manager" message often means duplicate
+        if (name === 'UnknownError') return true;
+        
+        // Check for specific messages
+        if (message && message.toLowerCase().indexOf('unknown error') !== -1) return true;
+        if (message && message.toLowerCase().indexOf('already exists') !== -1) return true;
+        if (message && message.toLowerCase().indexOf('credential manager') !== -1) return true;
+        
+        return false;
+    }
+
+    function showAlreadyPairedStep() {
+        showPairStep('AlreadyPaired');
+        if (actionsContainer) {
+            actionsContainer.innerHTML = `
+                <a href="/auth/login/" class="btn btn-primary w-100">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    {% trans "Sign In Now" %}
+                </a>
+            `;
+        }
+    }
+
     function getFriendlyErrorMessage(error) {
         const name = (error && (error.name || error.code)) || '';
         const message = (error && error.message) || '';
@@ -177,17 +402,16 @@ document.addEventListener('DOMContentLoaded', function () {
             case 'NotSupportedError':
                 return "{% trans 'This browser or device does not fully support WebAuthn passkeys for this site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) with passkeys enabled.' %}";
             case 'InvalidStateError':
-                return "{% trans 'A credential for this account already exists on this device. Try signing in instead of pairing again.' %}";
+                return null; // We'll show the already paired step instead
             case 'UnknownError':
-                // This is the "unknown error while talking to credential manager" case
-                return "{% trans 'Your device could not complete the registration. This may happen if: (1) You already have a passkey for this site on this device, (2) Your biometric sensor is not working properly, or (3) Your browser needs to be updated. Try using a different browser or device.' %}";
+                return null; // We'll show the already paired step instead
             default:
                 // Fallback if the browser returns a generic error
                 if (message && message.indexOf('operation either timed out or was not allowed') !== -1) {
                     return "{% trans 'The operation either timed out or was not allowed by the browser. Please try again, and check your browser privacy settings.' %}";
                 }
                 if (message && message.toLowerCase().indexOf('unknown error') !== -1) {
-                    return "{% trans 'Your device could not complete the registration. This may happen if you already have a passkey for this site. Try signing in instead, or use a different browser.' %}";
+                    return null; // We'll show the already paired step instead
                 }
                 // Show the actual error message if available
                 if (message) {
@@ -201,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function () {
         startBtn.addEventListener('click', async function () {
             try {
                 if (!navigator.credentials || !navigator.credentials.create) {
-                    alert("{% trans 'WebAuthn is not supported in your browser. Please use Chrome, Firefox, Safari, or Edge.' %}");
+                    showNotification("{% trans 'WebAuthn is not supported in your browser. Please use Chrome, Firefox, Safari, or Edge.' %}", 'warning');
                     return;
                 }
 
@@ -276,10 +500,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } catch (error) {
                 console.error('Device pairing error:', error);
+                
+                // Check if this is an "already paired" type error
+                if (isAlreadyPairedError(error)) {
+                    showAlreadyPairedStep();
+                    return;
+                }
+                
                 const friendly = getFriendlyErrorMessage(error);
-                alert(friendly);
-                showPairStep(1);
-                if (startBtn) startBtn.disabled = false;
+                if (friendly) {
+                    showNotification(friendly, 'error', function() {
+                        showPairStep(1);
+                        if (startBtn) startBtn.disabled = false;
+                    });
+                } else {
+                    showPairStep(1);
+                    if (startBtn) startBtn.disabled = false;
+                }
             }
         });
     }

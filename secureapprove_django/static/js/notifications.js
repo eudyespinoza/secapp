@@ -96,7 +96,11 @@
             
             if (!toastEl || !toastTitle || !toastBody) {
                 // Fallback if toast elements are missing
-                alert(message);
+                if (typeof SecureNotify !== 'undefined') {
+                    SecureNotify.show(message, type);
+                } else {
+                    console.log(message);
+                }
                 return;
             }
 
@@ -118,8 +122,10 @@
             if (typeof bootstrap !== 'undefined') {
                 const toast = new bootstrap.Toast(toastEl);
                 toast.show();
+            } else if (typeof SecureNotify !== 'undefined') {
+                SecureNotify.show(message, type);
             } else {
-                alert(message);
+                console.log(message);
             }
         }
 

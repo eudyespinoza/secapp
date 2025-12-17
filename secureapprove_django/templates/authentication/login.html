@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (webauthnButton) {
         webauthnButton.addEventListener('click', function() {
             // Basic WebAuthn implementation placeholder
-            alert('{% trans "WebAuthn is not fully implemented yet. Please use email/password login." %}');
+            SecureNotify.warning('{% trans "WebAuthn is not fully implemented yet. Please use email/password login." %}');
         });
     }
 });

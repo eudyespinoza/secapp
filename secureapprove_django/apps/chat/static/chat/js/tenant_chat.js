@@ -801,7 +801,7 @@
             if (onlineUsers.length > 0) {
                 // Online users header
                 const onlineHeader = document.createElement('li');
-                onlineHeader.className = 'list-group-item bg-light py-1';
+                onlineHeader.className = 'list-group-item py-1 chat-user-header';
                 onlineHeader.innerHTML = `<small class="text-success fw-bold"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>${this.i18n.online} (${onlineUsers.length})</small>`;
                 this.elements.userList.appendChild(onlineHeader);
 
@@ -814,8 +814,8 @@
             if (offlineUsers.length > 0) {
                 // Offline users header
                 const offlineHeader = document.createElement('li');
-                offlineHeader.className = 'list-group-item bg-light py-1';
-                offlineHeader.innerHTML = `<small class="text-muted fw-bold"><i class="bi bi-circle me-1" style="font-size: 0.5rem;"></i>${this.i18n.offline} (${offlineUsers.length})</small>`;
+                offlineHeader.className = 'list-group-item py-1 chat-user-header';
+                offlineHeader.innerHTML = `<small class="fw-bold" style="color: var(--text-muted);"><i class="bi bi-circle me-1" style="font-size: 0.5rem;"></i>${this.i18n.offline} (${offlineUsers.length})</small>`;
                 this.elements.userList.appendChild(offlineHeader);
 
                 offlineUsers.forEach(user => {
@@ -863,14 +863,15 @@
 
                 const displayName = user.name || user.email;
                 const online = !!user.is_online;
-                const statusClass = online ? 'text-success' : 'text-muted';
+                const statusClass = online ? 'text-success' : '';
+                const statusStyle = online ? '' : 'style="color: var(--text-muted);"';
 
                 li.innerHTML = `
                     <div class="form-check mb-0">
                         <input class="form-check-input group-user-checkbox" type="checkbox" value="${user.id}" id="group-user-${user.id}">
-                        <label class="form-check-label small" for="group-user-${user.id}">${this.escapeHtml(displayName)}</label>
+                        <label class="form-check-label small" for="group-user-${user.id}" style="color: var(--text-color);">${this.escapeHtml(displayName)}</label>
                     </div>
-                    <small class="${statusClass}">${online ? this.i18n.online : this.i18n.offline}</small>
+                    <small class="${statusClass}" ${statusStyle}>${online ? this.i18n.online : this.i18n.offline}</small>
                 `;
 
                 this.elements.groupUserList.appendChild(li);
