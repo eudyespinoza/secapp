@@ -868,15 +868,22 @@ def device_pairing_begin(request, token):
     Begin WebAuthn registration on the pairing device.
     The user is identified via the pairing token.
     """
+    logger.info(f"device_pairing_begin called with token: {token[:16]}...")
+    
     session = _get_valid_pairing_session(token)
     if not session:
+        logger.error(f"Pairing session not found or expired for token: {token[:16]}...")
         return JsonResponse(
             {"success": False, "error": _("Pairing session not found or expired.")},
             status=400,
         )
 
+    logger.info(f"Valid pairing session found for user: {session.user.email}")
+    
     try:
         options = webauthn_service.generate_registration_options(session.user)
+        logger.info(f"WebAuthn registration options generated successfully for user: {session.user.email}")
+        logger.info(f"RP ID in options: {options.get('rp', {}).get('id')}")
         return JsonResponse(
             {
                 "success": True,
@@ -893,7 +900,7 @@ def device_pairing_begin(request, token):
             }
         )
     except Exception as e:
-        logger.error(f"Error generating WebAuthn options for device pairing: {e}")
+        logger.error(f"Error generating WebAuthn options for device pairing: {e}", exc_info=True)
         return JsonResponse(
             {"success": False, "error": str(e)},
             status=400,

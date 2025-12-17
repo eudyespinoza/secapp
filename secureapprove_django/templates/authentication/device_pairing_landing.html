@@ -161,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const name = (error && (error.name || error.code)) || '';
         const message = (error && error.message) || '';
 
+        console.log('WebAuthn Error Details:', { name, message, error });
+
         // If the error comes from our server, show it directly
         if (message && !name) {
             return message;
@@ -176,10 +178,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return "{% trans 'This browser or device does not fully support WebAuthn passkeys for this site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) with passkeys enabled.' %}";
             case 'InvalidStateError':
                 return "{% trans 'A credential for this account already exists on this device. Try signing in instead of pairing again.' %}";
+            case 'UnknownError':
+                // This is the "unknown error while talking to credential manager" case
+                return "{% trans 'Your device could not complete the registration. This may happen if: (1) You already have a passkey for this site on this device, (2) Your biometric sensor is not working properly, or (3) Your browser needs to be updated. Try using a different browser or device.' %}";
             default:
                 // Fallback if the browser returns a generic error
                 if (message && message.indexOf('operation either timed out or was not allowed') !== -1) {
                     return "{% trans 'The operation either timed out or was not allowed by the browser. Please try again, and check your browser privacy settings.' %}";
+                }
+                if (message && message.toLowerCase().indexOf('unknown error') !== -1) {
+                    return "{% trans 'Your device could not complete the registration. This may happen if you already have a passkey for this site. Try signing in instead, or use a different browser.' %}";
                 }
                 // Show the actual error message if available
                 if (message) {
