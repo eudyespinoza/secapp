@@ -571,8 +571,8 @@
                 const name = participant.name || participant.email || this.i18n.unknownUser || 'Unknown';
                 const isOnline = participant.is_online;
                 const statusDot = isOnline 
-                    ? '<span class="text-success me-2" style="font-size: 0.5rem;">●</span>'
-                    : '<span class="text-muted me-2" style="font-size: 0.5rem;">○</span>';
+                    ? '<span class="d-inline-block rounded-circle bg-success me-2" style="width: 8px; height: 8px;"></span>'
+                    : '<span class="d-inline-block rounded-circle bg-secondary me-2" style="width: 8px; height: 8px; opacity: 0.4;"></span>';
                 
                 li.innerHTML = `
                     <span class="dropdown-item small d-flex align-items-center">
