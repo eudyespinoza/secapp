@@ -536,6 +536,54 @@
             }
         }
 
+        updateGroupMembersDropdown(conversation) {
+            const dropdown = this.elements.groupMembersDropdown;
+            const membersList = this.elements.groupMembersList;
+            const membersCount = this.elements.groupMembersCount;
+
+            if (!dropdown || !membersList) return;
+
+            // Hide dropdown for non-group or invalid conversations
+            if (!conversation || !conversation.is_group || !conversation.participants) {
+                dropdown.classList.add('d-none');
+                return;
+            }
+
+            // Show dropdown and populate members
+            dropdown.classList.remove('d-none');
+            
+            const participants = conversation.participants || [];
+            if (membersCount) {
+                membersCount.textContent = participants.length;
+            }
+
+            membersList.innerHTML = '';
+            
+            if (participants.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.innerHTML = `<span class="dropdown-item text-muted small">${this.i18n.noUsersAvailable || 'No members'}</span>`;
+                membersList.appendChild(emptyItem);
+                return;
+            }
+
+            participants.forEach(participant => {
+                const li = document.createElement('li');
+                const name = participant.name || participant.email || this.i18n.unknownUser || 'Unknown';
+                const isOnline = participant.is_online;
+                const statusDot = isOnline 
+                    ? '<span class="text-success me-2" style="font-size: 0.5rem;">●</span>'
+                    : '<span class="text-muted me-2" style="font-size: 0.5rem;">○</span>';
+                
+                li.innerHTML = `
+                    <span class="dropdown-item small d-flex align-items-center">
+                        ${statusDot}
+                        <span class="text-truncate">${this.escapeHtml(name)}</span>
+                    </span>
+                `;
+                membersList.appendChild(li);
+            });
+        }
+
         showTypingIndicator(show = true) {
             if (this.elements.typingIndicator) {
                 this.elements.typingIndicator.style.display = show ? 'block' : 'none';
@@ -1390,6 +1438,10 @@
             this.ui.setCurrentConversationTitle(title || fallbackTitle);
             this.ui.showActiveWindow(true);
 
+            // Find the conversation to check if it's a group and get participants
+            const conv = this.state.conversations.find(c => c.id === this.state.currentConversationId);
+            this.ui.updateGroupMembersDropdown(conv);
+
             await this.loadMessages();
         }
 
@@ -1398,6 +1450,7 @@
             this.state.lastMessageId = null;
             this.ui.clearMessages();
             this.ui.showActiveWindow(false);
+            this.ui.updateGroupMembersDropdown(null);
         }
 
         async loadMessages(showLoading = true) {
@@ -1748,6 +1801,9 @@
             sendButton: document.getElementById('widgetSendButton'),
             toastContainer: document.getElementById('tenantChatToastContainer'),
             closeConversation: document.getElementById('widgetCloseConversation'),
+            groupMembersDropdown: document.getElementById('widgetGroupMembersDropdown'),
+            groupMembersList: document.getElementById('widgetGroupMembersList'),
+            groupMembersCount: document.getElementById('widgetGroupMembersCount'),
         };
 
         // Validate required elements

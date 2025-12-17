@@ -1283,8 +1283,22 @@
                             <!-- Active Conversation Window -->
                             <div id="tenantChatActiveWindow" class="tenant-chat-active-window">
                                 <div class="tenant-chat-topline">
-                                    <div>
+                                    <div class="d-flex align-items-center gap-2">
                                         <div class="tenant-chat-conversation-title" id="widgetCurrentConversationTitle">
+                                        </div>
+                                        <!-- Group Members Dropdown (only visible for group chats) -->
+                                        <div id="widgetGroupMembersDropdown" class="dropdown d-none">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-2" 
+                                                    type="button" 
+                                                    data-bs-toggle="dropdown" 
+                                                    aria-expanded="false"
+                                                    title="{% trans 'View members' %}">
+                                                <i class="bi bi-people-fill"></i>
+                                                <span id="widgetGroupMembersCount" class="ms-1">0</span>
+                                            </button>
+                                            <ul id="widgetGroupMembersList" class="dropdown-menu dropdown-menu-end" style="max-height: 200px; overflow-y: auto;">
+                                                <!-- Members will be populated dynamically -->
+                                            </ul>
                                         </div>
                                         <div id="widgetTypingIndicator" class="tenant-chat-typing"
                                             style="display:none;">
