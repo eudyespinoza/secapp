@@ -1138,25 +1138,23 @@ msgstr ""
 #: templates/authentication/profile.html:4
 #| msgid "SecureApprove"
 msgid "Profile - SecureApprove"
-msgstr "SecureApprove"
+msgstr "Profile - SecureApprove"
 
 #: templates/authentication/profile.html:128
 msgid "Administrator"
 msgstr "Administrator"
 
 #: templates/authentication/profile.html:130
-#| msgid "September"
 msgid "Staff Member"
-msgstr "September"
+msgstr "Staff Member"
 
 #: templates/authentication/profile.html:149
 msgid "Company"
 msgstr "Company"
 
 #: templates/authentication/profile.html:153
-#| msgid "Remember me"
 msgid "Member Since"
-msgstr "Remember me"
+msgstr "Member Since"
 
 #: templates/authentication/profile.html:162
 msgid "Biometric Authentication"
@@ -1171,14 +1169,12 @@ msgid "Authentication Device"
 msgstr "Authentication Device"
 
 #: templates/authentication/profile.html:182
-#| msgid "Register"
 msgid "Registered on"
-msgstr "Register"
+msgstr "Registered on"
 
 #: templates/authentication/profile.html:184
-#| msgid "Register"
 msgid "Registered device"
-msgstr "Register"
+msgstr "Registered device"
 
 #: templates/authentication/profile.html:200
 msgid "No biometric devices registered"
@@ -1189,9 +1185,8 @@ msgid "Add a biometric device to enhance your account security"
 msgstr "Add a biometric device to enhance your account security"
 
 #: templates/authentication/profile.html:211
-#| msgid "Request Information"
 msgid "Security Information"
-msgstr "Request Information"
+msgstr "Security Information"
 
 #: templates/authentication/profile.html:214
 msgid ""
@@ -1204,9 +1199,8 @@ msgstr ""
 "authentication."
 
 #: templates/authentication/profile.html:222
-#| msgid "Profile"
 msgid "Edit Profile"
-msgstr "Profile"
+msgstr "Edit Profile"
 
 #: templates/authentication/profile.html:226
 msgid "Sign Out"
@@ -1234,9 +1228,8 @@ msgid "Use your fingerprint, Face ID, or security key"
 msgstr "Use your fingerprint, Face ID, or security key"
 
 #: templates/authentication/profile.html:266
-#| msgid "Operation completed successfully."
 msgid "Device Added Successfully!"
-msgstr "Operation completed successfully."
+msgstr "Device Added Successfully!"
 
 #: templates/authentication/profile.html:267
 msgid "Your new device has been registered"
@@ -1267,9 +1260,8 @@ msgstr "Failed to add device"
 # Common Terms
 # ================================================
 #: templates/authentication/webauthn_login.html:4
-#| msgid "SecureApprove"
 msgid "Sign In - SecureApprove"
-msgstr "SecureApprove"
+msgstr "Sign In - SecureApprove"
 
 #: templates/authentication/webauthn_login.html:166
 msgid "Secure passwordless authentication with biometrics"

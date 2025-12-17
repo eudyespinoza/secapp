@@ -40,6 +40,9 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- Flag Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" rel="stylesheet">
+
     <!-- Global Theme and Common Styles -->
     <style>
         :root {
@@ -280,6 +283,11 @@
             min-width: 80px;
             justify-content: space-between;
             text-decoration: none;
+        }
+
+        .control-button #currentFlag {
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+            line-height: 1;
         }
 
         .control-button:hover {
@@ -1044,8 +1052,8 @@
                                             <div class="dropdown">
                                                 <button class="control-button" type="button" id="languageDropdown"
                                                     data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <span id="currentFlag" class="fs-5">
-                                                        {% if CURRENT_LANG == 'es' %}🇪🇸{% elif CURRENT_LANG == 'en' %}🇺🇸{% elif CURRENT_LANG == 'pt-br' %}🇧🇷{% endif %}
+                                                    <span id="currentFlag" style="display: inline-block;">
+                                                        {% if CURRENT_LANG == 'es' %}<span class="fi fi-es"></span>{% elif CURRENT_LANG == 'en' %}<span class="fi fi-us"></span>{% elif CURRENT_LANG == 'pt-br' %}<span class="fi fi-br"></span>{% endif %}
                                                     </span>
                                                     <span id="currentLang" class="fw-medium">{{ CURRENT_LANG|upper }}</span>
                                                     <i class="bi bi-chevron-down small opacity-50"></i>
@@ -1066,7 +1074,7 @@
                                                             <button type="submit"
                                                                 class="dropdown-item d-flex align-items-center gap-2 py-2 {% if LANGUAGE_CODE == lang_code %}active fw-bold{% endif %}"
                                                                 data-lang="{{ lang_code }}">
-                                                                {% if lang_code == 'es' %}<span class="fs-5">🇪🇸</span> <span>Español</span>{% elif lang_code == 'en' %}<span class="fs-5">🇺🇸</span> <span>English</span>{% elif lang_code == 'pt-br' %}<span class="fs-5">🇧🇷</span> <span>Português</span>{% endif %}
+                                                                {% if lang_code == 'es' %}<span class="fi fi-es"></span> <span>Español</span>{% elif lang_code == 'en' %}<span class="fi fi-us"></span> <span>English</span>{% elif lang_code == 'pt-br' %}<span class="fi fi-br"></span> <span>Português</span>{% endif %}
                                                                 {% if LANGUAGE_CODE == lang_code %}
                                                                 <i class="bi bi-check-lg ms-auto"></i>
                                                                 {% endif %}
