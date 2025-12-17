@@ -15,6 +15,45 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
+            padding-top: 0;
+            padding-bottom: 2rem;
+            margin-top: -3rem;
+        }
+
+        /* Responsive hero section - solo para pantallas muy pequeñas */
+        @media (max-width: 400px) {
+            .hero-section {
+                min-height: auto;
+                padding: 2rem 0;
+                margin-top: 0;
+            }
+            .hero-section .display-4 {
+                font-size: 2rem;
+            }
+            .hero-section .fs-4 {
+                font-size: 1.1rem !important;
+            }
+            .hero-section .fs-5 {
+                font-size: 1rem !important;
+            }
+            .hero-section img {
+                height: 140px !important;
+            }
+            .hero-section .btn-lg {
+                padding: 10px 20px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .hero-section {
+                min-height: auto;
+                padding: 1.5rem 0;
+                margin-top: 0;
+            }
+            .hero-section img {
+                height: 140px !important;
+            }
         }
 
         [data-theme="dark"] .hero-section {
@@ -241,7 +280,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-8 mx-auto text-center">
                     <div class="mb-4">
-                        <img src="{% static 'img/logo.png' %}" alt="SecureApprove" style="height: 120px;">
+                        <img src="{% static 'img/logo.png' %}" alt="SecureApprove" style="height: 180px;">
                     </div>
 
                     <h1 class="display-4 fw-bold mb-4">SecureApprove</h1>
@@ -254,7 +293,7 @@
                         {% trans "Automatiza tus procesos de aprobación con seguridad de nivel empresarial y autenticación biométrica avanzada." %}
                     </p>
 
-                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center flex-wrap px-3">
                         <a href="{% url 'authentication:webauthn_login' %}" class="btn btn-hero-primary btn-lg">
                             <i class="bi bi-fingerprint me-2"></i>
                             {% trans "Comenzar Ahora" %}
