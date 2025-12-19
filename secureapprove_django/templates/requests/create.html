@@ -83,6 +83,38 @@
     .card-body {
         padding: 1.5rem;
     }
+    
+    /* WebAuthn Modal Styles */
+    .webauthn-status {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .webauthn-status .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .webauthn-status .bi-fingerprint {
+        font-size: 4rem;
+        color: var(--primary-color);
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.05); }
+    }
+    
+    .webauthn-success .bi-check-circle-fill {
+        font-size: 4rem;
+        color: var(--success-color);
+    }
+    
+    .webauthn-error .bi-x-circle-fill {
+        font-size: 4rem;
+        color: var(--danger-color);
+    }
 </style>
 {% endblock %}
 
@@ -109,6 +141,7 @@
                         <div class="card-body">
                             <form method="post" id="request-form" novalidate enctype="multipart/form-data">
                                 {% csrf_token %}
+                                <input type="hidden" id="webauthn_verified_token" name="webauthn_verified_token" value="">
                                 {% crispy form %}
                             </form>
                         </div>
@@ -206,6 +239,93 @@
         </div>
     </div>
 </div>
+
+<!-- WebAuthn Confirmation Modal -->
+<div class="modal fade" id="webauthnModal" tabindex="-1" aria-labelledby="webauthnModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="webauthnModalLabel">
+                    <i class="bi bi-shield-lock me-2"></i>
+                    {% trans "Confirm Your Identity" %}
+                </h5>
+            </div>
+            <div class="modal-body">
+                <!-- Initial State -->
+                <div id="webauthn-initial" class="webauthn-status">
+                    <div class="mb-4">
+                        <i class="bi bi-fingerprint"></i>
+                    </div>
+                    <h6 class="mb-2">{% trans "Biometric Verification Required" %}</h6>
+                    <p class="text-muted mb-0" style="font-size: var(--font-sm);">
+                        {% trans "Please authenticate using your fingerprint, face recognition, or security key to submit this request." %}
+                    </p>
+                </div>
+                
+                <!-- Processing State -->
+                <div id="webauthn-processing" class="webauthn-status" style="display: none;">
+                    <div class="mb-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">{% trans "Loading..." %}</span>
+                        </div>
+                    </div>
+                    <h6 class="mb-2">{% trans "Waiting for authentication..." %}</h6>
+                    <p class="text-muted mb-0" style="font-size: var(--font-sm);">
+                        {% trans "Please complete the biometric prompt on your device." %}
+                    </p>
+                </div>
+                
+                <!-- Success State -->
+                <div id="webauthn-success" class="webauthn-status webauthn-success" style="display: none;">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h6 class="mb-2 text-success">{% trans "Authentication Successful" %}</h6>
+                    <p class="text-muted mb-0" style="font-size: var(--font-sm);">
+                        {% trans "Submitting your request..." %}
+                    </p>
+                </div>
+                
+                <!-- Error State -->
+                <div id="webauthn-error" class="webauthn-status webauthn-error" style="display: none;">
+                    <div class="mb-4">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <h6 class="mb-2 text-danger">{% trans "Authentication Failed" %}</h6>
+                    <p class="text-muted mb-0" id="webauthn-error-message" style="font-size: var(--font-sm);">
+                        {% trans "Please try again." %}
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" id="webauthn-cancel-btn" data-bs-dismiss="modal">
+                    {% trans "Cancel" %}
+                </button>
+                <button type="button" class="btn btn-primary" id="webauthn-confirm-btn">
+                    <i class="bi bi-fingerprint me-2"></i>
+                    {% trans "Authenticate" %}
+                </button>
+                <button type="button" class="btn btn-primary" id="webauthn-retry-btn" style="display: none;">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    {% trans "Try Again" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="notification-toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+                <i class="bi bi-info-circle me-2" id="toast-icon"></i>
+                <span id="toast-message"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -216,6 +336,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('request-form');
     const previewCard = document.getElementById('preview-card');
     const previewContent = document.getElementById('preview-content');
+    const verifiedTokenField = document.getElementById('webauthn_verified_token');
+    
+    // WebAuthn Modal Elements
+    const webauthnModal = new bootstrap.Modal(document.getElementById('webauthnModal'));
+    const webauthnInitial = document.getElementById('webauthn-initial');
+    const webauthnProcessing = document.getElementById('webauthn-processing');
+    const webauthnSuccess = document.getElementById('webauthn-success');
+    const webauthnError = document.getElementById('webauthn-error');
+    const webauthnErrorMessage = document.getElementById('webauthn-error-message');
+    const webauthnConfirmBtn = document.getElementById('webauthn-confirm-btn');
+    const webauthnRetryBtn = document.getElementById('webauthn-retry-btn');
+    const webauthnCancelBtn = document.getElementById('webauthn-cancel-btn');
+    
+    // Toast elements
+    const toastEl = document.getElementById('notification-toast');
+    const toastMessage = document.getElementById('toast-message');
+    const toastIcon = document.getElementById('toast-icon');
+    
+    // WebAuthn URLs
+    const webauthnOptionsUrl = "{% url 'requests:create-webauthn-options' %}";
+    const webauthnVerifyUrl = "{% url 'requests:create-webauthn-verify' %}";
+    
+    // Store form data for WebAuthn flow
+    let pendingFormData = null;
+    let creationToken = null;
+    let isSubmittingAfterWebAuthn = false;  // Flag to bypass WebAuthn modal on verified submit
     
     // Category configurations (matches Django form)
     const categoryConfigs = {
@@ -250,6 +396,195 @@ document.addEventListener('DOMContentLoaded', function() {
             'extra_fields': []
         }
     };
+    
+    // Helper to show toast
+    function showToast(message, type = 'success') {
+        toastMessage.textContent = message;
+        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+        
+        if (type === 'success') {
+            toastEl.classList.add('bg-success');
+            toastIcon.className = 'bi bi-check-circle me-2';
+        } else if (type === 'error') {
+            toastEl.classList.add('bg-danger');
+            toastIcon.className = 'bi bi-exclamation-circle me-2';
+        } else if (type === 'warning') {
+            toastEl.classList.add('bg-warning');
+            toastIcon.className = 'bi bi-exclamation-triangle me-2';
+        } else {
+            toastEl.classList.add('bg-info');
+            toastIcon.className = 'bi bi-info-circle me-2';
+        }
+        
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+    
+    // Show modal state
+    function showModalState(state) {
+        webauthnInitial.style.display = state === 'initial' ? 'block' : 'none';
+        webauthnProcessing.style.display = state === 'processing' ? 'block' : 'none';
+        webauthnSuccess.style.display = state === 'success' ? 'block' : 'none';
+        webauthnError.style.display = state === 'error' ? 'block' : 'none';
+        
+        webauthnConfirmBtn.style.display = state === 'initial' ? 'inline-block' : 'none';
+        webauthnRetryBtn.style.display = state === 'error' ? 'inline-block' : 'none';
+        webauthnCancelBtn.style.display = ['initial', 'error'].includes(state) ? 'inline-block' : 'none';
+    }
+    
+    // Base64 helpers
+    function base64ToBuffer(base64) {
+        const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+        const buffer = new ArrayBuffer(binary.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < binary.length; i++) {
+            view[i] = binary.charCodeAt(i);
+        }
+        return buffer;
+    }
+
+    function bufferToBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const chunkSize = 8192;
+        for (let i = 0; i < bytes.byteLength; i += chunkSize) {
+            const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.byteLength));
+            binary += String.fromCharCode.apply(null, chunk);
+        }
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+    
+    // Perform WebAuthn authentication
+    async function performWebAuthn() {
+        showModalState('processing');
+        
+        try {
+            // Get form data for context
+            const formData = new FormData(form);
+            const contextData = {
+                title: formData.get('title') || '',
+                category: formData.get('category') || '',
+                amount: formData.get('amount') || '',
+            };
+            
+            // Step 1: Get WebAuthn options
+            const optionsResponse = await fetch(webauthnOptionsUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(contextData)
+            });
+
+            if (!optionsResponse.ok) {
+                const errorData = await optionsResponse.json();
+                if (errorData.noCredentials) {
+                    throw new Error('{% trans "No biometric credentials registered. Please register a device from your profile first." %}');
+                }
+                throw new Error(errorData.error || '{% trans "Failed to get authentication options" %}');
+            }
+
+            const optionsResult = await optionsResponse.json();
+            const { options } = optionsResult;
+            creationToken = optionsResult.creationToken;
+
+            // Step 2: Prepare WebAuthn options
+            const publicKey = {
+                challenge: base64ToBuffer(options.challenge),
+                timeout: options.timeout || 60000,
+                rpId: options.rpId,
+                allowCredentials: (options.allowCredentials || []).map(cred => ({
+                    type: cred.type,
+                    id: base64ToBuffer(cred.id),
+                    transports: cred.transports || []
+                })),
+                userVerification: options.userVerification || 'required'
+            };
+
+            // Step 3: Show biometric prompt
+            const assertion = await navigator.credentials.get({ publicKey });
+
+            if (!assertion) {
+                throw new Error('{% trans "WebAuthn authentication was cancelled" %}');
+            }
+
+            // Step 4: Prepare assertion data
+            const assertionData = {
+                id: assertion.id,
+                rawId: bufferToBase64(assertion.rawId),
+                response: {
+                    clientDataJSON: bufferToBase64(assertion.response.clientDataJSON),
+                    authenticatorData: bufferToBase64(assertion.response.authenticatorData),
+                    signature: bufferToBase64(assertion.response.signature),
+                    userHandle: assertion.response.userHandle ? bufferToBase64(assertion.response.userHandle) : null,
+                },
+                type: assertion.type
+            };
+
+            // Step 5: Verify WebAuthn response
+            const verifyResponse = await fetch(webauthnVerifyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    creationToken: creationToken,
+                    response: assertionData
+                })
+            });
+
+            if (!verifyResponse.ok) {
+                const errorData = await verifyResponse.json();
+                throw new Error(errorData.error || '{% trans "Authentication verification failed" %}');
+            }
+
+            const verifyResult = await verifyResponse.json();
+
+            if (!verifyResult.success) {
+                throw new Error(verifyResult.error || '{% trans "Verification failed" %}');
+            }
+
+            // Step 6: Success - set token and submit form
+            showModalState('success');
+            verifiedTokenField.value = verifyResult.verifiedToken;
+            
+            // Short delay to show success message, then submit directly
+            setTimeout(() => {
+                webauthnModal.hide();
+                // Use native submit to bypass event listeners
+                HTMLFormElement.prototype.submit.call(form);
+            }, 800);
+
+        } catch (error) {
+            console.error('WebAuthn error:', error);
+            
+            let errorMsg = error.message;
+            if (error.name === 'NotAllowedError') {
+                errorMsg = '{% trans "Biometric authentication was cancelled or denied. Please try again." %}';
+            } else if (error.name === 'InvalidStateError') {
+                errorMsg = '{% trans "No matching credential found on this device." %}';
+            } else if (error.name === 'NotSupportedError') {
+                errorMsg = '{% trans "This device does not support the required authentication method." %}';
+            }
+            
+            webauthnErrorMessage.textContent = errorMsg;
+            showModalState('error');
+        }
+    }
+    
+    // Event handlers for WebAuthn modal
+    webauthnConfirmBtn.addEventListener('click', performWebAuthn);
+    webauthnRetryBtn.addEventListener('click', function() {
+        showModalState('initial');
+    });
+    
+    // Reset modal state when closed
+    document.getElementById('webauthnModal').addEventListener('hidden.bs.modal', function() {
+        showModalState('initial');
+        creationToken = null;
+    });
     
     function updateFormFields() {
         const category = categoryField.value;
@@ -390,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('input', updatePreview);
         form.addEventListener('change', updatePreview);
         
-        // Form validation
+        // Form submission - intercept and show WebAuthn modal
         form.addEventListener('submit', function(e) {
             const category = categoryField.value;
             const config = categoryConfigs[category] || categoryConfigs['other'];
@@ -410,8 +745,29 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (hasErrors) {
                 e.preventDefault();
-                // Optional: Show a toast or alert
-                // alert('{% trans "Please fill in all required fields." %}');
+                showToast('{% trans "Please fill in all required fields." %}', 'warning');
+                return;
+            }
+            
+            // If we're submitting after WebAuthn verification, allow it
+            if (isSubmittingAfterWebAuthn && verifiedTokenField.value) {
+                // Reset flag and allow form submission
+                isSubmittingAfterWebAuthn = false;
+                return; // Allow the form to submit naturally
+            }
+            
+            // If we don't have a verified token yet, show WebAuthn modal
+            if (!verifiedTokenField.value) {
+                e.preventDefault();
+                
+                // Check if WebAuthn is supported
+                if (!navigator.credentials || !navigator.credentials.get) {
+                    showToast('{% trans "WebAuthn is not supported on this device/browser." %}', 'error');
+                    return;
+                }
+                
+                // Show WebAuthn modal
+                webauthnModal.show();
             }
         });
     }

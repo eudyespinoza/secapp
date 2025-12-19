@@ -28,6 +28,10 @@ urlpatterns = [
     # WebAuthn step-up authentication for approvals
     path('<int:approval_id>/webauthn/options/', webauthn_views.approval_webauthn_options, name='approval-webauthn-options'),
     path('<int:approval_id>/webauthn/verify/', webauthn_views.approval_webauthn_verify, name='approval-webauthn-verify'),
+    
+    # WebAuthn step-up authentication for request creation
+    path('new/webauthn/options/', webauthn_views.create_request_webauthn_options, name='create-webauthn-options'),
+    path('new/webauthn/verify/', webauthn_views.create_request_webauthn_verify, name='create-webauthn-verify'),
 
     # Chat UI entrypoint (template)
     path('chat/', ChatPageView.as_view(), name='chat'),

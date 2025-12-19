@@ -72,11 +72,31 @@ def request_list(request):
 def create_request(request):
     """Create a new approval request"""
     import logging
+    from django.core.cache import cache
     logger = logging.getLogger(__name__)
     
     if request.method == 'POST':
         logger.info(f"[CREATE_REQUEST] POST received. FILES keys: {list(request.FILES.keys())}")
         logger.info(f"[CREATE_REQUEST] FILES: {request.FILES}")
+        
+        # Verify WebAuthn token
+        verified_token = request.POST.get('webauthn_verified_token')
+        if not verified_token:
+            messages.error(request, _('Biometric authentication is required to create a request.'))
+            form = DynamicRequestForm(request.POST, request.FILES, user=request.user)
+            return render(request, 'requests/create.html', {'form': form, 'page_title': _('New Request')})
+        
+        # Check the verified token in cache
+        verified_cache_key = f"webauthn_create_verified_{request.user.id}_{verified_token}"
+        cached_verification = cache.get(verified_cache_key)
+        
+        if not cached_verification:
+            messages.error(request, _('Authentication expired. Please verify your identity again.'))
+            form = DynamicRequestForm(request.POST, request.FILES, user=request.user)
+            return render(request, 'requests/create.html', {'form': form, 'page_title': _('New Request')})
+        
+        # Token is valid - delete it to prevent reuse
+        cache.delete(verified_cache_key)
         
         form = DynamicRequestForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
@@ -119,6 +139,7 @@ def create_request(request):
     context = {
         'form': form,
         'page_title': _('New Request'),
+        'has_webauthn': request.user.has_webauthn_credentials,
     }
     
     return render(request, 'requests/create.html', context)
