@@ -1019,13 +1019,13 @@
 
 <!-- Toast Notification -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="notification-toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="notification-toast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body d-flex align-items-center">
                 <i class="bi bi-info-circle me-2" id="toast-icon"></i>
                 <span id="toast-message"></span>
             </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
+            <button type="button" class="btn-close me-2 m-auto" id="toast-close-btn" data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
         </div>
     </div>
 </div>
@@ -1405,21 +1405,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ===== Toast Helper =====
     function showToast(message, type = 'success') {
+        const closeBtn = document.getElementById('toast-close-btn');
         toastMessage.textContent = message;
-        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white', 'text-dark');
+        closeBtn.classList.remove('btn-close-white');
         
         if (type === 'success') {
-            toastEl.classList.add('bg-success');
+            toastEl.classList.add('bg-success', 'text-white');
             toastIcon.className = 'bi bi-check-circle me-2';
+            closeBtn.classList.add('btn-close-white');
         } else if (type === 'error') {
-            toastEl.classList.add('bg-danger');
+            toastEl.classList.add('bg-danger', 'text-white');
             toastIcon.className = 'bi bi-exclamation-circle me-2';
+            closeBtn.classList.add('btn-close-white');
         } else if (type === 'warning') {
-            toastEl.classList.add('bg-warning');
+            toastEl.classList.add('bg-warning', 'text-dark');
             toastIcon.className = 'bi bi-exclamation-triangle me-2';
+            // Dark close button for better contrast on yellow
         } else {
-            toastEl.classList.add('bg-info');
+            toastEl.classList.add('bg-info', 'text-white');
             toastIcon.className = 'bi bi-info-circle me-2';
+            closeBtn.classList.add('btn-close-white');
         }
         
         const toast = new bootstrap.Toast(toastEl);

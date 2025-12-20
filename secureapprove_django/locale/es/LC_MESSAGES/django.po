@@ -3118,4 +3118,86 @@ msgstr "Máx 25MB. Cualquier tipo de archivo está permitido."
 msgid "Select users for group:"
 msgstr "Seleccionar usuarios para el grupo:"
 
+# ================================================
+# Request Creation Form - New Translations
+# ================================================
+msgid "file(s)"
+msgstr "archivo(s)"
 
+msgid "File is too large"
+msgstr "El archivo es muy grande"
+
+msgid "Reimbursements"
+msgstr "Reembolsos"
+
+msgid "Equipment & supplies"
+msgstr "Equipos y suministros"
+
+msgid "Trips & logistics"
+msgstr "Viajes y logística"
+
+msgid "Agreements"
+msgstr "Acuerdos"
+
+msgid "Approvals"
+msgstr "Aprobaciones"
+
+msgid "General"
+msgstr "General"
+
+msgid "Fill in the form to see a preview"
+msgstr "Completa el formulario para ver una vista previa"
+
+msgid "Select Request Category"
+msgstr "Selecciona la Categoría de Solicitud"
+
+msgid "Choose the type of request you want to submit"
+msgstr "Elige el tipo de solicitud que deseas enviar"
+
+msgid "Request Details"
+msgstr "Detalles de la Solicitud"
+
+msgid "Enter a descriptive title for your request"
+msgstr "Ingresa un título descriptivo para tu solicitud"
+
+msgid "Provide detailed information about your request"
+msgstr "Proporciona información detallada sobre tu solicitud"
+
+msgid "Drag and drop files here or click to browse"
+msgstr "Arrastra y suelta archivos aquí o haz clic para explorar"
+
+msgid "PDF, Word, Excel, Images (Max 25MB per file)"
+msgstr "PDF, Word, Excel, Imágenes (Máx 25MB por archivo)"
+
+msgid "Request Preview"
+msgstr "Vista Previa de Solicitud"
+
+msgid "Submit Request"
+msgstr "Enviar Solicitud"
+
+msgid "WebAuthn is not supported on this device/browser."
+msgstr "WebAuthn no es compatible con este dispositivo/navegador."
+
+msgid "No biometric credentials registered. Please register a device from your profile first."
+msgstr "No hay credenciales biométricas registradas. Por favor, registra un dispositivo desde tu perfil primero."
+
+msgid "Failed to get authentication options"
+msgstr "Error al obtener opciones de autenticación"
+
+msgid "WebAuthn authentication was cancelled"
+msgstr "La autenticación WebAuthn fue cancelada"
+
+msgid "Authentication verification failed"
+msgstr "La verificación de autenticación falló"
+
+msgid "Verification failed"
+msgstr "La verificación falló"
+
+msgid "Biometric authentication was cancelled or denied. Please try again."
+msgstr "La autenticación biométrica fue cancelada o denegada. Por favor, intenta nuevamente."
+
+msgid "No matching credential found on this device."
+msgstr "No se encontró credencial coincidente en este dispositivo."
+
+msgid "This device does not support the required authentication method."
+msgstr "Este dispositivo no admite el método de autenticación requerido."
