@@ -3264,3 +3264,30 @@ msgstr "Por favor, intenta de nuevo."
 
 msgid "Authenticate"
 msgstr "Autenticar"
+
+msgid "request in total"
+msgstr "solicitud en total"
+
+msgid "requests in total"
+msgstr "solicitudes en total"
+
+msgid "Filter Requests"
+msgstr "Filtrar Solicitudes"
+
+msgid "Clear"
+msgstr "Limpiar"
+
+msgid "Request"
+msgstr "Solicitud"
+
+msgid "No requests match your search."
+msgstr "Ninguna solicitud coincide con tu búsqueda."
+
+msgid "request"
+msgstr "solicitud"
+
+msgid "requests"
+msgstr "solicitudes"
+
+msgid "Total"
+msgstr "Total"

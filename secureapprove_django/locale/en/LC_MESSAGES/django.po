@@ -2940,6 +2940,36 @@ msgstr "This device does not support the required authentication method."
 msgid "WebAuthn is not supported on this device/browser."
 msgstr "WebAuthn is not supported on this device/browser."
 
+msgid "request in total"
+msgstr "request in total"
+
+msgid "requests in total"
+msgstr "requests in total"
+
+msgid "Filter Requests"
+msgstr "Filter Requests"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Request"
+msgstr "Request"
+
+msgid "No requests match your search."
+msgstr "No requests match your search."
+
+msgid "request"
+msgstr "request"
+
+msgid "requests"
+msgstr "requests"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Just now"
+msgstr "Just now"
+
 #~ msgid "Submit"
 #~ msgstr "Submit"
 

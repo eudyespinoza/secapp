@@ -5,21 +5,155 @@
 
 {% block extra_css %}
 <style>
-.stats-card {
+/* ===== Page Layout ===== */
+.dashboard-page {
+    min-height: calc(100vh - 120px);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-color) 100%);
+}
+
+.page-header {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.page-header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-title .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary-color), #818cf8);
     border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.welcome-message {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0.25rem 0 0 0;
+}
+
+.welcome-message .user-name {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* ===== Quick Actions ===== */
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.quick-action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
     border: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.quick-action-btn.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #818cf8);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+}
+
+/* ===== Stats Cards ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stats-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .stats-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.stats-card.total::before { background: linear-gradient(90deg, var(--primary-color), #818cf8); }
+.stats-card.pending::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.stats-card.approved::before { background: linear-gradient(90deg, #10b981, #34d399); }
+.stats-card.cancelled::before { background: linear-gradient(90deg, #6b7280, #9ca3af); }
+.stats-card.my-requests::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+
+.stats-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stats-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.stats-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stats-value.text-warning { color: #f59e0b !important; }
+.stats-value.text-success { color: #10b981 !important; }
+.stats-value.text-info { color: #06b6d4 !important; }
+
 .stats-icon {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -27,287 +161,439 @@
     font-size: 1.5rem;
 }
 
+.stats-icon.bg-primary { background: rgba(79, 70, 229, 0.15); color: var(--primary-color); }
+.stats-icon.bg-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.stats-icon.bg-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.stats-icon.bg-secondary { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
+.stats-icon.bg-info { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+
+/* ===== Main Content ===== */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Cards ===== */
+.dashboard-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.dashboard-card .card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-card .card-header h5,
+.dashboard-card .card-header h6 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+
+.dashboard-card .card-header h5 i,
+.dashboard-card .card-header h6 i {
+    color: var(--primary-color);
+}
+
+.dashboard-card .card-body {
+    padding: 1.25rem;
+}
+
+/* ===== Chart Container ===== */
 .chart-container {
     position: relative;
     height: 300px;
 }
 
+/* ===== Recent Request Item ===== */
 .recent-request-item {
-    border-left: 4px solid #dee2e6;
-    padding-left: 1rem;
-    margin-bottom: 1rem;
     position: relative;
-    transition: background-color 0.2s ease;
-}
-
-.recent-request-item:hover {
-    background-color: var(--hover-bg);
-    cursor: pointer;
-}
-
-.recent-request-item.pending { border-left-color: #ffc107; }
-.recent-request-item.approved { border-left-color: #28a745; }
-.recent-request-item.rejected { border-left-color: #dc3545; }
-
-.priority-bar {
-    height: 6px;
-    border-radius: 3px;
-    margin-top: 0.5rem;
-}
-
-.priority-high { background: #dc3545; }
-.priority-medium { background: #ffc107; }
-.priority-low { background: #28a745; }
-
-.quick-action-btn {
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    text-decoration: none;
-    display: block;
+    padding: 0.875rem;
+    padding-left: 1.25rem;
+    margin-bottom: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border-left: 4px solid var(--border-color);
     transition: all 0.2s ease;
 }
 
-.quick-action-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+.recent-request-item:hover {
+    background: var(--bg-color);
+    transform: translateX(4px);
 }
 
-.metric-trend {
-    font-size: 0.75rem;
+.recent-request-item:last-child {
+    margin-bottom: 0;
+}
+
+.recent-request-item.pending { border-left-color: #f59e0b; }
+.recent-request-item.approved { border-left-color: #10b981; }
+.recent-request-item.rejected { border-left-color: #ef4444; }
+.recent-request-item.cancelled { border-left-color: #6b7280; }
+
+.recent-request-item h6 {
+    font-size: 0.9rem;
     font-weight: 600;
+    margin-bottom: 0;
 }
 
-.trend-up { color: #28a745; }
-.trend-down { color: #dc3545; }
-.trend-neutral { color: #6c757d; }
+.recent-request-item h6 a {
+    color: var(--text-color);
+}
 
+.recent-request-item h6 a:hover {
+    color: var(--primary-color);
+}
+
+.recent-request-item .badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+}
+
+.priority-bar {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    background: var(--border-color);
+}
+
+.priority-bar.priority-critical { background: linear-gradient(90deg, #dc3545, #f87171); }
+.priority-bar.priority-high { background: linear-gradient(90deg, #fd7e14, #fb923c); }
+.priority-bar.priority-medium { background: linear-gradient(90deg, #ffc107, #fcd34d); }
+.priority-bar.priority-low { background: linear-gradient(90deg, #6c757d, #9ca3af); }
+
+/* ===== Pending Approvals ===== */
 .pending-approvals-scroll {
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
     scrollbar-width: thin;
+}
+
+.pending-approval-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.pending-approval-item:hover {
+    background: var(--bg-color);
+}
+
+.pending-approval-item:last-child {
+    margin-bottom: 0;
+}
+
+.pending-approval-item h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.pending-approval-item h6 a {
+    color: var(--text-color);
+}
+
+.pending-approval-item h6 a:hover {
+    color: var(--primary-color);
+}
+
+.pending-approval-item small {
+    font-size: 0.75rem;
+}
+
+/* ===== Priority Badges ===== */
+.badge.bg-critical { background: #dc3545 !important; }
+.badge.bg-high { background: #fd7e14 !important; }
+.badge.bg-medium { background: #ffc107 !important; color: #92400e !important; }
+.badge.bg-low { background: #6c757d !important; }
+
+/* ===== Empty State ===== */
+.empty-state-small {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.empty-state-small i {
+    font-size: 2.5rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.empty-state-small p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-card {
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.stats-card:nth-child(1) { animation-delay: 0.05s; }
+.stats-card:nth-child(2) { animation-delay: 0.1s; }
+.stats-card:nth-child(3) { animation-delay: 0.15s; }
+.stats-card:nth-child(4) { animation-delay: 0.2s; }
+.stats-card:nth-child(5) { animation-delay: 0.25s; }
+
+.dashboard-card {
+    animation: fadeInUp 0.5s ease-out forwards;
+    animation-delay: 0.3s;
+    opacity: 0;
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div>
-            <h1 class="h3 mb-1">{% trans "Dashboard" %}</h1>
-            <p class="text-muted mb-0">
-                {% trans "Welcome back" %}, {{ user.first_name }}! 
-                {% trans "Here's what's happening with your requests." %}
-            </p>
-        </div>
-        <div class="d-flex flex-wrap gap-2" style="max-width: 200px;">
-            <a href="{% url 'requests:create' %}" class="btn btn-primary" title="{% trans 'New Request' %}" data-bs-toggle="tooltip" style="flex: 1 1 calc(50% - 0.25rem); min-width: 44px;">
-                <i class="bi bi-plus-lg"></i>
-            </a>
-            {% if user_can_approve %}
-                <a href="{% url 'requests:list' %}?status=pending" class="btn btn-outline-warning" title="{% trans 'Review Pending' %}" data-bs-toggle="tooltip" style="flex: 1 1 calc(50% - 0.25rem); min-width: 44px;">
-                    <i class="bi bi-clock"></i>
-                </a>
-            {% endif %}
-            <a href="{% url 'requests:list' %}?status=approved" class="btn btn-outline-success" title="{% trans 'View Approved' %}" data-bs-toggle="tooltip" style="flex: 1 1 calc(50% - 0.25rem); min-width: 44px;">
-                <i class="bi bi-check-circle"></i>
-            </a>
-            <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary" title="{% trans 'All Requests' %}" data-bs-toggle="tooltip" style="flex: 1 1 calc(50% - 0.25rem); min-width: 44px;">
-                <i class="bi bi-list-ul"></i>
-            </a>
-        </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="row mb-4 row-cols-1 row-cols-md-2 row-cols-lg-5 g-3">
-        <div class="col">
-            <div class="card stats-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-muted mb-1">{% trans "Total" %}</h6>
-                            <h3 class="mb-0" id="stats-total">{{ stats.total_requests }}</h3>
-                        </div>
-                        <div class="stats-icon bg-primary text-white">
-                            <i class="bi bi-file-text"></i>
-                        </div>
-                    </div>
+<div class="dashboard-page">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="page-title">
+                        <span class="icon-wrapper">
+                            <i class="bi bi-speedometer2"></i>
+                        </span>
+                        {% trans "Dashboard" %}
+                    </h1>
+                    <p class="welcome-message">
+                        {% trans "Welcome back" %}, <span class="user-name">{{ user.first_name }}</span>! 
+                        {% trans "Here's what's happening with your requests." %}
+                    </p>
                 </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card stats-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-muted mb-1">{% trans "Pending" %}</h6>
-                            <h3 class="mb-0 text-warning" id="stats-pending">{{ stats.pending_requests }}</h3>
-                        </div>
-                        <div class="stats-icon bg-warning text-dark">
+                <div class="quick-actions">
+                    <a href="{% url 'requests:create' %}" class="btn btn-primary quick-action-btn" title="{% trans 'New Request' %}" data-bs-toggle="tooltip">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                    {% if user_can_approve %}
+                        <a href="{% url 'requests:list' %}?status=pending" class="btn btn-outline-warning quick-action-btn" title="{% trans 'Review Pending' %}" data-bs-toggle="tooltip">
                             <i class="bi bi-clock"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card stats-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-muted mb-1">{% trans "Approved" %}</h6>
-                            <h3 class="mb-0 text-success" id="stats-approved">{{ stats.approved_requests }}</h3>
-                        </div>
-                        <div class="stats-icon bg-success text-white">
-                            <i class="bi bi-check-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card stats-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-muted mb-1">{% trans "Cancelled" %}</h6>
-                            <h3 class="mb-0 text-secondary" id="stats-cancelled">{{ stats.cancelled_requests }}</h3>
-                        </div>
-                        <div class="stats-icon bg-secondary text-white">
-                            <i class="bi bi-x-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card stats-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-muted mb-1">{% trans "My Requests" %}</h6>
-                            <h3 class="mb-0 text-info" id="stats-my">{{ stats.my_requests }}</h3>
-                        </div>
-                        <div class="stats-icon bg-info text-white">
-                            <i class="bi bi-person"></i>
-                        </div>
-                    </div>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'requests:list' %}?status=approved" class="btn btn-outline-success quick-action-btn" title="{% trans 'View Approved' %}" data-bs-toggle="tooltip">
+                        <i class="bi bi-check-circle"></i>
+                    </a>
+                    <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary quick-action-btn" title="{% trans 'All Requests' %}" data-bs-toggle="tooltip">
+                        <i class="bi bi-list-ul"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Charts and Analytics -->
-        <div class="col-lg-8">
-            <!-- Category Breakdown -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">
-                        <i class="bi bi-pie-chart"></i>
-                        {% trans "Requests by Category" %}
-                    </h5>
-                    <small class="text-muted">{% trans "Last 30 days" %}</small>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="categoryChart"></canvas>
+    <div class="main-content">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stats-card total">
+                <div class="stats-card-content">
+                    <div>
+                        <div class="stats-label">{% trans "Total" %}</div>
+                        <div class="stats-value" id="stats-total">{{ stats.total_requests }}</div>
+                    </div>
+                    <div class="stats-icon bg-primary">
+                        <i class="bi bi-file-text"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Activity Timeline -->
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="bi bi-activity"></i>
-                        {% trans "Activity Timeline" %}
-                    </h5>
+            <div class="stats-card pending">
+                <div class="stats-card-content">
+                    <div>
+                        <div class="stats-label">{% trans "Pending" %}</div>
+                        <div class="stats-value text-warning" id="stats-pending">{{ stats.pending_requests }}</div>
+                    </div>
+                    <div class="stats-icon bg-warning">
+                        <i class="bi bi-clock"></i>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="activityChart"></canvas>
+            </div>
+
+            <div class="stats-card approved">
+                <div class="stats-card-content">
+                    <div>
+                        <div class="stats-label">{% trans "Approved" %}</div>
+                        <div class="stats-value text-success" id="stats-approved">{{ stats.approved_requests }}</div>
+                    </div>
+                    <div class="stats-icon bg-success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card cancelled">
+                <div class="stats-card-content">
+                    <div>
+                        <div class="stats-label">{% trans "Cancelled" %}</div>
+                        <div class="stats-value" id="stats-cancelled">{{ stats.cancelled_requests }}</div>
+                    </div>
+                    <div class="stats-icon bg-secondary">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card my-requests">
+                <div class="stats-card-content">
+                    <div>
+                        <div class="stats-label">{% trans "My Requests" %}</div>
+                        <div class="stats-value text-info" id="stats-my">{{ stats.my_requests }}</div>
+                    </div>
+                    <div class="stats-icon bg-info">
+                        <i class="bi bi-person"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Pending Approvals (for approvers) -->
-            {% if user_can_approve and pending_for_approval %}
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h6 class="card-title mb-0">
-                            <i class="bi bi-hand-thumbs-up"></i>
-                            {% trans "Pending Approvals" %}
-                        </h6>
-                        <span class="badge bg-warning">{{ pending_for_approval|length }}</span>
+        <div class="content-grid">
+            <!-- Charts and Analytics -->
+            <div class="charts-column">
+                <!-- Category Breakdown -->
+                <div class="dashboard-card mb-4">
+                    <div class="card-header">
+                        <h5>
+                            <i class="bi bi-pie-chart"></i>
+                            {% trans "Requests by Category" %}
+                        </h5>
+                        <small class="text-muted">{% trans "Last 30 days" %}</small>
                     </div>
                     <div class="card-body">
-                        <div id="pending-approvals-container" class="pending-approvals-scroll">
-                        {% for request in pending_for_approval %}
-                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">
-                                        <a href="{% url 'requests:detail' request.pk %}" class="text-decoration-none">
-                                            {{ request.title|truncatechars:30 }}
-                                        </a>
-                                    </h6>
-                                    <small class="text-muted">
-                                        {{ request.requester.first_name }} {{ request.requester.last_name }}
-                                        • {{ request.created_at|timesince }} {% trans "ago" %}
-                                    </small>
-                                </div>
-                                <span class="badge bg-{{ request.priority }}">
-                                    {{ request.get_priority_display }}
-                                </span>
-                            </div>
-                        {% endfor %}
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
                         </div>
-                        <a href="{% url 'requests:list' %}?status=pending" class="btn btn-outline-primary btn-sm w-100">
-                            {% trans "View All Pending" %}
-                        </a>
                     </div>
                 </div>
-            {% endif %}
 
-            <!-- Recent Requests -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header">
-                    <h6 class="card-title mb-0">
-                        <i class="bi bi-clock-history"></i>
-                        {% trans "Recent Requests" %}
-                    </h6>
+                <!-- Activity Timeline -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5>
+                            <i class="bi bi-activity"></i>
+                            {% trans "Activity Timeline" %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body" id="recent-requests-container">
-                    {% for request in recent_requests %}
-                        <div class="recent-request-item {{ request.status }}" id="request-{{ request.pk }}">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <h6 class="mb-0">
-                                    <a href="{% url 'requests:detail' request.pk %}" class="text-decoration-none stretched-link">
-                                        {{ request.title|truncatechars:25 }}
-                                    </a>
-                                </h6>
-                                <span class="badge bg-{% if request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% elif request.status == 'cancelled' %}secondary{% else %}warning{% endif %} ms-2">
-                                    {{ request.get_status_display }}
-                                </span>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar-column">
+                <!-- Pending Approvals (for approvers) -->
+                {% if user_can_approve and pending_for_approval %}
+                    <div class="dashboard-card mb-4">
+                        <div class="card-header">
+                            <h6>
+                                <i class="bi bi-hand-thumbs-up"></i>
+                                {% trans "Pending Approvals" %}
+                            </h6>
+                            <span class="badge bg-warning text-dark">{{ pending_for_approval|length }}</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="pending-approvals-container" class="pending-approvals-scroll">
+                            {% for request in pending_for_approval %}
+                                <div class="pending-approval-item">
+                                    <div class="flex-grow-1">
+                                        <h6>
+                                            <a href="{% url 'requests:detail' request.pk %}" class="text-decoration-none">
+                                                {{ request.title|truncatechars:30 }}
+                                            </a>
+                                        </h6>
+                                        <small class="text-muted">
+                                            {{ request.requester.first_name }} {{ request.requester.last_name }}
+                                            • {{ request.created_at|timesince }} {% trans "ago" %}
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-{{ request.priority }}">
+                                        {{ request.get_priority_display }}
+                                    </span>
+                                </div>
+                            {% endfor %}
                             </div>
-                            <small class="text-muted">
-                                {{ request.requester.get_full_name }} • {{ request.get_category_display }} • {{ request.created_at|timesince }} {% trans "ago" %}
-                            </small>
-                            <div class="priority-bar priority-{{ request.priority }}"></div>
+                            <a href="{% url 'requests:list' %}?status=pending" class="btn btn-outline-primary btn-sm w-100 mt-3">
+                                {% trans "View All Pending" %}
+                            </a>
                         </div>
-                    {% empty %}
-                        <div class="text-center py-3" id="no-requests-message">
-                            <i class="bi bi-inbox display-4 text-muted"></i>
-                            <p class="text-muted mb-0">{% trans "No requests yet" %}</p>
-                        </div>
-                    {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Recent Requests -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h6>
+                            <i class="bi bi-clock-history"></i>
+                            {% trans "Recent Requests" %}
+                        </h6>
+                    </div>
+                    <div class="card-body" id="recent-requests-container">
+                        {% for request in recent_requests %}
+                            <div class="recent-request-item {{ request.status }}" id="request-{{ request.pk }}">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <h6>
+                                        <a href="{% url 'requests:detail' request.pk %}" class="text-decoration-none stretched-link">
+                                            {{ request.title|truncatechars:25 }}
+                                        </a>
+                                    </h6>
+                                    <span class="badge bg-{% if request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% elif request.status == 'cancelled' %}secondary{% else %}warning text-dark{% endif %}">
+                                        {{ request.get_status_display }}
+                                    </span>
+                                </div>
+                                <small class="text-muted">
+                                    {{ request.requester.get_full_name }} • {{ request.get_category_display }} • {{ request.created_at|timesince }} {% trans "ago" %}
+                                </small>
+                                <div class="priority-bar priority-{{ request.priority }}"></div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state-small" id="no-requests-message">
+                                <i class="bi bi-inbox d-block"></i>
+                                <p>{% trans "No requests yet" %}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

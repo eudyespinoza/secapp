@@ -3382,3 +3382,30 @@ msgstr "Este dispositivo não suporta o método de autenticação necessário."
 
 msgid "WebAuthn is not supported on this device/browser."
 msgstr "WebAuthn não é suportado neste dispositivo/navegador."
+
+msgid "request in total"
+msgstr "solicitação no total"
+
+msgid "requests in total"
+msgstr "solicitações no total"
+
+msgid "Filter Requests"
+msgstr "Filtrar Solicitações"
+
+msgid "Clear"
+msgstr "Limpar"
+
+msgid "Request"
+msgstr "Solicitação"
+
+msgid "No requests match your search."
+msgstr "Nenhuma solicitação corresponde à sua pesquisa."
+
+msgid "request"
+msgstr "solicitação"
+
+msgid "requests"
+msgstr "solicitações"
+
+msgid "Total"
+msgstr "Total"

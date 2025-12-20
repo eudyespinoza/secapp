@@ -5,284 +5,712 @@
 
 {% block extra_css %}
 <style>
-.filter-card {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
+/* ===== Page Layout ===== */
+.requests-page {
+    min-height: calc(100vh - 120px);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-color) 100%);
 }
 
-[data-theme="dark"] .filter-card {
-    background: #2b3035;
-    border: 1px solid #495057;
+.page-header {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.page-header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-title .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary-color), #818cf8);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.requests-count {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0.25rem 0 0 0;
+}
+
+.requests-count .count-number {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.btn-create-request {
+    background: linear-gradient(135deg, var(--primary-color), #818cf8);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+    transition: all 0.3s ease;
+}
+
+.btn-create-request:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+}
+
+/* ===== Filter Section ===== */
+.filter-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.filter-card .filter-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filter-item {
+    flex: 1;
+    min-width: 180px;
+}
+
+.filter-item label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.filter-item .form-select,
+.filter-item .form-control {
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    padding: 0.625rem 1rem;
+    font-size: 0.95rem;
+    background-color: var(--bg-color);
+    transition: all 0.2s ease;
+}
+
+.filter-item .form-select:focus,
+.filter-item .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.btn-clear-filters {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 0.625rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-clear-filters:hover {
+    background: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--text-muted);
+}
+
+/* ===== Request Cards ===== */
+.requests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 576px) {
+    .requests-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .request-card {
-    transition: all 0.2s ease;
-    border: 1px solid #dee2e6;
-}
-
-[data-theme="dark"] .request-card {
-    background-color: #212529;
-    border-color: #495057;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .request-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
 }
 
-.status-badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.request-card .card-body {
+    padding: 1.5rem;
+    padding-left: calc(1.5rem + 6px);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
+/* Priority Indicator */
 .priority-indicator {
-    width: 4px;
-    height: 100%;
     position: absolute;
     left: 0;
     top: 0;
+    bottom: 0;
+    width: 6px;
 }
 
-.priority-high { background-color: #dc3545; }
-.priority-medium { background-color: #ffc107; }
-.priority-low { background-color: #28a745; }
+.priority-indicator.priority-critical {
+    background: linear-gradient(180deg, #dc3545, #c82333);
+}
+
+.priority-indicator.priority-high {
+    background: linear-gradient(180deg, #fd7e14, #e76b00);
+}
+
+.priority-indicator.priority-medium {
+    background: linear-gradient(180deg, #ffc107, #e0a800);
+}
+
+.priority-indicator.priority-low {
+    background: linear-gradient(180deg, #6c757d, #545b62);
+}
+
+/* Status Badge */
+.status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    z-index: 1;
+}
+
+.status-badge.bg-warning {
+    color: #92400e !important;
+}
+
+/* Card Content */
+.request-card .card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    padding-right: 90px;
+    line-height: 1.4;
+}
+
+.request-card .card-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.request-card .card-title a:hover {
+    color: var(--primary-color);
+}
+
+.request-card .card-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Category & Amount Row */
+.request-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
 
 .amount-display {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #2c3e50;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--success-color);
 }
 
-[data-theme="dark"] .amount-display {
-    color: #e9ecef;
+/* Metadata Pills */
+.metadata-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .metadata-pill {
-    background: #e9ecef;
-    color: #495057;
-    padding: 0.25rem 0.5rem;
-    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--bg-secondary);
+    border-radius: 6px;
     font-size: 0.75rem;
-    margin-right: 0.25rem;
-    margin-bottom: 0.25rem;
-    display: inline-block;
+    color: var(--text-muted);
 }
 
-[data-theme="dark"] .metadata-pill {
-    background: #343a40;
-    color: #dee2e6;
+.metadata-pill i {
+    font-size: 0.7rem;
+}
+
+/* Card Footer */
+.request-card-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.requester-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.requester-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), #818cf8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.requester-details {
+    flex: 1;
+}
+
+.requester-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.request-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.approval-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.approval-status.approved {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.approval-status.rejected {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc3545;
+}
+
+/* ===== Animations ===== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.request-item.show {
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+/* Staggered animation on load */
+.request-item {
+    opacity: 0;
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.request-item:nth-child(1) { animation-delay: 0.05s; }
+.request-item:nth-child(2) { animation-delay: 0.1s; }
+.request-item:nth-child(3) { animation-delay: 0.15s; }
+.request-item:nth-child(4) { animation-delay: 0.2s; }
+.request-item:nth-child(5) { animation-delay: 0.25s; }
+.request-item:nth-child(6) { animation-delay: 0.3s; }
+.request-item:nth-child(7) { animation-delay: 0.35s; }
+.request-item:nth-child(8) { animation-delay: 0.4s; }
+.request-item:nth-child(9) { animation-delay: 0.45s; }
+
+/* ===== Empty State ===== */
+.empty-state {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 4rem 2rem;
+    text-align: center;
+    border: 2px dashed var(--border-color);
+}
+
+.empty-state-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-icon i {
+    font-size: 3rem;
+    color: var(--text-muted);
+}
+
+.empty-state h4 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ===== Pagination ===== */
+.pagination-wrapper {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 0.2rem;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 0.5rem 0.85rem;
+    transition: all 0.2s ease;
+    background: var(--card-bg);
+}
+
+.pagination .page-link:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.pagination .page-item.disabled .page-link {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+}
+
+/* ===== Content Container ===== */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0">{% trans "Approval Requests" %}</h1>
-            <p class="text-muted mb-0">
-                {% blocktrans count total=page_obj.paginator.count %}
-                    {{ total }} request
-                {% plural %}
-                    {{ total }} requests
-                {% endblocktrans %}
-            </p>
-        </div>
-        <a href="{% url 'requests:create' %}" class="btn btn-primary" title="{% trans 'New Request' %}">
-            <i class="bi bi-plus-lg"></i>
-        </a>
-    </div>
-
-    <!-- Filters -->
-    <div class="filter-card">
-        <form method="get" class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label">{% trans "Status" %}</label>
-                <select name="status" class="form-select" onchange="this.form.submit()">
-                    <option value="all" {% if not status_filter or status_filter == 'all' %}selected{% endif %}>{% trans "All Statuses" %}</option>
-                    {% for value, label in statuses %}
-                        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="col-md-3">
-                <label class="form-label">{% trans "Category" %}</label>
-                <select name="category" class="form-select" onchange="this.form.submit()">
-                    <option value="all" {% if not category_filter or category_filter == 'all' %}selected{% endif %}>{% trans "All Categories" %}</option>
-                    {% for value, label in categories %}
-                        <option value="{{ value }}" {% if category_filter == value %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="col-md-4">
-                <label class="form-label">{% trans "Search" %}</label>
-                <input type="text" name="q" id="searchInput" class="form-control" placeholder="{% trans 'Search by title or description...' %}" value="{{ search_query|default:'' }}">
-            </div>
-            
-            <div class="col-md-2">
-                <div class="d-flex gap-2 justify-content-end">
-                    {% if status_filter != 'all' or category_filter != 'all' or search_query %}
-                        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary" title="{% trans 'Clear Filters' %}">
-                            <i class="bi bi-x-lg"></i>
-                        </a>
-                    {% endif %}
+<div class="requests-page">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="page-title">
+                        <span class="icon-wrapper">
+                            <i class="bi bi-inbox-fill"></i>
+                        </span>
+                        {% trans "Approval Requests" %}
+                    </h1>
+                    <p class="requests-count">
+                        <span class="count-number">{{ page_obj.paginator.count }}</span>
+                        {% blocktrans count total=page_obj.paginator.count %}
+                            request in total
+                        {% plural %}
+                            requests in total
+                        {% endblocktrans %}
+                    </p>
                 </div>
+                <a href="{% url 'requests:create' %}" class="btn btn-primary btn-create-request">
+                    <i class="bi bi-plus-lg me-2"></i>{% trans "New Request" %}
+                </a>
             </div>
-        </form>
+        </div>
     </div>
 
-    <!-- Requests List -->
-    {% if page_obj.object_list %}
-        <div class="row" id="requestsContainer">
-            {% for request_obj in page_obj.object_list %}
-                <div class="col-lg-6 col-xl-4 mb-4 request-item" data-title="{{ request_obj.title|lower }}" data-description="{{ request_obj.description|lower }}">
-                    <div class="card request-card h-100 position-relative" data-request-id="{{ request_obj.pk }}">
-                        <!-- Priority Indicator -->
-                        <div class="priority-indicator priority-{{ request_obj.priority }}"></div>
-                        
-                        <div class="card-body d-flex flex-column">
-                            <!-- Header -->
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="card-title mb-0 flex-grow-1 me-2">
-                                    <a href="{% url 'requests:detail' request_obj.pk %}" class="text-decoration-none">
+    <div class="main-content">
+        <!-- Filters -->
+        <div class="filter-card">
+            <div class="filter-title">
+                <i class="bi bi-funnel"></i>
+                {% trans "Filter Requests" %}
+            </div>
+            <form method="get" class="filter-group">
+                <div class="filter-item">
+                    <label>{% trans "Status" %}</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {% if not status_filter or status_filter == 'all' %}selected{% endif %}>{% trans "All Statuses" %}</option>
+                        {% for value, label in statuses %}
+                            <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label>{% trans "Category" %}</label>
+                    <select name="category" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {% if not category_filter or category_filter == 'all' %}selected{% endif %}>{% trans "All Categories" %}</option>
+                        {% for value, label in categories %}
+                            <option value="{{ value }}" {% if category_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-item" style="flex: 2;">
+                    <label>{% trans "Search" %}</label>
+                    <input type="text" name="q" id="searchInput" class="form-control" 
+                           placeholder="{% trans 'Search by title or description...' %}" 
+                           value="{{ search_query|default:'' }}">
+                </div>
+                
+                {% if status_filter != 'all' or category_filter != 'all' or search_query %}
+                    <a href="{% url 'requests:list' %}" class="btn btn-clear-filters">
+                        <i class="bi bi-x-lg"></i>
+                        {% trans "Clear" %}
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Requests List -->
+        {% if page_obj.object_list %}
+            <div class="requests-grid" id="requestsContainer">
+                {% for request_obj in page_obj.object_list %}
+                    <div class="request-item" data-title="{{ request_obj.title|lower }}" data-description="{{ request_obj.description|lower }}">
+                        <div class="card request-card" data-request-id="{{ request_obj.pk }}">
+                            <!-- Priority Indicator -->
+                            <div class="priority-indicator priority-{{ request_obj.priority }}"></div>
+                            
+                            <!-- Status Badge -->
+                            <span class="status-badge badge bg-{% if request_obj.status == 'approved' %}success{% elif request_obj.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                                {{ request_obj.get_status_display }}
+                            </span>
+                            
+                            <div class="card-body">
+                                <!-- Title -->
+                                <h6 class="card-title">
+                                    <a href="{% url 'requests:detail' request_obj.pk %}">
                                         {{ request_obj.title }}
                                     </a>
                                 </h6>
-                                <span class="status-badge badge bg-{% if request_obj.status == 'approved' %}success{% elif request_obj.status == 'rejected' %}danger{% else %}warning{% endif %}">
-                                    {{ request_obj.get_status_display }}
-                                </span>
-                            </div>
-                            
-                            <!-- Description -->
-                            <p class="card-text text-muted small mb-3">
-                                {{ request_obj.description|truncatewords:15 }}
-                            </p>
-                            
-                            <!-- Category and Amount -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge bg-primary">{{ request_obj.get_category_display }}</span>
-                                {% if request_obj.amount %}
-                                    <span class="amount-display">${{ request_obj.amount|floatformat:2 }}</span>
-                                {% endif %}
-                            </div>
-                            
-                            <!-- Metadata -->
-                            {% if request_obj.metadata %}
-                                <div class="mb-3">
-                                    {% for key, value in request_obj.metadata.items %}
-                                        {% if value %}
-                                            <span class="metadata-pill">
-                                                {{ key|title }}: {{ value|truncatechars:20 }}
-                                            </span>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            
-                            <!-- Footer -->
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center text-muted small">
-                                    <span>
-                                        <i class="bi bi-person"></i>
-                                        {{ request_obj.requester.first_name }} {{ request_obj.requester.last_name }}
+                                
+                                <!-- Description -->
+                                <p class="card-description">
+                                    {{ request_obj.description|truncatewords:20 }}
+                                </p>
+                                
+                                <!-- Category and Amount -->
+                                <div class="request-meta-row">
+                                    <span class="category-badge">
+                                        <i class="bi bi-tag"></i>
+                                        {{ request_obj.get_category_display }}
                                     </span>
-                                    <span>
-                                        <i class="bi bi-calendar"></i>
-                                        <span class="local-date" data-iso="{{ request_obj.created_at|date:'c' }}">{{ request_obj.created_at|date:"M d, Y" }}</span>
-                                    </span>
+                                    {% if request_obj.amount %}
+                                        <span class="amount-display">${{ request_obj.amount|floatformat:2 }}</span>
+                                    {% endif %}
                                 </div>
                                 
-                                {% if request_obj.approved_by %}
-                                    <div class="text-muted small mt-1">
-                                        <i class="bi bi-check-circle"></i>
-                                        {% trans "Approved by" %} {{ request_obj.approved_by.first_name }} {{ request_obj.approved_by.last_name }}
-                                    </div>
-                                {% elif request_obj.status == 'rejected' %}
-                                    <div class="text-danger small mt-1">
-                                        <i class="bi bi-x-circle"></i>
-                                        {% trans "Rejected" %}
+                                <!-- Metadata -->
+                                {% if request_obj.metadata %}
+                                    <div class="metadata-pills">
+                                        {% for key, value in request_obj.metadata.items %}
+                                            {% if value %}
+                                                <span class="metadata-pill">
+                                                    <i class="bi bi-info-circle"></i>
+                                                    {{ key|title }}: {{ value|truncatechars:15 }}
+                                                </span>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
                                 {% endif %}
+                                
+                                <!-- Footer -->
+                                <div class="request-card-footer">
+                                    <div class="requester-info">
+                                        <div class="requester-avatar">
+                                            {{ request_obj.requester.first_name|slice:":1" }}{{ request_obj.requester.last_name|slice:":1" }}
+                                        </div>
+                                        <div class="requester-details">
+                                            <div class="requester-name">
+                                                {{ request_obj.requester.first_name }} {{ request_obj.requester.last_name }}
+                                            </div>
+                                            <div class="request-date">
+                                                <i class="bi bi-calendar3"></i>
+                                                <span class="local-date" data-iso="{{ request_obj.created_at|date:'c' }}">{{ request_obj.created_at|date:"M d, Y" }}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if request_obj.approved_by %}
+                                            <span class="approval-status approved">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                {{ request_obj.approved_by.first_name|slice:":1" }}.{{ request_obj.approved_by.last_name|slice:":1" }}.
+                                            </span>
+                                        {% elif request_obj.status == 'rejected' %}
+                                            <span class="approval-status rejected">
+                                                <i class="bi bi-x-circle-fill"></i>
+                                                {% trans "Rejected" %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
+                            <!-- Stretched link for whole card clickability -->
+                            <a href="{% url 'requests:detail' request_obj.pk %}" class="stretched-link"></a>
                         </div>
-                        <!-- Stretched link for whole card clickability -->
-                        <a href="{% url 'requests:detail' request_obj.pk %}" class="stretched-link"></a>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- Pagination -->
-        {% if page_obj.has_other_pages %}
-            <nav aria-label="{% trans 'Requests pagination' %}">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ page_obj.previous_page_number }}">
-                                <i class="bi bi-chevron-left"></i>
-                                {% trans "Previous" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ num }}</span>
-                            </li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ page_obj.next_page_number }}">
-                                {% trans "Next" %}
-                                <i class="bi bi-chevron-right"></i>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    {% else %}
-        <!-- Empty State -->
-        <div id="empty-state" class="text-center py-5">
-            <div class="mb-4">
-                <i class="bi bi-inbox display-1 text-muted"></i>
+                {% endfor %}
             </div>
-            <h4 class="text-muted">{% trans "No requests found" %}</h4>
-            <p class="text-muted mb-4">
-                {% if search_query or status_filter != 'all' or category_filter != 'all' %}
-                    {% trans "Try adjusting your filters or search terms." %}
-                {% else %}
-                    {% trans "Start by creating your first approval request." %}
-                {% endif %}
-            </p>
-            {% if not search_query and status_filter == 'all' and category_filter == 'all' %}
-                <a href="{% url 'requests:create' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i>
-                    {% trans "Create First Request" %}
-                </a>
-            {% else %}
-                <a href="{% url 'requests:list' %}" class="btn btn-outline-primary">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    {% trans "Clear Filters" %}
-                </a>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="pagination-wrapper">
+                    <nav aria-label="{% trans 'Requests pagination' %}">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if status_filter %}status={{ status_filter }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}page={{ page_obj.next_page_number }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
             {% endif %}
-        </div>
-        <div class="row" id="requests-container" style="display: none;"></div>
-    {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h4>{% trans "No requests found" %}</h4>
+                <p>
+                    {% if search_query or status_filter != 'all' or category_filter != 'all' %}
+                        {% trans "Try adjusting your filters or search terms." %}
+                    {% else %}
+                        {% trans "Start by creating your first approval request." %}
+                    {% endif %}
+                </p>
+                {% if not search_query and status_filter == 'all' and category_filter == 'all' %}
+                    <a href="{% url 'requests:create' %}" class="btn btn-primary btn-create-request">
+                        <i class="bi bi-plus-lg me-2"></i>
+                        {% trans "Create First Request" %}
+                    </a>
+                {% else %}
+                    <a href="{% url 'requests:list' %}" class="btn btn-clear-filters">
+                        <i class="bi bi-arrow-clockwise me-2"></i>
+                        {% trans "Clear Filters" %}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 
@@ -322,40 +750,47 @@
         fetch(`/dashboard/api/requests/${notificationData.request_id}/`)
             .then(response => response.json())
             .then(data => {
-                const container = document.querySelector('.row') || document.getElementById('requests-container');
-                const emptyState = document.getElementById('empty-state');
+                const container = document.getElementById('requestsContainer');
+                const emptyState = document.querySelector('.empty-state');
                 
                 if (emptyState) {
                     emptyState.style.display = 'none';
-                    if (container.id === 'requests-container') {
-                        container.style.display = 'flex';
-                        container.className = 'row';
-                    }
                 }
 
-                // Create new card HTML
+                // Create new card HTML with new design
                 const detailUrl = "{% url 'requests:detail' 0 %}".replace('0', data.id);
-                const col = document.createElement('div');
-                col.className = 'col-lg-6 col-xl-4 mb-4 new-request-item';
-                col.innerHTML = `
-                    <div class="card request-card h-100 position-relative border-primary" data-request-id="${data.id}">
+                const initials = (data.requester.first_name[0] || '') + (data.requester.last_name[0] || '');
+                
+                const item = document.createElement('div');
+                item.className = 'request-item';
+                item.dataset.title = data.title.toLowerCase();
+                item.dataset.description = (data.description || '').toLowerCase();
+                item.innerHTML = `
+                    <div class="card request-card" data-request-id="${data.id}" style="border-color: var(--primary-color);">
                         <div class="priority-indicator priority-${data.priority || 'medium'}"></div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="card-title mb-0 flex-grow-1 me-2">
-                                    <a href="#" class="text-decoration-none">${data.title}</a>
-                                </h6>
-                                <span class="status-badge badge bg-warning">Pending</span>
-                            </div>
-                            <p class="card-text text-muted small mb-3">${data.description ? (data.description.length > 100 ? data.description.substring(0, 100) + '...' : data.description) : ''}</p>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge bg-primary">${data.category_display || data.category || 'Request'}</span>
+                        <span class="status-badge badge bg-warning">{% trans "Pending" %}</span>
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <a href="${detailUrl}">${data.title}</a>
+                            </h6>
+                            <p class="card-description">${data.description ? (data.description.length > 80 ? data.description.substring(0, 80) + '...' : data.description) : ''}</p>
+                            <div class="request-meta-row">
+                                <span class="category-badge">
+                                    <i class="bi bi-tag"></i>
+                                    ${data.category_display || data.category || '{% trans "Request" %}'}
+                                </span>
                                 ${data.amount ? `<span class="amount-display">$${parseFloat(data.amount).toFixed(2)}</span>` : ''}
                             </div>
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center text-muted small">
-                                    <span><i class="bi bi-person"></i> ${data.requester.first_name} ${data.requester.last_name}</span>
-                                    <span><i class="bi bi-calendar"></i> ${new Date(data.created_at).toLocaleDateString()}</span>
+                            <div class="request-card-footer">
+                                <div class="requester-info">
+                                    <div class="requester-avatar">${initials}</div>
+                                    <div class="requester-details">
+                                        <div class="requester-name">${data.requester.first_name} ${data.requester.last_name}</div>
+                                        <div class="request-date">
+                                            <i class="bi bi-calendar3"></i>
+                                            ${new Date(data.created_at).toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric'})}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -364,10 +799,16 @@
                 `;
 
                 // Prepend to list
-                container.insertBefore(col, container.firstChild);
-                
-                // Highlight animation
-                setTimeout(() => col.classList.add('show'), 100);
+                if (container) {
+                    container.insertBefore(item, container.firstChild);
+                    // Highlight animation
+                    setTimeout(() => item.classList.add('show'), 100);
+                    // Remove highlight border after 3 seconds
+                    setTimeout(() => {
+                        const card = item.querySelector('.request-card');
+                        if (card) card.style.borderColor = '';
+                    }, 3000);
+                }
             })
             .catch(error => console.error('Error fetching new request details:', error));
     });
@@ -388,27 +829,29 @@
                 }
                 
                 // 2. Update Footer
-                const footerDiv = card.querySelector('.mt-auto');
+                const footerDiv = card.querySelector('.request-card-footer');
                 if (footerDiv) {
-                    // Remove existing status footer if any
-                    const existingStatusFooter = footerDiv.querySelector('.text-muted.small.mt-1, .text-danger.small.mt-1');
-                    if (existingStatusFooter) {
-                        existingStatusFooter.remove();
+                    // Remove existing status if any
+                    const existingStatus = footerDiv.querySelector('.approval-status');
+                    if (existingStatus) {
+                        existingStatus.remove();
                     }
 
-                    const newFooter = document.createElement('div');
-                    newFooter.className = 'small mt-1';
-                    
-                    if (data.status === 'approved') {
-                        newFooter.className += ' text-muted';
-                        const approverText = data.approver_name ? ` by ${data.approver_name}` : '';
-                        newFooter.innerHTML = `<i class="bi bi-check-circle"></i> Approved${approverText}`;
-                    } else if (data.status === 'rejected') {
-                        newFooter.className += ' text-danger';
-                        newFooter.innerHTML = `<i class="bi bi-x-circle"></i> Rejected`;
+                    const requesterInfo = footerDiv.querySelector('.requester-info');
+                    if (requesterInfo) {
+                        const newStatus = document.createElement('span');
+                        
+                        if (data.status === 'approved') {
+                            newStatus.className = 'approval-status approved';
+                            const approverInitials = data.approver_name ? data.approver_name.split(' ').map(n => n[0]).join('.') + '.' : '';
+                            newStatus.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${approverInitials}`;
+                        } else if (data.status === 'rejected') {
+                            newStatus.className = 'approval-status rejected';
+                            newStatus.innerHTML = `<i class="bi bi-x-circle-fill"></i> {% trans "Rejected" %}`;
+                        }
+                        
+                        requesterInfo.appendChild(newStatus);
                     }
-                    
-                    footerDiv.appendChild(newFooter);
                 }
 
                 // 3. Visual Highlight
@@ -424,8 +867,8 @@
     // Dynamic search - client-side filtering with pagination update
     const searchInput = document.getElementById('searchInput');
     const requestItems = document.querySelectorAll('.request-item');
-    const paginationNav = document.querySelector('nav[aria-label]');
-    const requestCountText = document.querySelector('.text-muted.mb-0');
+    const paginationWrapper = document.querySelector('.pagination-wrapper');
+    const requestCountElement = document.querySelector('.count-number');
     let searchTimeout = null;
     
     if (searchInput && requestItems.length > 0) {
@@ -448,19 +891,17 @@
             const visibleCount = visibleItems.length;
             
             // Hide/show pagination based on search
-            if (paginationNav) {
+            if (paginationWrapper) {
                 if (searchTerm !== '') {
-                    paginationNav.style.display = 'none';
+                    paginationWrapper.style.display = 'none';
                 } else {
-                    paginationNav.style.display = '';
+                    paginationWrapper.style.display = '';
                 }
             }
             
             // Update count text dynamically
-            if (requestCountText && searchTerm !== '') {
-                const singularText = '{% trans "request" %}';
-                const pluralText = '{% trans "requests" %}';
-                requestCountText.textContent = visibleCount + ' ' + (visibleCount === 1 ? singularText : pluralText);
+            if (requestCountElement && searchTerm !== '') {
+                requestCountElement.textContent = visibleCount;
             }
             
             // Show/hide no results message
