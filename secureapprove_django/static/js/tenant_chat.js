@@ -664,7 +664,7 @@
                     
                     const link = document.createElement('a');
                     link.href = att.file_url || att.file;
-                    link.target = '_blank';
+                    link.download = att.filename || 'attachment';  // Force download instead of preview
                     link.rel = 'noopener noreferrer';
                     link.textContent = att.filename || this.i18n.attachment;
                     attachmentsContainer.appendChild(link);
