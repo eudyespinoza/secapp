@@ -283,5 +283,5 @@ class RequestAttachment(models.Model):
     def download_url(self):
         """Return URL that forces file download via API endpoint (bypasses nginx)."""
         from django.urls import reverse
-        # Use the dedicated download endpoint that bypasses nginx static file serving
-        return reverse('requests:download-attachment', kwargs={'attachment_id': self.id})
+        # Use the API endpoint (api-requests namespace) to bypass i18n_patterns and nginx static serving
+        return reverse('api-requests:download-attachment', kwargs={'attachment_id': self.id})
