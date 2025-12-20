@@ -664,14 +664,41 @@
                     
                     // Use download_url for forced download, fallback to file_url
                     const fileUrl = att.download_url || att.file_url || att.file;
+                    const filename = att.filename || 'download';
                     
                     const link = document.createElement('a');
-                    link.href = fileUrl;
+                    link.href = '#';
                     link.className = 'chat-attachment-link d-flex align-items-center gap-1';
-                    link.target = '_blank';
-                    link.download = att.filename || '';
-                    link.rel = 'noopener noreferrer';
-                    link.innerHTML = `<i class="bi bi-download"></i> ${att.filename || this.i18n.attachment}`;
+                    link.dataset.downloadUrl = fileUrl;
+                    link.dataset.filename = filename;
+                    link.innerHTML = `<i class="bi bi-download"></i> ${filename}`;
+                    
+                    // Force download using fetch + blob
+                    link.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        try {
+                            link.innerHTML = `<i class="bi bi-hourglass-split"></i> ${filename}`;
+                            const response = await fetch(fileUrl);
+                            if (!response.ok) throw new Error('Download failed');
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const tempLink = document.createElement('a');
+                            tempLink.href = url;
+                            tempLink.download = filename;
+                            document.body.appendChild(tempLink);
+                            tempLink.click();
+                            document.body.removeChild(tempLink);
+                            window.URL.revokeObjectURL(url);
+                            link.innerHTML = `<i class="bi bi-download"></i> ${filename}`;
+                        } catch (err) {
+                            console.error('Download error:', err);
+                            link.innerHTML = `<i class="bi bi-download"></i> ${filename}`;
+                            // Fallback: open in new tab
+                            window.open(fileUrl, '_blank');
+                        }
+                    });
+                    
                     attachmentsContainer.appendChild(link);
                 });
                 
