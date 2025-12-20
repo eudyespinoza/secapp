@@ -587,124 +587,359 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="create-request-page">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h3 mb-1 fw-bold">{% trans "New Request" %}</h1>
-                    <p class="text-muted mb-0" style="font-size: var(--font-sm);">{% trans "Submit a new approval request for review" %}</p>
+                    <h1 class="h3 mb-1 fw-bold">
+                        <i class="bi bi-plus-circle me-2 text-primary"></i>
+                        {% trans "New Request" %}
+                    </h1>
+                    <p class="text-muted mb-0" style="font-size: var(--font-sm);">
+                        {% trans "Submit a new approval request for review" %}
+                    </p>
                 </div>
-                <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
+                <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
                     <i class="bi bi-arrow-left"></i>
-                    {% trans "Back to Requests" %}
+                    <span class="d-none d-sm-inline">{% trans "Back to Requests" %}</span>
                 </a>
             </div>
+        </div>
+    </div>
 
+    <div class="container-fluid" style="max-width: 1400px;">
+        <!-- Step Indicators -->
+        <div class="step-indicators">
+            <div class="step-item active" data-step="1">
+                <div class="step-circle">1</div>
+                <span class="step-label">{% trans "Category" %}</span>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item" data-step="2">
+                <div class="step-circle">2</div>
+                <span class="step-label">{% trans "Details" %}</span>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item" data-step="3">
+                <div class="step-circle">3</div>
+                <span class="step-label">{% trans "Review" %}</span>
+            </div>
+        </div>
+
+        <form method="post" id="request-form" novalidate enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" id="webauthn_verified_token" name="webauthn_verified_token" value="">
+            <input type="hidden" id="id_category" name="category" value="expense">
+            <input type="hidden" id="id_priority" name="priority" value="medium">
+            
             <div class="row g-4">
                 <div class="col-lg-8">
-                    <!-- Main Form -->
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <form method="post" id="request-form" novalidate enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <input type="hidden" id="webauthn_verified_token" name="webauthn_verified_token" value="">
-                                {% crispy form %}
-                            </form>
+                    <!-- Step 1: Category Selection -->
+                    <div class="form-card mb-4" id="step-1-card">
+                        <div class="form-card-header">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                            <h5>{% trans "Select Request Category" %}</h5>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <!-- Help Card -->
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
-                                <i class="bi bi-info-circle text-primary"></i>
-                                {% trans "Request Categories" %}
-                            </h5>
-                        </div>
-                        <div class="card-body p-2">
-                            <div class="category-help">
-                                <div class="category-item mb-1" data-category="expense">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <i class="bi bi-receipt text-muted"></i>
-                                        <strong style="font-size: var(--font-sm);">{% trans "Expense" %}</strong>
+                        <div class="form-card-body">
+                            <p class="text-muted mb-3" style="font-size: var(--font-sm);">
+                                {% trans "Choose the type of request you want to submit" %}
+                            </p>
+                            <div class="category-grid">
+                                <div class="category-card selected" data-category="expense">
+                                    <div class="category-icon">
+                                        <i class="bi bi-receipt"></i>
                                     </div>
-                                    <p class="category-description mb-0">
-                                        {% trans "Business expenses like meals, transportation, office supplies" %}
-                                    </p>
+                                    <div class="category-name">{% trans "Expense" %}</div>
+                                    <div class="category-hint">{% trans "Reimbursements" %}</div>
                                 </div>
-                                
-                                <div class="category-item mb-1" data-category="purchase">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <i class="bi bi-cart text-muted"></i>
-                                        <strong style="font-size: var(--font-sm);">{% trans "Purchase" %}</strong>
+                                <div class="category-card" data-category="purchase">
+                                    <div class="category-icon">
+                                        <i class="bi bi-cart3"></i>
                                     </div>
-                                    <p class="category-description mb-0">
-                                        {% trans "Equipment, software, or service purchases" %}
-                                    </p>
+                                    <div class="category-name">{% trans "Purchase" %}</div>
+                                    <div class="category-hint">{% trans "Equipment & supplies" %}</div>
                                 </div>
-                                
-                                <div class="category-item mb-1" data-category="travel">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <i class="bi bi-airplane text-muted"></i>
-                                        <strong style="font-size: var(--font-sm);">{% trans "Travel" %}</strong>
+                                <div class="category-card" data-category="travel">
+                                    <div class="category-icon">
+                                        <i class="bi bi-airplane"></i>
                                     </div>
-                                    <p class="category-description mb-0">
-                                        {% trans "Travel arrangements and related expenses" %}
-                                    </p>
+                                    <div class="category-name">{% trans "Travel" %}</div>
+                                    <div class="category-hint">{% trans "Trips & logistics" %}</div>
                                 </div>
-                                
-                                <div class="category-item mb-1" data-category="contract">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <i class="bi bi-file-text text-muted"></i>
-                                        <strong style="font-size: var(--font-sm);">{% trans "Contract" %}</strong>
+                                <div class="category-card" data-category="contract">
+                                    <div class="category-icon">
+                                        <i class="bi bi-file-earmark-text"></i>
                                     </div>
-                                    <p class="category-description mb-0">
-                                        {% trans "Contract approvals and vendor agreements" %}
-                                    </p>
+                                    <div class="category-name">{% trans "Contract" %}</div>
+                                    <div class="category-hint">{% trans "Agreements" %}</div>
                                 </div>
-                                
-                                <div class="category-item mb-1" data-category="document">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <i class="bi bi-file-earmark text-muted"></i>
-                                        <strong style="font-size: var(--font-sm);">{% trans "Document" %}</strong>
+                                <div class="category-card" data-category="document">
+                                    <div class="category-icon">
+                                        <i class="bi bi-file-earmark-check"></i>
                                     </div>
-                                    <p class="category-description mb-0">
-                                        {% trans "Document approvals and reviews" %}
-                                    </p>
+                                    <div class="category-name">{% trans "Document" %}</div>
+                                    <div class="category-hint">{% trans "Approvals" %}</div>
                                 </div>
-                                
-                                <div class="category-item mb-0" data-category="other">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <i class="bi bi-three-dots text-muted"></i>
-                                        <strong style="font-size: var(--font-sm);">{% trans "Other" %}</strong>
+                                <div class="category-card" data-category="other">
+                                    <div class="category-icon">
+                                        <i class="bi bi-three-dots"></i>
                                     </div>
-                                    <p class="category-description mb-0">
-                                        {% trans "Any other type of approval request" %}
-                                    </p>
+                                    <div class="category-name">{% trans "Other" %}</div>
+                                    <div class="category-hint">{% trans "General" %}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Preview Card -->
-                    <div class="card border-0 shadow-sm" id="preview-card" style="display: none;">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
-                                <i class="bi bi-eye text-primary"></i>
-                                {% trans "Preview" %}
-                            </h5>
+                    <!-- Step 2: Request Details -->
+                    <div class="form-card mb-4" id="step-2-card">
+                        <div class="form-card-header">
+                            <i class="bi bi-pencil-square"></i>
+                            <h5>{% trans "Request Details" %}</h5>
                         </div>
-                        <div class="card-body" id="preview-content">
-                            <!-- Preview content will be populated by JavaScript -->
+                        <div class="form-card-body">
+                            <!-- Title -->
+                            <div class="form-floating-custom">
+                                <label class="form-label" for="id_title">
+                                    <i class="bi bi-type"></i>
+                                    {% trans "Title" %}
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="id_title" name="title" 
+                                       placeholder="{% trans 'Enter a descriptive title for your request' %}" required>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-floating-custom">
+                                <label class="form-label" for="id_description">
+                                    <i class="bi bi-text-paragraph"></i>
+                                    {% trans "Description" %}
+                                    <span class="required">*</span>
+                                </label>
+                                <textarea class="form-control" id="id_description" name="description" rows="4"
+                                          placeholder="{% trans 'Provide detailed information about your request' %}" required></textarea>
+                            </div>
+
+                            <!-- Priority -->
+                            <div class="form-floating-custom">
+                                <label class="form-label">
+                                    <i class="bi bi-flag"></i>
+                                    {% trans "Priority" %}
+                                </label>
+                                <div class="priority-selector">
+                                    <div class="priority-option" data-priority="low">
+                                        <span class="priority-dot"></span>
+                                        <span>{% trans "Low" %}</span>
+                                    </div>
+                                    <div class="priority-option selected" data-priority="medium">
+                                        <span class="priority-dot"></span>
+                                        <span>{% trans "Medium" %}</span>
+                                    </div>
+                                    <div class="priority-option" data-priority="high">
+                                        <span class="priority-dot"></span>
+                                        <span>{% trans "High" %}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Amount (conditional) -->
+                            <div class="form-floating-custom" id="amount-field">
+                                <label class="form-label" for="id_amount">
+                                    <i class="bi bi-currency-dollar"></i>
+                                    {% trans "Amount" %}
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="number" class="form-control" id="id_amount" name="amount" 
+                                       step="0.01" min="0" placeholder="0.00">
+                            </div>
+
+                            <!-- Dynamic Category Fields -->
+                            <div id="dynamic-fields">
+                                <!-- Expense fields -->
+                                <div class="dynamic-group" data-category="expense">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating-custom mb-0">
+                                                <label class="form-label" for="id_expense_category">
+                                                    <i class="bi bi-tag"></i>
+                                                    {% trans "Expense Category" %}
+                                                </label>
+                                                <input type="text" class="form-control" id="id_expense_category" 
+                                                       name="expense_category" placeholder="{% trans 'Meals, Transportation, etc.' %}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating-custom mb-0">
+                                                <label class="form-label" for="id_receipt_ref">
+                                                    <i class="bi bi-receipt"></i>
+                                                    {% trans "Receipt Reference" %}
+                                                </label>
+                                                <input type="text" class="form-control" id="id_receipt_ref" 
+                                                       name="receipt_ref" placeholder="{% trans 'Receipt number' %}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Purchase fields -->
+                                <div class="dynamic-group" data-category="purchase" style="display: none;">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating-custom mb-0">
+                                                <label class="form-label" for="id_purchase_vendor">
+                                                    <i class="bi bi-building"></i>
+                                                    {% trans "Vendor" %}
+                                                </label>
+                                                <input type="text" class="form-control" id="id_purchase_vendor" 
+                                                       name="purchase_vendor" placeholder="{% trans 'Vendor name' %}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating-custom mb-0">
+                                                <label class="form-label" for="id_cost_center">
+                                                    <i class="bi bi-diagram-3"></i>
+                                                    {% trans "Cost Center" %}
+                                                </label>
+                                                <input type="text" class="form-control" id="id_cost_center" 
+                                                       name="cost_center" placeholder="{% trans 'Cost center code' %}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Travel fields -->
+                                <div class="dynamic-group" data-category="travel" style="display: none;">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label" for="id_destination">
+                                            <i class="bi bi-geo-alt"></i>
+                                            {% trans "Destination" %}
+                                        </label>
+                                        <input type="text" class="form-control" id="id_destination" 
+                                               name="destination" placeholder="{% trans 'Travel destination' %}">
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating-custom mb-0">
+                                                <label class="form-label" for="id_start_date">
+                                                    <i class="bi bi-calendar-event"></i>
+                                                    {% trans "Start Date" %}
+                                                </label>
+                                                <input type="date" class="form-control" id="id_start_date" name="start_date">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating-custom mb-0">
+                                                <label class="form-label" for="id_end_date">
+                                                    <i class="bi bi-calendar-check"></i>
+                                                    {% trans "End Date" %}
+                                                </label>
+                                                <input type="date" class="form-control" id="id_end_date" name="end_date">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contract fields -->
+                                <div class="dynamic-group" data-category="contract" style="display: none;">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label" for="id_contract_vendor">
+                                            <i class="bi bi-building"></i>
+                                            {% trans "Vendor" %}
+                                        </label>
+                                        <input type="text" class="form-control" id="id_contract_vendor" 
+                                               name="contract_vendor" placeholder="{% trans 'Vendor name' %}">
+                                    </div>
+                                    <div class="form-floating-custom mb-0">
+                                        <label class="form-label" for="id_contract_reason">
+                                            <i class="bi bi-chat-left-text"></i>
+                                            {% trans "Reason" %}
+                                        </label>
+                                        <textarea class="form-control" id="id_contract_reason" name="contract_reason" 
+                                                  rows="3" placeholder="{% trans 'Explain the reason for this request' %}"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Document fields -->
+                                <div class="dynamic-group" data-category="document" style="display: none;">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label" for="id_document_id">
+                                            <i class="bi bi-file-earmark"></i>
+                                            {% trans "Document ID" %}
+                                        </label>
+                                        <input type="text" class="form-control" id="id_document_id" 
+                                               name="document_id" placeholder="{% trans 'Document ID or reference' %}">
+                                    </div>
+                                    <div class="form-floating-custom mb-0">
+                                        <label class="form-label" for="id_document_reason">
+                                            <i class="bi bi-chat-left-text"></i>
+                                            {% trans "Reason" %}
+                                        </label>
+                                        <textarea class="form-control" id="id_document_reason" name="document_reason" 
+                                                  rows="3" placeholder="{% trans 'Explain the reason for this request' %}"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Attachments -->
+                    <div class="form-card mb-4" id="step-3-card">
+                        <div class="form-card-header">
+                            <i class="bi bi-paperclip"></i>
+                            <h5>{% trans "Attachments" %}</h5>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="file-upload-zone" id="file-upload-zone">
+                                <input type="file" id="id_attachments" name="attachments" multiple 
+                                       class="d-none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif">
+                                <i class="bi bi-cloud-arrow-up d-block"></i>
+                                <p class="mb-1 fw-medium" style="font-size: var(--font-sm);">
+                                    {% trans "Drag and drop files here or click to browse" %}
+                                </p>
+                                <p class="text-muted mb-0" style="font-size: var(--font-xs);">
+                                    {% trans "PDF, Word, Excel, Images (Max 25MB per file)" %}
+                                </p>
+                            </div>
+                            <div class="file-list" id="file-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Section -->
+                    <div class="submit-section d-flex justify-content-between align-items-center">
+                        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-2"></i>
+                            {% trans "Cancel" %}
+                        </a>
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-shield-check"></i>
+                            {% trans "Submit Request" %}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview Sidebar -->
+                <div class="col-lg-4">
+                    <div class="preview-sidebar">
+                        <div class="preview-card" id="preview-card">
+                            <div class="preview-header">
+                                <i class="bi bi-eye"></i>
+                                <h6>{% trans "Request Preview" %}</h6>
+                            </div>
+                            <div class="preview-body" id="preview-content">
+                                <div class="preview-empty">
+                                    <i class="bi bi-file-earmark-text d-block"></i>
+                                    <p class="mb-0" style="font-size: var(--font-sm);">
+                                        {% trans "Fill in the form to see a preview" %}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -799,12 +1034,26 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const categoryField = document.getElementById('id_category');
-    const amountField = document.getElementById('amount-field');
+    // Form Elements
     const form = document.getElementById('request-form');
-    const previewCard = document.getElementById('preview-card');
+    const categoryField = document.getElementById('id_category');
+    const priorityField = document.getElementById('id_priority');
+    const amountField = document.getElementById('amount-field');
     const previewContent = document.getElementById('preview-content');
     const verifiedTokenField = document.getElementById('webauthn_verified_token');
+    const fileInput = document.getElementById('id_attachments');
+    const fileUploadZone = document.getElementById('file-upload-zone');
+    const fileList = document.getElementById('file-list');
+    
+    // Category Cards
+    const categoryCards = document.querySelectorAll('.category-card');
+    
+    // Priority Options
+    const priorityOptions = document.querySelectorAll('.priority-option');
+    
+    // Step indicators
+    const stepItems = document.querySelectorAll('.step-item');
+    const stepConnectors = document.querySelectorAll('.step-connector');
     
     // WebAuthn Modal Elements
     const webauthnModal = new bootstrap.Modal(document.getElementById('webauthnModal'));
@@ -826,36 +1075,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const webauthnOptionsUrl = "{% url 'requests:create-webauthn-options' %}";
     const webauthnVerifyUrl = "{% url 'requests:create-webauthn-verify' %}";
     
-    // Store form data for WebAuthn flow
-    let pendingFormData = null;
+    // State
     let creationToken = null;
-    let isSubmittingAfterWebAuthn = false;  // Flag to bypass WebAuthn modal on verified submit
+    let selectedFiles = [];
     
-    // Category configurations (matches Django form)
+    // Category configurations
     const categoryConfigs = {
         'expense': {
             'show_amount': true,
-            'required_fields': ['title', 'description', 'amount', 'priority', 'expense_category', 'receipt_ref'],
+            'required_fields': ['title', 'description', 'amount', 'priority'],
             'extra_fields': ['expense_category', 'receipt_ref']
         },
         'purchase': {
             'show_amount': true,
-            'required_fields': ['title', 'description', 'amount', 'priority', 'purchase_vendor', 'cost_center'],
+            'required_fields': ['title', 'description', 'amount', 'priority'],
             'extra_fields': ['purchase_vendor', 'cost_center']
         },
         'travel': {
             'show_amount': true,
-            'required_fields': ['title', 'description', 'amount', 'priority', 'destination', 'start_date', 'end_date'],
+            'required_fields': ['title', 'description', 'amount', 'priority'],
             'extra_fields': ['destination', 'start_date', 'end_date']
         },
         'contract': {
             'show_amount': false,
-            'required_fields': ['title', 'description', 'priority', 'contract_vendor', 'contract_reason'],
+            'required_fields': ['title', 'description', 'priority'],
             'extra_fields': ['contract_vendor', 'contract_reason']
         },
         'document': {
             'show_amount': false,
-            'required_fields': ['title', 'description', 'priority', 'document_id', 'document_reason'],
+            'required_fields': ['title', 'description', 'priority'],
             'extra_fields': ['document_id', 'document_reason']
         },
         'other': {
@@ -865,7 +1113,297 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // Helper to show toast
+    const categoryNames = {
+        'expense': '{% trans "Expense" %}',
+        'purchase': '{% trans "Purchase" %}',
+        'travel': '{% trans "Travel" %}',
+        'contract': '{% trans "Contract" %}',
+        'document': '{% trans "Document" %}',
+        'other': '{% trans "Other" %}'
+    };
+    
+    const priorityNames = {
+        'low': '{% trans "Low" %}',
+        'medium': '{% trans "Medium" %}',
+        'high': '{% trans "High" %}'
+    };
+    
+    // ===== Category Selection =====
+    categoryCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            
+            // Update hidden field
+            categoryField.value = category;
+            
+            // Update visual state
+            categoryCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Update form fields
+            updateFormFields();
+            
+            // Update step indicator
+            updateStepIndicator(2);
+        });
+    });
+    
+    // ===== Priority Selection =====
+    priorityOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const priority = this.getAttribute('data-priority');
+            
+            // Update hidden field
+            priorityField.value = priority;
+            
+            // Update visual state
+            priorityOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Update preview
+            updatePreview();
+        });
+    });
+    
+    // ===== File Upload =====
+    fileUploadZone.addEventListener('click', () => fileInput.click());
+    
+    fileUploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadZone.classList.add('dragover');
+    });
+    
+    fileUploadZone.addEventListener('dragleave', () => {
+        fileUploadZone.classList.remove('dragover');
+    });
+    
+    fileUploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+    
+    function handleFiles(files) {
+        for (let file of files) {
+            if (file.size > 25 * 1024 * 1024) {
+                showToast(`{% trans "File is too large" %}: ${file.name}`, 'error');
+                continue;
+            }
+            selectedFiles.push(file);
+        }
+        renderFileList();
+        updateStepIndicator(3);
+    }
+    
+    function renderFileList() {
+        fileList.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+            const size = formatFileSize(file.size);
+            const icon = getFileIcon(file.name);
+            fileList.innerHTML += `
+                <div class="file-item">
+                    <i class="bi ${icon}"></i>
+                    <span class="file-name">${file.name}</span>
+                    <span class="file-size">${size}</span>
+                    <span class="remove-file" data-index="${index}">
+                        <i class="bi bi-x-lg"></i>
+                    </span>
+                </div>
+            `;
+        });
+        
+        // Add remove handlers
+        fileList.querySelectorAll('.remove-file').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                selectedFiles.splice(index, 1);
+                renderFileList();
+                updateFileInput();
+            });
+        });
+    }
+    
+    function updateFileInput() {
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+    
+    function getFileIcon(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const icons = {
+            'pdf': 'bi-file-pdf',
+            'doc': 'bi-file-word',
+            'docx': 'bi-file-word',
+            'xls': 'bi-file-excel',
+            'xlsx': 'bi-file-excel',
+            'png': 'bi-file-image',
+            'jpg': 'bi-file-image',
+            'jpeg': 'bi-file-image',
+            'gif': 'bi-file-image'
+        };
+        return icons[ext] || 'bi-file-earmark';
+    }
+    
+    // ===== Step Indicator =====
+    function updateStepIndicator(currentStep) {
+        stepItems.forEach((item, index) => {
+            const step = index + 1;
+            item.classList.remove('active', 'completed');
+            
+            if (step < currentStep) {
+                item.classList.add('completed');
+            } else if (step === currentStep) {
+                item.classList.add('active');
+            }
+        });
+        
+        stepConnectors.forEach((connector, index) => {
+            connector.classList.remove('completed');
+            if (index < currentStep - 1) {
+                connector.classList.add('completed');
+            }
+        });
+    }
+    
+    // ===== Form Fields Update =====
+    function updateFormFields() {
+        const category = categoryField.value;
+        const config = categoryConfigs[category] || categoryConfigs['other'];
+        
+        // Show/hide amount field
+        if (config.show_amount) {
+            amountField.style.display = 'block';
+        } else {
+            amountField.style.display = 'none';
+            document.getElementById('id_amount').value = '';
+        }
+        
+        // Show/hide dynamic field groups
+        document.querySelectorAll('.dynamic-group').forEach(group => {
+            const groupCategory = group.getAttribute('data-category');
+            if (groupCategory === category) {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+                group.querySelectorAll('input, textarea').forEach(field => {
+                    field.value = '';
+                });
+            }
+        });
+        
+        updatePreview();
+    }
+    
+    // ===== Preview Update =====
+    function updatePreview() {
+        const title = document.getElementById('id_title').value;
+        const description = document.getElementById('id_description').value;
+        const category = categoryField.value;
+        const priority = priorityField.value;
+        const amount = document.getElementById('id_amount').value;
+        const config = categoryConfigs[category] || categoryConfigs['other'];
+        
+        if (!title && !description) {
+            previewContent.innerHTML = `
+                <div class="preview-empty">
+                    <i class="bi bi-file-earmark-text d-block"></i>
+                    <p class="mb-0" style="font-size: var(--font-sm);">
+                        {% trans "Fill in the form to see a preview" %}
+                    </p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        
+        if (title) {
+            html += `
+                <div class="preview-field">
+                    <div class="preview-label">{% trans "Title" %}</div>
+                    <div class="preview-value">${escapeHtml(title)}</div>
+                </div>
+            `;
+        }
+        
+        if (description) {
+            html += `
+                <div class="preview-field">
+                    <div class="preview-label">{% trans "Description" %}</div>
+                    <div class="preview-value" style="font-weight: 400;">${escapeHtml(description).substring(0, 100)}${description.length > 100 ? '...' : ''}</div>
+                </div>
+            `;
+        }
+        
+        html += `
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="preview-field mb-0">
+                        <div class="preview-label">{% trans "Category" %}</div>
+                        <div class="preview-value">
+                            <span class="badge bg-primary-custom">${categoryNames[category] || category}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="preview-field mb-0">
+                        <div class="preview-label">{% trans "Priority" %}</div>
+                        <div class="preview-value">
+                            <span class="badge ${getPriorityClass(priority)}">${priorityNames[priority] || priority}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        if (config.show_amount && amount) {
+            html += `
+                <div class="preview-field mt-3 pt-3 border-top">
+                    <div class="preview-label">{% trans "Amount" %}</div>
+                    <div class="preview-amount">$${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                </div>
+            `;
+        }
+        
+        if (selectedFiles.length > 0) {
+            html += `
+                <div class="preview-field mt-3 pt-3 border-top">
+                    <div class="preview-label">{% trans "Attachments" %}</div>
+                    <div class="preview-value">${selectedFiles.length} {% trans "file(s)" %}</div>
+                </div>
+            `;
+        }
+        
+        previewContent.innerHTML = html;
+    }
+    
+    function getPriorityClass(priority) {
+        const classes = {
+            'low': 'bg-success',
+            'medium': 'bg-warning text-dark',
+            'high': 'bg-danger'
+        };
+        return classes[priority] || 'bg-secondary';
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // ===== Toast Helper =====
     function showToast(message, type = 'success') {
         toastMessage.textContent = message;
         toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
@@ -888,7 +1426,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toast.show();
     }
     
-    // Show modal state
+    // ===== WebAuthn Modal State =====
     function showModalState(state) {
         webauthnInitial.style.display = state === 'initial' ? 'block' : 'none';
         webauthnProcessing.style.display = state === 'processing' ? 'block' : 'none';
@@ -900,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', function() {
         webauthnCancelBtn.style.display = ['initial', 'error'].includes(state) ? 'inline-block' : 'none';
     }
     
-    // Base64 helpers
+    // ===== Base64 Helpers =====
     function base64ToBuffer(base64) {
         const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
         const buffer = new ArrayBuffer(binary.length);
@@ -922,12 +1460,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
     
-    // Perform WebAuthn authentication
+    // ===== WebAuthn Authentication =====
     async function performWebAuthn() {
         showModalState('processing');
         
         try {
-            // Get form data for context
             const formData = new FormData(form);
             const contextData = {
                 title: formData.get('title') || '',
@@ -935,7 +1472,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 amount: formData.get('amount') || '',
             };
             
-            // Step 1: Get WebAuthn options
             const optionsResponse = await fetch(webauthnOptionsUrl, {
                 method: 'POST',
                 headers: {
@@ -957,7 +1493,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const { options } = optionsResult;
             creationToken = optionsResult.creationToken;
 
-            // Step 2: Prepare WebAuthn options
             const publicKey = {
                 challenge: base64ToBuffer(options.challenge),
                 timeout: options.timeout || 60000,
@@ -970,14 +1505,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 userVerification: options.userVerification || 'required'
             };
 
-            // Step 3: Show biometric prompt
             const assertion = await navigator.credentials.get({ publicKey });
 
             if (!assertion) {
                 throw new Error('{% trans "WebAuthn authentication was cancelled" %}');
             }
 
-            // Step 4: Prepare assertion data
             const assertionData = {
                 id: assertion.id,
                 rawId: bufferToBase64(assertion.rawId),
@@ -990,7 +1523,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: assertion.type
             };
 
-            // Step 5: Verify WebAuthn response
             const verifyResponse = await fetch(webauthnVerifyUrl, {
                 method: 'POST',
                 headers: {
@@ -1014,14 +1546,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(verifyResult.error || '{% trans "Verification failed" %}');
             }
 
-            // Step 6: Success - set token and submit form
             showModalState('success');
             verifiedTokenField.value = verifyResult.verifiedToken;
             
-            // Short delay to show success message, then submit directly
             setTimeout(() => {
                 webauthnModal.hide();
-                // Use native submit to bypass event listeners
                 HTMLFormElement.prototype.submit.call(form);
             }, 800);
 
@@ -1042,208 +1571,79 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Event handlers for WebAuthn modal
+    // ===== Event Handlers =====
     webauthnConfirmBtn.addEventListener('click', performWebAuthn);
-    webauthnRetryBtn.addEventListener('click', function() {
-        showModalState('initial');
-    });
+    webauthnRetryBtn.addEventListener('click', () => showModalState('initial'));
     
-    // Reset modal state when closed
     document.getElementById('webauthnModal').addEventListener('hidden.bs.modal', function() {
         showModalState('initial');
         creationToken = null;
     });
     
-    function updateFormFields() {
+    // Form input listeners
+    document.getElementById('id_title').addEventListener('input', () => {
+        updatePreview();
+        if (document.getElementById('id_title').value) {
+            updateStepIndicator(2);
+        }
+    });
+    document.getElementById('id_description').addEventListener('input', updatePreview);
+    document.getElementById('id_amount').addEventListener('input', updatePreview);
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
         const category = categoryField.value;
         const config = categoryConfigs[category] || categoryConfigs['other'];
         
-        // Show/hide amount field
-        if (config.show_amount) {
-            if (amountField) {
-                amountField.style.display = 'block';
-                const amountInput = document.getElementById('id_amount');
-                if (amountInput) amountInput.required = true;
-            }
-        } else {
-            if (amountField) {
-                amountField.style.display = 'none';
-                const amountInput = document.getElementById('id_amount');
-                if (amountInput) {
-                    amountInput.required = false;
-                    amountInput.value = '';
-                }
-            }
-        }
+        let hasErrors = false;
+        const errorFields = [];
         
-        // Show/hide dynamic field groups
-        document.querySelectorAll('.dynamic-group').forEach(group => {
-            const groupCategory = group.getAttribute('data-category');
-            if (groupCategory === category) {
-                group.style.display = 'block';
-                // Set required attributes for fields in this group
-                group.querySelectorAll('input, select, textarea').forEach(field => {
-                    const fieldName = field.name;
-                    if (config.required_fields.includes(fieldName)) {
-                        field.required = true;
-                    }
-                });
-            } else {
-                group.style.display = 'none';
-                // Remove required attributes and clear values
-                group.querySelectorAll('input, select, textarea').forEach(field => {
-                    field.required = false;
-                    if (field.type !== 'hidden') {
-                        field.value = '';
-                    }
-                });
+        // Validate required fields
+        config.required_fields.forEach(fieldName => {
+            const field = document.getElementById('id_' + fieldName);
+            if (field && !field.value.trim()) {
+                field.classList.add('field-error');
+                errorFields.push(fieldName);
+                hasErrors = true;
+            } else if (field) {
+                field.classList.remove('field-error');
             }
         });
         
-        // Update category help highlighting
-        document.querySelectorAll('.category-item').forEach(item => {
-            const itemCategory = item.getAttribute('data-category');
-            if (itemCategory === category) {
-                item.classList.add('active');
-                item.style.backgroundColor = 'rgba(79, 70, 229, 0.05)';
-                item.style.borderColor = 'rgba(79, 70, 229, 0.2)';
-            } else {
-                item.classList.remove('active');
-                item.style.backgroundColor = '';
-                item.style.borderColor = 'transparent';
+        if (hasErrors) {
+            e.preventDefault();
+            showToast('{% trans "Please fill in all required fields." %}', 'warning');
+            // Scroll to first error
+            const firstError = document.querySelector('.field-error');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstError.focus();
             }
-        });
-        
-        updatePreview();
-    }
-    
-    function updatePreview() {
-        const formData = new FormData(form);
-        const category = formData.get('category');
-        const title = formData.get('title');
-        const description = formData.get('description');
-        const amount = formData.get('amount');
-        const priority = formData.get('priority');
-        
-        if (!title && !description) {
-            previewCard.style.display = 'none';
             return;
         }
         
-        previewCard.style.display = 'block';
+        // Update files before submit
+        updateFileInput();
         
-        let previewHtml = '';
-        
-        if (title) {
-            previewHtml += `<h6 class="fw-bold mb-1" style="font-size: var(--font-base);">${title}</h6>`;
+        // If we have a verified token, allow submit
+        if (verifiedTokenField.value) {
+            return;
         }
         
-        if (description) {
-            previewHtml += `<p class="text-muted mb-3" style="font-size: var(--font-sm);">${description}</p>`;
+        // Otherwise, show WebAuthn modal
+        e.preventDefault();
+        
+        if (!navigator.credentials || !navigator.credentials.get) {
+            showToast('{% trans "WebAuthn is not supported on this device/browser." %}', 'error');
+            return;
         }
         
-        previewHtml += '<div class="row g-2">';
-        
-        if (category) {
-            const categoryDisplay = categoryField.options[categoryField.selectedIndex].text;
-            previewHtml += `
-                <div class="col-6">
-                    <small class="text-muted d-block mb-1" style="font-size: var(--font-xs);">{% trans "Category" %}</small>
-                    <span class="badge bg-primary-custom fw-normal" style="font-size: var(--font-xs);">${categoryDisplay}</span>
-                </div>
-            `;
-        }
-        
-        if (priority) {
-            const prioritySelect = document.getElementById('id_priority');
-            const priorityDisplay = prioritySelect.options[prioritySelect.selectedIndex].text;
-            let priorityClass = 'bg-success';
-            if (priority === 'high') priorityClass = 'bg-danger';
-            else if (priority === 'medium') priorityClass = 'bg-warning text-dark';
-            
-            previewHtml += `
-                <div class="col-6">
-                    <small class="text-muted d-block mb-1" style="font-size: var(--font-xs);">{% trans "Priority" %}</small>
-                    <span class="badge ${priorityClass} fw-normal" style="font-size: var(--font-xs);">${priorityDisplay}</span>
-                </div>
-            `;
-        }
-        
-        previewHtml += '</div>';
-        
-        if (amount && categoryConfigs[category]?.show_amount) {
-            previewHtml += `
-                <div class="mt-3 pt-2 border-top">
-                    <small class="text-muted d-block mb-1" style="font-size: var(--font-xs);">{% trans "Amount" %}</small>
-                    <strong class="text-dark" style="font-size: var(--font-lg);">$${parseFloat(amount).toLocaleString()}</strong>
-                </div>
-            `;
-        }
-        
-        previewContent.innerHTML = previewHtml;
-    }
+        webauthnModal.show();
+    });
     
-    // Event listeners
-    if (categoryField) {
-        categoryField.addEventListener('change', updateFormFields);
-    }
-    
-    // Update preview on form changes
-    if (form) {
-        form.addEventListener('input', updatePreview);
-        form.addEventListener('change', updatePreview);
-        
-        // Form submission - intercept and show WebAuthn modal
-        form.addEventListener('submit', function(e) {
-            const category = categoryField.value;
-            const config = categoryConfigs[category] || categoryConfigs['other'];
-            
-            let hasErrors = false;
-            
-            // Validate required fields
-            config.required_fields.forEach(fieldName => {
-                const field = document.getElementById('id_' + fieldName);
-                if (field && !field.value.trim()) {
-                    field.classList.add('field-error');
-                    hasErrors = true;
-                } else if (field) {
-                    field.classList.remove('field-error');
-                }
-            });
-            
-            if (hasErrors) {
-                e.preventDefault();
-                showToast('{% trans "Please fill in all required fields." %}', 'warning');
-                return;
-            }
-            
-            // If we're submitting after WebAuthn verification, allow it
-            if (isSubmittingAfterWebAuthn && verifiedTokenField.value) {
-                // Reset flag and allow form submission
-                isSubmittingAfterWebAuthn = false;
-                return; // Allow the form to submit naturally
-            }
-            
-            // If we don't have a verified token yet, show WebAuthn modal
-            if (!verifiedTokenField.value) {
-                e.preventDefault();
-                
-                // Check if WebAuthn is supported
-                if (!navigator.credentials || !navigator.credentials.get) {
-                    showToast('{% trans "WebAuthn is not supported on this device/browser." %}', 'error');
-                    return;
-                }
-                
-                // Show WebAuthn modal
-                webauthnModal.show();
-            }
-        });
-    }
-    
-    // Initialize form
-    if (categoryField) {
-        updateFormFields();
-    }
+    // Initialize
+    updateFormFields();
+    updateStepIndicator(1);
 });
 </script>
 {% endblock %}
