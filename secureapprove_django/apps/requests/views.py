@@ -433,15 +433,18 @@ def download_request_attachment(request, attachment_id):
     This endpoint bypasses nginx static file serving to ensure proper download behavior.
     """
     try:
-        attachment = RequestAttachment.objects.select_related('request').get(id=attachment_id)
+        attachment = RequestAttachment.objects.select_related('request', 'request__tenant').get(id=attachment_id)
     except RequestAttachment.DoesNotExist:
         raise Http404("Attachment not found")
     
     # Verify user has access to this request (same tenant)
     approval_request = attachment.request
-    user_tenant = getattr(request.user, 'tenant', None)
-    if not user_tenant or approval_request.tenant_id != user_tenant.id:
-        raise Http404("Access denied")
+    user_tenant_id = getattr(request.user, 'tenant_id', None)
+    
+    # Superusers and staff can access all attachments
+    if not request.user.is_superuser and not request.user.is_staff:
+        if not user_tenant_id or approval_request.tenant_id != user_tenant_id:
+            raise Http404("Access denied")
     
     # Get file path
     if not attachment.file:
