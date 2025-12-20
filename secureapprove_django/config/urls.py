@@ -36,12 +36,18 @@ def serve_media_download(request, path):
     file_path = os.path.join(settings.MEDIA_ROOT, path)
     if os.path.exists(file_path) and os.path.isfile(file_path):
         filename = os.path.basename(file_path)
+        content_type, _ = mimetypes.guess_type(file_path)
         # Use as_attachment=True which properly sets Content-Disposition: attachment
         response = FileResponse(
             open(file_path, 'rb'), 
             as_attachment=True, 
-            filename=filename
+            filename=filename,
+            content_type=content_type or 'application/octet-stream'
         )
+        # Add CORS headers for fetch requests
+        response['Access-Control-Allow-Origin'] = '*'
+        response['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response['Access-Control-Allow-Headers'] = 'Content-Type'
         return response
     raise Http404("File not found")
 
