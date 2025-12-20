@@ -17,10 +17,11 @@ class ChatAttachmentSerializer(serializers.ModelSerializer):
     """Serializer for chat file attachments."""
 
     file_url = serializers.SerializerMethodField()
+    download_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ChatAttachment
-        fields = ['id', 'filename', 'content_type', 'size', 'file', 'file_url', 'uploaded_at']
+        fields = ['id', 'filename', 'content_type', 'size', 'file', 'file_url', 'download_url', 'uploaded_at']
         read_only_fields = ['id', 'uploaded_at', 'size', 'content_type']
 
     def get_file_url(self, obj):
@@ -29,6 +30,18 @@ class ChatAttachmentSerializer(serializers.ModelSerializer):
         if obj.file and request:
             return request.build_absolute_uri(obj.file.url)
         return obj.file.url if obj.file else None
+
+    def get_download_url(self, obj):
+        """Return absolute URL for forced download."""
+        request = self.context.get('request')
+        if obj.file and request:
+            # Replace /media/ with /media/download/ to force download
+            file_url = obj.file.url
+            download_path = file_url.replace('/media/', '/media/download/')
+            return request.build_absolute_uri(download_path)
+        elif obj.file:
+            return obj.file.url.replace('/media/', '/media/download/')
+        return None
 
     def validate_file(self, value):
         """Validate file size and content type."""

@@ -662,11 +662,8 @@
                 message.attachments.forEach(att => {
                     if (!att || !att.file) return;
                     
-                    // Convert media URL to download URL for forced download
-                    let fileUrl = att.file_url || att.file;
-                    if (fileUrl && fileUrl.includes('/media/')) {
-                        fileUrl = fileUrl.replace('/media/', '/media/download/');
-                    }
+                    // Use download_url for forced download, fallback to file_url
+                    const fileUrl = att.download_url || att.file_url || att.file;
                     
                     const link = document.createElement('a');
                     link.href = fileUrl;
