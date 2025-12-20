@@ -758,7 +758,7 @@ def download_attachment(request, attachment_id):
     
     # Verify user has access to this conversation
     conversation = attachment.message.conversation
-    if not conversation.participants.filter(user=request.user).exists():
+    if not conversation.participant_set.filter(user=request.user).exists():
         raise Http404("Access denied")
     
     # Get file path
