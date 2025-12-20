@@ -288,6 +288,23 @@
 
 {% block extra_js %}
 <script>
+    // Format dates to local time when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.local-date').forEach(function(element) {
+            const isoDate = element.getAttribute('data-iso');
+            if (isoDate) {
+                const date = new Date(isoDate);
+                if (!isNaN(date.getTime())) {
+                    element.textContent = date.toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+            }
+        });
+    });
+
     function getStatusColor(status) {
         switch(status) {
             case 'approved': return 'success';
@@ -402,21 +419,6 @@
                     card.style.backgroundColor = originalBg;
                 }, 2000);
             }
-    });
-
-    // Format dates to local time
-    document.querySelectorAll('.local-date').forEach(function(element) {
-        const isoDate = element.getAttribute('data-iso');
-        if (isoDate) {
-            const date = new Date(isoDate);
-            if (!isNaN(date.getTime())) {
-                element.textContent = date.toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
-            }
-        }
     });
 
     // Dynamic search - client-side filtering with pagination update

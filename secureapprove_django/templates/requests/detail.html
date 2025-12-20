@@ -542,22 +542,39 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Format dates to local time FIRST (before any other code that might fail)
+    document.querySelectorAll('.local-datetime').forEach(function(element) {
+        const isoDate = element.getAttribute('data-iso');
+        if (isoDate) {
+            const date = new Date(isoDate);
+            if (!isNaN(date.getTime())) {
+                element.textContent = date.toLocaleString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+    });
+
     const approveForm = document.getElementById('approveForm');
     const rejectForm = document.getElementById('rejectForm');
     
     // UI Elements
     const confirmationModalEl = document.getElementById('actionConfirmationModal');
-    const confirmationModal = new bootstrap.Modal(confirmationModalEl);
+    const confirmationModal = confirmationModalEl ? new bootstrap.Modal(confirmationModalEl) : null;
     const modalTitle = document.getElementById('confirmationModalTitle');
     const modalBody = document.getElementById('confirmationModalBody');
     const confirmBtn = document.getElementById('confirmActionBtn');
     const modalRejectionContainer = document.getElementById('rejectionReasonContainer');
     
     const toastEl = document.getElementById('actionToast');
-    const toast = new bootstrap.Toast(toastEl);
+    const toast = toastEl ? new bootstrap.Toast(toastEl) : null;
     const toastMessage = document.getElementById('toastMessage');
     const toastIcon = document.getElementById('toastIcon');
-    const toastBody = toastEl.querySelector('.toast-body'); // For changing background color if needed, though we use bg classes on toastEl usually
+    const toastBody = toastEl ? toastEl.querySelector('.toast-body') : null; // For changing background color if needed, though we use bg classes on toastEl usually
 
     let pendingAction = null;
 
@@ -740,23 +757,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
-
-    // Format dates to local time
-    document.querySelectorAll('.local-datetime').forEach(function(element) {
-        const isoDate = element.getAttribute('data-iso');
-        if (isoDate) {
-            const date = new Date(isoDate);
-            if (!isNaN(date.getTime())) {
-                element.textContent = date.toLocaleString(undefined, {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-        }
-    });
 
     // Handle Approve form
     if (approveForm) {
