@@ -46,15 +46,34 @@ def dashboard(request):
         'requester', 'approver'
     ).order_by('-created_at')[:10]
     
-    # Category breakdown
-    category_stats = list(requests_qs.values('category').annotate(
+    # Category breakdown with translated labels
+    category_counts = requests_qs.values('category').annotate(
         count=Count('id')
-    ).order_by('-count'))
+    ).order_by('-count')
     
-    # Priority breakdown
-    priority_stats = list(requests_qs.values('priority').annotate(
+    # Map category codes to translated display names
+    category_display_map = dict(ApprovalRequest.CATEGORY_CHOICES)
+    category_stats = [
+        {
+            'category': str(category_display_map.get(item['category'], item['category'])),
+            'count': item['count']
+        }
+        for item in category_counts
+    ]
+    
+    # Priority breakdown with translated labels
+    priority_counts = requests_qs.values('priority').annotate(
         count=Count('id')
-    ).order_by('-count'))
+    ).order_by('-count')
+    
+    priority_display_map = dict(ApprovalRequest.PRIORITY_CHOICES)
+    priority_stats = [
+        {
+            'priority': str(priority_display_map.get(item['priority'], item['priority'])),
+            'count': item['count']
+        }
+        for item in priority_counts
+    ]
     
     # Requests by status over time (last 30 days)
     thirty_days_ago = timezone.now() - timedelta(days=30)
