@@ -212,9 +212,10 @@ msgstr ""
 "completar el registro"
 
 msgid "Please use your fingerprint, Face ID, or security key to sign in"
-msgstr "Por favor use su huella digital, Face ID, o llave de seguridad para iniciar sesión"
-"Por favor usa tu huella dactilar, Face ID, o llave de seguridad para iniciar"
-" sesión"
+msgstr ""
+"Por favor use su huella digital, Face ID, o llave de seguridad para iniciar "
+"sesiónPor favor usa tu huella dactilar, Face ID, o llave de seguridad para "
+"iniciar sesión"
 
 msgid "Verifying..."
 msgstr "Verificando..."
@@ -1298,8 +1299,10 @@ msgid "Metadata"
 msgstr "Metadatos"
 
 msgid "Category-specific data: vendor, cost_center, destination, etc."
-msgstr "Datos específicos de categoría: proveedor, centro de costos, destino, etc."
-"Datos específicos de la categoría: proveedor, centro_coste, destino, etc."
+msgstr ""
+"Datos específicos de categoría: proveedor, centro de costos, destino, "
+"etc.Datos específicos de la categoría: proveedor, centro_coste, destino, "
+"etc."
 
 msgid "Expires At"
 msgstr "Vence en"
@@ -1395,8 +1398,9 @@ msgid "Welcome back!"
 msgstr "¡Bienvenido de nuevo!"
 
 msgid "Sign in to access your approval workflow dashboard"
-msgstr "Inicie sesión para acceder a su panel de flujo de aprobaciones"
-"Inicie sesión para acceder a su panel de flujo de trabajo de aprobación"
+msgstr ""
+"Inicie sesión para acceder a su panel de flujo de aprobacionesInicie sesión "
+"para acceder a su panel de flujo de trabajo de aprobación"
 
 msgid "Fast"
 msgstr "Fast"
@@ -1462,8 +1466,10 @@ msgid "No biometric devices registered"
 msgstr "No hay dispositivos biométricos registrados"
 
 msgid "Add a biometric device to enhance your account security"
-msgstr "Añada un dispositivo biométrico para mejorar la seguridad de su cuenta"
-"Agregue un dispositivo biométrico para mejorar la seguridad de su cuenta"
+msgstr ""
+"Añada un dispositivo biométrico para mejorar la seguridad de su "
+"cuentaAgregue un dispositivo biométrico para mejorar la seguridad de su "
+"cuenta"
 
 msgid "Security Information"
 msgstr "Información de seguridad"
@@ -2068,9 +2074,10 @@ msgid "This invitation is no longer valid."
 msgstr "Esta invitación ya no es válida."
 
 msgid "This tenant has no available seats. Please contact the administrator."
-msgstr "Este inquilino no tiene asientos disponibles. Por favor contacte al administrador."
-"Este tenant no tiene asientos disponibles. Por favor contacta al "
-"administrador."
+msgstr ""
+"Este inquilino no tiene asientos disponibles. Por favor contacte al "
+"administrador.Este tenant no tiene asientos disponibles. Por favor contacta "
+"al administrador."
 
 msgid ""
 "This email is already associated with a different tenant. Please contact "
@@ -2515,9 +2522,10 @@ msgid "Approval type '%(name)s' has been deleted."
 msgstr "El tipo de aprobación '%(name)s' ha sido eliminado."
 
 msgid "Cannot delete default approval types. You can disable them instead."
-msgstr "No se pueden eliminar los tipos de aprobación predeterminados. Puede deshabilitarlos en su lugar."
-"No se pueden eliminar los tipos de aprobación predeterminados. Puedes "
-"deshabilitarlos."
+msgstr ""
+"No se pueden eliminar los tipos de aprobación predeterminados. Puede "
+"deshabilitarlos en su lugar.No se pueden eliminar los tipos de aprobación "
+"predeterminados. Puedes deshabilitarlos."
 
 msgid "Approval type not found."
 msgstr "Tipo de aprobación no encontrado."
@@ -2846,9 +2854,10 @@ msgid "Respond to your comments and questions."
 msgstr "Responder a tus comentarios y preguntas."
 
 msgid "Monitor and analyze usage patterns to improve user experience."
-msgstr "Monitorear y analizar patrones de uso para mejorar la experiencia del usuario."
+msgstr ""
 "Monitorear y analizar patrones de uso para mejorar la experiencia del "
-"usuario."
+"usuario.Monitorear y analizar patrones de uso para mejorar la experiencia "
+"del usuario."
 
 msgid "5. Information Sharing"
 msgstr "5. Compartición de Información"
@@ -2872,8 +2881,9 @@ msgstr ""
 "aprobación."
 
 msgid "To comply with legal obligations or respond to lawful requests."
-msgstr "Para cumplir con obligaciones legales o responder a solicitudes legales."
-"Para cumplir con obligaciones legales o responder a solicitudes legítimas."
+msgstr ""
+"Para cumplir con obligaciones legales o responder a solicitudes legales.Para"
+" cumplir con obligaciones legales o responder a solicitudes legítimas."
 
 msgid ""
 "To protect the rights, privacy, safety, or property of SecureApprove, our "
@@ -2899,8 +2909,10 @@ msgid "Regular security audits and vulnerability assessments."
 msgstr "Auditorías de seguridad regulares y evaluaciones de vulnerabilidad."
 
 msgid "Access controls and authentication requirements for our systems."
-msgstr "Controles de acceso y requisitos de autenticación para nuestros sistemas."
-"Controles de acceso y requisitos de autenticación para nuestros sistemas."
+msgstr ""
+"Controles de acceso y requisitos de autenticación para nuestros "
+"sistemas.Controles de acceso y requisitos de autenticación para nuestros "
+"sistemas."
 
 msgid "Secure data centers with physical security measures."
 msgstr "Centros de datos seguros con medidas de seguridad física."
@@ -2987,7 +2999,6 @@ msgstr "Términos de Servicio"
 # ================================================
 # Landing Page - Updated Features
 # ================================================
-
 msgid "Seguridad avanzada y autenticación biométrica"
 msgstr "Seguridad avanzada y autenticación biométrica"
 
@@ -3178,8 +3189,12 @@ msgstr "Enviar Solicitud"
 msgid "WebAuthn is not supported on this device/browser."
 msgstr "WebAuthn no es compatible con este dispositivo/navegador."
 
-msgid "No biometric credentials registered. Please register a device from your profile first."
-msgstr "No hay credenciales biométricas registradas. Por favor, registra un dispositivo desde tu perfil primero."
+msgid ""
+"No biometric credentials registered. Please register a device from your "
+"profile first."
+msgstr ""
+"No hay credenciales biométricas registradas. Por favor, registra un "
+"dispositivo desde tu perfil primero."
 
 msgid "Failed to get authentication options"
 msgstr "Error al obtener opciones de autenticación"
@@ -3194,10 +3209,58 @@ msgid "Verification failed"
 msgstr "La verificación falló"
 
 msgid "Biometric authentication was cancelled or denied. Please try again."
-msgstr "La autenticación biométrica fue cancelada o denegada. Por favor, intenta nuevamente."
+msgstr ""
+"La autenticación biométrica fue cancelada o denegada. Por favor, intenta "
+"nuevamente."
 
 msgid "No matching credential found on this device."
 msgstr "No se encontró credencial coincidente en este dispositivo."
 
 msgid "This device does not support the required authentication method."
 msgstr "Este dispositivo no admite el método de autenticación requerido."
+
+msgid "Submit a new approval request for review"
+msgstr "Envía una nueva solicitud de aprobación para revisión"
+
+msgid "Details"
+msgstr "Detalles"
+
+msgid "Review"
+msgstr "Revisar"
+
+msgid "Receipt number"
+msgstr "Número de recibo"
+
+msgid "Confirm Your Identity"
+msgstr "Confirma Tu Identidad"
+
+msgid "Biometric Verification Required"
+msgstr "Verificación Biométrica Requerida"
+
+msgid ""
+"Please authenticate using your fingerprint, face recognition, or security "
+"key to submit this request."
+msgstr ""
+"Por favor, autentícate usando tu huella digital, reconocimiento facial o "
+"llave de seguridad para enviar esta solicitud."
+
+msgid "Waiting for authentication..."
+msgstr "Esperando autenticación..."
+
+msgid "Please complete the biometric prompt on your device."
+msgstr "Por favor, completa el aviso biométrico en tu dispositivo."
+
+msgid "Authentication Successful"
+msgstr "Autenticación Exitosa"
+
+msgid "Submitting your request..."
+msgstr "Enviando tu solicitud..."
+
+msgid "Authentication Failed"
+msgstr "Autenticación Fallida"
+
+msgid "Please try again."
+msgstr "Por favor, intenta de nuevo."
+
+msgid "Authenticate"
+msgstr "Autenticar"

@@ -2710,6 +2710,236 @@ msgid ""
 msgstr ""
 "An unexpected error occurred while adding this device. Please try again."
 
+# ================================================
+# Landing Page - New Features (Updated)
+# ================================================
+msgid "Advanced security and biometric authentication"
+msgstr "Advanced security and biometric authentication"
+
+msgid "Compliance with security standards"
+msgstr "Compliance with security standards"
+
+msgid "Compatible with PC, Android and iOS"
+msgstr "Compatible with PC, Android and iOS"
+
+msgid "Approve from any device"
+msgstr "Approve from any device"
+
+msgid "Instant communication with your team"
+msgstr "Instant communication with your team"
+
+msgid "100%"
+msgstr "100%"
+
+msgid "Certified Security"
+msgstr "Certified Security"
+
+msgid "Multi-platform Compatibility"
+msgstr "Multi-platform Compatibility"
+
+msgid "Integrated Chat"
+msgstr "Integrated Chat"
+
+# ================================================
+# Demo Page - Updated Structure
+# ================================================
+msgid "Pendiente de Aprobación"
+msgstr "Pending Approval"
+
+msgid "Esta solicitud está esperando aprobación de un administrador."
+msgstr "This request is waiting for approval from an administrator."
+
+msgid "Detalles de la Solicitud"
+msgstr "Request Details"
+
+msgid "INFORMACIÓN ADICIONAL"
+msgstr "ADDITIONAL INFORMATION"
+
+msgid "Proveedor"
+msgstr "Vendor"
+
+msgid "Centro de Costo"
+msgstr "Cost Center"
+
+msgid "Documentos Adjuntos"
+msgstr "Attached Documents"
+
+msgid "Historial"
+msgstr "History"
+
+msgid "Solicitud creada"
+msgstr "Request created"
+
+msgid "Ana García creó esta solicitud"
+msgstr "Ana García created this request"
+
+msgid "Esperando aprobación"
+msgstr "Awaiting approval"
+
+msgid "La solicitud está pendiente de revisión"
+msgstr "The request is pending review"
+
+msgid "Prioridad Media"
+msgstr "Medium Priority"
+
+msgid "Compra"
+msgstr "Purchase"
+
+# ================================================
+# Chat Group Features
+# ================================================
+msgid "Create Group"
+msgstr "Create Group"
+
+msgid "Enter group name..."
+msgstr "Enter group name..."
+
+msgid "Please enter a group name"
+msgstr "Please enter a group name"
+
+msgid "Select at least 2 users for the group"
+msgstr "Select at least 2 users for the group"
+
+msgid "Select users for group"
+msgstr "Select users for group"
+
+msgid "Group created successfully"
+msgstr "Group created successfully"
+
+msgid "Could not create group"
+msgstr "Could not create group"
+
+msgid "Leave Group"
+msgstr "Leave Group"
+
+msgid "Add Participants"
+msgstr "Add Participants"
+
+msgid "Group Members"
+msgstr "Group Members"
+
+msgid "Submit a new approval request for review"
+msgstr "Submit a new approval request for review"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "Select Request Category"
+msgstr "Select Request Category"
+
+msgid "Choose the type of request you want to submit"
+msgstr "Choose the type of request you want to submit"
+
+msgid "Reimbursements"
+msgstr "Reimbursements"
+
+msgid "Equipment & supplies"
+msgstr "Equipment & supplies"
+
+msgid "Trips & logistics"
+msgstr "Trips & logistics"
+
+msgid "Agreements"
+msgstr "Agreements"
+
+msgid "Approvals"
+msgstr "Approvals"
+
+msgid "General"
+msgstr "General"
+
+msgid "Enter a descriptive title for your request"
+msgstr "Enter a descriptive title for your request"
+
+msgid "Provide detailed information about your request"
+msgstr "Provide detailed information about your request"
+
+msgid "Receipt number"
+msgstr "Receipt number"
+
+msgid "Drag and drop files here or click to browse"
+msgstr "Drag and drop files here or click to browse"
+
+msgid "PDF, Word, Excel, Images (Max 25MB per file)"
+msgstr "PDF, Word, Excel, Images (Max 25MB per file)"
+
+msgid "Request Preview"
+msgstr "Request Preview"
+
+msgid "Fill in the form to see a preview"
+msgstr "Fill in the form to see a preview"
+
+msgid "Confirm Your Identity"
+msgstr "Confirm Your Identity"
+
+msgid "Biometric Verification Required"
+msgstr "Biometric Verification Required"
+
+msgid ""
+"Please authenticate using your fingerprint, face recognition, or security "
+"key to submit this request."
+msgstr ""
+"Please authenticate using your fingerprint, face recognition, or security "
+"key to submit this request."
+
+msgid "Loading..."
+msgstr "Loading..."
+
+msgid "Waiting for authentication..."
+msgstr "Waiting for authentication..."
+
+msgid "Please complete the biometric prompt on your device."
+msgstr "Please complete the biometric prompt on your device."
+
+msgid "Authentication Successful"
+msgstr "Authentication Successful"
+
+msgid "Submitting your request..."
+msgstr "Submitting your request..."
+
+msgid "Authentication Failed"
+msgstr "Authentication Failed"
+
+msgid "Please try again."
+msgstr "Please try again."
+
+msgid "Authenticate"
+msgstr "Authenticate"
+
+msgid "File is too large"
+msgstr "File is too large"
+
+msgid "file(s)"
+msgstr "file(s)"
+
+msgid ""
+"No biometric credentials registered. Please register a device from your "
+"profile first."
+msgstr ""
+"No biometric credentials registered. Please register a device from your "
+"profile first."
+
+msgid "Failed to get authentication options"
+msgstr "Failed to get authentication options"
+
+msgid "Verification failed"
+msgstr "Verification failed"
+
+msgid "Biometric authentication was cancelled or denied. Please try again."
+msgstr "Biometric authentication was cancelled or denied. Please try again."
+
+msgid "No matching credential found on this device."
+msgstr "No matching credential found on this device."
+
+msgid "This device does not support the required authentication method."
+msgstr "This device does not support the required authentication method."
+
+msgid "WebAuthn is not supported on this device/browser."
+msgstr "WebAuthn is not supported on this device/browser."
+
 #~ msgid "Submit"
 #~ msgstr "Submit"
 
@@ -2862,112 +3092,3 @@ msgstr ""
 
 #~ msgid "December"
 #~ msgstr "December"
-
-# ================================================
-# Landing Page - New Features (Updated)
-# ================================================
-msgid "Advanced security and biometric authentication"
-msgstr "Advanced security and biometric authentication"
-
-msgid "Compliance with security standards"
-msgstr "Compliance with security standards"
-
-msgid "Compatible with PC, Android and iOS"
-msgstr "Compatible with PC, Android and iOS"
-
-msgid "Approve from any device"
-msgstr "Approve from any device"
-
-msgid "Instant communication with your team"
-msgstr "Instant communication with your team"
-
-msgid "100%"
-msgstr "100%"
-
-msgid "Certified Security"
-msgstr "Certified Security"
-
-msgid "Multi-platform Compatibility"
-msgstr "Multi-platform Compatibility"
-
-msgid "Integrated Chat"
-msgstr "Integrated Chat"
-
-# ================================================
-# Demo Page - Updated Structure
-# ================================================
-msgid "Pendiente de Aprobación"
-msgstr "Pending Approval"
-
-msgid "Esta solicitud está esperando aprobación de un administrador."
-msgstr "This request is waiting for approval from an administrator."
-
-msgid "Detalles de la Solicitud"
-msgstr "Request Details"
-
-msgid "INFORMACIÓN ADICIONAL"
-msgstr "ADDITIONAL INFORMATION"
-
-msgid "Proveedor"
-msgstr "Vendor"
-
-msgid "Centro de Costo"
-msgstr "Cost Center"
-
-msgid "Documentos Adjuntos"
-msgstr "Attached Documents"
-
-msgid "Historial"
-msgstr "History"
-
-msgid "Solicitud creada"
-msgstr "Request created"
-
-msgid "Ana García creó esta solicitud"
-msgstr "Ana García created this request"
-
-msgid "Esperando aprobación"
-msgstr "Awaiting approval"
-
-msgid "La solicitud está pendiente de revisión"
-msgstr "The request is pending review"
-
-msgid "Prioridad Media"
-msgstr "Medium Priority"
-
-msgid "Compra"
-msgstr "Purchase"
-
-# ================================================
-# Chat Group Features
-# ================================================
-msgid "Create Group"
-msgstr "Create Group"
-
-msgid "Enter group name..."
-msgstr "Enter group name..."
-
-msgid "Please enter a group name"
-msgstr "Please enter a group name"
-
-msgid "Select at least 2 users for the group"
-msgstr "Select at least 2 users for the group"
-
-msgid "Select users for group"
-msgstr "Select users for group"
-
-msgid "Group created successfully"
-msgstr "Group created successfully"
-
-msgid "Could not create group"
-msgstr "Could not create group"
-
-msgid "Leave Group"
-msgstr "Leave Group"
-
-msgid "Add Participants"
-msgstr "Add Participants"
-
-msgid "Group Members"
-msgstr "Group Members"
-

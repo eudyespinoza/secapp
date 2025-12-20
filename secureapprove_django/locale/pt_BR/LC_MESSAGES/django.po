@@ -2544,7 +2544,7 @@ msgid "Scan this QR code with the device you want to pair."
 msgstr "Scan this QR code with the device you want to pair."
 
 msgid "Close"
-msgstr "Close"
+msgstr "Fechar"
 
 msgid "Link copied to clipboard."
 msgstr "Link copied to clipboard."
@@ -3262,3 +3262,123 @@ msgstr "Máx 25MB. Qualquer tipo de arquivo é permitido."
 msgid "Select users for group:"
 msgstr "Selecionar usuários para o grupo:"
 
+msgid "Submit a new approval request for review"
+msgstr "Envie uma nova solicitação de aprovação para revisão"
+
+msgid "Details"
+msgstr "Detalhes"
+
+msgid "Review"
+msgstr "Revisar"
+
+msgid "Select Request Category"
+msgstr "Selecione a Categoria da Solicitação"
+
+msgid "Choose the type of request you want to submit"
+msgstr "Escolha o tipo de solicitação que deseja enviar"
+
+msgid "Reimbursements"
+msgstr "Reembolsos"
+
+msgid "Equipment & supplies"
+msgstr "Equipamentos e suprimentos"
+
+msgid "Trips & logistics"
+msgstr "Viagens e logística"
+
+msgid "Agreements"
+msgstr "Acordos"
+
+msgid "Approvals"
+msgstr "Aprovações"
+
+msgid "Enter a descriptive title for your request"
+msgstr "Digite um título descritivo para sua solicitação"
+
+msgid "Provide detailed information about your request"
+msgstr "Forneça informações detalhadas sobre sua solicitação"
+
+msgid "Receipt number"
+msgstr "Número do recibo"
+
+msgid "Drag and drop files here or click to browse"
+msgstr "Arraste e solte arquivos aqui ou clique para navegar"
+
+msgid "PDF, Word, Excel, Images (Max 25MB per file)"
+msgstr "PDF, Word, Excel, Imagens (Máx 25MB por arquivo)"
+
+msgid "Request Preview"
+msgstr "Prévia da Solicitação"
+
+msgid "Fill in the form to see a preview"
+msgstr "Preencha o formulário para ver uma prévia"
+
+msgid "Confirm Your Identity"
+msgstr "Confirme Sua Identidade"
+
+msgid "Biometric Verification Required"
+msgstr "Verificação Biométrica Necessária"
+
+msgid ""
+"Please authenticate using your fingerprint, face recognition, or security "
+"key to submit this request."
+msgstr ""
+"Por favor, autentique-se usando sua impressão digital, reconhecimento facial"
+" ou chave de segurança para enviar esta solicitação."
+
+msgid "Loading..."
+msgstr "Carregando..."
+
+msgid "Waiting for authentication..."
+msgstr "Aguardando autenticação..."
+
+msgid "Please complete the biometric prompt on your device."
+msgstr "Por favor, complete o prompt biométrico no seu dispositivo."
+
+msgid "Authentication Successful"
+msgstr "Autenticação Bem-sucedida"
+
+msgid "Submitting your request..."
+msgstr "Enviando sua solicitação..."
+
+msgid "Authentication Failed"
+msgstr "Autenticação Falhou"
+
+msgid "Please try again."
+msgstr "Por favor, tente novamente."
+
+msgid "Authenticate"
+msgstr "Autenticar"
+
+msgid "File is too large"
+msgstr "O arquivo é muito grande"
+
+msgid "file(s)"
+msgstr "arquivo(s)"
+
+msgid ""
+"No biometric credentials registered. Please register a device from your "
+"profile first."
+msgstr ""
+"Nenhuma credencial biométrica registrada. Por favor, registre um dispositivo"
+" no seu perfil primeiro."
+
+msgid "Failed to get authentication options"
+msgstr "Falha ao obter opções de autenticação"
+
+msgid "Verification failed"
+msgstr "A verificação falhou"
+
+msgid "Biometric authentication was cancelled or denied. Please try again."
+msgstr ""
+"A autenticação biométrica foi cancelada ou negada. Por favor, tente "
+"novamente."
+
+msgid "No matching credential found on this device."
+msgstr "Nenhuma credencial correspondente encontrada neste dispositivo."
+
+msgid "This device does not support the required authentication method."
+msgstr "Este dispositivo não suporta o método de autenticação necessário."
+
+msgid "WebAuthn is not supported on this device/browser."
+msgstr "WebAuthn não é suportado neste dispositivo/navegador."
