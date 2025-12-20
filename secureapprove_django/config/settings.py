@@ -238,6 +238,14 @@ SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
+# Proxy SSL Header - Required for Django behind Traefik/nginx to detect HTTPS
+# Traefik sets X-Forwarded-Proto header when terminating SSL
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Trust X-Forwarded-Host header from proxy
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
 # Session and Cookie Settings
 # Note: iOS Safari requires explicit SameSite attribute for cookies to work properly
 SESSION_COOKIE_SECURE = not DEBUG
