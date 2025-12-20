@@ -281,8 +281,7 @@ class RequestAttachment(models.Model):
 
     @property
     def download_url(self):
-        """Return URL that forces file download (Content-Disposition: attachment)."""
-        if self.file:
-            # Replace /media/ with /media/download/ to use the forced download endpoint
-            return self.file.url.replace('/media/', '/media/download/')
-        return None
+        """Return URL that forces file download via API endpoint (bypasses nginx)."""
+        from django.urls import reverse
+        # Use the dedicated download endpoint that bypasses nginx static file serving
+        return reverse('requests:download-attachment', kwargs={'attachment_id': self.id})

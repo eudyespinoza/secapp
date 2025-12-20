@@ -736,3 +736,49 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
 
         return Response({'status': 'unmuted'})
 
+
+from django.http import FileResponse, Http404
+import os
+import mimetypes
+
+def download_attachment(request, attachment_id):
+    """
+    Download a chat attachment with forced Content-Disposition: attachment header.
+    This endpoint bypasses nginx static file serving to ensure proper download behavior.
+    """
+    from django.conf import settings
+    
+    if not request.user.is_authenticated:
+        raise Http404("Not authenticated")
+    
+    try:
+        attachment = ChatAttachment.objects.select_related('message__conversation').get(id=attachment_id)
+    except ChatAttachment.DoesNotExist:
+        raise Http404("Attachment not found")
+    
+    # Verify user has access to this conversation
+    conversation = attachment.message.conversation
+    if not conversation.participants.filter(user=request.user).exists():
+        raise Http404("Access denied")
+    
+    # Get file path
+    if not attachment.file:
+        raise Http404("File not found")
+    
+    file_path = attachment.file.path
+    if not os.path.exists(file_path):
+        raise Http404("File not found on disk")
+    
+    # Determine content type
+    content_type, _ = mimetypes.guess_type(file_path)
+    
+    # Create response with forced download
+    response = FileResponse(
+        open(file_path, 'rb'),
+        as_attachment=True,
+        filename=attachment.filename or os.path.basename(file_path),
+        content_type=content_type or 'application/octet-stream'
+    )
+    
+    return response
+

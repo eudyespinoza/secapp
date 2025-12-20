@@ -25,6 +25,9 @@ urlpatterns = [
     path('<int:pk>/approve/', views.approve_request, name='approve'),
     path('<int:pk>/reject/', views.reject_request, name='reject'),
     
+    # Attachment download (bypasses nginx for forced download)
+    path('attachments/<int:attachment_id>/download/', views.download_request_attachment, name='download-attachment'),
+    
     # WebAuthn step-up authentication for approvals
     path('<int:approval_id>/webauthn/options/', webauthn_views.approval_webauthn_options, name='approval-webauthn-options'),
     path('<int:approval_id>/webauthn/verify/', webauthn_views.approval_webauthn_verify, name='approval-webauthn-verify'),

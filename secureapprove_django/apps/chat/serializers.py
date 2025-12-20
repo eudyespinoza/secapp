@@ -32,16 +32,13 @@ class ChatAttachmentSerializer(serializers.ModelSerializer):
         return obj.file.url if obj.file else None
 
     def get_download_url(self, obj):
-        """Return absolute URL for forced download."""
+        """Return absolute URL for forced download via API endpoint."""
         request = self.context.get('request')
-        if obj.file and request:
-            # Replace /media/ with /media/download/ to force download
-            file_url = obj.file.url
-            download_path = file_url.replace('/media/', '/media/download/')
+        # Use the dedicated download endpoint that bypasses nginx
+        download_path = f'/api/chat/attachments/{obj.id}/download/'
+        if request:
             return request.build_absolute_uri(download_path)
-        elif obj.file:
-            return obj.file.url.replace('/media/', '/media/download/')
-        return None
+        return download_path
 
     def validate_file(self, value):
         """Validate file size and content type."""

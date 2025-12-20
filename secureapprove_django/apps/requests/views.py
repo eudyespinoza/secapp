@@ -420,3 +420,46 @@ class ApprovalRequestViewSet(viewsets.ModelViewSet):
         stats['by_category'] = category_stats
         
         return Response(stats)
+
+
+from django.http import FileResponse, Http404
+import os
+import mimetypes as mime_types
+
+@login_required
+def download_request_attachment(request, attachment_id):
+    """
+    Download a request attachment with forced Content-Disposition: attachment header.
+    This endpoint bypasses nginx static file serving to ensure proper download behavior.
+    """
+    try:
+        attachment = RequestAttachment.objects.select_related('request').get(id=attachment_id)
+    except RequestAttachment.DoesNotExist:
+        raise Http404("Attachment not found")
+    
+    # Verify user has access to this request (same tenant)
+    approval_request = attachment.request
+    user_tenant = getattr(request.user, 'tenant', None)
+    if not user_tenant or approval_request.tenant_id != user_tenant.id:
+        raise Http404("Access denied")
+    
+    # Get file path
+    if not attachment.file:
+        raise Http404("File not found")
+    
+    file_path = attachment.file.path
+    if not os.path.exists(file_path):
+        raise Http404("File not found on disk")
+    
+    # Determine content type
+    content_type, _ = mime_types.guess_type(file_path)
+    
+    # Create response with forced download
+    response = FileResponse(
+        open(file_path, 'rb'),
+        as_attachment=True,
+        filename=attachment.filename or os.path.basename(file_path),
+        content_type=content_type or 'application/octet-stream'
+    )
+    
+    return response

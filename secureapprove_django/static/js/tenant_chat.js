@@ -662,52 +662,14 @@
                 message.attachments.forEach(att => {
                     if (!att || !att.file) return;
                     
-                    // Use download_url for forced download, fallback to file_url
+                    // Use download_url which points to the API endpoint that bypasses nginx
                     const fileUrl = att.download_url || att.file_url || att.file;
                     const filename = att.filename || 'download';
                     
                     const link = document.createElement('a');
-                    link.href = '#';
+                    link.href = fileUrl;
                     link.className = 'chat-attachment-link d-flex align-items-center gap-1';
-                    link.dataset.downloadUrl = fileUrl;
-                    link.dataset.filename = filename;
                     link.innerHTML = `<i class="bi bi-download"></i> ${filename}`;
-                    
-                    // Force download using fetch + blob
-                    link.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Download clicked:', fileUrl, filename);
-                        try {
-                            link.innerHTML = `<i class="bi bi-hourglass-split"></i> ${filename}`;
-                            const response = await fetch(fileUrl, {
-                                method: 'GET',
-                                credentials: 'same-origin',
-                                cache: 'no-store'
-                            });
-                            console.log('Fetch response:', response.status, response.ok);
-                            if (!response.ok) throw new Error('Download failed: ' + response.status);
-                            const blob = await response.blob();
-                            console.log('Blob created:', blob.size, blob.type);
-                            const url = window.URL.createObjectURL(blob);
-                            const tempLink = document.createElement('a');
-                            tempLink.href = url;
-                            tempLink.download = filename;
-                            tempLink.style.display = 'none';
-                            document.body.appendChild(tempLink);
-                            tempLink.click();
-                            setTimeout(() => {
-                                document.body.removeChild(tempLink);
-                                window.URL.revokeObjectURL(url);
-                            }, 100);
-                            link.innerHTML = `<i class="bi bi-download"></i> ${filename}`;
-                        } catch (err) {
-                            console.error('Download error:', err);
-                            link.innerHTML = `<i class="bi bi-download"></i> ${filename}`;
-                            // Fallback: open in new tab
-                            window.open(fileUrl, '_blank');
-                        }
-                    });
                     
                     attachmentsContainer.appendChild(link);
                 });
