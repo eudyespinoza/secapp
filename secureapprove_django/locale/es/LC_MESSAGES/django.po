@@ -212,7 +212,7 @@ msgstr ""
 "completar el registro"
 
 msgid "Please use your fingerprint, Face ID, or security key to sign in"
-msgstr ""
+msgstr "Por favor use su huella digital, Face ID, o llave de seguridad para iniciar sesión"
 "Por favor usa tu huella dactilar, Face ID, o llave de seguridad para iniciar"
 " sesión"
 
@@ -1298,7 +1298,7 @@ msgid "Metadata"
 msgstr "Metadatos"
 
 msgid "Category-specific data: vendor, cost_center, destination, etc."
-msgstr ""
+msgstr "Datos específicos de categoría: proveedor, centro de costos, destino, etc."
 "Datos específicos de la categoría: proveedor, centro_coste, destino, etc."
 
 msgid "Expires At"
@@ -1395,7 +1395,7 @@ msgid "Welcome back!"
 msgstr "¡Bienvenido de nuevo!"
 
 msgid "Sign in to access your approval workflow dashboard"
-msgstr ""
+msgstr "Inicie sesión para acceder a su panel de flujo de aprobaciones"
 "Inicie sesión para acceder a su panel de flujo de trabajo de aprobación"
 
 msgid "Fast"
@@ -1462,7 +1462,7 @@ msgid "No biometric devices registered"
 msgstr "No hay dispositivos biométricos registrados"
 
 msgid "Add a biometric device to enhance your account security"
-msgstr ""
+msgstr "Añada un dispositivo biométrico para mejorar la seguridad de su cuenta"
 "Agregue un dispositivo biométrico para mejorar la seguridad de su cuenta"
 
 msgid "Security Information"
@@ -2068,7 +2068,7 @@ msgid "This invitation is no longer valid."
 msgstr "Esta invitación ya no es válida."
 
 msgid "This tenant has no available seats. Please contact the administrator."
-msgstr ""
+msgstr "Este inquilino no tiene asientos disponibles. Por favor contacte al administrador."
 "Este tenant no tiene asientos disponibles. Por favor contacta al "
 "administrador."
 
@@ -2515,7 +2515,7 @@ msgid "Approval type '%(name)s' has been deleted."
 msgstr "El tipo de aprobación '%(name)s' ha sido eliminado."
 
 msgid "Cannot delete default approval types. You can disable them instead."
-msgstr ""
+msgstr "No se pueden eliminar los tipos de aprobación predeterminados. Puede deshabilitarlos en su lugar."
 "No se pueden eliminar los tipos de aprobación predeterminados. Puedes "
 "deshabilitarlos."
 
@@ -2846,7 +2846,7 @@ msgid "Respond to your comments and questions."
 msgstr "Responder a tus comentarios y preguntas."
 
 msgid "Monitor and analyze usage patterns to improve user experience."
-msgstr ""
+msgstr "Monitorear y analizar patrones de uso para mejorar la experiencia del usuario."
 "Monitorear y analizar patrones de uso para mejorar la experiencia del "
 "usuario."
 
@@ -2872,7 +2872,7 @@ msgstr ""
 "aprobación."
 
 msgid "To comply with legal obligations or respond to lawful requests."
-msgstr ""
+msgstr "Para cumplir con obligaciones legales o responder a solicitudes legales."
 "Para cumplir con obligaciones legales o responder a solicitudes legítimas."
 
 msgid ""
@@ -2899,7 +2899,7 @@ msgid "Regular security audits and vulnerability assessments."
 msgstr "Auditorías de seguridad regulares y evaluaciones de vulnerabilidad."
 
 msgid "Access controls and authentication requirements for our systems."
-msgstr ""
+msgstr "Controles de acceso y requisitos de autenticación para nuestros sistemas."
 "Controles de acceso y requisitos de autenticación para nuestros sistemas."
 
 msgid "Secure data centers with physical security measures."
