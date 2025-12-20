@@ -668,6 +668,9 @@
                     const link = document.createElement('a');
                     link.href = fileUrl;
                     link.className = 'chat-attachment-link d-flex align-items-center gap-1';
+                    link.target = '_blank';
+                    link.download = att.filename || '';
+                    link.rel = 'noopener noreferrer';
                     link.innerHTML = `<i class="bi bi-download"></i> ${att.filename || this.i18n.attachment}`;
                     attachmentsContainer.appendChild(link);
                 });

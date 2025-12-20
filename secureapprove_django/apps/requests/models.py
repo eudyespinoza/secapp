@@ -278,3 +278,11 @@ class RequestAttachment(models.Model):
 
     def __str__(self):
         return self.filename
+
+    @property
+    def download_url(self):
+        """Return URL that forces file download (Content-Disposition: attachment)."""
+        if self.file:
+            # Replace /media/ with /media/download/ to use the forced download endpoint
+            return self.file.url.replace('/media/', '/media/download/')
+        return None
