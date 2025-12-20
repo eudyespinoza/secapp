@@ -662,11 +662,16 @@
                 message.attachments.forEach(att => {
                     if (!att || !att.file) return;
                     
+                    // Convert media URL to download URL for forced download
+                    let fileUrl = att.file_url || att.file;
+                    if (fileUrl && fileUrl.includes('/media/')) {
+                        fileUrl = fileUrl.replace('/media/', '/media/download/');
+                    }
+                    
                     const link = document.createElement('a');
-                    link.href = att.file_url || att.file;
-                    link.download = att.filename || 'attachment';  // Force download instead of preview
-                    link.rel = 'noopener noreferrer';
-                    link.textContent = att.filename || this.i18n.attachment;
+                    link.href = fileUrl;
+                    link.className = 'chat-attachment-link d-flex align-items-center gap-1';
+                    link.innerHTML = `<i class="bi bi-download"></i> ${att.filename || this.i18n.attachment}`;
                     attachmentsContainer.appendChild(link);
                 });
                 

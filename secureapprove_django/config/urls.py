@@ -30,6 +30,20 @@ def serve_media(request, path):
         return FileResponse(open(file_path, 'rb'), content_type=content_type or 'application/octet-stream')
     raise Http404("File not found")
 
+# Serve media files as download (forces Content-Disposition: attachment)
+def serve_media_download(request, path):
+    """Serve media files as forced download (for chat attachments, etc.)"""
+    from urllib.parse import quote
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        content_type, _ = mimetypes.guess_type(file_path)
+        filename = os.path.basename(file_path)
+        response = FileResponse(open(file_path, 'rb'), content_type=content_type or 'application/octet-stream')
+        # Force download with proper filename encoding for non-ASCII characters
+        response['Content-Disposition'] = f"attachment; filename*=UTF-8''{quote(filename)}"
+        return response
+    raise Http404("File not found")
+
 # Custom view for Service Worker to avoid TemplateView issues
 def service_worker(request):
     path = os.path.join(settings.BASE_DIR, 'templates', 'service_worker.js')
@@ -174,6 +188,7 @@ urlpatterns += i18n_urls
 # Serve media files (always, even in production)
 # This custom view works with DEBUG=False unlike django.conf.urls.static
 urlpatterns += [
+    re_path(r'^media/download/(?P<path>.*)$', serve_media_download, name='serve_media_download'),
     re_path(r'^media/(?P<path>.*)$', serve_media, name='serve_media'),
 ]
 
