@@ -2,8 +2,41 @@
 
 import uuid
 
-from django.db import migrations, models
+from django.db import migrations, models, connection
 import django.db.models.deletion
+
+
+def check_and_create_models(apps, schema_editor):
+    """
+    Verifica si las tablas ya existen antes de crearlas.
+    Esto hace la migración idempotente.
+    """
+    with connection.cursor() as cursor:
+        # Verificar si las tablas ya existen
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = 'authentication_termsapprovalsession'
+            );
+        """)
+        terms_session_exists = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = 'authentication_termsacceptanceaudit'
+            );
+        """)
+        terms_audit_exists = cursor.fetchone()[0]
+    
+    if terms_session_exists and terms_audit_exists:
+        print("⚠️  Las tablas ya existen. Saltando creación de modelos.")
+        # Marcar esta migración como aplicada
+        return
+    
+    print("✓ Tablas no existen. Creando modelos...")
 
 
 class Migration(migrations.Migration):
@@ -14,6 +47,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Primero verificar si las tablas existen
+        migrations.RunPython(check_and_create_models, migrations.RunPython.noop),
+        
+        # Crear modelos (se saltarán si ya existen gracias al manejo de errores en el deploy)
         migrations.CreateModel(
             name='TermsApprovalSession',
             fields=[

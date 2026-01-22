@@ -130,9 +130,38 @@ if [ "$SKIP_MIGRATIONS" = false ]; then
         echo 'Database is ready!'
     "
     
-    # Run standard migrations
+    # Run standard migrations with error handling
     echo "Running standard migrations..."
-    $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec -T web python manage.py migrate --noinput
+    if ! $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec -T web python manage.py migrate --noinput 2>&1 | tee /tmp/migrate.log; then
+        # Check if it's a duplicate key error (migration already applied)
+        if grep -q "duplicate key value violates unique constraint\|already exists" /tmp/migrate.log; then
+            echo -e "${YELLOW}⚠️  Detectado conflicto de migración (tabla ya existe).${NC}"
+            echo -e "${YELLOW}Intentando marcar la migración como aplicada...${NC}"
+            
+            # Extraer el nombre de la migración del error
+            MIGRATION_NAME=$(grep -oP "authentication\.\K[0-9]+_[a-z_]+" /tmp/migrate.log | head -1)
+            
+            if [ ! -z "$MIGRATION_NAME" ]; then
+                echo "Marcando migración 'authentication.$MIGRATION_NAME' como aplicada..."
+                $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec -T db psql -U secureapprove -d secureapprove -c "
+                    INSERT INTO django_migrations (app, name, applied)
+                    SELECT 'authentication', '$MIGRATION_NAME', NOW()
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM django_migrations 
+                        WHERE app = 'authentication' 
+                        AND name = '$MIGRATION_NAME'
+                    );
+                " || true
+                
+                # Reintentar migraciones
+                echo "Reintentando migraciones..."
+                $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec -T web python manage.py migrate --noinput
+            fi
+        else
+            echo -e "${RED}Error en las migraciones. Revisa los logs arriba.${NC}"
+            exit 1
+        fi
+    fi
     
     # Handle chat schema migration
     echo "Checking chat schema migration..."
