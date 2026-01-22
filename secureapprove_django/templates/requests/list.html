@@ -507,8 +507,8 @@
                         {% endblocktrans %}
                     </p>
                 </div>
-                <a href="{% url 'requests:create' %}" class="btn btn-primary btn-create-request">
-                    <i class="bi bi-plus-lg me-2"></i>{% trans "New Request" %}
+                <a href="{% url 'requests:create' %}" class="btn btn-primary btn-create-request" title="{% trans 'New Request' %}" data-bs-toggle="tooltip">
+                    <i class="bi bi-plus-lg"></i>
                 </a>
             </div>
         </div>

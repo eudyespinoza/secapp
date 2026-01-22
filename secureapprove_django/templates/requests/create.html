@@ -35,6 +35,18 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+    }
+    
+    .step-item:hover {
+        background: rgba(79, 70, 229, 0.08);
+    }
+    
+    .step-item:hover .step-circle {
+        transform: scale(1.05);
     }
     
     .step-circle {
@@ -49,7 +61,7 @@
         background: var(--bg-secondary);
         color: var(--text-muted);
         border: 2px solid var(--border-color);
-        transition: all 0.3s ease;
+        transition: all 0.3s ease, transform 0.2s ease;
     }
     
     .step-item.active .step-circle {
@@ -95,6 +107,31 @@
     
     .step-connector.completed {
         background: var(--success-color);
+    }
+
+    /* Step cards transitions */
+    .form-card {
+        transition: all 0.3s ease;
+    }
+    
+    .form-card.highlighted {
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2), 0 4px 20px rgba(79, 70, 229, 0.15);
+        border-color: var(--primary-color);
+    }
+    
+    /* Step indicator clickable */
+    .step-item {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .step-item:hover .step-circle {
+        transform: scale(1.1);
+    }
+    
+    .step-item.completed:hover .step-label,
+    .step-item.active:hover .step-label {
+        text-decoration: underline;
     }
 
     /* ===== Category Selection Cards ===== */
@@ -601,9 +638,8 @@
                         {% trans "Submit a new approval request for review" %}
                     </p>
                 </div>
-                <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                <a href="{% url 'requests:list' %}" class="btn btn-primary" title="{% trans 'Back to Requests' %}" data-bs-toggle="tooltip">
                     <i class="bi bi-arrow-left"></i>
-                    <span class="d-none d-sm-inline">{% trans "Back to Requests" %}</span>
                 </a>
             </div>
         </div>
@@ -1078,6 +1114,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // State
     let creationToken = null;
     let selectedFiles = [];
+    let currentVisibleStep = 1;
+    let isAutoScrolling = false;
     
     // Category configurations
     const categoryConfigs = {
@@ -1145,7 +1183,141 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update step indicator
             updateStepIndicator(2);
+            
+            // Auto-scroll to step 2 (Details)
+            scrollToStep(2);
+            
+            // Focus on title field after a brief delay
+            setTimeout(() => {
+                document.getElementById('id_title').focus();
+            }, 400);
         });
+    });
+    
+    // ===== Auto-advance to Step 3 when required fields are complete =====
+    const titleInput = document.getElementById('id_title');
+    const descriptionInput = document.getElementById('id_description');
+    const amountInput = document.getElementById('id_amount');
+    
+    function checkStep2Completion() {
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const category = categoryField.value;
+        const config = categoryConfigs[category] || categoryConfigs['other'];
+        
+        // Check if required fields are filled
+        let isComplete = title.length >= 3 && description.length >= 10;
+        
+        // If amount is required, check it too
+        if (config.show_amount) {
+            const amount = parseFloat(amountInput.value);
+            isComplete = isComplete && amount > 0;
+        }
+        
+        if (isComplete) {
+            updateStepIndicator(3);
+        } else {
+            // Stay on step 2 if not complete
+            const currentStep = getCurrentStep();
+            if (currentStep >= 2) {
+                updateStepIndicator(2);
+            }
+        }
+        
+        return isComplete;
+    }
+    
+    function getCurrentStep() {
+        let currentStep = 1;
+        stepItems.forEach((item, index) => {
+            if (item.classList.contains('active')) {
+                currentStep = index + 1;
+            } else if (item.classList.contains('completed')) {
+                currentStep = Math.max(currentStep, index + 2);
+            }
+        });
+        return currentStep;
+    }
+    
+    // Debounced check for step completion
+    let step2CheckTimeout = null;
+    function scheduleStep2Check() {
+        clearTimeout(step2CheckTimeout);
+        step2CheckTimeout = setTimeout(() => {
+            const wasComplete = getCurrentStep() >= 3;
+            const isNowComplete = checkStep2Completion();
+            
+            // Auto-scroll to step 3 only when transitioning from incomplete to complete
+            if (!wasComplete && isNowComplete) {
+                scrollToStep(3);
+            }
+        }, 500);
+        
+        // Always update preview immediately
+        updatePreview();
+    }
+    
+    titleInput.addEventListener('input', scheduleStep2Check);
+    descriptionInput.addEventListener('input', scheduleStep2Check);
+    amountInput.addEventListener('input', scheduleStep2Check);
+    
+    // ===== Scroll to Step Function =====
+    function scrollToStep(stepNumber) {
+        const stepCard = document.getElementById(`step-${stepNumber}-card`);
+        if (stepCard) {
+            isAutoScrolling = true;
+            currentVisibleStep = stepNumber;
+            updateStepIndicator(stepNumber);
+            
+            const headerOffset = 100; // Account for fixed header
+            const elementPosition = stepCard.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+            
+            // Reset auto-scrolling flag after animation completes
+            setTimeout(() => {
+                isAutoScrolling = false;
+            }, 600);
+        }
+    }
+    
+    // ===== Scroll-based Step Detection =====
+    function updateStepFromScroll() {
+        if (isAutoScrolling) return; // Don't update during programmatic scroll
+        
+        const stepCards = [
+            { step: 1, el: document.getElementById('step-1-card') },
+            { step: 2, el: document.getElementById('step-2-card') },
+            { step: 3, el: document.getElementById('step-3-card') }
+        ];
+        
+        const scrollPosition = window.scrollY + 150; // Offset for header
+        let visibleStep = 1;
+        
+        stepCards.forEach(({ step, el }) => {
+            if (el && el.offsetTop <= scrollPosition) {
+                visibleStep = step;
+            }
+        });
+        
+        if (visibleStep !== currentVisibleStep) {
+            currentVisibleStep = visibleStep;
+            updateStepIndicator(visibleStep);
+        }
+    }
+    
+    // Throttled scroll handler
+    let scrollTimeout = null;
+    window.addEventListener('scroll', function() {
+        if (scrollTimeout) return;
+        scrollTimeout = setTimeout(() => {
+            updateStepFromScroll();
+            scrollTimeout = null;
+        }, 100);
     });
     
     // ===== Priority Selection =====
@@ -1274,7 +1446,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 connector.classList.add('completed');
             }
         });
+        
+        // Highlight current step card
+        document.querySelectorAll('.form-card').forEach((card, index) => {
+            card.classList.remove('highlighted');
+            if (index + 1 === currentStep) {
+                card.classList.add('highlighted');
+                // Remove highlight after a delay
+                setTimeout(() => card.classList.remove('highlighted'), 1500);
+            }
+        });
     }
+    
+    // ===== Step Indicator Click Navigation =====
+    stepItems.forEach((item, index) => {
+        item.addEventListener('click', function() {
+            const stepNumber = index + 1;
+            scrollToStep(stepNumber);
+        });
+    });
     
     // ===== Form Fields Update =====
     function updateFormFields() {

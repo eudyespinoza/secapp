@@ -144,6 +144,7 @@ schema_view = get_schema_view(
 # API URLs (no i18n prefix)
 api_urlpatterns = [
     path('api/auth/', include('apps.authentication.api_urls')),
+    path('api/approvals/', include('apps.authentication.approvals_api_urls')),
     path('api/requests/', include(('apps.requests.urls', 'requests'), namespace='api-requests')),
     path('api/chat/', include(('apps.chat.urls', 'chat'), namespace='api-chat')),
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

@@ -302,3 +302,164 @@ class ApprovalAudit(models.Model):
     
     def __str__(self):
         return f"Audit {self.id}: {self.user.email} - {self.action} - {self.status}"
+
+
+class TermsApprovalSession(models.Model):
+    """Short-lived, one-time token to bind a WebAuthn step-up to a legal acceptance event."""
+
+    PURPOSE_CHOICES = [
+        ('terms_acceptance', _('Terms Acceptance')),
+        ('generic', _('Generic')),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    tenant = models.ForeignKey(
+        'tenants.Tenant',
+        on_delete=models.CASCADE,
+        related_name='terms_approval_sessions',
+        verbose_name=_('Tenant'),
+    )
+
+    subject_user = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.CASCADE,
+        related_name='terms_approval_sessions',
+        verbose_name=_('User'),
+    )
+
+    created_by = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_terms_approval_sessions',
+        verbose_name=_('Created By'),
+    )
+
+    purpose = models.CharField(
+        _('Purpose'),
+        max_length=64,
+        choices=PURPOSE_CHOICES,
+        default='terms_acceptance',
+    )
+
+    document_type = models.CharField(_('Document Type'), max_length=32, default='terms')
+    document_version = models.CharField(_('Document Version'), max_length=64, blank=True)
+    document_hash = models.CharField(_('Document Hash'), max_length=128, blank=True)
+
+    # Context bound to the WebAuthn challenge hash (see WebAuthnService.generate_approval_challenge)
+    context_data = models.JSONField(_('Context Data'), default=dict, blank=True)
+
+    # Identifiers used to locate the cached WebAuthn challenge
+    approval_id = models.CharField(_('Approval ID'), max_length=128)
+    challenge_id = models.CharField(_('Challenge ID'), max_length=128, blank=True)
+
+    # Store only a hash of the token for maximum security
+    token_hash = models.CharField(_('Token Hash'), max_length=64, unique=True)
+
+    expires_at = models.DateTimeField(_('Expires At'))
+    consumed_at = models.DateTimeField(_('Consumed At'), null=True, blank=True)
+
+    created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Terms Approval Session')
+        verbose_name_plural = _('Terms Approval Sessions')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['tenant', 'subject_user', 'created_at']),
+            models.Index(fields=['expires_at']),
+            models.Index(fields=['consumed_at']),
+        ]
+
+    @property
+    def is_expired(self):
+        return timezone.now() >= self.expires_at
+
+    @property
+    def is_consumed(self):
+        return self.consumed_at is not None
+
+
+class TermsAcceptanceAudit(models.Model):
+    """Audit log for Terms & Conditions acceptance/rejection via WebAuthn step-up."""
+
+    STATUS_CHOICES = [
+        ('success', _('Success')),
+        ('failed', _('Failed')),
+        ('expired', _('Expired')),
+        ('cancelled', _('Cancelled')),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    tenant = models.ForeignKey(
+        'tenants.Tenant',
+        on_delete=models.CASCADE,
+        related_name='terms_acceptance_audits',
+        verbose_name=_('Tenant'),
+    )
+
+    user = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.CASCADE,
+        related_name='terms_acceptance_audits',
+        verbose_name=_('User'),
+    )
+
+    initiated_by = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='initiated_terms_acceptance_audits',
+        verbose_name=_('Initiated By'),
+    )
+
+    session = models.ForeignKey(
+        'authentication.TermsApprovalSession',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='audits',
+        verbose_name=_('Approval Session'),
+    )
+
+    purpose = models.CharField(_('Purpose'), max_length=64, default='terms_acceptance')
+    document_type = models.CharField(_('Document Type'), max_length=32, default='terms')
+    document_version = models.CharField(_('Document Version'), max_length=64, blank=True)
+    document_hash = models.CharField(_('Document Hash'), max_length=128, blank=True)
+
+    status = models.CharField(_('Status'), max_length=20, choices=STATUS_CHOICES, default='success')
+
+    credential_id = models.CharField(_('Credential ID'), max_length=512, blank=True)
+    challenge_id = models.CharField(_('Challenge ID'), max_length=128, blank=True)
+
+    ip_address = models.GenericIPAddressField(_('IP Address'), null=True, blank=True)
+    user_agent = models.TextField(_('User Agent'), blank=True)
+
+    user_snapshot = models.JSONField(
+        _('User Snapshot'),
+        default=dict,
+        blank=True,
+        help_text=_('Snapshot of user fields at the time of acceptance'),
+    )
+
+    context_data = models.JSONField(_('Context Data'), default=dict, blank=True)
+    error_message = models.TextField(_('Error Message'), blank=True)
+
+    performed_at = models.DateTimeField(_('Performed At'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Terms Acceptance Audit')
+        verbose_name_plural = _('Terms Acceptance Audits')
+        ordering = ['-performed_at']
+        indexes = [
+            models.Index(fields=['tenant', 'performed_at']),
+            models.Index(fields=['user', 'performed_at']),
+            models.Index(fields=['status']),
+        ]
+
+    def __str__(self):
+        return f"Terms audit {self.id}: {self.user.email} - {self.status}"

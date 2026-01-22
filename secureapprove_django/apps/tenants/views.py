@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -12,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from apps.authentication.models import ApprovalAudit, TermsAcceptanceAudit
 from apps.requests.models import ApprovalRequest
 from .models import Tenant, TenantUserInvite, ApprovalTypeConfig
 from .utils import ensure_user_tenant
@@ -117,7 +119,6 @@ class TenantSettingsView(LoginRequiredMixin, View):
             can_by_subscription = (
                 tenant.subscription.can_create_user() if has_subscription else True
             )
-
             if seats and used_seats >= seats:
                 messages.error(
                     request,
@@ -356,6 +357,71 @@ class TenantSettingsView(LoginRequiredMixin, View):
                     messages.error(request, _("Approval type not found."))
 
         return redirect("tenants:settings")
+
+
+class TenantAuditView(LoginRequiredMixin, View):
+    """Tenant-scoped audit log view (WebAuthn approvals + Terms acceptance)."""
+
+    template_name = "tenants/audit.html"
+
+    def get_tenant(self, request):
+        return ensure_user_tenant(request.user)
+
+    def get(self, request):
+        tenant = self.get_tenant(request)
+        if not tenant:
+            return redirect("landing:index")
+
+        if not request.user.can_admin_tenant() and not request.user.is_staff and not request.user.is_superuser:
+            return redirect("landing:index")
+
+        audit_type = (request.GET.get("type") or "terms").strip().lower()
+        status_filter = (request.GET.get("status") or "").strip().lower()
+        query = (request.GET.get("q") or "").strip()
+        page_number = request.GET.get("page")
+
+        if audit_type not in ("terms", "approvals"):
+            audit_type = "terms"
+
+        if audit_type == "terms":
+            audits = TermsAcceptanceAudit.objects.filter(tenant=tenant).select_related(
+                "user", "initiated_by"
+            )
+            if status_filter:
+                audits = audits.filter(status=status_filter)
+            if query:
+                audits = audits.filter(user__email__icontains=query)
+
+            audits = audits.order_by("-performed_at")
+        else:
+            audits = (
+                ApprovalAudit.objects.filter(approval_request__tenant=tenant)
+                .select_related("user", "approval_request")
+            )
+            if status_filter:
+                audits = audits.filter(status=status_filter)
+            if query:
+                audits = audits.filter(
+                    models.Q(user__email__icontains=query)
+                    | models.Q(approval_request__title__icontains=query)
+                )
+
+            audits = audits.order_by("-performed_at")
+
+        paginator = Paginator(audits, 50)
+        page_obj = paginator.get_page(page_number)
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "tenant": tenant,
+                "audit_type": audit_type,
+                "status": status_filter,
+                "q": query,
+                "page_obj": page_obj,
+            },
+        )
 
 
 class TenantInviteAcceptView(View):

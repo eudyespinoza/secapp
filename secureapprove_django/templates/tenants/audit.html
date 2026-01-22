@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% get_current_language as CURRENT_MENU_LANG %}
+
+{% block title %}{% if CURRENT_MENU_LANG == 'es' %}Auditoría{% elif CURRENT_MENU_LANG == 'pt-br' %}Auditoria{% else %}Audit Log{% endif %} - SecureApprove{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{% if CURRENT_MENU_LANG == 'es' %}Auditoría{% elif CURRENT_MENU_LANG == 'pt-br' %}Auditoria{% else %}Audit Log{% endif %}</h1>
+            <div class="text-muted">{% trans "Tenant" %}: {{ tenant.name }}</div>
+        </div>
+
+        <div class="btn-group" role="group" aria-label="audit type">
+            <a class="btn btn-sm {% if audit_type == 'terms' %}btn-primary-custom{% else %}btn-outline-primary{% endif %}"
+               href="?type=terms{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}">
+                {% trans "Terms" %}
+            </a>
+            <a class="btn btn-sm {% if audit_type == 'approvals' %}btn-primary-custom{% else %}btn-outline-primary{% endif %}"
+               href="?type=approvals{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}">
+                {% trans "Approvals" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end">
+                <input type="hidden" name="type" value="{{ audit_type }}">
+
+                <div class="col-12 col-md-3">
+                    <label class="form-label">{% trans "Status" %}</label>
+                    <select class="form-select" name="status">
+                        <option value="" {% if not status %}selected{% endif %}>{% trans "All" %}</option>
+                        <option value="success" {% if status == 'success' %}selected{% endif %}>{% trans "Success" %}</option>
+                        <option value="failed" {% if status == 'failed' %}selected{% endif %}>{% trans "Failed" %}</option>
+                        <option value="expired" {% if status == 'expired' %}selected{% endif %}>{% trans "Expired" %}</option>
+                        <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>{% trans "Cancelled" %}</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label">{% trans "Search" %}</label>
+                    <input class="form-control" name="q" value="{{ q }}" placeholder="{% if audit_type == 'terms' %}{% trans 'User email' %}{% else %}{% trans 'User email or request title' %}{% endif %}">
+                </div>
+
+                <div class="col-12 col-md-3 d-flex gap-2">
+                    <button class="btn btn-primary-custom w-100" type="submit">{% trans "Filter" %}</button>
+                    <a class="btn btn-outline-secondary w-100" href="?type={{ audit_type }}">{% trans "Reset" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                {% if audit_type == 'terms' %}
+                    {% trans "Terms acceptance audits" %}
+                {% else %}
+                    {% trans "Approval audits" %}
+                {% endif %}
+            </div>
+            <div class="text-muted small">
+                {% trans "Total" %}: {{ page_obj.paginator.count }}
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-nowrap">{% trans "When" %}</th>
+                            <th>{% trans "Status" %}</th>
+                            <th>{% trans "User" %}</th>
+                            {% if audit_type == 'terms' %}
+                                <th>{% trans "Document" %}</th>
+                                <th class="text-nowrap">{% trans "Credential" %}</th>
+                            {% else %}
+                                <th>{% trans "Request" %}</th>
+                                <th>{% trans "Action" %}</th>
+                            {% endif %}
+                            <th class="text-nowrap">{% trans "IP" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for audit in page_obj.object_list %}
+                            <tr>
+                                <td class="text-nowrap">{{ audit.performed_at|date:"Y-m-d H:i:s" }}</td>
+                                <td>
+                                    <span class="badge {% if audit.status == 'success' %}bg-success{% elif audit.status == 'failed' %}bg-danger{% elif audit.status == 'expired' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                        {{ audit.status }}
+                                    </span>
+                                </td>
+                                <td class="text-nowrap">{{ audit.user.email }}</td>
+
+                                {% if audit_type == 'terms' %}
+                                    <td>
+                                        <div class="text-nowrap">{{ audit.document_type }}{% if audit.document_version %} v{{ audit.document_version }}{% endif %}</div>
+                                        {% if audit.document_hash %}<div class="small text-muted text-truncate" style="max-width: 320px;">{{ audit.document_hash }}</div>{% endif %}
+                                    </td>
+                                    <td class="text-nowrap">
+                                        {% if audit.credential_id %}
+                                            <span title="{{ audit.credential_id }}">{{ audit.credential_id|slice:":12" }}…</span>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <div class="text-nowrap">{{ audit.approval_request.title }}</div>
+                                        <div class="small text-muted">#{{ audit.approval_request.id }}</div>
+                                    </td>
+                                    <td class="text-nowrap">{{ audit.action }}</td>
+                                {% endif %}
+
+                                <td class="text-nowrap">{% if audit.ip_address %}{{ audit.ip_address }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">{% trans "No audit records found." %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="card-footer">
+            <nav aria-label="pagination">
+                <ul class="pagination mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?type={{ audit_type }}{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">{% trans "Previous" %}</span></li>
+                    {% endif %}
+
+                    <li class="page-item disabled"><span class="page-link">{% trans "Page" %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?type={{ audit_type }}{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">{% trans "Next" %}</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1122,6 +1122,10 @@
                                                             <i class="bi bi-building-gear me-2"></i>
                                                             {% if CURRENT_MENU_LANG == 'es' %}Configuracion del Tenant{% elif CURRENT_MENU_LANG == 'pt-br' %}Configuracao do Tenant{% else %}Tenant Settings{% endif %}
                                                         </a></li>
+                                                    <li><a class="dropdown-item" href="{% url 'tenants:audit' %}">
+                                                            <i class="bi bi-clipboard-data me-2"></i>
+                                                            {% if CURRENT_MENU_LANG == 'es' %}Auditoría{% elif CURRENT_MENU_LANG == 'pt-br' %}Auditoria{% else %}Audit Log{% endif %}
+                                                        </a></li>
                                                     {% endif %}
                                                     {% if user.email == 'eudyespinoza@gmail.com' %}
                                                     <li><a class="dropdown-item" href="{% url 'tenants:superadmin' %}">
