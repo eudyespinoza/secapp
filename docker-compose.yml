@@ -88,14 +88,14 @@ services:
       - ./logs:/app/logs
     networks:
       - internal
-      - traefik_proxy
+      - secureapprove_proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.secureapprove-web.rule=Host(`secureapprove.com`) || Host(`www.secureapprove.com`)"
       - "traefik.http.routers.secureapprove-web.entrypoints=websecure"
       - "traefik.http.routers.secureapprove-web.tls=true"
       - "traefik.http.services.secureapprove-web.loadbalancer.server.port=8005"
-      - "traefik.docker.network=traefik_proxy"
+      - "traefik.docker.network=secureapprove_proxy"
 
   # Celery Worker
   celery:
@@ -168,5 +168,5 @@ networks:
     driver: bridge
   
   # Red externa de Traefik (debe existir previamente)
-  traefik_proxy:
+  secureapprove_proxy:
     external: true
