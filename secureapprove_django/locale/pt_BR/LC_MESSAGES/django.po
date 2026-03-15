@@ -3409,3 +3409,142 @@ msgstr "solicitações"
 
 msgid "Total"
 msgstr "Total"
+
+# Iframe integration guide
+msgid "Iframe integration"
+msgstr "Integração iframe"
+
+msgid "SecureApprove iframe integration"
+msgstr "Integração iframe do SecureApprove"
+
+msgid "Production-ready module with secure handshake, ephemeral token flow, and copy-ready snippets."
+msgstr "Módulo pronto para produção com handshake seguro, fluxo de token efêmero e snippets prontos para copiar."
+
+msgid "Security-first"
+msgstr "Segurança primeiro"
+
+msgid "WebAuthn biometric"
+msgstr "Biometria WebAuthn"
+
+msgid "Generated code"
+msgstr "Código gerado"
+
+msgid "Actor"
+msgstr "Ator"
+
+msgid "Configuration"
+msgstr "Configuração"
+
+msgid "Environment"
+msgstr "Ambiente"
+
+msgid "Production"
+msgstr "Produção"
+
+msgid "Staging"
+msgstr "Homologação"
+
+msgid "Development"
+msgstr "Desenvolvimento"
+
+msgid "Backend snippet"
+msgstr "Snippet backend"
+
+msgid "SecureApprove origin"
+msgstr "Origem do SecureApprove"
+
+msgid "Main origin hosting loader and iframe endpoint."
+msgstr "Origem principal onde o loader e o endpoint do iframe são publicados."
+
+msgid "Token endpoint"
+msgstr "Endpoint de token"
+
+msgid "Server-to-server endpoint used by your backend."
+msgstr "Endpoint server-to-server consumido pelo seu backend."
+
+msgid "Iframe URL"
+msgstr "URL do iframe"
+
+msgid "Loader script URL"
+msgstr "URL do script loader"
+
+msgid "Tenant key"
+msgstr "Chave do tenant"
+
+msgid "Actor email"
+msgstr "Email do ator"
+
+msgid "Your backend session endpoint"
+msgstr "Endpoint de sessão do seu backend"
+
+msgid "Default decision"
+msgstr "Decisão padrão"
+
+msgid "approve"
+msgstr "aprovar"
+
+msgid "reject"
+msgstr "rejeitar"
+
+msgid "Generate snippets"
+msgstr "Gerar snippets"
+
+msgid "Reset defaults"
+msgstr "Redefinir valores"
+
+msgid "Implementation steps"
+msgstr "Passos de implementação"
+
+msgid "Functional"
+msgstr "Funcional"
+
+msgid "Your backend validates tenant/user context and requests token from SecureApprove."
+msgstr "Seu backend valida tenant/usuário e solicita token ao SecureApprove."
+
+msgid "Browser requests only ephemeral session data from your backend."
+msgstr "O navegador solicita apenas dados efêmeros de sessão ao seu backend."
+
+msgid "Loader creates iframe and executes strict origin + nonce handshake."
+msgstr "O loader cria o iframe e executa handshake estrito com origin + nonce."
+
+msgid "Iframe performs biometric challenge and confirms /api/approvals/terms/confirm/."
+msgstr "O iframe executa desafio biométrico e confirma /api/approvals/terms/confirm/."
+
+msgid "Store audit_id from result for compliance and traceability."
+msgstr "Armazene audit_id do resultado para compliance e rastreabilidade."
+
+msgid "Security checklist"
+msgstr "Checklist de segurança"
+
+msgid "Never expose long-lived API keys in browser code."
+msgstr "Nunca exponha API keys de longa duração no código do navegador."
+
+msgid "Issue one-time, short-lived approval tokens only."
+msgstr "Emita apenas tokens de aprovação de uso único e curta duração."
+
+msgid "Validate decision, approval type, and subject user server-side."
+msgstr "Valide no servidor decisão, tipo de aprovação e usuário alvo."
+
+msgid "Enforce HTTPS and validate parent origin in frontend."
+msgstr "Exija HTTPS e valide parent origin no frontend."
+
+msgid "Do not persist approvalToken in localStorage/sessionStorage."
+msgstr "Não persista approvalToken em localStorage/sessionStorage."
+
+msgid "Backend session endpoint"
+msgstr "Endpoint de sessão backend"
+
+msgid "Frontend embed integration"
+msgstr "Integração frontend embed"
+
+msgid "Test request (curl)"
+msgstr "Requisição de teste (curl)"
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Copied"
+msgstr "Copiado"
+
+msgid "Copy failed"
+msgstr "Falha ao copiar"

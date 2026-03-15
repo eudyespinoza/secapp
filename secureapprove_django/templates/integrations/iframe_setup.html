@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% get_current_language as CURRENT_MENU_LANG %}
 
-{% block title %}{% if CURRENT_MENU_LANG == 'es' %}Integracion iframe{% elif CURRENT_MENU_LANG == 'pt-br' %}Integracao iframe{% else %}Iframe Integration{% endif %} - SecureApprove{% endblock %}
+{% block title %}{% trans "Iframe integration" %} - SecureApprove{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -87,20 +86,20 @@
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
                         <div>
-                            <h1 class="h3 mb-2">{% if CURRENT_MENU_LANG == 'es' %}Integracion iframe SecureApprove{% elif CURRENT_MENU_LANG == 'pt-br' %}Integracao iframe SecureApprove{% else %}SecureApprove iframe Integration{% endif %}</h1>
+                            <h1 class="h3 mb-2">{% trans "SecureApprove iframe integration" %}</h1>
                             <p class="text-muted mb-2">
-                                {% if CURRENT_MENU_LANG == 'es' %}Modulo listo para produccion con handshake seguro, token efimero y snippets listos para copiar.{% elif CURRENT_MENU_LANG == 'pt-br' %}Modulo pronto para producao com handshake seguro, token efemero e snippets prontos para copiar.{% else %}Production-ready module with secure handshake, ephemeral token flow, and copy-ready snippets.{% endif %}
+                                {% trans "Production-ready module with secure handshake, ephemeral token flow, and copy-ready snippets." %}
                             </p>
                             <div>
-                                <span class="step-chip"><i class="bi bi-shield-lock"></i>{% if CURRENT_MENU_LANG == 'es' %}Seguridad primero{% elif CURRENT_MENU_LANG == 'pt-br' %}Seguranca primeiro{% else %}Security-first{% endif %}</span>
-                                <span class="step-chip"><i class="bi bi-fingerprint"></i>{% if CURRENT_MENU_LANG == 'es' %}Biometria WebAuthn{% elif CURRENT_MENU_LANG == 'pt-br' %}Biometria WebAuthn{% else %}WebAuthn Biometric{% endif %}</span>
-                                <span class="step-chip"><i class="bi bi-braces"></i>{% if CURRENT_MENU_LANG == 'es' %}Codigo generado{% elif CURRENT_MENU_LANG == 'pt-br' %}Codigo gerado{% else %}Generated Code{% endif %}</span>
+                                <span class="step-chip"><i class="bi bi-shield-lock"></i>{% trans "Security-first" %}</span>
+                                <span class="step-chip"><i class="bi bi-fingerprint"></i>{% trans "WebAuthn biometric" %}</span>
+                                <span class="step-chip"><i class="bi bi-braces"></i>{% trans "Generated code" %}</span>
                             </div>
                         </div>
                         <div class="status-box">
-                            <div><strong>{% if CURRENT_MENU_LANG == 'es' %}Tenant{% elif CURRENT_MENU_LANG == 'pt-br' %}Tenant{% else %}Tenant{% endif %}:</strong> {{ tenant_name }}</div>
-                            <div><strong>{% if CURRENT_MENU_LANG == 'es' %}Clave{% elif CURRENT_MENU_LANG == 'pt-br' %}Chave{% else %}Key{% endif %}:</strong> {{ tenant_key }}</div>
-                            <div><strong>{% if CURRENT_MENU_LANG == 'es' %}Actor{% elif CURRENT_MENU_LANG == 'pt-br' %}Ator{% else %}Actor{% endif %}:</strong> {{ actor_email }}</div>
+                            <div><strong>{% trans "Tenant" %}:</strong> {{ tenant_name }}</div>
+                            <div><strong>{% trans "Key" %}:</strong> {{ tenant_key }}</div>
+                            <div><strong>{% trans "Actor" %}:</strong> {{ actor_email }}</div>
                         </div>
                     </div>
                 </div>
@@ -112,79 +111,79 @@
         <div class="col-12 col-xl-5">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-light border-0">
-                    <h2 class="h5 mb-0">{% if CURRENT_MENU_LANG == 'es' %}Configuracion{% elif CURRENT_MENU_LANG == 'pt-br' %}Configuracao{% else %}Configuration{% endif %}</h2>
+                    <h2 class="h5 mb-0">{% trans "Configuration" %}</h2>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label for="cfgEnvironment" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Entorno{% elif CURRENT_MENU_LANG == 'pt-br' %}Ambiente{% else %}Environment{% endif %}</label>
+                            <label for="cfgEnvironment" class="form-label">{% trans "Environment" %}</label>
                             <select id="cfgEnvironment" class="form-select">
-                                <option value="production">{% if CURRENT_MENU_LANG == 'es' %}Produccion{% elif CURRENT_MENU_LANG == 'pt-br' %}Producao{% else %}Production{% endif %}</option>
-                                <option value="staging">{% if CURRENT_MENU_LANG == 'es' %}Preproduccion{% elif CURRENT_MENU_LANG == 'pt-br' %}Homologacao{% else %}Staging{% endif %}</option>
-                                <option value="development">{% if CURRENT_MENU_LANG == 'es' %}Desarrollo{% elif CURRENT_MENU_LANG == 'pt-br' %}Desenvolvimento{% else %}Development{% endif %}</option>
+                                <option value="production">{% trans "Production" %}</option>
+                                <option value="staging">{% trans "Staging" %}</option>
+                                <option value="development">{% trans "Development" %}</option>
                             </select>
                         </div>
 
                         <div class="col-12">
-                            <label for="cfgBackendLanguage" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Snippet backend{% elif CURRENT_MENU_LANG == 'pt-br' %}Snippet backend{% else %}Backend snippet{% endif %}</label>
+                            <label for="cfgBackendLanguage" class="form-label">{% trans "Backend snippet" %}</label>
                             <select id="cfgBackendLanguage" class="form-select">
-                                <option value="node">{% if CURRENT_MENU_LANG == 'es' %}Node.js (Express){% elif CURRENT_MENU_LANG == 'pt-br' %}Node.js (Express){% else %}Node.js (Express){% endif %}</option>
-                                <option value="python">{% if CURRENT_MENU_LANG == 'es' %}Python (FastAPI){% elif CURRENT_MENU_LANG == 'pt-br' %}Python (FastAPI){% else %}Python (FastAPI){% endif %}</option>
+                                <option value="node">Node.js (Express)</option>
+                                <option value="python">Python (FastAPI)</option>
                             </select>
                         </div>
 
                         <div class="col-12">
-                            <label for="cfgSecureApproveOrigin" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Origen de SecureApprove{% elif CURRENT_MENU_LANG == 'pt-br' %}Origem do SecureApprove{% else %}SecureApprove Origin{% endif %}</label>
+                            <label for="cfgSecureApproveOrigin" class="form-label">{% trans "SecureApprove origin" %}</label>
                             <input id="cfgSecureApproveOrigin" class="form-control" value="{{ app_origin }}" />
-                            <div class="field-note">{% if CURRENT_MENU_LANG == 'es' %}Origen principal donde se publica el loader y el endpoint del iframe.{% elif CURRENT_MENU_LANG == 'pt-br' %}Origem principal onde o loader e o endpoint do iframe sao publicados.{% else %}Main origin hosting loader and iframe endpoint.{% endif %}</div>
+                            <div class="field-note">{% trans "Main origin hosting loader and iframe endpoint." %}</div>
                         </div>
 
                         <div class="col-12">
-                            <label for="cfgApiTokenEndpoint" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Endpoint de token{% elif CURRENT_MENU_LANG == 'pt-br' %}Endpoint de token{% else %}Token endpoint{% endif %}</label>
+                            <label for="cfgApiTokenEndpoint" class="form-label">{% trans "Token endpoint" %}</label>
                             <input id="cfgApiTokenEndpoint" class="form-control" value="{{ token_endpoint }}" />
-                            <div class="field-note">{% if CURRENT_MENU_LANG == 'es' %}Endpoint server-to-server consumido por tu backend.{% elif CURRENT_MENU_LANG == 'pt-br' %}Endpoint server-to-server consumido pelo seu backend.{% else %}Server-to-server endpoint used by your backend.{% endif %}</div>
+                            <div class="field-note">{% trans "Server-to-server endpoint used by your backend." %}</div>
                         </div>
 
                         <div class="col-12">
-                            <label for="cfgEmbedUrl" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}URL del iframe{% elif CURRENT_MENU_LANG == 'pt-br' %}URL do iframe{% else %}Iframe URL{% endif %}</label>
+                            <label for="cfgEmbedUrl" class="form-label">{% trans "Iframe URL" %}</label>
                             <input id="cfgEmbedUrl" class="form-control" value="{{ embed_url }}" />
                         </div>
 
                         <div class="col-12">
-                            <label for="cfgLoaderUrl" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}URL del script loader{% elif CURRENT_MENU_LANG == 'pt-br' %}URL do script loader{% else %}Loader script URL{% endif %}</label>
+                            <label for="cfgLoaderUrl" class="form-label">{% trans "Loader script URL" %}</label>
                             <input id="cfgLoaderUrl" class="form-control" value="{{ loader_url }}" />
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <label for="cfgTenantKey" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Clave del tenant{% elif CURRENT_MENU_LANG == 'pt-br' %}Chave do tenant{% else %}Tenant key{% endif %}</label>
+                            <label for="cfgTenantKey" class="form-label">{% trans "Tenant key" %}</label>
                             <input id="cfgTenantKey" class="form-control" value="{{ tenant_key }}" />
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <label for="cfgActorEmail" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Email del actor{% elif CURRENT_MENU_LANG == 'pt-br' %}Email do ator{% else %}Actor email{% endif %}</label>
+                            <label for="cfgActorEmail" class="form-label">{% trans "Actor email" %}</label>
                             <input id="cfgActorEmail" class="form-control" value="{{ actor_email }}" />
                         </div>
 
                         <div class="col-12">
-                            <label for="cfgBackendSessionPath" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Endpoint de sesion de tu backend{% elif CURRENT_MENU_LANG == 'pt-br' %}Endpoint de sessao do seu backend{% else %}Your backend session endpoint{% endif %}</label>
+                            <label for="cfgBackendSessionPath" class="form-label">{% trans "Your backend session endpoint" %}</label>
                             <input id="cfgBackendSessionPath" class="form-control" value="{{ backend_session_endpoint }}" />
                         </div>
 
                         <div class="col-12">
-                            <label for="cfgDecision" class="form-label">{% if CURRENT_MENU_LANG == 'es' %}Decision por defecto{% elif CURRENT_MENU_LANG == 'pt-br' %}Decisao padrao{% else %}Default decision{% endif %}</label>
+                            <label for="cfgDecision" class="form-label">{% trans "Default decision" %}</label>
                             <select id="cfgDecision" class="form-select">
-                                <option value="approve">{% if CURRENT_MENU_LANG == 'es' %}aprobar{% elif CURRENT_MENU_LANG == 'pt-br' %}aprovar{% else %}approve{% endif %}</option>
-                                <option value="reject">{% if CURRENT_MENU_LANG == 'es' %}rechazar{% elif CURRENT_MENU_LANG == 'pt-br' %}rejeitar{% else %}reject{% endif %}</option>
+                                <option value="approve">{% trans "approve" %}</option>
+                                <option value="reject">{% trans "reject" %}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="d-flex flex-wrap gap-2 mt-3">
                         <button type="button" class="btn btn-primary" id="btnGenerate">
-                            <i class="bi bi-magic me-1"></i>{% if CURRENT_MENU_LANG == 'es' %}Generar snippets{% elif CURRENT_MENU_LANG == 'pt-br' %}Gerar snippets{% else %}Generate snippets{% endif %}
+                            <i class="bi bi-magic me-1"></i>{% trans "Generate snippets" %}
                         </button>
                         <button type="button" class="btn btn-outline-secondary" id="btnReset">
-                            <i class="bi bi-arrow-counterclockwise me-1"></i>{% if CURRENT_MENU_LANG == 'es' %}Restablecer valores{% elif CURRENT_MENU_LANG == 'pt-br' %}Redefinir valores{% else %}Reset defaults{% endif %}
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>{% trans "Reset defaults" %}
                         </button>
                     </div>
                 </div>
@@ -194,28 +193,28 @@
         <div class="col-12 col-xl-7">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
-                    <h2 class="h5 mb-0">{% if CURRENT_MENU_LANG == 'es' %}Pasos de implementacion{% elif CURRENT_MENU_LANG == 'pt-br' %}Passos de implementacao{% else %}Implementation steps{% endif %}</h2>
-                    <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">{% if CURRENT_MENU_LANG == 'es' %}Funcional{% elif CURRENT_MENU_LANG == 'pt-br' %}Funcional{% else %}Functional{% endif %}</span>
+                    <h2 class="h5 mb-0">{% trans "Implementation steps" %}</h2>
+                    <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">{% trans "Functional" %}</span>
                 </div>
                 <div class="card-body">
                     <ol class="mb-0">
-                        <li class="mb-2">{% if CURRENT_MENU_LANG == 'es' %}Tu backend valida tenant/usuario y solicita token a SecureApprove.{% elif CURRENT_MENU_LANG == 'pt-br' %}Seu backend valida tenant/usuario e solicita token ao SecureApprove.{% else %}Your backend validates tenant/user context and requests token from SecureApprove.{% endif %}</li>
-                        <li class="mb-2">{% if CURRENT_MENU_LANG == 'es' %}El navegador solicita solo datos efimeros de sesion a tu backend.{% elif CURRENT_MENU_LANG == 'pt-br' %}O navegador solicita apenas dados efemeros de sessao ao seu backend.{% else %}Browser requests only ephemeral session data from your backend.{% endif %}</li>
-                        <li class="mb-2">{% if CURRENT_MENU_LANG == 'es' %}El loader crea el iframe y ejecuta handshake estricto con origin + nonce.{% elif CURRENT_MENU_LANG == 'pt-br' %}O loader cria o iframe e executa handshake estrito com origin + nonce.{% else %}Loader creates iframe and executes strict origin + nonce handshake.{% endif %}</li>
-                        <li class="mb-2">{% if CURRENT_MENU_LANG == 'es' %}El iframe ejecuta desafio biometrico y confirma /api/approvals/terms/confirm/.{% elif CURRENT_MENU_LANG == 'pt-br' %}O iframe executa desafio biometrico e confirma /api/approvals/terms/confirm/.{% else %}Iframe performs biometric challenge and confirms /api/approvals/terms/confirm/.{% endif %}</li>
-                        <li>{% if CURRENT_MENU_LANG == 'es' %}Guarda audit_id del resultado para cumplimiento y trazabilidad.{% elif CURRENT_MENU_LANG == 'pt-br' %}Armazene audit_id do resultado para compliance e rastreabilidade.{% else %}Store audit_id from result for compliance and traceability.{% endif %}</li>
+                        <li class="mb-2">{% trans "Your backend validates tenant/user context and requests token from SecureApprove." %}</li>
+                        <li class="mb-2">{% trans "Browser requests only ephemeral session data from your backend." %}</li>
+                        <li class="mb-2">{% trans "Loader creates iframe and executes strict origin + nonce handshake." %}</li>
+                        <li class="mb-2">{% trans "Iframe performs biometric challenge and confirms /api/approvals/terms/confirm/." %}</li>
+                        <li>{% trans "Store audit_id from result for compliance and traceability." %}</li>
                     </ol>
 
                     <hr>
 
                     <div class="mb-0">
-                        <h3 class="h6">{% if CURRENT_MENU_LANG == 'es' %}Checklist de seguridad{% elif CURRENT_MENU_LANG == 'pt-br' %}Checklist de seguranca{% else %}Security checklist{% endif %}</h3>
+                        <h3 class="h6">{% trans "Security checklist" %}</h3>
                         <ul class="mb-0">
-                            <li>{% if CURRENT_MENU_LANG == 'es' %}Nunca expongas API keys de larga duracion en codigo de navegador.{% elif CURRENT_MENU_LANG == 'pt-br' %}Nunca exponha API keys de longa duracao no codigo do navegador.{% else %}Never expose long-lived API keys in browser code.{% endif %}</li>
-                            <li>{% if CURRENT_MENU_LANG == 'es' %}Emite solo tokens de aprobacion de un uso y corta vida.{% elif CURRENT_MENU_LANG == 'pt-br' %}Emita apenas tokens de aprovacao de uso unico e curta duracao.{% else %}Issue one-time, short-lived approval tokens only.{% endif %}</li>
-                            <li>{% if CURRENT_MENU_LANG == 'es' %}Valida server-side decision, tipo de aprobacion y usuario sujeto.{% elif CURRENT_MENU_LANG == 'pt-br' %}Valide no servidor decisao, tipo de aprovacao e usuario alvo.{% else %}Validate decision, approval type, and subject user server-side.{% endif %}</li>
-                            <li>{% if CURRENT_MENU_LANG == 'es' %}Exige HTTPS y valida parent origin en frontend.{% elif CURRENT_MENU_LANG == 'pt-br' %}Exija HTTPS e valide parent origin no frontend.{% else %}Enforce HTTPS and validate parent origin in frontend.{% endif %}</li>
-                            <li>{% if CURRENT_MENU_LANG == 'es' %}No persistas approvalToken en localStorage/sessionStorage.{% elif CURRENT_MENU_LANG == 'pt-br' %}Nao persista approvalToken em localStorage/sessionStorage.{% else %}Do not persist approvalToken in localStorage/sessionStorage.{% endif %}</li>
+                            <li>{% trans "Never expose long-lived API keys in browser code." %}</li>
+                            <li>{% trans "Issue one-time, short-lived approval tokens only." %}</li>
+                            <li>{% trans "Validate decision, approval type, and subject user server-side." %}</li>
+                            <li>{% trans "Enforce HTTPS and validate parent origin in frontend." %}</li>
+                            <li>{% trans "Do not persist approvalToken in localStorage/sessionStorage." %}</li>
                         </ul>
                     </div>
                 </div>
@@ -227,9 +226,9 @@
         <div class="col-12">
             <div class="code-card shadow-sm">
                 <div class="code-header">
-                    <strong>{% if CURRENT_MENU_LANG == 'es' %}Endpoint de sesion backend{% elif CURRENT_MENU_LANG == 'pt-br' %}Endpoint de sessao backend{% else %}Backend session endpoint{% endif %}</strong>
+                    <strong>{% trans "Backend session endpoint" %}</strong>
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="backendSnippet">
-                        <i class="bi bi-clipboard me-1"></i>{% if CURRENT_MENU_LANG == 'es' %}Copiar{% elif CURRENT_MENU_LANG == 'pt-br' %}Copiar{% else %}Copy{% endif %}
+                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
                     </button>
                 </div>
                 <pre class="code-body"><code id="backendSnippet"></code></pre>
@@ -239,9 +238,9 @@
         <div class="col-12">
             <div class="code-card shadow-sm">
                 <div class="code-header">
-                    <strong>{% if CURRENT_MENU_LANG == 'es' %}Integracion frontend embed{% elif CURRENT_MENU_LANG == 'pt-br' %}Integracao frontend embed{% else %}Frontend embed integration{% endif %}</strong>
+                    <strong>{% trans "Frontend embed integration" %}</strong>
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="frontendSnippet">
-                        <i class="bi bi-clipboard me-1"></i>{% if CURRENT_MENU_LANG == 'es' %}Copiar{% elif CURRENT_MENU_LANG == 'pt-br' %}Copiar{% else %}Copy{% endif %}
+                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
                     </button>
                 </div>
                 <pre class="code-body"><code id="frontendSnippet"></code></pre>
@@ -251,9 +250,9 @@
         <div class="col-12">
             <div class="code-card shadow-sm">
                 <div class="code-header">
-                    <strong>{% if CURRENT_MENU_LANG == 'es' %}Solicitud de prueba (curl){% elif CURRENT_MENU_LANG == 'pt-br' %}Requisicao de teste (curl){% else %}Test request (curl){% endif %}</strong>
+                    <strong>{% trans "Test request (curl)" %}</strong>
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="curlSnippet">
-                        <i class="bi bi-clipboard me-1"></i>{% if CURRENT_MENU_LANG == 'es' %}Copiar{% elif CURRENT_MENU_LANG == 'pt-br' %}Copiar{% else %}Copy{% endif %}
+                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
                     </button>
                 </div>
                 <pre class="code-body"><code id="curlSnippet"></code></pre>
@@ -288,8 +287,8 @@
     const frontendSnippetEl = document.getElementById('frontendSnippet');
     const curlSnippetEl = document.getElementById('curlSnippet');
     const uiText = {
-        copied: "{% if CURRENT_MENU_LANG == 'es' %}Copiado{% elif CURRENT_MENU_LANG == 'pt-br' %}Copiado{% else %}Copied{% endif %}",
-        copyFailed: "{% if CURRENT_MENU_LANG == 'es' %}Error al copiar{% elif CURRENT_MENU_LANG == 'pt-br' %}Falha ao copiar{% else %}Copy failed{% endif %}"
+        copied: "{% trans 'Copied' %}",
+        copyFailed: "{% trans 'Copy failed' %}"
     };
 
     function q(v) {
