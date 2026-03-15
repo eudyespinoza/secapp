@@ -324,6 +324,12 @@ WEBPUSH_SETTINGS = {
     "VAPID_ADMIN_EMAIL": config('VAPID_ADMIN_EMAIL', default='mailto:admin@secureapprove.com'),
 }
 
+# Keep push subscriptions across logout by default to improve mobile background delivery.
+WEBPUSH_UNSUBSCRIBE_ON_LOGOUT = config('WEBPUSH_UNSUBSCRIBE_ON_LOGOUT', default=False, cast=bool)
+
+# Default TTL for queued push delivery (seconds). 24h helps intermittent mobile connectivity.
+WEBPUSH_DEFAULT_TTL = config('WEBPUSH_DEFAULT_TTL', default=86400, cast=int)
+
 # Celery Configuration
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL

@@ -71,8 +71,8 @@ def logout_view(request):
     """Custom logout view (CSRF-exempt for proxy compatibility)"""
     user = request.user
     
-    # Remove push notification subscriptions for this user before logout
-    if user.is_authenticated:
+    # Optional cleanup: keep subscriptions by default to avoid losing mobile push delivery.
+    if user.is_authenticated and getattr(settings, 'WEBPUSH_UNSUBSCRIBE_ON_LOGOUT', False):
         try:
             from webpush.models import PushInformation
             # Delete all push subscriptions for this user

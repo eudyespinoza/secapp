@@ -1570,34 +1570,7 @@
                             <script src="{% static 'js/tenant_chat.js' %}"></script>
                             {% endif %}
                             
-                            <!-- Push Notification Cleanup on Logout -->
-                            <script>
-                            (function() {
-                                const logoutForm = document.getElementById('logoutForm');
-                                if (logoutForm) {
-                                    logoutForm.addEventListener('submit', async function(e) {
-                                        e.preventDefault();
-                                        const form = this;
-                                        
-                                        try {
-                                            if ('serviceWorker' in navigator && 'PushManager' in window) {
-                                                const registration = await navigator.serviceWorker.ready;
-                                                const subscription = await registration.pushManager.getSubscription();
-                                                if (subscription) {
-                                                    await subscription.unsubscribe();
-                                                    console.log('Push notifications unsubscribed successfully');
-                                                }
-                                            }
-                                        } catch (err) {
-                                            console.log('Push unsubscribe failed:', err);
-                                        }
-                                        
-                                        // Submit the form after cleanup
-                                        form.submit();
-                                    });
-                                }
-                            })();
-                            </script>
+                            <!-- Keep push subscription on logout by default (server-side configurable). -->
                             
                             {% block extra_js %}{% endblock %}
                         </body>
