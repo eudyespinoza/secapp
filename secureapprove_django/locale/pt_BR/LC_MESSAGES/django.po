@@ -2700,6 +2700,9 @@ msgstr ""
 msgid "Approval type not found."
 msgstr "Tipo de aprovação não encontrado."
 
+msgid "Manage your organization profile, users, and settings"
+msgstr "Gerencie o perfil, usuários e configurações da sua organização"
+
 msgid "Name and key are required."
 msgstr "Nome e chave são obrigatórios."
 

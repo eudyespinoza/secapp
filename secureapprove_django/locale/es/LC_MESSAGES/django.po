@@ -2217,6 +2217,9 @@ msgstr ""
 msgid "Approvers"
 msgstr "Aprobadores"
 
+msgid "Manage your organization profile, users, and settings"
+msgstr "Administra el perfil, usuarios y configuración de tu organización"
+
 msgid "Invite User"
 msgstr "Invitar Usuario"
 
