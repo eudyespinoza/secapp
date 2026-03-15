@@ -79,7 +79,7 @@
                                     <i class="bi {{ config.icon }} text-{{ config.color }}"></i>
                                     <div>
                                         <span class="fw-medium {% if not config.is_enabled %}text-muted text-decoration-line-through{% endif %}">
-                                            {{ config.name }}
+                                            {{ config.get_translated_name }}
                                         </span>
                                         {% if config.is_custom %}
                                         <span class="badge bg-info bg-opacity-10 text-info border-0 ms-1" style="font-size: 0.65rem;">{% trans "Custom" %}</span>

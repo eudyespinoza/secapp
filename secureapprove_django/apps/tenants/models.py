@@ -324,7 +324,21 @@ class ApprovalTypeConfig(models.Model):
     def __str__(self):
         status = "✓" if self.is_enabled else "✗"
         return f"{status} {self.name} ({self.tenant.key})"
-    
+
+    def get_translated_name(self):
+        """Return translated name for default types; stored name for custom types."""
+        if self.is_custom:
+            return self.name
+        default_names = {
+            'expense': _('Expense Reimbursement'),
+            'purchase': _('Purchase Request'),
+            'travel': _('Travel Approval'),
+            'contract': _('Contract Approval'),
+            'document': _('Document Withdrawal'),
+            'other': _('Other'),
+        }
+        return default_names.get(self.category_key, self.name)
+
     @classmethod
     def get_default_config(cls, category_key):
         """Get default configuration for a category"""
