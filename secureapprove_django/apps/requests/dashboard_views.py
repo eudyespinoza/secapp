@@ -8,11 +8,22 @@ from django.http import JsonResponse
 from django.db.models import Count, Q
 from django.utils.translation import gettext as _
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+import hashlib
+import secrets
+import uuid
 from datetime import timedelta
 from .models import ApprovalRequest
+from apps.authentication.models import User, TermsApprovalSession
+from apps.authentication.webauthn_service import webauthn_service
+from apps.authentication.approvals_api_serializers import TermsTokenRequestSerializer
+
+
+def _sha256_hex(value: str) -> str:
+    return hashlib.sha256(value.encode('utf-8')).hexdigest()
 
 @login_required
 def dashboard(request):
@@ -118,6 +129,164 @@ def dashboard(request):
     }
     
     return render(request, 'dashboard/index.html', context)
+
+
+@login_required
+def iframe_integration_guide(request):
+    """Professional integration guide for SecureApprove iframe embed."""
+
+    if not hasattr(request.user, 'tenant') or request.user.tenant is None:
+        from django.shortcuts import redirect
+        return redirect('/billing/')
+
+    # Integration setup must be managed by tenant admins/super admins.
+    if not request.user.can_admin_tenant():
+        from django.shortcuts import redirect
+        return redirect('requests:dashboard')
+
+    app_origin = f"{request.scheme}://{request.get_host()}"
+    embed_url = f"{app_origin}/{request.LANGUAGE_CODE}/embed/secureapprove/"
+    token_endpoint = f"{app_origin}/api/approvals/terms/token/"
+    loader_url = f"{app_origin}/static/js/secureapprove-embed-loader.js"
+    backend_session_endpoint = f"/{request.LANGUAGE_CODE}/dashboard/api/integrations/iframe/session/"
+
+    context = {
+        'app_origin': app_origin,
+        'embed_url': embed_url,
+        'loader_url': loader_url,
+        'token_endpoint': token_endpoint,
+        'backend_session_endpoint': backend_session_endpoint,
+        'tenant_key': getattr(request.user.tenant, 'key', ''),
+        'tenant_name': getattr(request.user.tenant, 'name', ''),
+        'actor_email': request.user.email,
+    }
+    return render(request, 'integrations/iframe_setup.html', context)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def iframe_integration_session_api(request):
+    """Internal bootstrap endpoint to issue ephemeral iframe session data for integrations."""
+
+    if not getattr(request.user, 'tenant_id', None):
+        return Response({'detail': 'Authenticated user has no tenant.'}, status=400)
+
+    if not request.user.can_admin_tenant():
+        return Response({'detail': 'Insufficient permissions.'}, status=403)
+
+    subject_user_id = request.data.get('subjectUserId')
+    if not subject_user_id:
+        return Response({'detail': 'subjectUserId is required.'}, status=400)
+
+    decision = request.data.get('decision', 'approve')
+    decision = 'reject' if decision == 'reject' else 'approve'
+    approved = decision == 'approve'
+
+    approval_type = request.data.get('approvalType', 'document')
+    document_version = request.data.get('documentVersion', '')
+    document_hash = request.data.get('documentHash', '')
+
+    subject_user = get_object_or_404(User, pk=subject_user_id)
+
+    if subject_user.tenant_id != request.user.tenant_id:
+        return Response({'detail': 'User does not belong to your tenant.'}, status=403)
+
+    if not subject_user.has_webauthn_credentials:
+        return Response({'detail': 'User has no WebAuthn credentials.'}, status=400)
+
+    payload = {
+        'user_id': int(subject_user_id),
+        'purpose': f'external_{approval_type}_{decision}',
+        'document_type': approval_type,
+        'document_version': document_version,
+        'document_hash': document_hash,
+        'context': {
+            'tenant': {
+                'key': getattr(request.user.tenant, 'key', ''),
+                'name': getattr(request.user.tenant, 'name', ''),
+                'external_id': request.data.get('tenantExternalId', ''),
+            },
+            'actor_user': {
+                'id': str(request.user.id),
+                'email': request.user.email,
+                'name': request.user.get_full_name(),
+            },
+            'subject_user': {
+                'id': str(subject_user.id),
+                'email': subject_user.email,
+                'name': subject_user.get_full_name(),
+            },
+            'approval': {
+                'type': approval_type,
+                'decision': decision,
+                'approved': approved,
+                'reference_id': request.data.get('referenceId', ''),
+                'amount': request.data.get('amount'),
+                'currency': request.data.get('currency', ''),
+                'notes': request.data.get('notes', ''),
+                'source': 'dashboard_iframe_integration_module',
+                'requested_at': timezone.now().isoformat(),
+            },
+        },
+    }
+
+    serializer = TermsTokenRequestSerializer(data=payload)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+
+    raw_token = secrets.token_urlsafe(48)
+    token_hash = _sha256_hex(raw_token)
+    expires_at = timezone.now() + timedelta(seconds=120)
+    session_id = uuid.uuid4()
+
+    session = TermsApprovalSession(
+        id=session_id,
+        tenant=request.user.tenant,
+        subject_user=subject_user,
+        created_by=request.user,
+        purpose=data['purpose'],
+        document_type=data['document_type'],
+        document_version=data['document_version'],
+        document_hash=data['document_hash'],
+        context_data=data.get('context', {}) or {},
+        approval_id=f"terms_{session_id}",
+        token_hash=token_hash,
+        expires_at=expires_at,
+    )
+
+    context_data = {
+        'purpose': data['purpose'],
+        'document_type': data['document_type'],
+        'document_version': data['document_version'],
+        'document_hash': data['document_hash'],
+        'subject_user_id': str(subject_user.id),
+        'tenant_id': str(request.user.tenant_id),
+    }
+    extra = session.context_data or {}
+    if isinstance(extra, dict) and extra:
+        context_data['extra'] = extra
+
+    session.save()
+
+    options = webauthn_service.generate_approval_challenge(
+        user=subject_user,
+        approval_id=session.approval_id,
+        context_data=context_data,
+    )
+
+    session.challenge_id = options.get('challengeId', '')
+    session.save(update_fields=['challenge_id'])
+
+    return Response(
+        {
+            'approvalToken': raw_token,
+            'webauthnOptions': options,
+            'approved': approved,
+            'context': payload['context'],
+            'expiresAt': session.expires_at.isoformat(),
+        },
+        status=201,
+    )
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

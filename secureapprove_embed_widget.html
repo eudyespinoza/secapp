@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SecureApprove Embed Widget</title>
+  <style>
+    :root {
+      --bg-0: #f2f7f3;
+      --bg-1: #dfece2;
+      --card: #ffffff;
+      --line: #d4e2d7;
+      --text: #132218;
+      --muted: #4f6656;
+      --brand: #0a7a48;
+      --brand-2: #145f4d;
+      --warn: #b26600;
+      --err: #a3122b;
+      --ok: #0e7f46;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(18, 40, 26, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at -10% -20%, #f8fff8 0%, transparent 60%),
+        radial-gradient(800px 500px at 120% 0%, #e8f8eb 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg-0), var(--bg-1));
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .hero {
+      border: 1px solid #cfe0d3;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ffffff 0%, #f0faf2 100%);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.25rem, 2.5vw, 2rem);
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 920px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--brand-2);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .row.two {
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 640px) {
+      .row.two {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #243b2b;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #c7d8cb;
+      border-radius: 10px;
+      padding: 10px 11px;
+      outline: none;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: #fbfefb;
+      transition: border-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    textarea { min-height: 72px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #2b875f;
+      box-shadow: 0 0 0 3px rgba(42, 135, 95, 0.14);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 11px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), #0f8a52);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #edf7ef;
+      color: #17462e;
+      border: 1px solid #cbe0d0;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #a3122b, #8a1026);
+      color: #fff;
+    }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+
+    .status {
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #cbdbcf;
+      background: #f6fcf7;
+      white-space: pre-wrap;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      min-height: 120px;
+    }
+
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .err { color: var(--err); }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>SecureApprove Embedded Biometrics</h1>
+      <p>
+        Widget HTML para embeber en sitios de clientes. Ejecuta login biometrico,
+        crea solicitud de aprobacion y confirma/rechaza con auditoria WebAuthn.
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>1) Configuracion API</h2>
+
+        <div class="row">
+          <div>
+            <label for="apiBaseUrl">API Base URL</label>
+            <input id="apiBaseUrl" value="https://api.secureapprove.com" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="apiToken">API Token (Bearer)</label>
+            <input id="apiToken" placeholder="eyJ..." />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="authPrefix">Prefijo rutas WebAuthn (i18n)</label>
+            <input id="authPrefix" value="/es/auth" />
+          </div>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label for="tenantKey">Tenant key</label>
+            <input id="tenantKey" placeholder="acme" />
+          </div>
+          <div>
+            <label for="tenantName">Tenant name</label>
+            <input id="tenantName" placeholder="Acme Corp" />
+          </div>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label for="tenantExternalId">Tenant external id</label>
+            <input id="tenantExternalId" placeholder="crm-3342" />
+          </div>
+          <div>
+            <label for="actorUserId">Actor user id (admin/operador)</label>
+            <input id="actorUserId" type="number" placeholder="12" />
+          </div>
+        </div>
+
+        <p class="hint">
+          Nota: el token debe pertenecer a un usuario autenticado con permisos de administracion del tenant.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>2) Login Biometrico (usuario actor)</h2>
+
+        <div class="row two">
+          <div>
+            <label for="actorEmail">Email actor</label>
+            <input id="actorEmail" type="email" placeholder="admin@cliente.com" />
+          </div>
+          <div>
+            <label for="actorName">Nombre actor</label>
+            <input id="actorName" placeholder="Admin Cliente" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="btnLogin" class="btn-primary" type="button">Iniciar login biometrico</button>
+        </div>
+
+        <p class="hint">
+          Este paso consume /{lang}/auth/webauthn/login/options y /{lang}/auth/webauthn/login/verify.
+        </p>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>3) Solicitud de Aprobacion + Confirmacion</h2>
+
+      <div class="row two">
+        <div>
+          <label for="subjectUserId">Usuario sujeto (quien aprueba/firma)</label>
+          <input id="subjectUserId" type="number" placeholder="45" />
+        </div>
+        <div>
+          <label for="subjectUserEmail">Email sujeto</label>
+          <input id="subjectUserEmail" type="email" placeholder="approver@cliente.com" />
+        </div>
+      </div>
+
+      <div class="row two">
+        <div>
+          <label for="subjectUserName">Nombre sujeto</label>
+          <input id="subjectUserName" placeholder="Maria Gomez" />
+        </div>
+        <div>
+          <label for="approvalType">Tipo de aprobacion</label>
+          <select id="approvalType">
+            <option value="expense">expense</option>
+            <option value="purchase">purchase</option>
+            <option value="travel">travel</option>
+            <option value="contract">contract</option>
+            <option value="document">document</option>
+            <option value="other" selected>other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row two">
+        <div>
+          <label for="decision">Decision</label>
+          <select id="decision">
+            <option value="approve" selected>approve</option>
+            <option value="reject">reject</option>
+          </select>
+        </div>
+        <div>
+          <label for="docVersion">Version documento</label>
+          <input id="docVersion" placeholder="v1.0.0" />
+        </div>
+      </div>
+
+      <div class="row two">
+        <div>
+          <label for="docHash">Hash documento (sha256 recomendado)</label>
+          <input id="docHash" placeholder="2f09..." />
+        </div>
+        <div>
+          <label for="referenceId">Referencia externa</label>
+          <input id="referenceId" placeholder="INV-2026-001" />
+        </div>
+      </div>
+
+      <div class="row two">
+        <div>
+          <label for="amount">Monto</label>
+          <input id="amount" type="number" step="0.01" placeholder="1500.00" />
+        </div>
+        <div>
+          <label for="currency">Moneda</label>
+          <input id="currency" value="USD" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="notes">Notas</label>
+          <textarea id="notes" placeholder="Comentario o razon de la aprobacion/rechazo"></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnRunApprove" class="btn-primary" type="button">Crear y confirmar (approve)</button>
+        <button id="btnRunReject" class="btn-danger" type="button">Crear y confirmar (reject)</button>
+        <button id="btnDryPayload" class="btn-secondary" type="button">Ver payload</button>
+      </div>
+
+      <p class="hint">
+        Se envia contexto completo de tenant + actor + usuario sujeto en el campo context.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Salida / Auditoria</h2>
+      <div id="status" class="status">Esperando acciones...</div>
+    </section>
+  </main>
+
+  <script>
+    const statusEl = document.getElementById("status");
+
+    function setStatus(message, type = "") {
+      statusEl.className = "status";
+      if (type) statusEl.classList.add(type);
+      statusEl.textContent = message;
+    }
+
+    function getInput(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    async function apiFetch(path, { method = "GET", body, auth = false } = {}) {
+      const base = getInput("apiBaseUrl").replace(/\/+$/, "");
+      const headers = { "Content-Type": "application/json" };
+
+      if (auth) {
+        const token = getInput("apiToken");
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+      }
+
+      const response = await fetch(base + path, {
+        method,
+        credentials: "include",
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+
+      const text = await response.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${data.error || data.detail || JSON.stringify(data)}`);
+      }
+
+      return data;
+    }
+
+    function b64ToArrayBuffer(b64) {
+      const normalized = b64.replace(/-/g, "+").replace(/_/g, "/");
+      const padLen = (4 - (normalized.length % 4)) % 4;
+      const padded = normalized + "=".repeat(padLen);
+      const binary = atob(padded);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    function arrayBufferToB64url(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.byteLength; i += 1) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function toPublicKeyOptions(serverOptions) {
+      const publicKey = { ...serverOptions };
+      publicKey.challenge = b64ToArrayBuffer(serverOptions.challenge);
+
+      if (Array.isArray(serverOptions.allowCredentials)) {
+        publicKey.allowCredentials = serverOptions.allowCredentials.map((cred) => ({
+          ...cred,
+          id: b64ToArrayBuffer(cred.id),
+        }));
+      }
+
+      return publicKey;
+    }
+
+    function serializeAssertion(assertion) {
+      return {
+        id: assertion.id,
+        rawId: arrayBufferToB64url(assertion.rawId),
+        type: assertion.type,
+        response: {
+          clientDataJSON: arrayBufferToB64url(assertion.response.clientDataJSON),
+          authenticatorData: arrayBufferToB64url(assertion.response.authenticatorData),
+          signature: arrayBufferToB64url(assertion.response.signature),
+          userHandle: assertion.response.userHandle
+            ? arrayBufferToB64url(assertion.response.userHandle)
+            : null,
+        },
+      };
+    }
+
+    async function performBiometricLogin() {
+      const email = getInput("actorEmail").toLowerCase();
+      if (!email) throw new Error("Debes ingresar actorEmail para login biometrico");
+
+      if (!window.PublicKeyCredential || !navigator.credentials) {
+        throw new Error("Este navegador/dispositivo no soporta WebAuthn");
+      }
+
+      const authPrefix = (getInput("authPrefix") || "/es/auth").replace(/\/+$/, "");
+
+      setStatus("[1/3] Solicitando challenge de login...", "warn");
+      const optionsData = await apiFetch(`${authPrefix}/webauthn/login/options/`, {
+        method: "POST",
+        body: { email },
+      });
+
+      setStatus("[2/3] Ejecutando biometria del dispositivo...", "warn");
+      const assertion = await navigator.credentials.get({
+        publicKey: toPublicKeyOptions(optionsData.options),
+      });
+
+      if (!assertion) throw new Error("Autenticacion biometrica cancelada");
+
+      setStatus("[3/3] Verificando login con SecureApprove...", "warn");
+      const verify = await apiFetch(`${authPrefix}/webauthn/login/verify/`, {
+        method: "POST",
+        body: {
+          userId: optionsData.userId,
+          response: serializeAssertion(assertion),
+        },
+      });
+
+      if (verify && verify.user && verify.user.id && !getInput("actorUserId")) {
+        document.getElementById("actorUserId").value = verify.user.id;
+      }
+
+      setStatus("Login biometrico exitoso:\n" + JSON.stringify(verify, null, 2), "ok");
+      return verify;
+    }
+
+    function buildTokenPayload(decisionOverride) {
+      const decision = decisionOverride || getInput("decision");
+      const approved = decision === "approve";
+
+      const payload = {
+        user_id: Number(getInput("subjectUserId")),
+        purpose: `external_${getInput("approvalType")}_${decision}`,
+        document_type: getInput("approvalType") || "other",
+        document_version: getInput("docVersion") || "",
+        document_hash: getInput("docHash") || "",
+        context: {
+          tenant: {
+            key: getInput("tenantKey"),
+            name: getInput("tenantName"),
+            external_id: getInput("tenantExternalId"),
+          },
+          actor_user: {
+            id: getInput("actorUserId") || null,
+            email: getInput("actorEmail"),
+            name: getInput("actorName"),
+          },
+          subject_user: {
+            id: getInput("subjectUserId"),
+            email: getInput("subjectUserEmail"),
+            name: getInput("subjectUserName"),
+          },
+          approval: {
+            type: getInput("approvalType"),
+            decision,
+            approved,
+            reference_id: getInput("referenceId"),
+            amount: getInput("amount") || null,
+            currency: getInput("currency") || null,
+            notes: getInput("notes"),
+            source: "embedded_widget_html",
+            requested_at: new Date().toISOString(),
+          },
+        },
+      };
+
+      if (!payload.user_id || Number.isNaN(payload.user_id)) {
+        throw new Error("subjectUserId es obligatorio");
+      }
+
+      if (!payload.context.tenant.key) {
+        throw new Error("tenantKey es obligatorio");
+      }
+
+      return payload;
+    }
+
+    async function createAndConfirmApproval(decision) {
+      const approved = decision === "approve";
+      const tokenPayload = buildTokenPayload(decision);
+
+      if (!window.PublicKeyCredential || !navigator.credentials) {
+        throw new Error("Este navegador/dispositivo no soporta WebAuthn");
+      }
+
+      setStatus("[1/4] Creando token de aprobacion...", "warn");
+      const tokenData = await apiFetch("/api/approvals/terms/token/", {
+        method: "POST",
+        auth: true,
+        body: tokenPayload,
+      });
+
+      setStatus("[2/4] Solicitando biometria para la decision...", "warn");
+      const assertion = await navigator.credentials.get({
+        publicKey: toPublicKeyOptions(tokenData.webauthn_options),
+      });
+
+      if (!assertion) throw new Error("Autenticacion biometrica cancelada");
+
+      setStatus("[3/4] Confirmando decision con firma WebAuthn...", "warn");
+      const confirmData = await apiFetch("/api/approvals/terms/confirm/", {
+        method: "POST",
+        body: {
+          approval_token: tokenData.approval_token,
+          approved,
+          webauthn_response: serializeAssertion(assertion),
+        },
+      });
+
+      const result = {
+        flow: "create_and_confirm",
+        decision,
+        approved,
+        token_expires_at: tokenData.expires_at,
+        audit_id: confirmData.audit_id,
+        confirm_result: confirmData,
+        payload_sent: tokenPayload,
+      };
+
+      setStatus("[4/4] Flujo completado con auditoria:\n" + JSON.stringify(result, null, 2), "ok");
+      return result;
+    }
+
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      try {
+        await performBiometricLogin();
+      } catch (error) {
+        setStatus("Error login biometrico:\n" + error.message, "err");
+      }
+    });
+
+    document.getElementById("btnRunApprove").addEventListener("click", async () => {
+      try {
+        await createAndConfirmApproval("approve");
+      } catch (error) {
+        setStatus("Error en aprobacion:\n" + error.message, "err");
+      }
+    });
+
+    document.getElementById("btnRunReject").addEventListener("click", async () => {
+      try {
+        await createAndConfirmApproval("reject");
+      } catch (error) {
+        setStatus("Error en rechazo:\n" + error.message, "err");
+      }
+    });
+
+    document.getElementById("btnDryPayload").addEventListener("click", () => {
+      try {
+        const decision = getInput("decision") || "approve";
+        const payload = buildTokenPayload(decision);
+        setStatus("Payload actual que se enviara a /api/approvals/terms/token/:\n" + JSON.stringify(payload, null, 2));
+      } catch (error) {
+        setStatus("Error construyendo payload:\n" + error.message, "err");
+      }
+    });
+  </script>
+</body>
+</html>

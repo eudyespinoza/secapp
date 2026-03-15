@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 class LandingPageView(TemplateView):
     """Landing page for SecureApprove"""
@@ -78,3 +80,9 @@ class TermsView(TemplateView):
 class PrivacyView(TemplateView):
     """Privacy Policy page"""
     template_name = 'legal/privacy.html'
+
+
+@method_decorator(xframe_options_exempt, name='dispatch')
+class SecureApproveEmbedView(TemplateView):
+    """Embeddable iframe endpoint for high-security biometric approval confirmation."""
+    template_name = 'embed/secureapprove_iframe.html'

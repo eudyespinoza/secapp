@@ -17,6 +17,8 @@ app_name = 'requests'
 urlpatterns = [
     # Dashboard (default route)
     path('', dashboard_views.dashboard, name='dashboard'),
+    path('integrations/iframe/', dashboard_views.iframe_integration_guide, name='iframe-integration-guide'),
+    path('api/integrations/iframe/session/', dashboard_views.iframe_integration_session_api, name='iframe-integration-session-api'),
     
     # Web interface
     path('list/', views.request_list, name='list'),

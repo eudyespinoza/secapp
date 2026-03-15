@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LandingPageView, DemoPageView, TermsView, PrivacyView
+from .views import LandingPageView, DemoPageView, TermsView, PrivacyView, SecureApproveEmbedView
 from .test_i18n_view import test_i18n_view
 
 app_name = 'landing'
@@ -9,5 +9,6 @@ urlpatterns = [
     path('terms/', TermsView.as_view(), name='terms'),
     path('privacy/', PrivacyView.as_view(), name='privacy'),
     path('demo/', DemoPageView.as_view(), name='demo'),
+    path('embed/secureapprove/', SecureApproveEmbedView.as_view(), name='secureapprove_embed'),
     path('test-i18n/', test_i18n_view, name='test_i18n'),
 ]

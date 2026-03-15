@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SecureApprove Embedded Approval</title>
+  <style>
+    :root {
+      --bg: #f5fbf6;
+      --card: #ffffff;
+      --line: #d0e2d4;
+      --text: #11261a;
+      --muted: #4d6354;
+      --ok: #0d7f47;
+      --warn: #a36a00;
+      --err: #a0162f;
+      --brand: #0b7b49;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(700px 200px at 100% 0, #e9f6eb, transparent 60%),
+        radial-gradient(500px 160px at 0 100%, #edf9ef, transparent 60%),
+        var(--bg);
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 14px;
+      display: grid;
+      place-items: center;
+    }
+
+    .card {
+      width: min(100%, 560px);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 10px 28px rgba(14, 49, 27, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.08rem;
+      letter-spacing: 0.02em;
+    }
+
+    .sub {
+      margin: 7px 0 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .pill {
+      display: inline-block;
+      border: 1px solid #c9dccf;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      color: #2a4c38;
+      margin-right: 6px;
+      margin-bottom: 8px;
+      background: #f3faf5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--brand), #0f9257);
+      color: white;
+    }
+
+    .secondary {
+      border: 1px solid #c9dccf;
+      background: #f1f8f3;
+      color: #1d452f;
+    }
+
+    .status {
+      margin-top: 12px;
+      border: 1px solid #d4e3d7;
+      border-radius: 10px;
+      min-height: 130px;
+      padding: 10px;
+      background: #f8fcf9;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .err { color: var(--err); }
+  </style>
+</head>
+<body>
+  <section class="card">
+    <h1>SecureApprove Biometric Approval</h1>
+    <p class="sub">
+      Este iframe usa autenticacion biometrica del dispositivo y confirma una aprobacion con
+      token efimero de un solo uso. No almacena credenciales de tenant.
+    </p>
+
+    <div>
+      <span class="pill" id="modeTag">Modo seguro: token efimero</span>
+      <span class="pill" id="decisionTag">Decision: -</span>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="btnConfirm" class="primary" disabled>Confirmar con biometria</button>
+      <button type="button" id="btnCancel" class="secondary">Cancelar</button>
+    </div>
+
+    <div id="status" class="status">Esperando inicializacion segura...</div>
+  </section>
+
+  <script>
+    const state = {
+      initialized: false,
+      parentOrigin: null,
+      nonce: null,
+      approvalToken: null,
+      webauthnOptions: null,
+      approved: true,
+      context: {},
+    };
+
+    const statusEl = document.getElementById("status");
+    const confirmBtn = document.getElementById("btnConfirm");
+    const decisionTag = document.getElementById("decisionTag");
+
+    function setStatus(msg, type = "") {
+      statusEl.className = "status";
+      if (type) statusEl.classList.add(type);
+      statusEl.textContent = msg;
+    }
+
+    function getParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    function toArrayBuffer(base64Like) {
+      const normalized = base64Like.replace(/-/g, "+").replace(/_/g, "/");
+      const padLen = (4 - (normalized.length % 4)) % 4;
+      const padded = normalized + "=".repeat(padLen);
+      const binary = atob(padded);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    function toBase64url(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.byteLength; i += 1) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function toPublicKeyOptions(serverOptions) {
+      const publicKey = { ...serverOptions };
+      publicKey.challenge = toArrayBuffer(serverOptions.challenge);
+
+      if (Array.isArray(serverOptions.allowCredentials)) {
+        publicKey.allowCredentials = serverOptions.allowCredentials.map((cred) => ({
+          ...cred,
+          id: toArrayBuffer(cred.id),
+        }));
+      }
+
+      return publicKey;
+    }
+
+    function serializeAssertion(assertion) {
+      return {
+        id: assertion.id,
+        rawId: toBase64url(assertion.rawId),
+        type: assertion.type,
+        response: {
+          clientDataJSON: toBase64url(assertion.response.clientDataJSON),
+          authenticatorData: toBase64url(assertion.response.authenticatorData),
+          signature: toBase64url(assertion.response.signature),
+          userHandle: assertion.response.userHandle
+            ? toBase64url(assertion.response.userHandle)
+            : null,
+        },
+      };
+    }
+
+    function notifyParent(type, payload = {}) {
+      if (!state.parentOrigin || !window.parent) return;
+      window.parent.postMessage({
+        source: "secureapprove-iframe",
+        type,
+        nonce: state.nonce,
+        payload,
+      }, state.parentOrigin);
+    }
+
+    async function apiConfirmApproval(payload) {
+      const response = await fetch("/api/approvals/terms/confirm/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "omit",
+        body: JSON.stringify(payload),
+      });
+
+      const text = await response.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+
+      if (!response.ok) {
+        throw new Error(data.error || data.detail || `HTTP ${response.status}`);
+      }
+
+      return data;
+    }
+
+    async function runBiometricConfirmation() {
+      if (!state.initialized) {
+        throw new Error("Widget no inicializado");
+      }
+
+      if (!window.PublicKeyCredential || !navigator.credentials) {
+        throw new Error("WebAuthn no soportado en este dispositivo/navegador");
+      }
+
+      setStatus("[1/3] Solicitando biometria del dispositivo...", "warn");
+      const assertion = await navigator.credentials.get({
+        publicKey: toPublicKeyOptions(state.webauthnOptions),
+      });
+
+      if (!assertion) {
+        throw new Error("Autenticacion biometrica cancelada");
+      }
+
+      setStatus("[2/3] Enviando confirmacion firmada a SecureApprove...", "warn");
+      const confirmPayload = {
+        approval_token: state.approvalToken,
+        approved: state.approved,
+        webauthn_response: serializeAssertion(assertion),
+      };
+
+      const confirmResult = await apiConfirmApproval(confirmPayload);
+
+      setStatus("[3/3] Aprobacion confirmada con auditoria:\n" + JSON.stringify(confirmResult, null, 2), "ok");
+      notifyParent("SECUREAPPROVE_RESULT", {
+        success: true,
+        approved: state.approved,
+        confirm: confirmResult,
+        context: state.context,
+      });
+    }
+
+    function bootstrapFromMessage(event) {
+      if (!state.parentOrigin || event.origin !== state.parentOrigin) return;
+      if (!event.data || event.data.type !== "SECUREAPPROVE_INIT") return;
+
+      const payload = event.data.payload || {};
+      if (event.data.nonce !== state.nonce) {
+        setStatus("Nonce invalido: inicializacion rechazada", "err");
+        notifyParent("SECUREAPPROVE_ERROR", { error: "invalid_nonce" });
+        return;
+      }
+
+      const approvalToken = payload.approvalToken;
+      const webauthnOptions = payload.webauthnOptions;
+
+      if (!approvalToken || !webauthnOptions) {
+        setStatus("INIT incompleto: faltan approvalToken y/o webauthnOptions", "err");
+        notifyParent("SECUREAPPROVE_ERROR", { error: "invalid_init_payload" });
+        return;
+      }
+
+      state.approvalToken = approvalToken;
+      state.webauthnOptions = webauthnOptions;
+      state.approved = payload.approved !== false;
+      state.context = payload.context || {};
+      state.initialized = true;
+
+      decisionTag.textContent = "Decision: " + (state.approved ? "approve" : "reject");
+      confirmBtn.disabled = false;
+
+      setStatus("Widget inicializado de forma segura.\nToken efimero cargado.\nListo para biometria.", "ok");
+      notifyParent("SECUREAPPROVE_READY_ACK", {
+        mode: "ephemeral_token",
+        approved: state.approved,
+      });
+    }
+
+    function initSecurityContext() {
+      const parentOrigin = getParam("parent_origin");
+      const nonce = getParam("nonce");
+
+      if (!parentOrigin || !nonce) {
+        setStatus("Falta parent_origin o nonce en query params", "err");
+        return false;
+      }
+
+      state.parentOrigin = parentOrigin;
+      state.nonce = nonce;
+
+      return true;
+    }
+
+    confirmBtn.addEventListener("click", async () => {
+      try {
+        await runBiometricConfirmation();
+      } catch (error) {
+        setStatus("Error en confirmacion biometrica:\n" + error.message, "err");
+        notifyParent("SECUREAPPROVE_ERROR", {
+          error: "confirm_failed",
+          message: error.message,
+          context: state.context,
+        });
+      }
+    });
+
+    document.getElementById("btnCancel").addEventListener("click", () => {
+      setStatus("Operacion cancelada por usuario", "warn");
+      notifyParent("SECUREAPPROVE_CANCEL", { reason: "user_cancelled" });
+    });
+
+    window.addEventListener("message", bootstrapFromMessage);
+
+    if (initSecurityContext()) {
+      setStatus("Canal seguro iniciado. Esperando INIT del parent...", "warn");
+      notifyParent("SECUREAPPROVE_READY", { mode: "ephemeral_token" });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Iframe Integration" %} - SecureApprove{% endblock %}
+
+{% block extra_css %}
+<style>
+    .integration-hero {
+        background: linear-gradient(135deg, #ffffff 0%, #f1fbf4 100%);
+        border: 1px solid #d8eadc;
+    }
+
+    .code-card {
+        border: 1px solid #dde8e1;
+        border-radius: 0.75rem;
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .code-header {
+        background: #f6faf8;
+        border-bottom: 1px solid #e3ece6;
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .code-body {
+        background: #0f1a14;
+        color: #e7f6ec;
+        padding: 1rem;
+        margin: 0;
+        max-height: 420px;
+        overflow: auto;
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+
+    .step-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: #edf8f1;
+        color: #22563a;
+        border: 1px solid #d3e8da;
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-right: 0.4rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .status-box {
+        border: 1px solid #d7e8dc;
+        background: #f8fcf9;
+        border-radius: 0.75rem;
+        padding: 0.85rem;
+        font-size: 0.86rem;
+        color: #2e5f44;
+    }
+
+    .field-note {
+        font-size: 0.78rem;
+        color: #5e7264;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{{ app_origin|json_script:"ctx_app_origin" }}
+{{ token_endpoint|json_script:"ctx_token_endpoint" }}
+{{ embed_url|json_script:"ctx_embed_url" }}
+{{ loader_url|json_script:"ctx_loader_url" }}
+{{ tenant_key|json_script:"ctx_tenant_key" }}
+{{ actor_email|json_script:"ctx_actor_email" }}
+{{ backend_session_endpoint|json_script:"ctx_session_path" }}
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card integration-hero shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                        <div>
+                            <h1 class="h3 mb-2">{% trans "SecureApprove iframe Integration" %}</h1>
+                            <p class="text-muted mb-2">
+                                {% trans "Production-ready module with secure handshake, ephemeral token flow, and copy-ready snippets." %}
+                            </p>
+                            <div>
+                                <span class="step-chip"><i class="bi bi-shield-lock"></i>{% trans "Security-first" %}</span>
+                                <span class="step-chip"><i class="bi bi-fingerprint"></i>{% trans "WebAuthn Biometric" %}</span>
+                                <span class="step-chip"><i class="bi bi-braces"></i>{% trans "Generated Code" %}</span>
+                            </div>
+                        </div>
+                        <div class="status-box">
+                            <div><strong>{% trans "Tenant" %}:</strong> {{ tenant_name }}</div>
+                            <div><strong>{% trans "Key" %}:</strong> {{ tenant_key }}</div>
+                            <div><strong>{% trans "Actor" %}:</strong> {{ actor_email }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-xl-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0">
+                    <h2 class="h5 mb-0">{% trans "Configuration" %}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="cfgEnvironment" class="form-label">{% trans "Environment" %}</label>
+                            <select id="cfgEnvironment" class="form-select">
+                                <option value="production">Production</option>
+                                <option value="staging">Staging</option>
+                                <option value="development">Development</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgBackendLanguage" class="form-label">{% trans "Backend snippet" %}</label>
+                            <select id="cfgBackendLanguage" class="form-select">
+                                <option value="node">Node.js (Express)</option>
+                                <option value="python">Python (FastAPI)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgSecureApproveOrigin" class="form-label">SecureApprove Origin</label>
+                            <input id="cfgSecureApproveOrigin" class="form-control" value="{{ app_origin }}" />
+                            <div class="field-note">{% trans "Main origin hosting loader and iframe endpoint." %}</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgApiTokenEndpoint" class="form-label">{% trans "Token endpoint" %}</label>
+                            <input id="cfgApiTokenEndpoint" class="form-control" value="{{ token_endpoint }}" />
+                            <div class="field-note">{% trans "Server-to-server endpoint used by your backend." %}</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgEmbedUrl" class="form-label">{% trans "Iframe URL" %}</label>
+                            <input id="cfgEmbedUrl" class="form-control" value="{{ embed_url }}" />
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgLoaderUrl" class="form-label">{% trans "Loader script URL" %}</label>
+                            <input id="cfgLoaderUrl" class="form-control" value="{{ loader_url }}" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="cfgTenantKey" class="form-label">{% trans "Tenant key" %}</label>
+                            <input id="cfgTenantKey" class="form-control" value="{{ tenant_key }}" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="cfgActorEmail" class="form-label">{% trans "Actor email" %}</label>
+                            <input id="cfgActorEmail" class="form-control" value="{{ actor_email }}" />
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgBackendSessionPath" class="form-label">{% trans "Your backend session endpoint" %}</label>
+                            <input id="cfgBackendSessionPath" class="form-control" value="{{ backend_session_endpoint }}" />
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgDecision" class="form-label">{% trans "Default decision" %}</label>
+                            <select id="cfgDecision" class="form-select">
+                                <option value="approve">approve</option>
+                                <option value="reject">reject</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <button type="button" class="btn btn-primary" id="btnGenerate">
+                            <i class="bi bi-magic me-1"></i>{% trans "Generate snippets" %}
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="btnReset">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>{% trans "Reset defaults" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">{% trans "Implementation steps" %}</h2>
+                    <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">{% trans "Functional" %}</span>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li class="mb-2">{% trans "Your backend validates tenant/user context and requests token from SecureApprove." %}</li>
+                        <li class="mb-2">{% trans "Browser requests only ephemeral session data from your backend." %}</li>
+                        <li class="mb-2">{% trans "Loader creates iframe and executes strict origin + nonce handshake." %}</li>
+                        <li class="mb-2">{% trans "Iframe performs biometric challenge and confirms /api/approvals/terms/confirm/." %}</li>
+                        <li>{% trans "Store audit_id from result for compliance and traceability." %}</li>
+                    </ol>
+
+                    <hr>
+
+                    <div class="mb-0">
+                        <h3 class="h6">{% trans "Security checklist" %}</h3>
+                        <ul class="mb-0">
+                            <li>{% trans "Never expose long-lived API keys in browser code." %}</li>
+                            <li>{% trans "Issue one-time, short-lived approval tokens only." %}</li>
+                            <li>{% trans "Validate decision, approval type, and subject user server-side." %}</li>
+                            <li>{% trans "Enforce HTTPS and validate parent origin in frontend." %}</li>
+                            <li>{% trans "Do not persist approvalToken in localStorage/sessionStorage." %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="code-card shadow-sm">
+                <div class="code-header">
+                    <strong>{% trans "Backend session endpoint" %}</strong>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="backendSnippet">
+                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
+                    </button>
+                </div>
+                <pre class="code-body"><code id="backendSnippet"></code></pre>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="code-card shadow-sm">
+                <div class="code-header">
+                    <strong>{% trans "Frontend embed integration" %}</strong>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="frontendSnippet">
+                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
+                    </button>
+                </div>
+                <pre class="code-body"><code id="frontendSnippet"></code></pre>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="code-card shadow-sm">
+                <div class="code-header">
+                    <strong>{% trans "Test request (curl)" %}</strong>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="curlSnippet">
+                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
+                    </button>
+                </div>
+                <pre class="code-body"><code id="curlSnippet"></code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+    const parseCtx = (id) => {
+        const el = document.getElementById(id);
+        return el ? JSON.parse(el.textContent) : '';
+    };
+
+    const cfg = {
+        environment: document.getElementById('cfgEnvironment'),
+        backendLanguage: document.getElementById('cfgBackendLanguage'),
+        secureApproveOrigin: document.getElementById('cfgSecureApproveOrigin'),
+        apiTokenEndpoint: document.getElementById('cfgApiTokenEndpoint'),
+        embedUrl: document.getElementById('cfgEmbedUrl'),
+        loaderUrl: document.getElementById('cfgLoaderUrl'),
+        tenantKey: document.getElementById('cfgTenantKey'),
+        actorEmail: document.getElementById('cfgActorEmail'),
+        backendSessionPath: document.getElementById('cfgBackendSessionPath'),
+        decision: document.getElementById('cfgDecision'),
+    };
+
+    const backendSnippetEl = document.getElementById('backendSnippet');
+    const frontendSnippetEl = document.getElementById('frontendSnippet');
+    const curlSnippetEl = document.getElementById('curlSnippet');
+
+    function q(v) {
+        return String(v || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    }
+
+    function backendSnippetNode(c) {
+        return `// Node.js (Express) - Secure server-to-server token creation\n` +
+`import express from 'express';\n` +
+`import fetch from 'node-fetch';\n\n` +
+`const router = express.Router();\n\n` +
+`router.post('${c.backendSessionPath}', async (req, res) => {\n` +
+`  const subjectUserId = Number(req.body.subjectUserId);\n` +
+`  const decision = req.body.decision === 'reject' ? 'reject' : 'approve';\n` +
+`  const approvalType = req.body.approvalType || 'document';\n\n` +
+`  const payload = {\n` +
+`    user_id: subjectUserId,\n` +
+`    purpose: \`external_\${approvalType}_\${decision}\`,\n` +
+`    document_type: approvalType,\n` +
+`    document_version: 'v1',\n` +
+`    document_hash: '',\n` +
+`    context: {\n` +
+`      tenant: { key: '${q(c.tenantKey)}' },\n` +
+`      actor_user: { email: '${q(c.actorEmail)}' },\n` +
+`      subject_user: { id: String(subjectUserId) },\n` +
+`      approval: { type: approvalType, decision }\n` +
+`    }\n` +
+`  };\n\n` +
+`  const tokenResp = await fetch('${q(c.apiTokenEndpoint)}', {\n` +
+`    method: 'POST',\n` +
+`    headers: {\n` +
+`      'Content-Type': 'application/json',\n` +
+`      Authorization: \`Bearer \${process.env.SECUREAPPROVE_SERVER_TOKEN}\`\n` +
+`    },\n` +
+`    body: JSON.stringify(payload)\n` +
+`  });\n\n` +
+`  if (!tokenResp.ok) {\n` +
+`    const err = await tokenResp.text();\n` +
+`    return res.status(502).json({ error: 'secureapprove_token_failed', details: err });\n` +
+`  }\n\n` +
+`  const tokenData = await tokenResp.json();\n` +
+`  return res.json({\n` +
+`    approvalToken: tokenData.approval_token,\n` +
+`    webauthnOptions: tokenData.webauthn_options,\n` +
+`    approved: decision === 'approve',\n` +
+`    context: payload.context\n` +
+`  });\n` +
+`});`;
+    }
+
+    function backendSnippetPython(c) {
+        return `# Python (FastAPI) - Secure server-to-server token creation\n` +
+`from fastapi import APIRouter, Request, HTTPException\n` +
+`import os\n` +
+`import httpx\n\n` +
+`router = APIRouter()\n\n` +
+`@router.post('${c.backendSessionPath}')\n` +
+`async def create_secureapprove_session(request: Request):\n` +
+`    body = await request.json()\n` +
+`    subject_user_id = int(body.get('subjectUserId'))\n` +
+`    decision = 'reject' if body.get('decision') == 'reject' else 'approve'\n` +
+`    approval_type = body.get('approvalType', 'document')\n\n` +
+`    payload = {\n` +
+`        'user_id': subject_user_id,\n` +
+`        'purpose': f'external_{approval_type}_{decision}',\n` +
+`        'document_type': approval_type,\n` +
+`        'document_version': 'v1',\n` +
+`        'document_hash': '',\n` +
+`        'context': {\n` +
+`            'tenant': {'key': '${q(c.tenantKey)}'},\n` +
+`            'actor_user': {'email': '${q(c.actorEmail)}'},\n` +
+`            'subject_user': {'id': str(subject_user_id)},\n` +
+`            'approval': {'type': approval_type, 'decision': decision},\n` +
+`        },\n` +
+`    }\n\n` +
+`    headers = {\n` +
+`        'Authorization': f"Bearer {os.environ['SECUREAPPROVE_SERVER_TOKEN']}",\n` +
+`        'Content-Type': 'application/json',\n` +
+`    }\n\n` +
+`    async with httpx.AsyncClient(timeout=20) as client:\n` +
+`        resp = await client.post('${q(c.apiTokenEndpoint)}', json=payload, headers=headers)\n\n` +
+`    if resp.status_code >= 400:\n` +
+`        raise HTTPException(status_code=502, detail={'error': 'secureapprove_token_failed', 'details': resp.text})\n\n` +
+`    token_data = resp.json()\n` +
+`    return {\n` +
+`        'approvalToken': token_data['approval_token'],\n` +
+`        'webauthnOptions': token_data['webauthn_options'],\n` +
+`        'approved': decision == 'approve',\n` +
+`        'context': payload['context'],\n` +
+`    }`;
+    }
+
+    function frontendSnippet(c) {
+        return `<!-- Load once per page -->\n` +
+`<script src="${q(c.loaderUrl)}"></script>\n\n` +
+`<div id="secureapprove-container"></div>\n\n` +
+`<script>\n` +
+`function getCookie(name) {\n` +
+`  const value = '; ' + document.cookie;\n` +
+`  const parts = value.split('; ' + name + '=');\n` +
+`  if (parts.length === 2) return parts.pop().split(';').shift();\n` +
+`}\n\n` +
+`const widget = SecureApproveEmbed.init({\n` +
+`  container: '#secureapprove-container',\n` +
+`  iframeUrl: '${q(c.embedUrl)}',\n` +
+`  parentOrigin: window.location.origin,\n` +
+`  fetchSession: async function () {\n` +
+`    const csrfToken = getCookie('csrftoken');\n` +
+`    const response = await fetch('${q(c.backendSessionPath)}', {\n` +
+`      method: 'POST',\n` +
+`      headers: {\n` +
+`        'Content-Type': 'application/json',\n` +
+`        'X-CSRFToken': csrfToken || ''\n` +
+`      },\n` +
+`      credentials: 'include',\n` +
+`      body: JSON.stringify({\n` +
+`        subjectUserId: 45,\n` +
+`        decision: '${q(c.decision)}',\n` +
+`        approvalType: 'document'\n` +
+`      })\n` +
+`    });\n` +
+`\n` +
+`    if (!response.ok) throw new Error('Failed to create SecureApprove session');\n` +
+`    return response.json();\n` +
+`  },\n` +
+`  onSuccess: function (result) {\n` +
+`    console.log('SecureApprove success', result);\n` +
+`  },\n` +
+`  onError: function (error) {\n` +
+`    console.error('SecureApprove error', error);\n` +
+`  },\n` +
+`  onCancel: function () {\n` +
+`    console.warn('User cancelled biometric confirmation');\n` +
+`  }\n` +
+`});\n` +
+`<\/script>`;
+    }
+
+    function curlSnippet(c) {
+        return `curl -X POST "${q(c.apiTokenEndpoint)}" \\\n  -H "Authorization: Bearer <SERVER_TOKEN>" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n` +
+`    "user_id": 45,\n` +
+`    "purpose": "external_document_${q(c.decision)}",\n` +
+`    "document_type": "document",\n` +
+`    "document_version": "v1",\n` +
+`    "document_hash": "",\n` +
+`    "context": {\n` +
+`      "tenant": {"key": "${q(c.tenantKey)}"},\n` +
+`      "actor_user": {"email": "${q(c.actorEmail)}"},\n` +
+`      "subject_user": {"id": "45"},\n` +
+`      "approval": {"type": "document", "decision": "${q(c.decision)}"}\n` +
+`    }\n` +
+`  }'`;
+    }
+
+    function readConfig() {
+        return {
+            environment: cfg.environment.value,
+            backendLanguage: cfg.backendLanguage.value,
+            secureApproveOrigin: cfg.secureApproveOrigin.value.trim(),
+            apiTokenEndpoint: cfg.apiTokenEndpoint.value.trim(),
+            embedUrl: cfg.embedUrl.value.trim(),
+            loaderUrl: cfg.loaderUrl.value.trim(),
+            tenantKey: cfg.tenantKey.value.trim(),
+            actorEmail: cfg.actorEmail.value.trim(),
+            backendSessionPath: cfg.backendSessionPath.value.trim(),
+            decision: cfg.decision.value,
+        };
+    }
+
+    function renderSnippets() {
+        const c = readConfig();
+        backendSnippetEl.textContent = c.backendLanguage === 'python' ? backendSnippetPython(c) : backendSnippetNode(c);
+        frontendSnippetEl.textContent = frontendSnippet(c);
+        curlSnippetEl.textContent = curlSnippet(c);
+    }
+
+    async function copyById(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        await navigator.clipboard.writeText(el.textContent || '');
+    }
+
+    function resetDefaults() {
+        cfg.environment.value = 'production';
+        cfg.backendLanguage.value = 'node';
+        cfg.secureApproveOrigin.value = parseCtx('ctx_app_origin');
+        cfg.apiTokenEndpoint.value = parseCtx('ctx_token_endpoint');
+        cfg.embedUrl.value = parseCtx('ctx_embed_url');
+        cfg.loaderUrl.value = parseCtx('ctx_loader_url');
+        cfg.tenantKey.value = parseCtx('ctx_tenant_key');
+        cfg.actorEmail.value = parseCtx('ctx_actor_email');
+        cfg.backendSessionPath.value = parseCtx('ctx_session_path');
+        cfg.decision.value = 'approve';
+        renderSnippets();
+    }
+
+    document.querySelectorAll('[data-copy-target]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const target = button.getAttribute('data-copy-target');
+            const original = button.innerHTML;
+            try {
+                await copyById(target);
+                button.innerHTML = '<i class="bi bi-check2 me-1"></i>{% trans "Copied" %}';
+                setTimeout(() => {
+                    button.innerHTML = original;
+                }, 1200);
+            } catch (_) {
+                button.innerHTML = '<i class="bi bi-x-circle me-1"></i>{% trans "Copy failed" %}';
+                setTimeout(() => {
+                    button.innerHTML = original;
+                }, 1400);
+            }
+        });
+    });
+
+    document.getElementById('btnGenerate').addEventListener('click', renderSnippets);
+    document.getElementById('btnReset').addEventListener('click', resetDefaults);
+
+    resetDefaults();
+})();
+</script>
+{% endblock %}
