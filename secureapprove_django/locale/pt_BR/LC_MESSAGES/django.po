@@ -172,11 +172,11 @@ msgstr "As senhas não coincidem."
 
 #: apps/authentication/models.py:15 apps/requests/models.py:61
 msgid "Requester"
-msgstr "Solicitações"
+msgstr "Solicitante"
 
 #: apps/authentication/models.py:16 apps/requests/models.py:70
 msgid "Approver"
-msgstr "Aprovado"
+msgstr "Aprovador"
 
 #: apps/authentication/models.py:17
 msgid "Tenant Admin"
@@ -2389,20 +2389,20 @@ msgid "No charge for the first 7 days. Cancel anytime."
 msgstr "Sem cobrança nos primeiros 7 dias. Cancele a qualquer momento."
 
 msgid "Tenant Settings"
-msgstr "Configura��ǜo do Tenant"
+msgstr "Configuração do Tenant"
 
 msgid "Tenant Information"
-msgstr "Informa��ǜo do Tenant"
+msgstr "Informação do Tenant"
 
 msgid "Tenant Users"
-msgstr "Usu��rios do Tenant"
+msgstr "Usuários do Tenant"
 
 msgid ""
 "Request categories are currently global. Future versions will allow per-"
 "tenant customization."
 msgstr ""
-"As categorias de solicita��ǜo s��o atualmente globais. Vers��es futuras "
-"permitir��o personaliza��ǜo por tenant."
+"As categorias de solicitação são atualmente globais. Versões futuras "
+"permitirão personalização por tenant."
 
 msgid "Contacts"
 msgstr "Contatos"
@@ -3548,3 +3548,36 @@ msgstr "Copiado"
 
 msgid "Copy failed"
 msgstr "Falha ao copiar"
+
+msgid "Invite User"
+msgstr "Convidar Usuário"
+
+msgid "Invite"
+msgstr "Convidar"
+
+msgid "Active Users"
+msgstr "Usuários Ativos"
+
+msgid "Pending Invitations"
+msgstr "Convites Pendentes"
+
+msgid "Expires"
+msgstr "Expira"
+
+msgid "Cancel Invitation"
+msgstr "Cancelar Convite"
+
+msgid "No users found."
+msgstr "Nenhum usuário encontrado."
+
+msgid "%(available)s seats available (%(used)s of %(total)s used)"
+msgstr "%(available)s assentos disponíveis (%(used)s de %(total)s usados)"
+
+msgid "Accepted"
+msgstr "Aceito"
+
+msgid "Expired"
+msgstr "Expirado"
+
+msgid "Cancelled"
+msgstr "Cancelado"

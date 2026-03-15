@@ -364,7 +364,7 @@
                             {% for inv in invites %}
                             <tr>
                                 <td class="ps-4 fw-medium">{{ inv.email }}</td>
-                                <td><span class="badge bg-light text-dark border fw-normal">{{ inv.role }}</span></td>
+                                <td><span class="badge bg-light text-dark border fw-normal">{{ inv.get_role_display }}</span></td>
                                 <td>
                                     {% if inv.status == 'pending' %}
                                         <span class="badge bg-warning text-dark bg-opacity-25 border border-warning border-opacity-25">{% trans "Pending" %}</span>

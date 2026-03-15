@@ -84,6 +84,12 @@ msgstr "Todas las Solicitudes"
 msgid "My Requests"
 msgstr "Mis Solicitudes"
 
+msgid "Accepted"
+msgstr "Aceptado"
+
+msgid "Expired"
+msgstr "Expirado"
+
 msgid "Pending"
 msgstr "Pendiente"
 
