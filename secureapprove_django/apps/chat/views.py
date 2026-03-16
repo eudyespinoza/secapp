@@ -99,6 +99,45 @@ def broadcast_to_conversation(conversation, event_type, payload):
         logger.warning("WebSocket broadcast error for conversation %s: %s", conversation.id, e)
 
 
+def _aggregate_message_status(message):
+    deliveries = list(message.deliveries.all())
+    if not deliveries:
+        return 'sent'
+    if any(delivery.read_at for delivery in deliveries):
+        return 'read'
+    if any(delivery.delivered_at for delivery in deliveries):
+        return 'delivered'
+    return 'sent'
+
+
+def broadcast_message_statuses(conversation, message_ids):
+    unique_message_ids = [message_id for message_id in dict.fromkeys(message_ids) if message_id]
+    if not conversation or not unique_message_ids:
+        return
+
+    messages = list(
+        ChatMessage.objects.filter(conversation=conversation, id__in=unique_message_ids)
+        .prefetch_related('deliveries')
+    )
+    status_map = {str(message.id): _aggregate_message_status(message) for message in messages}
+    payload = [
+        {
+            'id': str(message_id),
+            'status': status_map.get(str(message_id), 'sent'),
+        }
+        for message_id in unique_message_ids
+    ]
+
+    broadcast_to_conversation(
+        conversation,
+        'chat_message_status',
+        {
+            'conversation_id': str(conversation.id),
+            'messages': payload,
+        },
+    )
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class ChatConversationViewSet(viewsets.ModelViewSet):
     """
@@ -474,11 +513,15 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
                     pass  # Return all messages if reference doesn't exist
 
             # Mark as delivered for current user
-            ChatMessageDelivery.objects.filter(
+            delivered_qs = ChatMessageDelivery.objects.filter(
                 message__in=qs,
                 recipient=user,
                 delivered_at__isnull=True
-            ).update(delivered_at=timezone.now())
+            )
+            delivered_message_ids = list(delivered_qs.values_list('message_id', flat=True).distinct())
+            if delivered_message_ids:
+                delivered_qs.update(delivered_at=timezone.now())
+                broadcast_message_statuses(conv, delivered_message_ids)
 
             serializer = ChatMessageSerializer(
                 qs,
@@ -606,11 +649,13 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
 
         with transaction.atomic():
             # Mark all unread deliveries as read
-            updated_count = ChatMessageDelivery.objects.filter(
+            read_qs = ChatMessageDelivery.objects.filter(
                 message__conversation=conv,
                 recipient=user,
                 read_at__isnull=True,
-            ).update(read_at=now, delivered_at=now)
+            )
+            updated_message_ids = list(read_qs.values_list('message_id', flat=True).distinct())
+            updated_count = read_qs.update(read_at=now, delivered_at=now)
 
             # Reset unread count and update last read message for this participant
             last_message = conv.messages.order_by('-created_at').first()
@@ -622,6 +667,9 @@ class ChatConversationViewSet(viewsets.ModelViewSet):
                 conversation=conv,
                 user=user,
             ).update(**update_kwargs)
+
+            if updated_message_ids:
+                transaction.on_commit(lambda: broadcast_message_statuses(conv, updated_message_ids))
 
         return Response({
             'status': 'ok',

@@ -40,6 +40,7 @@
             this.currentConversationId = null;
             this.lastMessageId = null;
             this.typingTimeout = null;
+            this.lastTypingSentAt = 0;
             this.panelVisible = false;
             this.panelInitialized = false;
             this.conversations = [];
@@ -176,6 +177,12 @@
                 case 'typing':
                     if (this.callbacks.onTyping) {
                         this.callbacks.onTyping(data);
+                    }
+                    break;
+
+                case 'message_status':
+                    if (this.callbacks.onMessageStatus) {
+                        this.callbacks.onMessageStatus(data);
                     }
                     break;
 
@@ -629,11 +636,25 @@
             }
         }
 
+        getMessageStatusLabel(status) {
+            switch ((status || '').toLowerCase()) {
+                case 'read':
+                    return this.i18n.messageStatusRead || 'Read';
+                case 'delivered':
+                    return this.i18n.messageStatusDelivered || 'Delivered';
+                case 'sent':
+                    return this.i18n.messageStatusSent || 'Sent';
+                default:
+                    return status || '';
+            }
+        }
+
         renderMessage(message, currentUserId) {
             const isMine = currentUserId && message.sender_id === currentUserId;
             
             const wrapper = document.createElement('div');
             wrapper.className = 'tenant-chat-message ' + (isMine ? 'me' : 'other');
+            wrapper.dataset.senderId = message.sender_id != null ? String(message.sender_id) : '';
             if (message.id) {
                 wrapper.dataset.messageId = message.id;
             }
@@ -681,7 +702,8 @@
             const meta = document.createElement('div');
             meta.className = 'tenant-chat-meta';
             const timeLabel = this.formatTime(message.created_at);
-            const statusLabel = message.status || '';
+            const statusLabel = this.getMessageStatusLabel(message.status_label || message.status_display || message.status);
+            meta.dataset.timeLabel = timeLabel;
             meta.textContent = [timeLabel, statusLabel].filter(Boolean).join(' · ');
             bubble.appendChild(meta);
 
@@ -711,6 +733,25 @@
 
             // Scroll to bottom
             this.scrollToBottom();
+        }
+
+        updateMessageStatus(messageId, status, currentUserId) {
+            if (!messageId || !this.elements.messageContainer) return;
+
+            const selector = `[data-message-id="${messageId}"]`;
+            const wrapper = this.elements.messageContainer.querySelector(selector);
+            if (!wrapper) return;
+
+            if (currentUserId != null && String(wrapper.dataset.senderId || '') !== String(currentUserId)) {
+                return;
+            }
+
+            const meta = wrapper.querySelector('.tenant-chat-meta');
+            if (!meta) return;
+
+            const timeLabel = meta.dataset.timeLabel || '';
+            const statusLabel = this.getMessageStatusLabel(status);
+            meta.textContent = [timeLabel, statusLabel].filter(Boolean).join(' · ');
         }
 
         scrollToBottom() {
@@ -1023,6 +1064,7 @@
                 onConnect: () => this.handleWebSocketConnect(),
                 onDisconnect: () => this.handleWebSocketDisconnect(),
                 onMessage: (data) => this.handleWebSocketMessage(data),
+                onMessageStatus: (data) => this.handleWebSocketMessageStatus(data),
                 onTyping: (data) => this.handleWebSocketTyping(data),
                 onPresence: (data) => this.handleWebSocketPresence(data),
                 onApprovalRequest: (data) => this.handleApprovalRequest(data),
@@ -1564,18 +1606,18 @@
         async handleTyping() {
             if (!this.state.currentConversationId) return;
 
+            const now = Date.now();
+            if (now - this.state.lastTypingSentAt < 600) {
+                return;
+            }
+
+            this.state.lastTypingSentAt = now;
+
             try {
                 await this.api.sendTyping(this.state.currentConversationId);
             } catch (e) {
                 // Silently fail
             }
-
-            // Show typing indicator briefly
-            this.ui.showTypingIndicator(true);
-            this.state.clearTypingTimeout();
-            this.state.typingTimeout = setTimeout(() => {
-                this.ui.showTypingIndicator(false);
-            }, CONFIG.TYPING_TIMEOUT);
         }
 
         updateUnreadCount() {
@@ -1687,18 +1729,47 @@
         }
 
         handleWebSocketTyping(data) {
-            const { conversation_id, user_id, user_name } = data;
+            const conversationId = data && data.conversation_id != null
+                ? String(data.conversation_id)
+                : null;
+            const typingUserId = data && data.user_id != null
+                ? String(data.user_id)
+                : null;
+            const currentConversationId = this.state.currentConversationId != null
+                ? String(this.state.currentConversationId)
+                : null;
+            const currentUserId = this.state.currentUserId != null
+                ? String(this.state.currentUserId)
+                : null;
 
             // Only show typing for current conversation and from other users
-            if (this.state.currentConversationId === conversation_id && 
-                user_id !== this.state.currentUserId) {
+            if (currentConversationId && currentConversationId === conversationId && typingUserId !== currentUserId) {
                 this.ui.showTypingIndicator(true);
-                
-                // Hide after timeout
-                setTimeout(() => {
+
+                this.state.clearTypingTimeout();
+                this.state.typingTimeout = setTimeout(() => {
                     this.ui.showTypingIndicator(false);
                 }, CONFIG.TYPING_TIMEOUT);
             }
+        }
+
+        handleWebSocketMessageStatus(data) {
+            const conversationId = data && data.conversation_id != null
+                ? String(data.conversation_id)
+                : null;
+            const currentConversationId = this.state.currentConversationId != null
+                ? String(this.state.currentConversationId)
+                : null;
+
+            if (!conversationId || !currentConversationId || conversationId !== currentConversationId) {
+                return;
+            }
+
+            const messages = Array.isArray(data.messages) ? data.messages : [];
+            messages.forEach((message) => {
+                if (!message || !message.id) return;
+                this.ui.updateMessageStatus(message.id, message.status, this.state.currentUserId);
+            });
         }
 
         handleWebSocketPresence(data) {
@@ -1829,6 +1900,9 @@
             newMessage: 'New chat message',
             newMessages: 'New chat messages',
             unreadMessages: 'unread messages',
+            messageStatusSent: 'Sent',
+            messageStatusDelivered: 'Delivered',
+            messageStatusRead: 'Read',
             usersOnline: 'users online',
             noUsersOnline: 'No users online',
             online: 'Online',

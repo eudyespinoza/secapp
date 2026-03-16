@@ -231,6 +231,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             "is_online": event.get("is_online"),
         })
 
+    async def chat_message_status(self, event: Dict[str, Any]) -> None:
+        await self.send_json({
+            "type": "message_status",
+            "conversation_id": event.get("conversation_id"),
+            "messages": event.get("messages", []),
+        })
+
     async def notification_approval_request(self, event: Dict[str, Any]) -> None:
         """
         Handler for "notification.approval_request" events.
