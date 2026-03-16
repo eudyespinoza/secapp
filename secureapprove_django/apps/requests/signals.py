@@ -11,9 +11,39 @@ import logging
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
+
+def _get_user_display_name(user):
+    full_name = user.get_full_name().strip()
+    if full_name:
+        return full_name
+    return getattr(user, 'email', '') or getattr(user, 'username', '') or str(user.pk)
+
+
+def _send_group_notification(channel_layer, user_id, payload):
+    if not channel_layer:
+        logger.warning("Notification channel layer unavailable for user %s", user_id)
+        return False
+
+    try:
+        async_to_sync(channel_layer.group_send)(f"user_{user_id}", payload)
+        return True
+    except Exception:
+        logger.exception("Failed to send websocket notification to user %s", user_id)
+        return False
+
+
+def _queue_webpush_notification(user_id, payload, ttl=1000):
+    try:
+        send_webpush_notification.delay(user_id=user_id, payload=payload, ttl=ttl)
+        return True
+    except Exception:
+        logger.exception("Failed to queue webpush notification for user %s", user_id)
+        return False
+
 @receiver(post_save, sender=ApprovalRequest)
 def notify_approval_request_update(sender, instance, created, **kwargs):
     channel_layer = get_channel_layer()
+    requester_name = _get_user_display_name(instance.requester)
     
     if created:
         # Notify approvers in the tenant
@@ -30,27 +60,29 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                 # Don't notify the requester if they are also an approver
                 if approver == instance.requester:
                     continue
-                    
-                async_to_sync(channel_layer.group_send)(
-                    f"user_{approver.id}",
+
+                message = _("New request from {name}: {title}").format(name=requester_name, title=instance.title)
+                _send_group_notification(
+                    channel_layer,
+                    approver.id,
                     {
                         "type": "notification_approval_request",
                         "request_id": instance.id,
                         "title": instance.title,
-                        "requester_name": instance.requester.get_full_name(),
+                        "requester_name": requester_name,
                         "status": instance.status,
                         "status_display": instance.get_status_display(),
                         "priority": instance.priority,
                         "category_display": instance.get_category_display(),
                         "created_at": instance.created_at.isoformat(),
-                        "message": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title)
+                        "message": message,
                     }
                 )
 
                 # Web Push Notification (Async)
                 payload = {
                     "title": _("New Request"),
-                    "body": _("New request from {name}: {title}").format(name=instance.requester.get_full_name(), title=instance.title),
+                    "body": message,
                     "icon": "/static/img/logo-push-96.png",
                     "badge": "/static/img/badge-mono.png",
                     "color": "#4f46e5",  # Primary indigo color
@@ -77,16 +109,17 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     ]
                 }
                 logger.info(f"Sending WebPush for request {instance.id} to user {approver.id}")
-                send_webpush_notification.delay(user_id=approver.id, payload=payload, ttl=1000)
+                _queue_webpush_notification(user_id=approver.id, payload=payload, ttl=1000)
 
             # Notify the requester as well (so their dashboard updates in real-time)
-            async_to_sync(channel_layer.group_send)(
-                f"user_{instance.requester.id}",
+            _send_group_notification(
+                channel_layer,
+                instance.requester.id,
                 {
                     "type": "notification_approval_request",
                     "request_id": instance.id,
                     "title": instance.title,
-                    "requester_name": instance.requester.get_full_name(),
+                    "requester_name": requester_name,
                     "status": instance.status,
                     "status_display": instance.get_status_display(),
                     "priority": instance.priority,
@@ -102,8 +135,9 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
             approver_name = instance.approver.get_full_name() if instance.approver else None
             status_display = instance.get_status_display()
             
-            async_to_sync(channel_layer.group_send)(
-                f"user_{instance.requester.id}",
+            _send_group_notification(
+                channel_layer,
+                instance.requester.id,
                 {
                     "type": "notification_approval_status",
                     "request_id": instance.id,
@@ -148,4 +182,4 @@ def notify_approval_request_update(sender, instance, created, **kwargs):
                     }
                 ]
             }
-            send_webpush_notification.delay(user_id=instance.requester.id, payload=payload, ttl=1000)
+            _queue_webpush_notification(user_id=instance.requester.id, payload=payload, ttl=1000)
