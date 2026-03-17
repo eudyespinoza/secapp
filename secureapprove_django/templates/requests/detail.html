@@ -257,7 +257,10 @@
                                 {% trans "This request was approved on" %} <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at }}</span>
                                 {% trans "by" %} {{ request_obj.approver.get_full_name }}.
                             {% elif request_obj.status == 'rejected' %}
-                                {% trans "This request was rejected." %}
+                                {% trans "This request was rejected on" %} <span class="local-datetime" data-iso="{{ request_obj.rejected_at|date:'c' }}">{{ request_obj.rejected_at }}</span>
+                                {% if request_obj.approver %}
+                                    {% trans "by" %} {{ request_obj.approver.get_full_name }}.
+                                {% endif %}
                                 {% if request_obj.rejection_reason %}
                                     <br><strong>{% trans "Reason:" %}</strong> {{ request_obj.rejection_reason }}
                                 {% endif %}
@@ -303,16 +306,14 @@
                     </div>
 
                     <!-- Metadata -->
-                    {% if request_obj.metadata %}
+                    {% if metadata_items %}
                         <h6>{% trans "Additional Information" %}</h6>
                         <table class="table table-sm metadata-table">
-                            {% for key, value in request_obj.metadata.items %}
-                                {% if value %}
-                                    <tr>
-                                        <th>{{ key|capfirst|title }}</th>
-                                        <td>{{ value }}</td>
-                                    </tr>
-                                {% endif %}
+                            {% for item in metadata_items %}
+                                <tr>
+                                    <th>{{ item.label }}</th>
+                                    <td>{{ item.value }}</td>
+                                </tr>
                             {% endfor %}
                         </table>
                     {% endif %}
@@ -381,7 +382,10 @@
                                 <div>
                                     <strong>{% trans "Request Rejected" %}</strong>
                                     <div class="text-muted small">
-                                        <span class="local-datetime" data-iso="{{ request_obj.approved_at|date:'c' }}">{{ request_obj.approved_at }}</span>
+                                        <span class="local-datetime" data-iso="{{ request_obj.rejected_at|date:'c' }}">{{ request_obj.rejected_at }}</span>
+                                        {% if request_obj.approver %}
+                                            {% trans "by" %} {{ request_obj.approver.get_full_name }}
+                                        {% endif %}
                                     </div>
                                     {% if request_obj.rejection_reason %}
                                         <div class="mt-1">
@@ -586,6 +590,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const approvalId = '{{ request_obj.pk }}';
     const webauthnOptionsUrl = "{% url 'requests:approval-webauthn-options' request_obj.pk %}";
     const webauthnVerifyUrl = "{% url 'requests:approval-webauthn-verify' request_obj.pk %}";
+    const uiText = {
+        confirmAction: '{% if REQ_LANG == "es" %}Confirmar acción{% elif REQ_LANG == "pt-br" %}Confirmar ação{% else %}Confirm Action{% endif %}',
+        approve: '{% if REQ_LANG == "es" %}Aprobar{% elif REQ_LANG == "pt-br" %}Aprovar{% else %}Approve{% endif %}',
+        reject: '{% if REQ_LANG == "es" %}Rechazar{% elif REQ_LANG == "pt-br" %}Rejeitar{% else %}Reject{% endif %}',
+        approveConfirm: '{% if REQ_LANG == "es" %}¿Seguro que deseas aprobar esta solicitud? Esta acción requiere confirmación biométrica.{% elif REQ_LANG == "pt-br" %}Tem certeza de que deseja aprovar esta solicitação? Esta ação exige confirmação biométrica.{% else %}Are you sure you want to approve this request? This action requires biometric confirmation.{% endif %}',
+        rejectConfirm: '{% if REQ_LANG == "es" %}¿Seguro que deseas rechazar esta solicitud? Esta acción requiere confirmación biométrica.{% elif REQ_LANG == "pt-br" %}Tem certeza de que deseja rejeitar esta solicitação? Esta ação exige confirmação biométrica.{% else %}Are you sure you want to reject this request? This action requires biometric confirmation.{% endif %}'
+    };
 
     // Helper to show toast
     function showToast(message, type = 'success') {
@@ -766,11 +777,11 @@ document.addEventListener('DOMContentLoaded', function () {
             pendingAction = { type: 'approve' };
             
             modalTitle.textContent = '{% trans "Approve Request" %}';
-            modalBody.textContent = '{% trans "Are you sure you want to approve this request? This action requires biometric confirmation." %}';
+            modalBody.textContent = uiText.approveConfirm;
             modalRejectionContainer.classList.add('d-none');
             confirmBtn.classList.remove('btn-danger');
             confirmBtn.classList.add('btn-success');
-            confirmBtn.textContent = '{% trans "Approve" %}';
+            confirmBtn.textContent = uiText.approve;
             
             confirmationModal.show();
         });
@@ -793,11 +804,11 @@ document.addEventListener('DOMContentLoaded', function () {
             pendingAction = { type: 'reject', reason: reason };
             
             modalTitle.textContent = '{% trans "Reject Request" %}';
-            modalBody.textContent = '{% trans "Are you sure you want to reject this request? This action requires biometric confirmation." %}';
+            modalBody.textContent = uiText.rejectConfirm;
             modalRejectionContainer.classList.add('d-none'); // Reason is already in the main form
             confirmBtn.classList.remove('btn-success');
             confirmBtn.classList.add('btn-danger');
-            confirmBtn.textContent = '{% trans "Reject" %}';
+            confirmBtn.textContent = uiText.reject;
             
             confirmationModal.show();
         });

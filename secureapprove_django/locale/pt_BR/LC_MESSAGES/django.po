@@ -3581,6 +3581,3 @@ msgstr "Aceito"
 
 msgid "Expired"
 msgstr "Expirado"
-
-msgid "Cancelled"
-msgstr "Cancelado"

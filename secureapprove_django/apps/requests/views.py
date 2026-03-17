@@ -160,10 +160,31 @@ def request_detail(request, pk):
         approval_request.status == 'pending' and
         approval_request.requester != request.user
     )
+
+    metadata_labels = {
+        'vendor': _('Vendor'),
+        'cost_center': _('Cost Center'),
+        'expense_category': _('Expense Category'),
+        'receipt_ref': _('Receipt Reference'),
+        'destination': _('Destination'),
+        'start_date': _('Start Date'),
+        'end_date': _('End Date'),
+        'document_id': _('Document ID'),
+        'reason': _('Reason'),
+    }
+    metadata_items = []
+    for key, value in (approval_request.metadata or {}).items():
+        if not value:
+            continue
+        label = metadata_labels.get(key)
+        if label is None:
+            label = key.replace('_', ' ').strip().title()
+        metadata_items.append({'label': label, 'value': value})
     
     context = {
         'request_obj': approval_request,
         'can_approve': can_approve,
+        'metadata_items': metadata_items,
     }
     
     return render(request, 'requests/detail.html', context)
