@@ -4,6 +4,40 @@
 
 {% block title %}{% if CURRENT_MENU_LANG == 'es' %}Auditoría{% elif CURRENT_MENU_LANG == 'pt-br' %}Auditoria{% else %}Audit Log{% endif %} - SecureApprove{% endblock %}
 
+{% block extra_css %}
+<style>
+    .audit-request-row {
+        cursor: pointer;
+    }
+
+    .audit-request-row > * {
+        transition: background-color 0.15s ease;
+    }
+
+    .audit-request-row:hover > *,
+    .audit-request-row:focus-within > * {
+        background-color: var(--hover-bg);
+    }
+
+    .audit-request-row:focus-within {
+        outline: 2px solid var(--primary-color);
+        outline-offset: -2px;
+    }
+
+    .audit-request-link {
+        color: inherit;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .audit-request-link:hover,
+    .audit-request-link:focus-visible {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -86,7 +120,7 @@
                     </thead>
                     <tbody>
                         {% for audit in page_obj.object_list %}
-                            <tr>
+                            <tr{% if audit_type == 'approvals' %} class="audit-request-row" data-request-url="{% url 'requests:detail' audit.approval_request.id %}"{% endif %}>
                                 <td class="text-nowrap">{{ audit.performed_at|date:"Y-m-d H:i:s" }}</td>
                                 <td>
                                     <span class="badge {% if audit.status == 'success' %}bg-success{% elif audit.status == 'failed' %}bg-danger{% elif audit.status == 'expired' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
@@ -109,7 +143,9 @@
                                     </td>
                                 {% else %}
                                     <td>
-                                        <div class="text-nowrap">{{ audit.approval_request.title }}</div>
+                                        <div class="text-nowrap">
+                                            <a class="audit-request-link" href="{% url 'requests:detail' audit.approval_request.id %}">{{ audit.approval_request.title }}</a>
+                                        </div>
                                         <div class="small text-muted">#{{ audit.approval_request.id }}</div>
                                     </td>
                                     <td class="text-nowrap">{{ audit.action }}</td>
@@ -153,4 +189,21 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.audit-request-row').forEach((row) => {
+        row.addEventListener('click', (event) => {
+            if (event.target.closest('a, button, input, select, textarea, label')) {
+                return;
+            }
+
+            const requestUrl = row.dataset.requestUrl;
+            if (requestUrl) {
+                window.location.assign(requestUrl);
+            }
+        });
+    });
+</script>
 {% endblock %}

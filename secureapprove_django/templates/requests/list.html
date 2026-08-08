@@ -20,9 +20,7 @@
 }
 
 .page-header-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 1rem;
+    width: 100%;
 }
 
 .page-title {
@@ -478,9 +476,7 @@
 
 /* ===== Content Container ===== */
 .main-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 1rem 2rem;
+    padding-bottom: 2rem;
 }
 </style>
 {% endblock %}
@@ -489,7 +485,7 @@
 <div class="requests-page">
     <!-- Page Header -->
     <div class="page-header">
-        <div class="page-header-content">
+        <div class="page-header-content container">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
                     <h1 class="page-title">
@@ -514,7 +510,7 @@
         </div>
     </div>
 
-    <div class="main-content">
+    <div class="main-content container">
         <!-- Filters -->
         <div class="filter-card">
             <div class="filter-title">
