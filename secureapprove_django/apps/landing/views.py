@@ -1,7 +1,12 @@
+import re
+
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_exempt
+
+from apps.authentication.approvals_api_serializers import normalize_parent_origin
 
 class LandingPageView(TemplateView):
     """Landing page for SecureApprove"""
@@ -86,3 +91,27 @@ class PrivacyView(TemplateView):
 class SecureApproveEmbedView(TemplateView):
     """Embeddable iframe endpoint for high-security biometric approval confirmation."""
     template_name = 'embed/secureapprove_iframe.html'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            parent_origin = normalize_parent_origin(request.GET.get('parent_origin', ''))
+        except Exception:
+            return HttpResponseBadRequest('Invalid parent_origin')
+
+        nonce = request.GET.get('nonce', '')
+        if not re.fullmatch(r'[0-9a-f]{32}', nonce):
+            return HttpResponseBadRequest('Invalid nonce')
+
+        response = super().get(request, *args, **kwargs)
+        response['Cache-Control'] = 'no-store, max-age=0'
+        response['Referrer-Policy'] = 'no-referrer'
+        response['Permissions-Policy'] = 'publickey-credentials-get=*'
+        response['Content-Security-Policy'] = (
+            "default-src 'none'; "
+            "script-src 'unsafe-inline'; "
+            "style-src 'unsafe-inline'; "
+            "connect-src 'self'; "
+            "img-src 'self' data:; "
+            f'frame-ancestors {parent_origin}'
+        )
+        return response

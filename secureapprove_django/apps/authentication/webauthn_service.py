@@ -228,7 +228,11 @@ class WebAuthnService:
         allow_credentials = []
         for cred in user.webauthn_credentials:
             # Only include active credentials
-            if 'credential_id' in cred and cred.get('is_active', True):
+            if (
+                cred.get('credential_id')
+                and cred.get('credential_public_key')
+                and cred.get('is_active', True)
+            ):
                 allow_credentials.append({
                     'id': base64.b64decode(cred['credential_id']),
                     'type': 'public-key',
@@ -401,8 +405,12 @@ class WebAuthnService:
         
         # Only include active credentials
         active_credentials = [
-            cred for cred in user.webauthn_credentials 
-            if cred.get('is_active', True)
+            cred for cred in user.webauthn_credentials
+            if (
+                cred.get('is_active', True)
+                and cred.get('credential_id')
+                and cred.get('credential_public_key')
+            )
         ]
         
         if not active_credentials:
@@ -411,12 +419,11 @@ class WebAuthnService:
         # Prepare allowed credentials
         allow_credentials = []
         for cred in active_credentials:
-            if 'credential_id' in cred:
-                allow_credentials.append({
-                    'id': base64.b64decode(cred['credential_id']),
-                    'type': 'public-key',
-                    'transports': cred.get('transports', [])
-                })
+            allow_credentials.append({
+                'id': base64.b64decode(cred['credential_id']),
+                'type': 'public-key',
+                'transports': cred.get('transports', [])
+            })
         
         # Generate authentication options
         options = generate_authentication_options(

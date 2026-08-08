@@ -12,18 +12,11 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-import hashlib
-import secrets
-import uuid
 from datetime import timedelta
 from .models import ApprovalRequest
-from apps.authentication.models import User, TermsApprovalSession
-from apps.authentication.webauthn_service import webauthn_service
+from apps.authentication.models import User
+from apps.authentication.approvals_api_views import create_terms_approval_session
 from apps.authentication.approvals_api_serializers import TermsTokenRequestSerializer
-
-
-def _sha256_hex(value: str) -> str:
-    return hashlib.sha256(value.encode('utf-8')).hexdigest()
 
 @login_required
 def dashboard(request):
@@ -147,14 +140,17 @@ def iframe_integration_guide(request):
     app_origin = f"{request.scheme}://{request.get_host()}"
     embed_url = f"{app_origin}/{request.LANGUAGE_CODE}/embed/secureapprove/"
     token_endpoint = f"{app_origin}/api/approvals/terms/token/"
+    status_endpoint = f"{app_origin}/api/approvals/terms/status/"
     loader_url = f"{app_origin}/static/js/secureapprove-embed-loader.js"
-    backend_session_endpoint = f"/{request.LANGUAGE_CODE}/dashboard/api/integrations/iframe/session/"
+    # This route belongs to the integrating site's backend, not to SecureApprove.
+    backend_session_endpoint = "/api/secureapprove/session"
 
     context = {
         'app_origin': app_origin,
         'embed_url': embed_url,
         'loader_url': loader_url,
         'token_endpoint': token_endpoint,
+        'status_endpoint': status_endpoint,
         'backend_session_endpoint': backend_session_endpoint,
         'tenant_key': getattr(request.user.tenant, 'key', ''),
         'tenant_name': getattr(request.user.tenant, 'name', ''),
@@ -180,11 +176,10 @@ def iframe_integration_session_api(request):
 
     decision = request.data.get('decision', 'approve')
     decision = 'reject' if decision == 'reject' else 'approve'
-    approved = decision == 'approve'
-
     approval_type = request.data.get('approvalType', 'document')
     document_version = request.data.get('documentVersion', '')
     document_hash = request.data.get('documentHash', '')
+    parent_origin = request.data.get('parentOrigin') or f'{request.scheme}://{request.get_host()}'
 
     subject_user = get_object_or_404(User, pk=subject_user_id)
 
@@ -197,6 +192,8 @@ def iframe_integration_session_api(request):
     payload = {
         'user_id': int(subject_user_id),
         'purpose': f'external_{approval_type}_{decision}',
+        'decision': decision,
+        'parent_origin': parent_origin,
         'document_type': approval_type,
         'document_version': document_version,
         'document_hash': document_hash,
@@ -219,7 +216,7 @@ def iframe_integration_session_api(request):
             'approval': {
                 'type': approval_type,
                 'decision': decision,
-                'approved': approved,
+                'approved': decision == 'approve',
                 'reference_id': request.data.get('referenceId', ''),
                 'amount': request.data.get('amount'),
                 'currency': request.data.get('currency', ''),
@@ -234,55 +231,31 @@ def iframe_integration_session_api(request):
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
 
-    raw_token = secrets.token_urlsafe(48)
-    token_hash = _sha256_hex(raw_token)
-    expires_at = timezone.now() + timedelta(seconds=120)
-    session_id = uuid.uuid4()
-
-    session = TermsApprovalSession(
-        id=session_id,
-        tenant=request.user.tenant,
-        subject_user=subject_user,
+    session, raw_token, options = create_terms_approval_session(
         created_by=request.user,
-        purpose=data['purpose'],
-        document_type=data['document_type'],
-        document_version=data['document_version'],
-        document_hash=data['document_hash'],
-        context_data=data.get('context', {}) or {},
-        approval_id=f"terms_{session_id}",
-        token_hash=token_hash,
-        expires_at=expires_at,
+        subject_user=subject_user,
+        data=data,
     )
-
-    context_data = {
-        'purpose': data['purpose'],
-        'document_type': data['document_type'],
-        'document_version': data['document_version'],
-        'document_hash': data['document_hash'],
-        'subject_user_id': str(subject_user.id),
-        'tenant_id': str(request.user.tenant_id),
-    }
-    extra = session.context_data or {}
-    if isinstance(extra, dict) and extra:
-        context_data['extra'] = extra
-
-    session.save()
-
-    options = webauthn_service.generate_approval_challenge(
-        user=subject_user,
-        approval_id=session.approval_id,
-        context_data=context_data,
-    )
-
-    session.challenge_id = options.get('challengeId', '')
-    session.save(update_fields=['challenge_id'])
 
     return Response(
         {
             'approvalToken': raw_token,
             'webauthnOptions': options,
-            'approved': approved,
-            'context': payload['context'],
+            'transaction': {
+                'id': str(session.id),
+                'parentOrigin': session.parent_origin,
+                'decision': session.decision,
+                'purpose': session.purpose,
+                'document': {
+                    'type': session.document_type,
+                    'version': session.document_version,
+                    'sha256': session.document_hash,
+                },
+                'tenant': payload['context']['tenant'],
+                'subject': payload['context']['subject_user'],
+                'context': payload['context'],
+                'expiresAt': session.expires_at.isoformat(),
+            },
             'expiresAt': session.expires_at.isoformat(),
         },
         status=201,

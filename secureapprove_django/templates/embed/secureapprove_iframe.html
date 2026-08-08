@@ -43,6 +43,17 @@
       box-shadow: 0 10px 28px rgba(14, 49, 27, 0.12);
     }
 
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 12px;
+      color: var(--brand);
+      font-weight: 700;
+    }
+
+    .brand svg { width: 24px; height: 24px; }
+
     h1 {
       margin: 0;
       font-size: 1.08rem;
@@ -67,6 +78,26 @@
       margin-bottom: 8px;
       background: #f3faf5;
     }
+
+    .transaction {
+      margin: 12px 0;
+      border: 1px solid #d4e3d7;
+      border-radius: 10px;
+      background: #f8fcf9;
+      padding: 10px 12px;
+    }
+
+    .transaction-row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 10px;
+      padding: 5px 0;
+      font-size: 0.82rem;
+    }
+
+    .transaction-label { color: var(--muted); }
+    .transaction-value { font-weight: 600; overflow-wrap: anywhere; }
+    .transaction-hash { font-family: Consolas, "Courier New", monospace; font-size: 0.74rem; }
 
     .actions {
       display: flex;
@@ -115,15 +146,30 @@
 </head>
 <body>
   <section class="card">
+    <div class="brand" aria-label="SecureApprove">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 3 20 6.5v5.3c0 4.7-3.1 7.7-8 9.2-4.9-1.5-8-4.5-8-9.2V6.5L12 3Z" stroke="currentColor" stroke-width="1.8"/>
+        <path d="m8.2 12 2.4 2.4 5.3-5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>SecureApprove</span>
+    </div>
     <h1>SecureApprove Biometric Approval</h1>
     <p class="sub">
-      Este iframe usa autenticacion biometrica del dispositivo y confirma una aprobacion con
-      token efimero de un solo uso. No almacena credenciales de tenant.
+      Verifica los datos y confirma con la passkey, biometría o PIN seguro de tu dispositivo.
     </p>
 
     <div>
       <span class="pill" id="modeTag">Modo seguro: token efimero</span>
       <span class="pill" id="decisionTag">Decision: -</span>
+    </div>
+
+    <div class="transaction" aria-label="Detalle de la transacción">
+      <div class="transaction-row"><span class="transaction-label">Organización</span><span class="transaction-value" id="tenantValue">-</span></div>
+      <div class="transaction-row"><span class="transaction-label">Usuario</span><span class="transaction-value" id="subjectValue">-</span></div>
+      <div class="transaction-row"><span class="transaction-label">Documento</span><span class="transaction-value" id="documentValue">-</span></div>
+      <div class="transaction-row"><span class="transaction-label">Versión</span><span class="transaction-value" id="versionValue">-</span></div>
+      <div class="transaction-row"><span class="transaction-label">SHA-256</span><span class="transaction-value transaction-hash" id="hashValue">-</span></div>
+      <div class="transaction-row"><span class="transaction-label">Referencia</span><span class="transaction-value" id="referenceValue">-</span></div>
     </div>
 
     <div class="actions">
@@ -141,13 +187,18 @@
       nonce: null,
       approvalToken: null,
       webauthnOptions: null,
-      approved: true,
-      context: {},
+      transaction: null,
     };
 
     const statusEl = document.getElementById("status");
     const confirmBtn = document.getElementById("btnConfirm");
     const decisionTag = document.getElementById("decisionTag");
+    const tenantValue = document.getElementById("tenantValue");
+    const subjectValue = document.getElementById("subjectValue");
+    const documentValue = document.getElementById("documentValue");
+    const versionValue = document.getElementById("versionValue");
+    const hashValue = document.getElementById("hashValue");
+    const referenceValue = document.getElementById("referenceValue");
 
     function setStatus(msg, type = "") {
       statusEl.className = "status";
@@ -221,6 +272,24 @@
       }, state.parentOrigin);
     }
 
+    function renderTransaction(transaction) {
+      const approved = transaction.decision === "approve";
+      const documentData = transaction.document || {};
+      const context = transaction.context || {};
+      const approvalContext = context.approval || {};
+      const tenant = transaction.tenant || context.tenant || {};
+      const subject = transaction.subject || context.subject_user || {};
+
+      decisionTag.textContent = "Decisión: " + (approved ? "aceptar" : "rechazar");
+      confirmBtn.textContent = approved ? "Aceptar con passkey" : "Rechazar con passkey";
+      tenantValue.textContent = tenant.name || tenant.key || "-";
+      subjectValue.textContent = subject.email || subject.name || "-";
+      documentValue.textContent = documentData.type || "-";
+      versionValue.textContent = documentData.version || "-";
+      hashValue.textContent = documentData.sha256 || "-";
+      referenceValue.textContent = approvalContext.reference_id || "-";
+    }
+
     async function apiConfirmApproval(payload) {
       const response = await fetch("/api/approvals/terms/confirm/", {
         method: "POST",
@@ -261,7 +330,6 @@
       setStatus("[2/3] Enviando confirmacion firmada a SecureApprove...", "warn");
       const confirmPayload = {
         approval_token: state.approvalToken,
-        approved: state.approved,
         webauthn_response: serializeAssertion(assertion),
       };
 
@@ -270,15 +338,15 @@
       setStatus("[3/3] Aprobacion confirmada con auditoria:\n" + JSON.stringify(confirmResult, null, 2), "ok");
       notifyParent("SECUREAPPROVE_RESULT", {
         success: true,
-        approved: state.approved,
-        confirm: confirmResult,
-        context: state.context,
+        transactionId: state.transaction.id,
+        status: confirmResult.status,
+        approved: confirmResult.approved,
       });
     }
 
     function bootstrapFromMessage(event) {
-      if (!state.parentOrigin || event.origin !== state.parentOrigin) return;
-      if (!event.data || event.data.type !== "SECUREAPPROVE_INIT") return;
+      if (!state.parentOrigin || event.origin !== state.parentOrigin || event.source !== window.parent) return;
+      if (!event.data || event.data.source !== "secureapprove-loader" || event.data.type !== "SECUREAPPROVE_INIT") return;
 
       const payload = event.data.payload || {};
       if (event.data.nonce !== state.nonce) {
@@ -289,26 +357,34 @@
 
       const approvalToken = payload.approvalToken;
       const webauthnOptions = payload.webauthnOptions;
+      const transaction = payload.transaction;
 
-      if (!approvalToken || !webauthnOptions) {
-        setStatus("INIT incompleto: faltan approvalToken y/o webauthnOptions", "err");
+      if (!approvalToken || !webauthnOptions || !transaction) {
+        setStatus("INIT incompleto: faltan datos de la transacción", "err");
         notifyParent("SECUREAPPROVE_ERROR", { error: "invalid_init_payload" });
+        return;
+      }
+
+      if (!transaction.id || transaction.parentOrigin !== state.parentOrigin ||
+          !["approve", "reject"].includes(transaction.decision)) {
+        setStatus("La transacción no pertenece a este sitio", "err");
+        notifyParent("SECUREAPPROVE_ERROR", { error: "transaction_origin_mismatch" });
         return;
       }
 
       state.approvalToken = approvalToken;
       state.webauthnOptions = webauthnOptions;
-      state.approved = payload.approved !== false;
-      state.context = payload.context || {};
+      state.transaction = transaction;
       state.initialized = true;
 
-      decisionTag.textContent = "Decision: " + (state.approved ? "approve" : "reject");
+      renderTransaction(transaction);
       confirmBtn.disabled = false;
 
       setStatus("Widget inicializado de forma segura.\nToken efimero cargado.\nListo para biometria.", "ok");
       notifyParent("SECUREAPPROVE_READY_ACK", {
         mode: "ephemeral_token",
-        approved: state.approved,
+        transactionId: transaction.id,
+        decision: transaction.decision,
       });
     }
 
@@ -321,7 +397,12 @@
         return false;
       }
 
-      state.parentOrigin = parentOrigin;
+      try {
+        state.parentOrigin = new URL(parentOrigin).origin;
+      } catch {
+        setStatus("parent_origin inválido", "err");
+        return false;
+      }
       state.nonce = nonce;
 
       return true;
@@ -335,7 +416,7 @@
         notifyParent("SECUREAPPROVE_ERROR", {
           error: "confirm_failed",
           message: error.message,
-          context: state.context,
+          transactionId: state.transaction ? state.transaction.id : null,
         });
       }
     });

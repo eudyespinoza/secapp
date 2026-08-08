@@ -1,3 +1,5 @@
+import base64
+import json
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -43,6 +45,30 @@ class TermsApprovalAPITest(TestCase):
         ]
         self.subject.save(update_fields=['webauthn_credentials'])
 
+    @staticmethod
+    def _client_data(top_origin='https://client.example'):
+        value = json.dumps({
+            'type': 'webauthn.get',
+            'challenge': 'Y2hhbGxlbmdl',
+            'origin': 'https://secureapprove.com',
+            'crossOrigin': True,
+            'topOrigin': top_origin,
+        }).encode('utf-8')
+        return base64.urlsafe_b64encode(value).decode('ascii').rstrip('=')
+
+    def _assertion(self, top_origin='https://client.example'):
+        return {
+            'id': 'x',
+            'rawId': 'y',
+            'type': 'public-key',
+            'response': {
+                'clientDataJSON': self._client_data(top_origin),
+                'authenticatorData': 'authenticator-data',
+                'signature': 'signature',
+                'userHandle': None,
+            },
+        }
+
     @patch('apps.authentication.approvals_api_views.webauthn_service.generate_approval_challenge')
     @patch('apps.authentication.approvals_api_views.webauthn_service.verify_approval_response')
     def test_terms_flow_success(self, mock_verify, mock_generate):
@@ -66,29 +92,35 @@ class TermsApprovalAPITest(TestCase):
             {
                 'user_id': self.subject.id,
                 'purpose': 'terms_acceptance',
+                'decision': 'approve',
+                'parent_origin': 'https://client.example',
                 'document_type': 'terms',
                 'document_version': '2026-01',
-                'document_hash': 'hash-abc',
+                'document_hash': 'a' * 64,
                 'context': {'source': 'signup'},
             },
             format='json',
         )
 
         self.assertEqual(token_resp.status_code, 201)
+        self.assertEqual(token_resp['Cache-Control'], 'no-store, max-age=0')
         approval_token = token_resp.json()['approval_token']
 
         confirm_resp = self.client.post(
             '/api/approvals/terms/confirm/',
             {
                 'approval_token': approval_token,
-                'approved': True,
-                'webauthn_response': {'id': 'x', 'rawId': 'y', 'type': 'public-key', 'response': {}},
+                'approved': False,
+                'webauthn_response': self._assertion(),
             },
             format='json',
         )
 
         self.assertEqual(confirm_resp.status_code, 200)
         self.assertTrue(confirm_resp.json()['success'])
+        self.assertTrue(confirm_resp.json()['approved'])
+        self.assertEqual(confirm_resp.json()['status'], 'approved')
+        self.assertTrue(confirm_resp.json()['verification_passed'])
 
         self.assertEqual(TermsAcceptanceAudit.objects.count(), 1)
         audit = TermsAcceptanceAudit.objects.first()
@@ -98,6 +130,73 @@ class TermsApprovalAPITest(TestCase):
 
         session = TermsApprovalSession.objects.first()
         self.assertIsNotNone(session.consumed_at)
+        self.assertEqual(session.result_status, 'approved')
+
+        self.client.force_authenticate(user=self.admin)
+        status_resp = self.client.get(f'/api/approvals/terms/status/{session.id}/')
+        self.assertEqual(status_resp.status_code, 200)
+        self.assertEqual(status_resp['Cache-Control'], 'no-store, max-age=0')
+        self.assertTrue(status_resp.json()['authenticated'])
+        self.assertTrue(status_resp.json()['verification_passed'])
+        self.assertEqual(status_resp.json()['transaction']['decision'], 'approve')
+        self.assertTrue(status_resp.json()['transaction']['verificationPassed'])
+
+    @patch('apps.authentication.approvals_api_views.webauthn_service.verify_approval_response')
+    def test_confirm_rejects_unexpected_top_origin(self, mock_verify):
+        self.client.force_authenticate(user=self.admin)
+        token_resp = self.client.post(
+            '/api/approvals/terms/token/',
+            {
+                'user_id': self.subject.id,
+                'purpose': 'terms_acceptance',
+                'decision': 'approve',
+                'parent_origin': 'https://client.example',
+                'document_type': 'terms',
+                'document_version': '2026-01',
+                'document_hash': 'b' * 64,
+            },
+            format='json',
+        )
+        self.client.force_authenticate(user=None)
+
+        confirm_resp = self.client.post(
+            '/api/approvals/terms/confirm/',
+            {
+                'approval_token': token_resp.json()['approval_token'],
+                'webauthn_response': self._assertion('https://attacker.example'),
+            },
+            format='json',
+        )
+
+        self.assertEqual(confirm_resp.status_code, 400)
+        self.assertFalse(mock_verify.called)
+        session = TermsApprovalSession.objects.get()
+        self.assertEqual(session.result_status, 'failed')
+        self.assertIsNotNone(session.consumed_at)
+        self.assertEqual(TermsAcceptanceAudit.objects.get().status, 'failed')
+
+    def test_token_requires_sha256_document_hash_and_parent_origin(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.post(
+            '/api/approvals/terms/token/',
+            {
+                'user_id': self.subject.id,
+                'document_type': 'terms',
+                'document_version': '2026-01',
+                'document_hash': '',
+            },
+            format='json',
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_parent_origin_is_canonicalized_and_rejects_browser_ambiguous_input(self):
+        from apps.authentication.approvals_api_serializers import normalize_parent_origin
+        from rest_framework.serializers import ValidationError
+
+        self.assertEqual(normalize_parent_origin('https://client.example:443/'), 'https://client.example')
+        self.assertEqual(normalize_parent_origin('http://localhost:80'), 'http://localhost')
+        with self.assertRaises(ValidationError):
+            normalize_parent_origin('https://client.example\\@attacker.example')
 
     def test_confirm_expired_creates_audit(self):
         # Create an expired session with a known token
@@ -111,7 +210,9 @@ class TermsApprovalAPITest(TestCase):
             purpose='terms_acceptance',
             document_type='terms',
             document_version='2026-01',
-            document_hash='hash-abc',
+            document_hash='c' * 64,
+            decision='approve',
+            parent_origin='https://client.example',
             context_data={'source': 'signup'},
             approval_id='terms_expired',
             challenge_id='challenge-exp',
@@ -123,8 +224,7 @@ class TermsApprovalAPITest(TestCase):
             '/api/approvals/terms/confirm/',
             {
                 'approval_token': approval_token,
-                'approved': True,
-                'webauthn_response': {'id': 'x', 'rawId': 'y', 'type': 'public-key', 'response': {}},
+                'webauthn_response': self._assertion(),
             },
             format='json',
         )
@@ -134,3 +234,50 @@ class TermsApprovalAPITest(TestCase):
         audit = TermsAcceptanceAudit.objects.first()
         self.assertEqual(audit.status, 'expired')
         self.assertEqual(audit.session_id, session.id)
+        session.refresh_from_db()
+        self.assertEqual(session.result_status, 'expired')
+        self.assertIsNotNone(session.consumed_at)
+
+    def test_fallback_credential_endpoint_is_disabled(self):
+        response = self.client.post(
+            '/en/auth/webauthn/fallback/',
+            {'userId': self.subject.id},
+            format='json',
+        )
+        self.assertEqual(response.status_code, 410)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_embed_response_delegates_webauthn_only_to_requested_parent(self):
+        response = self.client.get(
+            '/en/embed/secureapprove/',
+            {
+                'parent_origin': 'https://client.example',
+                'nonce': 'a' * 32,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Permissions-Policy'], 'publickey-credentials-get=*')
+        self.assertIn('frame-ancestors https://client.example', response['Content-Security-Policy'])
+        self.assertEqual(response['Cache-Control'], 'no-store, max-age=0')
+
+    def test_embed_rejects_invalid_parent_origin(self):
+        response = self.client.get(
+            '/en/embed/secureapprove/',
+            {
+                'parent_origin': 'https://client.example/path',
+                'nonce': 'a' * 32,
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_integration_guide_renders_server_verified_login_exchange(self):
+        self.client.force_authenticate(user=None)
+        self.client.force_login(self.admin)
+        response = self.client.get('/en/dashboard/integrations/iframe/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'pendingSecureApprove')
+        self.assertContains(response, 'secureapprove_transaction_mismatch')
+        self.assertContains(response, 'transaction.parentOrigin === pending.parentOrigin')
+        self.assertContains(response, '/api/secureapprove/session')

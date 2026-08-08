@@ -76,8 +76,13 @@ class User(AbstractUser):
         """Check if user has registered WebAuthn credentials"""
         if not isinstance(self.webauthn_credentials, list):
             return False
-        # Only count active credentials
-        return any(cred.get('is_active', True) for cred in self.webauthn_credentials)
+        # Software fallback records are not WebAuthn credentials and must never satisfy MFA.
+        return any(
+            cred.get('is_active', True)
+            and bool(cred.get('credential_id'))
+            and bool(cred.get('credential_public_key'))
+            for cred in self.webauthn_credentials
+        )
     
     def can_approve_requests(self):
         """Check if user can approve requests"""
@@ -312,6 +317,19 @@ class TermsApprovalSession(models.Model):
         ('generic', _('Generic')),
     ]
 
+    DECISION_CHOICES = [
+        ('approve', _('Approve')),
+        ('reject', _('Reject')),
+    ]
+
+    RESULT_STATUS_CHOICES = [
+        ('pending', _('Pending')),
+        ('approved', _('Approved')),
+        ('rejected', _('Rejected')),
+        ('failed', _('Failed')),
+        ('expired', _('Expired')),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     tenant = models.ForeignKey(
@@ -348,6 +366,20 @@ class TermsApprovalSession(models.Model):
     document_version = models.CharField(_('Document Version'), max_length=64, blank=True)
     document_hash = models.CharField(_('Document Hash'), max_length=128, blank=True)
 
+    decision = models.CharField(
+        _('Decision'),
+        max_length=16,
+        choices=DECISION_CHOICES,
+        default='approve',
+    )
+    parent_origin = models.CharField(
+        _('Parent Origin'),
+        max_length=255,
+        blank=True,
+        default='',
+        help_text=_('Exact top-level origin authorized to host this WebAuthn ceremony'),
+    )
+
     # Context bound to the WebAuthn challenge hash (see WebAuthnService.generate_approval_challenge)
     context_data = models.JSONField(_('Context Data'), default=dict, blank=True)
 
@@ -360,6 +392,13 @@ class TermsApprovalSession(models.Model):
 
     expires_at = models.DateTimeField(_('Expires At'))
     consumed_at = models.DateTimeField(_('Consumed At'), null=True, blank=True)
+    completed_at = models.DateTimeField(_('Completed At'), null=True, blank=True)
+    result_status = models.CharField(
+        _('Result Status'),
+        max_length=20,
+        choices=RESULT_STATUS_CHOICES,
+        default='pending',
+    )
 
     created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
 
@@ -371,6 +410,7 @@ class TermsApprovalSession(models.Model):
             models.Index(fields=['tenant', 'subject_user', 'created_at']),
             models.Index(fields=['expires_at']),
             models.Index(fields=['consumed_at']),
+            models.Index(fields=['result_status'], name='authenticat_result__a421b5_idx'),
         ]
 
     @property

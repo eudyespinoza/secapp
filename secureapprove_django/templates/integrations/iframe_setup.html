@@ -73,6 +73,7 @@
 {% block content %}
 {{ app_origin|json_script:"ctx_app_origin" }}
 {{ token_endpoint|json_script:"ctx_token_endpoint" }}
+{{ status_endpoint|json_script:"ctx_status_endpoint" }}
 {{ embed_url|json_script:"ctx_embed_url" }}
 {{ loader_url|json_script:"ctx_loader_url" }}
 {{ tenant_key|json_script:"ctx_tenant_key" }}
@@ -88,7 +89,7 @@
                         <div>
                             <h1 class="h3 mb-2">{% trans "SecureApprove iframe integration" %}</h1>
                             <p class="text-muted mb-2">
-                                {% trans "Production-ready module with secure handshake, ephemeral token flow, and copy-ready snippets." %}
+                                {% trans "Origin-bound WebAuthn transactions with server-verified results and copy-ready snippets." %}
                             </p>
                             <div>
                                 <span class="step-chip"><i class="bi bi-shield-lock"></i>{% trans "Security-first" %}</span>
@@ -142,6 +143,12 @@
                             <label for="cfgApiTokenEndpoint" class="form-label">{% trans "Token endpoint" %}</label>
                             <input id="cfgApiTokenEndpoint" class="form-control" value="{{ token_endpoint }}" />
                             <div class="field-note">{% trans "Server-to-server endpoint used by your backend." %}</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="cfgApiStatusEndpoint" class="form-label">{% trans "Status endpoint base" %}</label>
+                            <input id="cfgApiStatusEndpoint" class="form-control" value="{{ status_endpoint }}" />
+                            <div class="field-note">{% trans "Your backend verifies the final WebAuthn result here before creating a session." %}</div>
                         </div>
 
                         <div class="col-12">
@@ -202,7 +209,7 @@
                         <li class="mb-2">{% trans "Browser requests only ephemeral session data from your backend." %}</li>
                         <li class="mb-2">{% trans "Loader creates iframe and executes strict origin + nonce handshake." %}</li>
                         <li class="mb-2">{% trans "Iframe performs biometric challenge and confirms /api/approvals/terms/confirm/." %}</li>
-                        <li>{% trans "Store audit_id from result for compliance and traceability." %}</li>
+                        <li>{% trans "Your backend verifies transaction status with SecureApprove before creating its own login session." %}</li>
                     </ol>
 
                     <hr>
@@ -213,7 +220,9 @@
                             <li>{% trans "Never expose long-lived API keys in browser code." %}</li>
                             <li>{% trans "Issue one-time, short-lived approval tokens only." %}</li>
                             <li>{% trans "Validate decision, approval type, and subject user server-side." %}</li>
-                            <li>{% trans "Enforce HTTPS and validate parent origin in frontend." %}</li>
+                            <li>{% trans "Bind the exact parent origin, decision, document version, and SHA-256 server-side." %}</li>
+                            <li>{% trans "Bind the transaction ID to the host's pre-authentication session and rotate that session after success." %}</li>
+                            <li>{% trans "Treat postMessage as a UI notification; trust only the authenticated status endpoint." %}</li>
                             <li>{% trans "Do not persist approvalToken in localStorage/sessionStorage." %}</li>
                         </ul>
                     </div>
@@ -275,6 +284,7 @@
         backendLanguage: document.getElementById('cfgBackendLanguage'),
         secureApproveOrigin: document.getElementById('cfgSecureApproveOrigin'),
         apiTokenEndpoint: document.getElementById('cfgApiTokenEndpoint'),
+        apiStatusEndpoint: document.getElementById('cfgApiStatusEndpoint'),
         embedUrl: document.getElementById('cfgEmbedUrl'),
         loaderUrl: document.getElementById('cfgLoaderUrl'),
         tenantKey: document.getElementById('cfgTenantKey'),
@@ -299,30 +309,37 @@
         return `// Node.js (Express) - Secure server-to-server token creation\n` +
 `import express from 'express';\n` +
 `import fetch from 'node-fetch';\n\n` +
+`import crypto from 'node:crypto';\n\n` +
 `const router = express.Router();\n\n` +
+`const SECUREAPPROVE_HEADERS = {\n` +
+`  'Content-Type': 'application/json',\n` +
+`  Authorization: \`Bearer \${process.env.SECUREAPPROVE_SERVER_TOKEN}\`\n` +
+`};\n` +
+`const APP_ORIGIN = process.env.APP_ORIGIN; // e.g. https://app.example.com\n\n` +
 `router.post('${c.backendSessionPath}', async (req, res) => {\n` +
 `  const subjectUserId = Number(req.body.subjectUserId);\n` +
 `  const decision = req.body.decision === 'reject' ? 'reject' : 'approve';\n` +
 `  const approvalType = req.body.approvalType || 'document';\n\n` +
+`  const documentText = await loadImmutableDocument(req.body.referenceId);\n` +
+`  const documentHash = crypto.createHash('sha256').update(documentText).digest('hex');\n\n` +
 `  const payload = {\n` +
 `    user_id: subjectUserId,\n` +
 `    purpose: \`external_\${approvalType}_\${decision}\`,\n` +
+`    decision,\n` +
+`    parent_origin: APP_ORIGIN,\n` +
 `    document_type: approvalType,\n` +
 `    document_version: 'v1',\n` +
-`    document_hash: '',\n` +
+`    document_hash: documentHash,\n` +
 `    context: {\n` +
 `      tenant: { key: '${q(c.tenantKey)}' },\n` +
 `      actor_user: { email: '${q(c.actorEmail)}' },\n` +
 `      subject_user: { id: String(subjectUserId) },\n` +
-`      approval: { type: approvalType, decision }\n` +
+`      approval: { type: approvalType, decision, reference_id: req.body.referenceId }\n` +
 `    }\n` +
 `  };\n\n` +
 `  const tokenResp = await fetch('${q(c.apiTokenEndpoint)}', {\n` +
 `    method: 'POST',\n` +
-`    headers: {\n` +
-`      'Content-Type': 'application/json',\n` +
-`      Authorization: \`Bearer \${process.env.SECUREAPPROVE_SERVER_TOKEN}\`\n` +
-`    },\n` +
+`    headers: SECUREAPPROVE_HEADERS,\n` +
 `    body: JSON.stringify(payload)\n` +
 `  });\n\n` +
 `  if (!tokenResp.ok) {\n` +
@@ -330,18 +347,47 @@
 `    return res.status(502).json({ error: 'secureapprove_token_failed', details: err });\n` +
 `  }\n\n` +
 `  const tokenData = await tokenResp.json();\n` +
+`  req.session.pendingSecureApprove = {\n` +
+`    transactionId: tokenData.transaction.id,\n` +
+`    subjectUserId: String(subjectUserId),\n` +
+`    documentHash,\n` +
+`    parentOrigin: APP_ORIGIN\n` +
+`  };\n` +
 `  return res.json({\n` +
 `    approvalToken: tokenData.approval_token,\n` +
 `    webauthnOptions: tokenData.webauthn_options,\n` +
-`    approved: decision === 'approve',\n` +
-`    context: payload.context\n` +
+`    transaction: tokenData.transaction\n` +
 `  });\n` +
+`});\n\n` +
+`router.post('/api/secureapprove/finalize', async (req, res) => {\n` +
+`  const transactionId = String(req.body.transactionId || '');\n` +
+`  const pending = req.session.pendingSecureApprove;\n` +
+`  if (!pending || transactionId !== pending.transactionId) {\n` +
+`    return res.status(401).json({ error: 'secureapprove_transaction_mismatch' });\n` +
+`  }\n` +
+`  const statusResp = await fetch('${q(c.apiStatusEndpoint)}' + encodeURIComponent(transactionId) + '/', {\n` +
+`    headers: SECUREAPPROVE_HEADERS\n` +
+`  });\n` +
+`  if (!statusResp.ok) return res.status(401).json({ error: 'secureapprove_not_verified' });\n` +
+`  const result = await statusResp.json();\n` +
+`  const transaction = result.transaction || {};\n` +
+`  const valid = result.authenticated && transaction.state === 'approved' &&\n` +
+`    transaction.decision === 'approve' && transaction.parentOrigin === pending.parentOrigin &&\n` +
+`    String(transaction.subject?.id) === pending.subjectUserId &&\n` +
+`    transaction.document?.sha256 === pending.documentHash;\n` +
+`  if (!valid) return res.status(401).json({ error: 'secureapprove_not_approved' });\n` +
+`  const subject = transaction.subject;\n` +
+`  await new Promise((resolve, reject) => req.session.regenerate((error) => error ? reject(error) : resolve()));\n` +
+`  req.session.secureapproveUser = subject;\n` +
+`  return res.json({ authenticated: true, user: subject });\n` +
 `});`;
     }
 
     function backendSnippetPython(c) {
         return `# Python (FastAPI) - Secure server-to-server token creation\n` +
 `from fastapi import APIRouter, Request, HTTPException\n` +
+`from fastapi.responses import JSONResponse\n` +
+`import hashlib\n` +
 `import os\n` +
 `import httpx\n\n` +
 `router = APIRouter()\n\n` +
@@ -351,17 +397,21 @@
 `    subject_user_id = int(body.get('subjectUserId'))\n` +
 `    decision = 'reject' if body.get('decision') == 'reject' else 'approve'\n` +
 `    approval_type = body.get('approvalType', 'document')\n\n` +
+`    document_text = await load_immutable_document(body.get('referenceId'))\n` +
+`    document_hash = hashlib.sha256(document_text.encode()).hexdigest()\n\n` +
 `    payload = {\n` +
 `        'user_id': subject_user_id,\n` +
 `        'purpose': f'external_{approval_type}_{decision}',\n` +
+`        'decision': decision,\n` +
+`        'parent_origin': os.environ['APP_ORIGIN'],\n` +
 `        'document_type': approval_type,\n` +
 `        'document_version': 'v1',\n` +
-`        'document_hash': '',\n` +
+`        'document_hash': document_hash,\n` +
 `        'context': {\n` +
 `            'tenant': {'key': '${q(c.tenantKey)}'},\n` +
 `            'actor_user': {'email': '${q(c.actorEmail)}'},\n` +
 `            'subject_user': {'id': str(subject_user_id)},\n` +
-`            'approval': {'type': approval_type, 'decision': decision},\n` +
+`            'approval': {'type': approval_type, 'decision': decision, 'reference_id': body.get('referenceId')},\n` +
 `        },\n` +
 `    }\n\n` +
 `    headers = {\n` +
@@ -373,12 +423,40 @@
 `    if resp.status_code >= 400:\n` +
 `        raise HTTPException(status_code=502, detail={'error': 'secureapprove_token_failed', 'details': resp.text})\n\n` +
 `    token_data = resp.json()\n` +
+`    request.session['pending_secureapprove'] = {\n` +
+`        'transaction_id': token_data['transaction']['id'],\n` +
+`        'subject_user_id': str(subject_user_id),\n` +
+`        'document_hash': document_hash,\n` +
+`        'parent_origin': os.environ['APP_ORIGIN'],\n` +
+`    }\n` +
 `    return {\n` +
 `        'approvalToken': token_data['approval_token'],\n` +
 `        'webauthnOptions': token_data['webauthn_options'],\n` +
-`        'approved': decision == 'approve',\n` +
-`        'context': payload['context'],\n` +
-`    }`;
+`        'transaction': token_data['transaction'],\n` +
+`    }\n\n` +
+`@router.post('/api/secureapprove/finalize')\n` +
+`async def finalize_secureapprove(request: Request):\n` +
+`    body = await request.json()\n` +
+`    transaction_id = str(body.get('transactionId', ''))\n` +
+`    pending = request.session.get('pending_secureapprove')\n` +
+`    if not pending or transaction_id != pending['transaction_id']:\n` +
+`        raise HTTPException(status_code=401, detail='secureapprove_transaction_mismatch')\n` +
+`    headers = {'Authorization': f"Bearer {os.environ['SECUREAPPROVE_SERVER_TOKEN']}"}\n` +
+`    async with httpx.AsyncClient(timeout=20) as client:\n` +
+`        status = await client.get('${q(c.apiStatusEndpoint)}' + transaction_id + '/', headers=headers)\n` +
+`    result = status.json() if status.status_code < 400 else {}\n` +
+`    transaction = result.get('transaction', {})\n` +
+`    document = transaction.get('document', {})\n` +
+`    subject = transaction.get('subject', {})\n` +
+`    valid = result.get('authenticated') and transaction.get('state') == 'approved' and \\\n` +
+`        transaction.get('decision') == 'approve' and transaction.get('parentOrigin') == pending['parent_origin'] and \\\n` +
+`        str(subject.get('id')) == pending['subject_user_id'] and document.get('sha256') == pending['document_hash']\n` +
+`    if not valid:\n` +
+`        raise HTTPException(status_code=401, detail='secureapprove_not_approved')\n` +
+`    request.session.pop('pending_secureapprove', None)\n` +
+`    response = JSONResponse({'authenticated': True, 'user': subject})\n` +
+`    response.set_cookie('session', issue_first_party_session(subject), httponly=True, secure=True, samesite='lax')\n` +
+`    return response`;
     }
 
     function frontendSnippet(c) {
@@ -407,7 +485,8 @@
 `      body: JSON.stringify({\n` +
 `        subjectUserId: 45,\n` +
 `        decision: '${q(c.decision)}',\n` +
-`        approvalType: 'document'\n` +
+`        approvalType: 'document',\n` +
+`        referenceId: 'terms-2026-v1'\n` +
 `      })\n` +
 `    });\n` +
 `\n` +
@@ -415,7 +494,15 @@
 `    return response.json();\n` +
 `  },\n` +
 `  onSuccess: function (result) {\n` +
-`    console.log('SecureApprove success', result);\n` +
+`    fetch('/api/secureapprove/finalize', {\n` +
+`      method: 'POST',\n` +
+`      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },\n` +
+`      credentials: 'include',\n` +
+`      body: JSON.stringify({ transactionId: result.transactionId })\n` +
+`    }).then(function (response) {\n` +
+`      if (!response.ok) throw new Error('SecureApprove result was not verified by the backend');\n` +
+`      window.location.reload(); // the host now has its own first-party session\n` +
+`    });\n` +
 `  },\n` +
 `  onError: function (error) {\n` +
 `    console.error('SecureApprove error', error);\n` +
@@ -431,9 +518,11 @@
         return `curl -X POST "${q(c.apiTokenEndpoint)}" \\\n  -H "Authorization: Bearer <SERVER_TOKEN>" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n` +
 `    "user_id": 45,\n` +
 `    "purpose": "external_document_${q(c.decision)}",\n` +
+`    "decision": "${q(c.decision)}",\n` +
+`    "parent_origin": "https://app.example.com",\n` +
 `    "document_type": "document",\n` +
 `    "document_version": "v1",\n` +
-`    "document_hash": "",\n` +
+`    "document_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",\n` +
 `    "context": {\n` +
 `      "tenant": {"key": "${q(c.tenantKey)}"},\n` +
 `      "actor_user": {"email": "${q(c.actorEmail)}"},\n` +
@@ -449,6 +538,7 @@
             backendLanguage: cfg.backendLanguage.value,
             secureApproveOrigin: cfg.secureApproveOrigin.value.trim(),
             apiTokenEndpoint: cfg.apiTokenEndpoint.value.trim(),
+            apiStatusEndpoint: cfg.apiStatusEndpoint.value.trim(),
             embedUrl: cfg.embedUrl.value.trim(),
             loaderUrl: cfg.loaderUrl.value.trim(),
             tenantKey: cfg.tenantKey.value.trim(),
@@ -476,6 +566,7 @@
         cfg.backendLanguage.value = 'node';
         cfg.secureApproveOrigin.value = parseCtx('ctx_app_origin');
         cfg.apiTokenEndpoint.value = parseCtx('ctx_token_endpoint');
+        cfg.apiStatusEndpoint.value = parseCtx('ctx_status_endpoint');
         cfg.embedUrl.value = parseCtx('ctx_embed_url');
         cfg.loaderUrl.value = parseCtx('ctx_loader_url');
         cfg.tenantKey.value = parseCtx('ctx_tenant_key');

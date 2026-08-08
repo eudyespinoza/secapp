@@ -707,76 +707,18 @@ def webauthn_toggle_credential(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def webauthn_create_fallback_credential(request):
-    """Create a fallback credential for devices without WebAuthn support"""
-    try:
-        data = json.loads(request.body)
-        user_id = data.get('userId')
-        
-        if not user_id:
-            return JsonResponse({'error': _('User ID is required')}, status=400)
-        
-        user = get_object_or_404(User, id=user_id)
-        
-        # Generate a unique credential ID for this user
-        import secrets
-        import base64
-        
-        credential_id = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('utf-8')
-        
-        # Create a fallback credential
-        fallback_credential = {
-            'credential_id': credential_id,
-            'public_key': None,
-            'sign_count': 0,
-            'created_at': timezone.now().isoformat(),
-            'name': 'Auto-generated Key',
-            'type': 'fallback',
-            'authenticator_type': 'software',
-        }
-        
-        # Store the credential in JSONField
-        webauthn_credentials = []
-        raw_creds = getattr(user, "webauthn_credentials", None)
-        if raw_creds:
-            if isinstance(raw_creds, list):
-                webauthn_credentials = raw_creds
-            else:
-                try:
-                    parsed = json.loads(raw_creds)
-                    if isinstance(parsed, list):
-                        webauthn_credentials = parsed
-                except Exception:
-                    webauthn_credentials = []
-        
-        webauthn_credentials.append(fallback_credential)
-        user.webauthn_credentials = webauthn_credentials
-        user.save()
-        
-        # Log the user in after creating fallback credential
-        login(request, user)
-        # Associate with reserved tenant if applicable
-        assign_tenant_from_reservation(user)
-        
-        return JsonResponse({
-            'success': True,
-            'message': _('Fallback credential created successfully'),
-            'credential_id': credential_id,
-            'user': {
-                'id': str(user.id),
-                'name': user.name,
-                'email': user.email,
-                'role': user.role,
-                'hasTenant': hasattr(user, 'owned_tenant') and user.owned_tenant is not None
-            },
-            'redirect_url': '/dashboard/' if hasattr(user, 'owned_tenant') and user.owned_tenant else '/billing/',
-            'authenticated': True
-        })
-        
-    except json.JSONDecodeError:
-        return JsonResponse({'error': _('Invalid JSON data')}, status=400)
-    except Exception as e:
-        logger.error(f"Error creating fallback credential: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
+    """Disabled: every SecureApprove login now requires a real WebAuthn assertion."""
+    logger.warning(
+        'Blocked request to retired WebAuthn fallback endpoint from %s',
+        request.META.get('REMOTE_ADDR', 'unknown'),
+    )
+    return JsonResponse(
+        {
+            'error': _('Fallback authentication has been disabled. Use a registered WebAuthn passkey.'),
+            'code': 'webauthn_required',
+        },
+        status=410,
+    )
 
 
 # ================================================

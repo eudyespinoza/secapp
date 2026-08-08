@@ -80,6 +80,8 @@ backups/
 tmp/
 temp/
 *.tmp
+__pycache__/
+*.py[cod]
 
 # Django static files
 staticfiles/
@@ -98,3 +100,4 @@ android/.gradle/
 
 # Sentry
 .sentryclirc
+.gstack/
