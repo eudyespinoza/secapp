@@ -3162,9 +3162,6 @@ msgstr "Acuerdos"
 msgid "Approvals"
 msgstr "Aprobaciones"
 
-msgid "General"
-msgstr "General"
-
 msgid "Fill in the form to see a preview"
 msgstr "Completa el formulario para ver una vista previa"
 
@@ -3173,9 +3170,6 @@ msgstr "Selecciona la Categoría de Solicitud"
 
 msgid "Choose the type of request you want to submit"
 msgstr "Elige el tipo de solicitud que deseas enviar"
-
-msgid "Request Details"
-msgstr "Detalles de la Solicitud"
 
 msgid "Enter a descriptive title for your request"
 msgstr "Ingresa un título descriptivo para tu solicitud"
@@ -3192,9 +3186,6 @@ msgstr "PDF, Word, Excel, Imágenes (Máx 25MB por archivo)"
 msgid "Request Preview"
 msgstr "Vista Previa de Solicitud"
 
-msgid "Submit Request"
-msgstr "Enviar Solicitud"
-
 msgid "WebAuthn is not supported on this device/browser."
 msgstr "WebAuthn no es compatible con este dispositivo/navegador."
 
@@ -3207,12 +3198,6 @@ msgstr ""
 
 msgid "Failed to get authentication options"
 msgstr "Error al obtener opciones de autenticación"
-
-msgid "WebAuthn authentication was cancelled"
-msgstr "La autenticación WebAuthn fue cancelada"
-
-msgid "Authentication verification failed"
-msgstr "La verificación de autenticación falló"
 
 msgid "Verification failed"
 msgstr "La verificación falló"
