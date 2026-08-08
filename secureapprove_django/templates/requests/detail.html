@@ -12,13 +12,31 @@
     color: #212529;
 }
 
+.request-detail-page {
+    --amount-surface: #ffffff;
+    --amount-border: #94a3b8;
+    --amount-label: #475569;
+    --amount-value: #0f172a;
+    --amount-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.status-card-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.status-summary {
+    min-width: 0;
+}
+
 .status-pending { background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); }
 .status-approved { background: linear-gradient(135deg, #d1edff 0%, #a8e6cf 100%); }
 .status-rejected { background: linear-gradient(135deg, #f8d7da 0%, #ffb3ba 100%); }
 
 .status-card h5,
-.status-card p,
-.status-card .amount-display {
+.status-card p {
     color: #212529 !important;
 }
 
@@ -89,20 +107,56 @@
 .priority-low { background: #28a745; color: white; }
 
 .amount-display {
-    font-size: 2rem;
+    min-width: 14.5rem;
+    padding: 0.875rem 1.125rem;
+    color: var(--amount-value);
+    background: var(--amount-surface);
+    border: 1px solid var(--amount-border);
+    border-radius: 10px;
+    box-shadow: var(--amount-shadow);
+    text-align: right;
+}
+
+.amount-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--amount-label);
+    font-size: 0.75rem;
     font-weight: 700;
-    color: #2c3e50;
-    background: var(--bg-secondary, #f8f9fa);
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.amount-value,
+.request-amount-inline {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.amount-value {
+    display: block;
+    color: var(--amount-value);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.request-amount-inline {
+    color: var(--text-primary, #0f172a);
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 /* Dark mode support */
-[data-theme="dark"] .amount-display {
-    color: #10b981 !important; /* Green for better visibility */
-    background: rgba(16, 185, 129, 0.15) !important; /* Subtle green background */
-    border: 1px solid rgba(16, 185, 129, 0.3);
+[data-theme="dark"] .request-detail-page {
+    --amount-surface: #111827;
+    --amount-border: #64748b;
+    --amount-label: #cbd5e1;
+    --amount-value: #f8fafc;
+    --amount-shadow: 0 10px 28px rgba(2, 6, 23, 0.32);
 }
 
 [data-theme="dark"] .status-card {
@@ -115,11 +169,8 @@
     color: #212529 !important;
 }
 
-/* Keep amount-display green in dark mode even inside status-card */
-[data-theme="dark"] .status-card .amount-display {
-    color: #10b981 !important;
-    background: rgba(16, 185, 129, 0.15) !important;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+[data-theme="dark"] .request-amount-inline {
+    color: var(--text-color) !important;
 }
 
 [data-theme="dark"] .metadata-table {
@@ -207,11 +258,24 @@
 [data-theme="dark"] .text-muted {
     color: var(--text-muted) !important;
 }
+
+@media (max-width: 767.98px) {
+    .status-card-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .amount-display {
+        width: 100%;
+        min-width: 0;
+        text-align: left;
+    }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-4 request-detail-page">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -236,8 +300,8 @@
         <div class="col-lg-8">
             <!-- Status Card -->
             <div class="status-card status-{{ request_obj.status }}">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
+                <div class="status-card-layout">
+                    <div class="status-summary">
                         <h5 class="mb-1">
                             {% if request_obj.status == 'pending' %}
                                 <i class="bi bi-clock text-warning"></i>
@@ -268,8 +332,9 @@
                         </p>
                     </div>
                     {% if request_obj.amount %}
-                        <div class="amount-display">
-                            ${{ request_obj.amount|floatformat:2 }}
+                        <div class="amount-display" aria-label="{% trans 'Amount' %}: $ {{ request_obj.amount|floatformat:'2g' }}">
+                            <span class="amount-label">{% trans "Amount" %}</span>
+                            <span class="amount-value">$&nbsp;{{ request_obj.amount|floatformat:"2g" }}</span>
                         </div>
                     {% endif %}
                 </div>
@@ -496,7 +561,7 @@
                         {% if request_obj.amount %}
                             <tr>
                                 <td class="text-muted">{% trans "Amount:" %}</td>
-                                <td class="fw-bold">${{ request_obj.amount|floatformat:2 }}</td>
+                                <td><span class="request-amount-inline">$&nbsp;{{ request_obj.amount|floatformat:"2g" }}</span></td>
                             </tr>
                         {% endif %}
                     </table>
