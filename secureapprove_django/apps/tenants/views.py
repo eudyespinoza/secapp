@@ -1,13 +1,18 @@
+import csv
+import ipaddress
+import json
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
-from django.http import JsonResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
@@ -363,9 +368,227 @@ class TenantAuditView(LoginRequiredMixin, View):
     """Tenant-scoped audit log view (WebAuthn approvals + Terms acceptance)."""
 
     template_name = "tenants/audit.html"
+    page_sizes = (25, 50, 100)
+
+    class CsvBuffer:
+        """Minimal file-like object used by csv.writer for streaming rows."""
+
+        def write(self, value):
+            return value
 
     def get_tenant(self, request):
         return ensure_user_tenant(request.user)
+
+    @staticmethod
+    def _safe_csv_value(value):
+        """Prevent spreadsheet formula execution when an exported cell is opened."""
+
+        if value is None:
+            return ""
+        rendered = str(value)
+        if rendered.startswith(("=", "+", "-", "@")):
+            return f"'{rendered}"
+        return rendered
+
+    def _parse_filters(self, request, audit_type):
+        status_choices = dict(ApprovalAudit.STATUS_CHOICES)
+        action_choices = dict(ApprovalAudit._meta.get_field("action").choices)
+
+        status_filter = (request.GET.get("status") or "").strip().lower()
+        if status_filter not in status_choices:
+            status_filter = ""
+
+        action_filter = (request.GET.get("action") or "").strip().lower()
+        if audit_type != "approvals" or action_filter not in action_choices:
+            action_filter = ""
+
+        query = (request.GET.get("q") or "").strip()[:200]
+        ip_filter = (request.GET.get("ip") or "").strip()
+        date_from_raw = (request.GET.get("date_from") or "").strip()
+        date_to_raw = (request.GET.get("date_to") or "").strip()
+        sort = (request.GET.get("sort") or "newest").strip().lower()
+        if sort not in ("newest", "oldest"):
+            sort = "newest"
+
+        try:
+            page_size = int(request.GET.get("page_size") or 50)
+        except (TypeError, ValueError):
+            page_size = 50
+        if page_size not in self.page_sizes:
+            page_size = 50
+
+        errors = []
+        try:
+            date_from = parse_date(date_from_raw) if date_from_raw else None
+        except ValueError:
+            date_from = None
+        try:
+            date_to = parse_date(date_to_raw) if date_to_raw else None
+        except ValueError:
+            date_to = None
+        if date_from_raw and not date_from:
+            errors.append(_("Enter a valid start date."))
+        if date_to_raw and not date_to:
+            errors.append(_("Enter a valid end date."))
+        if date_from and date_to and date_from > date_to:
+            errors.append(_("The start date must be before the end date."))
+            date_from = None
+            date_to = None
+
+        normalized_ip = ""
+        if ip_filter:
+            try:
+                normalized_ip = str(ipaddress.ip_address(ip_filter))
+            except ValueError:
+                errors.append(_("Enter a valid IPv4 or IPv6 address."))
+
+        return {
+            "status": status_filter,
+            "action": action_filter,
+            "q": query,
+            "ip": ip_filter,
+            "normalized_ip": normalized_ip,
+            "date_from": date_from,
+            "date_from_raw": date_from_raw,
+            "date_to": date_to,
+            "date_to_raw": date_to_raw,
+            "sort": sort,
+            "page_size": page_size,
+            "errors": errors,
+            "status_choices": status_choices,
+            "action_choices": action_choices,
+        }
+
+    @staticmethod
+    def _base_queryset(tenant, audit_type):
+        if audit_type == "terms":
+            return TermsAcceptanceAudit.objects.filter(tenant=tenant).select_related(
+                "user", "initiated_by", "session"
+            )
+        return ApprovalAudit.objects.filter(approval_request__tenant=tenant).select_related(
+            "user", "approval_request"
+        )
+
+    @staticmethod
+    def _apply_filters(audits, audit_type, filters):
+        if filters["status"]:
+            audits = audits.filter(status=filters["status"])
+        if filters["action"]:
+            audits = audits.filter(action=filters["action"])
+        if filters["normalized_ip"]:
+            audits = audits.filter(ip_address=filters["normalized_ip"])
+        if filters["date_from"]:
+            audits = audits.filter(performed_at__date__gte=filters["date_from"])
+        if filters["date_to"]:
+            audits = audits.filter(performed_at__date__lte=filters["date_to"])
+
+        query = filters["q"]
+        if query and audit_type == "terms":
+            audits = audits.filter(
+                models.Q(user__email__icontains=query)
+                | models.Q(initiated_by__email__icontains=query)
+                | models.Q(document_type__icontains=query)
+                | models.Q(document_version__icontains=query)
+                | models.Q(document_hash__icontains=query)
+            )
+        elif query:
+            search_query = (
+                models.Q(user__email__icontains=query)
+                | models.Q(approval_request__title__icontains=query)
+            )
+            if query.isdigit():
+                search_query |= models.Q(approval_request__id=int(query))
+            audits = audits.filter(search_query)
+
+        ordering = "performed_at" if filters["sort"] == "oldest" else "-performed_at"
+        return audits.order_by(ordering)
+
+    @staticmethod
+    def _query_string(request, *, audit_type=None, remove=(), additions=None):
+        params = request.GET.copy()
+        for key in ("page", "format", *remove):
+            params.pop(key, None)
+        if audit_type:
+            params["type"] = audit_type
+            if audit_type == "terms":
+                params.pop("action", None)
+        if additions:
+            for key, value in additions.items():
+                params[key] = value
+        return params.urlencode()
+
+    def _active_filters(self, request, filters):
+        filter_specs = [
+            ("status", _("Status"), filters["status_choices"].get(filters["status"], "")),
+            ("q", _("Search"), filters["q"]),
+            ("date_from", _("Start date"), filters["date_from_raw"]),
+            ("date_to", _("End date"), filters["date_to_raw"]),
+            ("ip", _("IP address"), filters["ip"]),
+            ("action", _("Action"), filters["action_choices"].get(filters["action"], "")),
+        ]
+        return [
+            {
+                "name": name,
+                "label": label,
+                "value": value,
+                "remove_query": self._query_string(request, remove=(name,)),
+            }
+            for name, label, value in filter_specs
+            if value
+        ]
+
+    def _csv_response(self, tenant, audit_type, audits):
+        pseudo_buffer = self.CsvBuffer()
+        writer = csv.writer(pseudo_buffer)
+
+        if audit_type == "terms":
+            headers = [
+                _("Timestamp"), _("Status"), _("User"), _("Initiated by"),
+                _("Document type"), _("Document version"), _("Document hash"),
+                _("Credential"), _("Challenge"), _("IP address"), _("User agent"),
+                _("Error"), _("Context"), _("Audit ID"),
+            ]
+
+            def data_rows():
+                for audit in audits.iterator(chunk_size=1000):
+                    yield [
+                        timezone.localtime(audit.performed_at).isoformat(), audit.get_status_display(),
+                        audit.user.email, audit.initiated_by.email if audit.initiated_by else "",
+                        audit.document_type, audit.document_version, audit.document_hash,
+                        audit.credential_id, audit.challenge_id, audit.ip_address, audit.user_agent,
+                        audit.error_message,
+                        json.dumps(audit.context_data, ensure_ascii=False, sort_keys=True), audit.id,
+                    ]
+        else:
+            headers = [
+                _("Timestamp"), _("Status"), _("User"), _("Request ID"),
+                _("Request"), _("Action"), _("Credential"), _("Challenge"),
+                _("IP address"), _("User agent"), _("Error"), _("Context"), _("Audit ID"),
+            ]
+
+            def data_rows():
+                for audit in audits.iterator(chunk_size=1000):
+                    yield [
+                        timezone.localtime(audit.performed_at).isoformat(), audit.get_status_display(),
+                        audit.user.email, audit.approval_request_id, audit.approval_request.title,
+                        audit.get_action_display(), audit.credential_id, audit.challenge_id,
+                        audit.ip_address, audit.user_agent, audit.error_message,
+                        json.dumps(audit.context_data, ensure_ascii=False, sort_keys=True), audit.id,
+                    ]
+
+        def stream():
+            yield "\ufeff"
+            yield writer.writerow([self._safe_csv_value(value) for value in headers])
+            for row in data_rows():
+                yield writer.writerow([self._safe_csv_value(value) for value in row])
+
+        response = StreamingHttpResponse(stream(), content_type="text/csv; charset=utf-8")
+        date_stamp = timezone.localdate().strftime("%Y%m%d")
+        response["Content-Disposition"] = (
+            f'attachment; filename="secureapprove-{tenant.key}-{audit_type}-audit-{date_stamp}.csv"'
+        )
+        response["Cache-Control"] = "no-store"
+        return response
 
     def get(self, request):
         tenant = self.get_tenant(request)
@@ -376,40 +599,28 @@ class TenantAuditView(LoginRequiredMixin, View):
             return redirect("landing:index")
 
         audit_type = (request.GET.get("type") or "terms").strip().lower()
-        status_filter = (request.GET.get("status") or "").strip().lower()
-        query = (request.GET.get("q") or "").strip()
         page_number = request.GET.get("page")
 
         if audit_type not in ("terms", "approvals"):
             audit_type = "terms"
 
-        if audit_type == "terms":
-            audits = TermsAcceptanceAudit.objects.filter(tenant=tenant).select_related(
-                "user", "initiated_by"
-            )
-            if status_filter:
-                audits = audits.filter(status=status_filter)
-            if query:
-                audits = audits.filter(user__email__icontains=query)
+        filters = self._parse_filters(request, audit_type)
+        audits = self._apply_filters(self._base_queryset(tenant, audit_type), audit_type, filters)
 
-            audits = audits.order_by("-performed_at")
-        else:
-            audits = (
-                ApprovalAudit.objects.filter(approval_request__tenant=tenant)
-                .select_related("user", "approval_request")
-            )
-            if status_filter:
-                audits = audits.filter(status=status_filter)
-            if query:
-                audits = audits.filter(
-                    models.Q(user__email__icontains=query)
-                    | models.Q(approval_request__title__icontains=query)
-                )
+        if request.GET.get("format") == "csv":
+            return self._csv_response(tenant, audit_type, audits)
 
-            audits = audits.order_by("-performed_at")
+        metrics = audits.aggregate(
+            total=models.Count("id"),
+            successful=models.Count("id", filter=models.Q(status="success")),
+            attention=models.Count("id", filter=~models.Q(status="success")),
+            unique_users=models.Count("user_id", distinct=True),
+        )
 
-        paginator = Paginator(audits, 50)
+        paginator = Paginator(audits, filters["page_size"])
         page_obj = paginator.get_page(page_number)
+        for audit in page_obj.object_list:
+            audit.context_json = json.dumps(audit.context_data, ensure_ascii=False, indent=2, sort_keys=True)
 
         return render(
             request,
@@ -417,8 +628,24 @@ class TenantAuditView(LoginRequiredMixin, View):
             {
                 "tenant": tenant,
                 "audit_type": audit_type,
-                "status": status_filter,
-                "q": query,
+                "status": filters["status"],
+                "action": filters["action"],
+                "q": filters["q"],
+                "ip": filters["ip"],
+                "date_from": filters["date_from_raw"],
+                "date_to": filters["date_to_raw"],
+                "sort": filters["sort"],
+                "page_size": filters["page_size"],
+                "page_sizes": self.page_sizes,
+                "filter_errors": filters["errors"],
+                "status_choices": ApprovalAudit.STATUS_CHOICES,
+                "action_choices": ApprovalAudit._meta.get_field("action").choices,
+                "metrics": metrics,
+                "active_filters": self._active_filters(request, filters),
+                "pagination_query": self._query_string(request),
+                "terms_query": self._query_string(request, audit_type="terms"),
+                "approvals_query": self._query_string(request, audit_type="approvals"),
+                "export_query": self._query_string(request, additions={"format": "csv"}),
                 "page_obj": page_obj,
             },
         )

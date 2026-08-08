@@ -401,7 +401,7 @@ msgstr "Informações Adicionais"
 #: apps/billing/admin.py:170 apps/requests/models.py:77
 #: apps/tenants/models.py:60
 msgid "Tenant"
-msgstr "Tenant"
+msgstr "Organização"
 
 #: apps/billing/admin.py:110 apps/billing/admin.py:157
 msgid "Period"
@@ -3626,3 +3626,189 @@ msgstr "Aceito"
 
 msgid "Expired"
 msgstr "Expirado"
+
+msgid "Audit log"
+msgstr "Registro de auditoria"
+
+msgid "Review high-security activity across your organization."
+msgstr "Revise as atividades de alta segurança da sua organização."
+
+msgid "Audit type"
+msgstr "Tipo de auditoria"
+
+msgid "Export CSV"
+msgstr "Exportar CSV"
+
+msgid "Audit summary"
+msgstr "Resumo da auditoria"
+
+msgid "Total events"
+msgstr "Total de eventos"
+
+msgid "Successful"
+msgstr "Bem-sucedidos"
+
+msgid "Requires attention"
+msgstr "Requerem atenção"
+
+msgid "Unique users"
+msgstr "Usuários únicos"
+
+msgid "Search and filters"
+msgstr "Pesquisa e filtros"
+
+msgid "active filters"
+msgstr "filtros ativos"
+
+msgid "All actions"
+msgstr "Todas as ações"
+
+msgid "Email, document, version or hash"
+msgstr "Email, documento, versão ou hash"
+
+msgid "Email, request title or ID"
+msgstr "Email, título ou ID da solicitação"
+
+msgid "IP address"
+msgstr "Endereço IP"
+
+msgid "Sort order"
+msgstr "Ordem"
+
+msgid "Newest first"
+msgstr "Mais recentes primeiro"
+
+msgid "Oldest first"
+msgstr "Mais antigos primeiro"
+
+msgid "Rows"
+msgstr "Linhas"
+
+msgid "Apply filters"
+msgstr "Aplicar filtros"
+
+msgid "Active filters"
+msgstr "Filtros ativos"
+
+msgid "Remove filter"
+msgstr "Remover filtro"
+
+msgid "Clear all"
+msgstr "Limpar tudo"
+
+msgid "Showing"
+msgstr "Exibindo"
+
+msgid "of"
+msgstr "de"
+
+msgid "No results"
+msgstr "Sem resultados"
+
+msgid "Scrollable audit results"
+msgstr "Resultados de auditoria com rolagem"
+
+msgid "High-security authentication audit events"
+msgstr "Eventos de auditoria de autenticação de alta segurança"
+
+msgid "Evidence"
+msgstr "Evidência"
+
+msgid "Open request"
+msgstr "Abrir solicitação"
+
+msgid "Audit ID"
+msgstr "ID da auditoria"
+
+msgid "Challenge"
+msgstr "Desafio"
+
+msgid "Credential"
+msgstr "Credencial"
+
+msgid "Initiated by"
+msgstr "Iniciado por"
+
+msgid "User agent"
+msgstr "Agente do usuário"
+
+msgid "Error"
+msgstr "Erro"
+
+msgid "Signed context"
+msgstr "Contexto assinado"
+
+msgid "No audit records match these filters."
+msgstr "Nenhum registro de auditoria corresponde a estes filtros."
+
+msgid "Try widening the date range or clearing one of the filters."
+msgstr "Tente ampliar o intervalo de datas ou remover um dos filtros."
+
+msgid "Rows per page"
+msgstr "Linhas por página"
+
+msgid "Pagination"
+msgstr "Paginação"
+
+msgid "Timestamp"
+msgstr "Data e hora"
+
+msgid "Document type"
+msgstr "Tipo de documento"
+
+msgid "Document version"
+msgstr "Versão do documento"
+
+msgid "Document hash"
+msgstr "Hash do documento"
+
+msgid "Context"
+msgstr "Contexto"
+
+msgid "Request ID"
+msgstr "ID da solicitação"
+
+msgid "The start date must be before the end date."
+msgstr "A data inicial deve ser anterior à data final."
+
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Insira um endereço IPv4 ou IPv6 válido."
+
+msgid "Enter a valid start date."
+msgstr "Insira uma data inicial válida."
+
+msgid "Enter a valid end date."
+msgstr "Insira uma data final válida."
+
+msgid "Terms"
+msgstr "Termos"
+
+msgid "All statuses"
+msgstr "Todos os status"
+
+msgid "Failed"
+msgstr "Falhou"
+
+msgid "Approve"
+msgstr "Aprovar"
+
+msgid "Reject"
+msgstr "Rejeitar"
+
+msgid "Start date"
+msgstr "Data inicial"
+
+msgid "End date"
+msgstr "Data final"
+
+msgid "Reset"
+msgstr "Redefinir"
+
+msgid "Approval audits"
+msgstr "Auditorias de aprovação"
+
+msgid "Terms acceptance audits"
+msgstr "Auditorias de aceitação de termos"
+
+msgid "When"
+msgstr "Data e hora"

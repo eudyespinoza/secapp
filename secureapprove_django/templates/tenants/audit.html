@@ -1,32 +1,378 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% get_current_language as CURRENT_MENU_LANG %}
 
-{% block title %}{% if CURRENT_MENU_LANG == 'es' %}Auditoría{% elif CURRENT_MENU_LANG == 'pt-br' %}Auditoria{% else %}Audit Log{% endif %} - SecureApprove{% endblock %}
+{% block title %}{% trans "Audit log" %} - SecureApprove{% endblock %}
 
 {% block extra_css %}
 <style>
+    .audit-page {
+        --audit-surface: #ffffff;
+        --audit-soft: #f8fafc;
+        --audit-soft-strong: #eef2f7;
+        --audit-border: #dbe3ee;
+        --audit-text: #111827;
+        --audit-muted: #4b5563;
+        --audit-subtle: #64748b;
+        --audit-hover: #eef2ff;
+        --audit-focus: rgba(79, 70, 229, 0.24);
+        --audit-success-bg: #dcfce7;
+        --audit-success-text: #166534;
+        --audit-danger-bg: #fee2e2;
+        --audit-danger-text: #991b1b;
+        --audit-warning-bg: #fef3c7;
+        --audit-warning-text: #854d0e;
+        --audit-neutral-bg: #e5e7eb;
+        --audit-neutral-text: #374151;
+        color: var(--audit-text);
+    }
+
+    [data-theme="dark"] .audit-page {
+        --audit-surface: #1f2937;
+        --audit-soft: #172033;
+        --audit-soft-strong: #253247;
+        --audit-border: #42516a;
+        --audit-text: #f8fafc;
+        --audit-muted: #d5dce8;
+        --audit-subtle: #b6c2d2;
+        --audit-hover: #293750;
+        --audit-focus: rgba(129, 140, 248, 0.34);
+        --audit-success-bg: #123d2c;
+        --audit-success-text: #bbf7d0;
+        --audit-danger-bg: #4a1d27;
+        --audit-danger-text: #fecdd3;
+        --audit-warning-bg: #493518;
+        --audit-warning-text: #fde68a;
+        --audit-neutral-bg: #374151;
+        --audit-neutral-text: #e5e7eb;
+    }
+
+    .audit-page h1,
+    .audit-page h2,
+    .audit-page h3,
+    .audit-page p,
+    .audit-page label,
+    .audit-page td,
+    .audit-page th,
+    .audit-page .card-header,
+    .audit-page .card-body,
+    .audit-page .card-footer {
+        color: var(--audit-text);
+    }
+
+    .audit-page .text-muted,
+    .audit-page .audit-muted {
+        color: var(--audit-subtle) !important;
+    }
+
+    .audit-hero {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .audit-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-bottom: 0.45rem;
+        color: var(--primary-color);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .audit-title {
+        margin: 0;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+        font-weight: 750;
+        letter-spacing: -0.025em;
+    }
+
+    .audit-description {
+        max-width: 680px;
+        margin: 0.45rem 0 0;
+        color: var(--audit-muted) !important;
+    }
+
+    .audit-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.65rem;
+    }
+
+    .audit-tabs {
+        display: inline-flex;
+        padding: 0.25rem;
+        border: 1px solid var(--audit-border);
+        border-radius: 0.7rem;
+        background: var(--audit-soft);
+    }
+
+    .audit-tab {
+        min-height: 40px;
+        padding: 0.55rem 0.9rem;
+        border-radius: 0.5rem;
+        color: var(--audit-muted);
+        font-weight: 650;
+        text-decoration: none;
+        transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .audit-tab:hover,
+    .audit-tab:focus-visible {
+        color: var(--audit-text);
+        background: var(--audit-soft-strong);
+    }
+
+    .audit-tab.active {
+        color: #ffffff;
+        background: var(--primary-color);
+        box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
+    }
+
+    .audit-page .btn,
+    .audit-page .form-control,
+    .audit-page .form-select {
+        min-height: 44px;
+    }
+
+    .audit-page .form-control,
+    .audit-page .form-select {
+        border-color: var(--audit-border);
+        background-color: var(--input-bg);
+        color: var(--audit-text);
+    }
+
+    .audit-page .form-control:focus,
+    .audit-page .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.22rem var(--audit-focus);
+    }
+
+    .audit-page .form-label {
+        margin-bottom: 0.4rem;
+        color: var(--audit-muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.025em;
+    }
+
+    .audit-panel,
+    .audit-metric,
+    .audit-table-card {
+        border: 1px solid var(--audit-border);
+        background: var(--audit-surface);
+        box-shadow: 0 8px 24px var(--card-shadow);
+    }
+
+    .audit-metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .audit-metric {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        min-height: 96px;
+        padding: 1rem;
+        border-radius: 0.8rem;
+    }
+
+    .audit-metric-icon {
+        display: inline-flex;
+        flex: 0 0 42px;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 0.7rem;
+        color: var(--primary-color);
+        background: var(--audit-soft-strong);
+        font-size: 1.1rem;
+    }
+
+    .audit-metric-label {
+        display: block;
+        color: var(--audit-subtle);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.035em;
+        text-transform: uppercase;
+    }
+
+    .audit-metric-value {
+        display: block;
+        margin-top: 0.1rem;
+        color: var(--audit-text);
+        font-size: 1.5rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 750;
+        line-height: 1.1;
+    }
+
+    .audit-panel {
+        margin-bottom: 1rem;
+        border-radius: 0.85rem;
+        overflow: hidden;
+    }
+
+    .audit-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid var(--audit-border);
+        background: var(--audit-soft);
+    }
+
+    .audit-panel-title {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    .audit-filter-count {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        color: var(--audit-muted);
+        background: var(--audit-soft-strong);
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .audit-filter-body {
+        padding: 1rem;
+    }
+
+    .audit-active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.8rem 1rem;
+        border-top: 1px solid var(--audit-border);
+        background: var(--audit-soft);
+    }
+
+    .audit-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-height: 34px;
+        padding: 0.3rem 0.65rem;
+        border: 1px solid var(--audit-border);
+        border-radius: 999px;
+        color: var(--audit-text);
+        background: var(--audit-surface);
+        font-size: 0.78rem;
+        text-decoration: none;
+    }
+
+    .audit-filter-chip:hover,
+    .audit-filter-chip:focus-visible {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .audit-filter-chip strong {
+        color: inherit;
+    }
+
+    .audit-alert {
+        margin-bottom: 1rem;
+        border: 1px solid var(--audit-warning-text);
+        border-radius: 0.7rem;
+        padding: 0.8rem 1rem;
+        color: var(--audit-warning-text);
+        background: var(--audit-warning-bg);
+    }
+
+    .audit-table-card {
+        border-radius: 0.85rem;
+        overflow: hidden;
+    }
+
+    .audit-table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid var(--audit-border);
+        background: var(--audit-surface);
+    }
+
+    .audit-table-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 750;
+    }
+
+    .audit-table-summary {
+        margin-top: 0.2rem;
+        color: var(--audit-subtle);
+        font-size: 0.78rem;
+    }
+
+    .audit-table-scroll {
+        overflow-x: auto;
+        scrollbar-color: var(--audit-border) var(--audit-soft);
+    }
+
+    .audit-table {
+        min-width: 980px;
+        margin: 0;
+        color: var(--audit-text);
+        --bs-table-bg: transparent;
+        --bs-table-color: var(--audit-text);
+        --bs-table-border-color: var(--audit-border);
+        --bs-table-hover-bg: var(--audit-hover);
+        --bs-table-hover-color: var(--audit-text);
+    }
+
+    .audit-table thead th {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--audit-border);
+        color: var(--audit-muted);
+        background: var(--audit-soft);
+        font-size: 0.72rem;
+        font-weight: 750;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .audit-table tbody td {
+        padding: 0.9rem 1rem;
+        border-color: var(--audit-border);
+        vertical-align: top;
+    }
+
     .audit-request-row {
         cursor: pointer;
+        transition: background-color 180ms ease;
     }
 
-    .audit-request-row > * {
-        transition: background-color 0.15s ease;
-    }
-
-    .audit-request-row:hover > *,
-    .audit-request-row:focus-within > * {
-        background-color: var(--hover-bg);
-    }
-
-    .audit-request-row:focus-within {
-        outline: 2px solid var(--primary-color);
-        outline-offset: -2px;
+    .audit-request-row:focus {
+        outline: 3px solid var(--primary-color);
+        outline-offset: -3px;
     }
 
     .audit-request-link {
-        color: inherit;
-        font-weight: 500;
+        color: var(--audit-text);
+        font-weight: 700;
         text-decoration: none;
     }
 
@@ -34,175 +380,489 @@
     .audit-request-link:focus-visible {
         color: var(--primary-color);
         text-decoration: underline;
+        text-underline-offset: 0.18rem;
+    }
+
+    .audit-date {
+        color: var(--audit-text);
+        font-size: 0.84rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .audit-time,
+    .audit-cell-meta {
+        margin-top: 0.16rem;
+        color: var(--audit-subtle);
+        font-size: 0.76rem;
+    }
+
+    .audit-status,
+    .audit-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        min-height: 28px;
+        padding: 0.25rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.74rem;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .audit-status-success {
+        color: var(--audit-success-text);
+        background: var(--audit-success-bg);
+    }
+
+    .audit-status-failed {
+        color: var(--audit-danger-text);
+        background: var(--audit-danger-bg);
+    }
+
+    .audit-status-expired {
+        color: var(--audit-warning-text);
+        background: var(--audit-warning-bg);
+    }
+
+    .audit-status-neutral,
+    .audit-action {
+        color: var(--audit-neutral-text);
+        background: var(--audit-neutral-bg);
+    }
+
+    .audit-user {
+        color: var(--audit-text);
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .audit-evidence summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        min-height: 34px;
+        padding: 0.3rem 0.55rem;
+        border: 1px solid var(--audit-border);
+        border-radius: 0.5rem;
+        color: var(--audit-muted);
+        background: var(--audit-soft);
+        cursor: pointer;
+        font-size: 0.76rem;
+        font-weight: 700;
+        list-style: none;
+    }
+
+    .audit-evidence summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .audit-evidence summary:hover,
+    .audit-evidence summary:focus-visible,
+    .audit-evidence[open] summary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .audit-evidence-content {
+        display: grid;
+        gap: 0.55rem;
+        width: min(420px, 70vw);
+        margin-top: 0.6rem;
+        padding: 0.75rem;
+        border: 1px solid var(--audit-border);
+        border-radius: 0.6rem;
+        color: var(--audit-text);
+        background: var(--audit-soft);
+        font-size: 0.76rem;
+    }
+
+    .audit-evidence-item {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 0.55rem;
+    }
+
+    .audit-evidence-label {
+        color: var(--audit-subtle);
+        font-weight: 700;
+    }
+
+    .audit-evidence-value,
+    .audit-context {
+        color: var(--audit-text);
+        overflow-wrap: anywhere;
+    }
+
+    .audit-context {
+        max-height: 160px;
+        margin: 0;
+        overflow: auto;
+        white-space: pre-wrap;
+    }
+
+    .audit-empty {
+        padding: 4rem 1.5rem !important;
+        text-align: center;
+    }
+
+    .audit-empty-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        margin-bottom: 0.8rem;
+        border-radius: 50%;
+        color: var(--audit-subtle);
+        background: var(--audit-soft-strong);
+        font-size: 1.25rem;
+    }
+
+    .audit-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.85rem 1rem;
+        border-top: 1px solid var(--audit-border);
+        background: var(--audit-soft);
+    }
+
+    .audit-page .page-link {
+        min-height: 40px;
+        color: var(--audit-text);
+        border-color: var(--audit-border);
+        background: var(--audit-surface);
+    }
+
+    .audit-page .page-item.disabled .page-link {
+        color: var(--audit-subtle);
+        background: var(--audit-soft);
+        opacity: 1;
+    }
+
+    [data-theme="dark"] .audit-page .btn-outline-secondary {
+        color: #e5e7eb;
+        border-color: #718096;
+    }
+
+    [data-theme="dark"] .audit-page .btn-outline-secondary:hover,
+    [data-theme="dark"] .audit-page .btn-outline-secondary:focus-visible {
+        color: #111827;
+        background: #e5e7eb;
+        border-color: #e5e7eb;
+    }
+
+    @media (max-width: 991.98px) {
+        .audit-hero {
+            flex-direction: column;
+        }
+
+        .audit-toolbar {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .audit-metrics {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .audit-toolbar,
+        .audit-tabs {
+            width: 100%;
+        }
+
+        .audit-tab {
+            flex: 1;
+            text-align: center;
+        }
+
+        .audit-toolbar .btn {
+            width: 100%;
+        }
+
+        .audit-metrics {
+            grid-template-columns: 1fr;
+        }
+
+        .audit-metric {
+            min-height: 80px;
+        }
+
+        .audit-table-header,
+        .audit-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .audit-page *,
+        .audit-page *::before,
+        .audit-page *::after {
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+<div class="container py-4 audit-page">
+    <header class="audit-hero">
         <div>
-            <h1 class="h3 mb-1">{% if CURRENT_MENU_LANG == 'es' %}Auditoría{% elif CURRENT_MENU_LANG == 'pt-br' %}Auditoria{% else %}Audit Log{% endif %}</h1>
-            <div class="text-muted">{% trans "Tenant" %}: {{ tenant.name }}</div>
+            <div class="audit-eyebrow"><i class="bi bi-shield-check" aria-hidden="true"></i> SecureApprove</div>
+            <h1 class="audit-title">{% trans "Audit log" %}</h1>
+            <p class="audit-description">{% trans "Review high-security activity across your organization." %} {% trans "Tenant" %}: <strong>{{ tenant.name }}</strong></p>
         </div>
 
-        <div class="btn-group" role="group" aria-label="audit type">
-            <a class="btn btn-sm {% if audit_type == 'terms' %}btn-primary-custom{% else %}btn-outline-primary{% endif %}"
-               href="?type=terms{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}">
-                {% trans "Terms" %}
-            </a>
-            <a class="btn btn-sm {% if audit_type == 'approvals' %}btn-primary-custom{% else %}btn-outline-primary{% endif %}"
-               href="?type=approvals{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}">
-                {% trans "Approvals" %}
+        <div class="audit-toolbar">
+            <nav class="audit-tabs" aria-label="{% trans 'Audit type' %}">
+                <a class="audit-tab{% if audit_type == 'terms' %} active{% endif %}" href="?{{ terms_query }}"{% if audit_type == 'terms' %} aria-current="page"{% endif %}>
+                    <i class="bi bi-file-earmark-check me-1" aria-hidden="true"></i>{% trans "Terms" %}
+                </a>
+                <a class="audit-tab{% if audit_type == 'approvals' %} active{% endif %}" href="?{{ approvals_query }}"{% if audit_type == 'approvals' %} aria-current="page"{% endif %}>
+                    <i class="bi bi-check2-square me-1" aria-hidden="true"></i>{% trans "Approvals" %}
+                </a>
+            </nav>
+            <a class="btn btn-outline-secondary" href="?{{ export_query }}">
+                <i class="bi bi-download me-1" aria-hidden="true"></i>{% trans "Export CSV" %}
             </a>
         </div>
-    </div>
+    </header>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end">
+    <section class="audit-metrics" aria-label="{% trans 'Audit summary' %}" aria-live="polite">
+        <article class="audit-metric">
+            <span class="audit-metric-icon"><i class="bi bi-activity" aria-hidden="true"></i></span>
+            <span><span class="audit-metric-label">{% trans "Total events" %}</span><strong class="audit-metric-value">{{ metrics.total }}</strong></span>
+        </article>
+        <article class="audit-metric">
+            <span class="audit-metric-icon"><i class="bi bi-check-circle" aria-hidden="true"></i></span>
+            <span><span class="audit-metric-label">{% trans "Successful" %}</span><strong class="audit-metric-value">{{ metrics.successful }}</strong></span>
+        </article>
+        <article class="audit-metric">
+            <span class="audit-metric-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
+            <span><span class="audit-metric-label">{% trans "Requires attention" %}</span><strong class="audit-metric-value">{{ metrics.attention }}</strong></span>
+        </article>
+        <article class="audit-metric">
+            <span class="audit-metric-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+            <span><span class="audit-metric-label">{% trans "Unique users" %}</span><strong class="audit-metric-value">{{ metrics.unique_users }}</strong></span>
+        </article>
+    </section>
+
+    {% if filter_errors %}
+        <div class="audit-alert" role="alert">
+            <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>
+            {% for error in filter_errors %}<span{% if not forloop.last %} class="me-2"{% endif %}>{{ error }}</span>{% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="audit-panel" aria-labelledby="auditFiltersTitle">
+        <div class="audit-panel-header">
+            <h2 id="auditFiltersTitle" class="audit-panel-title"><i class="bi bi-funnel me-1" aria-hidden="true"></i>{% trans "Search and filters" %}</h2>
+            {% if active_filters %}<span class="audit-filter-count">{{ active_filters|length }} {% trans "active filters" %}</span>{% endif %}
+        </div>
+        <div class="audit-filter-body">
+            <form method="get" class="row g-3 align-items-end" autocomplete="off">
                 <input type="hidden" name="type" value="{{ audit_type }}">
 
-                <div class="col-12 col-md-3">
-                    <label class="form-label">{% trans "Status" %}</label>
-                    <select class="form-select" name="status">
-                        <option value="" {% if not status %}selected{% endif %}>{% trans "All" %}</option>
-                        <option value="success" {% if status == 'success' %}selected{% endif %}>{% trans "Success" %}</option>
-                        <option value="failed" {% if status == 'failed' %}selected{% endif %}>{% trans "Failed" %}</option>
-                        <option value="expired" {% if status == 'expired' %}selected{% endif %}>{% trans "Expired" %}</option>
-                        <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>{% trans "Cancelled" %}</option>
+                <div class="col-12 col-sm-6 col-xl-2">
+                    <label for="auditStatus" class="form-label">{% trans "Status" %}</label>
+                    <select id="auditStatus" class="form-select" name="status">
+                        <option value="">{% trans "All statuses" %}</option>
+                        {% for value, label in status_choices %}<option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
                     </select>
                 </div>
 
-                <div class="col-12 col-md-6">
-                    <label class="form-label">{% trans "Search" %}</label>
-                    <input class="form-control" name="q" value="{{ q }}" placeholder="{% if audit_type == 'terms' %}{% trans 'User email' %}{% else %}{% trans 'User email or request title' %}{% endif %}">
+                {% if audit_type == 'approvals' %}
+                <div class="col-12 col-sm-6 col-xl-2">
+                    <label for="auditAction" class="form-label">{% trans "Action" %}</label>
+                    <select id="auditAction" class="form-select" name="action">
+                        <option value="">{% trans "All actions" %}</option>
+                        {% for value, label in action_choices %}<option value="{{ value }}"{% if action == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                <div class="col-12 {% if audit_type == 'approvals' %}col-xl-4{% else %}col-xl-6{% endif %}">
+                    <label for="auditSearch" class="form-label">{% trans "Search" %}</label>
+                    <input id="auditSearch" class="form-control" name="q" value="{{ q }}" maxlength="200" autocomplete="off" placeholder="{% if audit_type == 'terms' %}{% trans 'Email, document, version or hash' %}{% else %}{% trans 'Email, request title or ID' %}{% endif %}">
                 </div>
 
-                <div class="col-12 col-md-3 d-flex gap-2">
-                    <button class="btn btn-primary-custom w-100" type="submit">{% trans "Filter" %}</button>
-                    <a class="btn btn-outline-secondary w-100" href="?type={{ audit_type }}">{% trans "Reset" %}</a>
+                <div class="col-6 col-xl-2">
+                    <label for="auditDateFrom" class="form-label">{% trans "Start date" %}</label>
+                    <input id="auditDateFrom" class="form-control" type="date" name="date_from" value="{{ date_from }}">
+                </div>
+                <div class="col-6 col-xl-2">
+                    <label for="auditDateTo" class="form-label">{% trans "End date" %}</label>
+                    <input id="auditDateTo" class="form-control" type="date" name="date_to" value="{{ date_to }}">
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <label for="auditIp" class="form-label">{% trans "IP address" %}</label>
+                    <input id="auditIp" class="form-control" name="ip" value="{{ ip }}" inputmode="decimal" autocomplete="off" placeholder="192.0.2.10">
+                </div>
+                <div class="col-6 col-sm-3 col-xl-2">
+                    <label for="auditSort" class="form-label">{% trans "Sort order" %}</label>
+                    <select id="auditSort" class="form-select" name="sort">
+                        <option value="newest"{% if sort == 'newest' %} selected{% endif %}>{% trans "Newest first" %}</option>
+                        <option value="oldest"{% if sort == 'oldest' %} selected{% endif %}>{% trans "Oldest first" %}</option>
+                    </select>
+                </div>
+                <div class="col-6 col-sm-3 col-xl-2">
+                    <label for="auditPageSize" class="form-label">{% trans "Rows" %}</label>
+                    <select id="auditPageSize" class="form-select" name="page_size">
+                        {% for size in page_sizes %}<option value="{{ size }}"{% if page_size == size %} selected{% endif %}>{{ size }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-xl-5 d-flex flex-wrap gap-2 justify-content-xl-end">
+                    <button class="btn btn-primary-custom flex-grow-1 flex-xl-grow-0" type="submit"><i class="bi bi-search me-1" aria-hidden="true"></i>{% trans "Apply filters" %}</button>
+                    <a class="btn btn-outline-secondary flex-grow-1 flex-xl-grow-0" href="?type={{ audit_type }}"><i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>{% trans "Reset" %}</a>
                 </div>
             </form>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                {% if audit_type == 'terms' %}
-                    {% trans "Terms acceptance audits" %}
-                {% else %}
-                    {% trans "Approval audits" %}
-                {% endif %}
-            </div>
-            <div class="text-muted small">
-                {% trans "Total" %}: {{ page_obj.paginator.count }}
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="text-nowrap">{% trans "When" %}</th>
-                            <th>{% trans "Status" %}</th>
-                            <th>{% trans "User" %}</th>
-                            {% if audit_type == 'terms' %}
-                                <th>{% trans "Document" %}</th>
-                                <th class="text-nowrap">{% trans "Credential" %}</th>
-                            {% else %}
-                                <th>{% trans "Request" %}</th>
-                                <th>{% trans "Action" %}</th>
-                            {% endif %}
-                            <th class="text-nowrap">{% trans "IP" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for audit in page_obj.object_list %}
-                            <tr{% if audit_type == 'approvals' %} class="audit-request-row" data-request-url="{% url 'requests:detail' audit.approval_request.id %}"{% endif %}>
-                                <td class="text-nowrap">{{ audit.performed_at|date:"Y-m-d H:i:s" }}</td>
-                                <td>
-                                    <span class="badge {% if audit.status == 'success' %}bg-success{% elif audit.status == 'failed' %}bg-danger{% elif audit.status == 'expired' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
-                                        {{ audit.status }}
-                                    </span>
-                                </td>
-                                <td class="text-nowrap">{{ audit.user.email }}</td>
-
-                                {% if audit_type == 'terms' %}
-                                    <td>
-                                        <div class="text-nowrap">{{ audit.document_type }}{% if audit.document_version %} v{{ audit.document_version }}{% endif %}</div>
-                                        {% if audit.document_hash %}<div class="small text-muted text-truncate" style="max-width: 320px;">{{ audit.document_hash }}</div>{% endif %}
-                                    </td>
-                                    <td class="text-nowrap">
-                                        {% if audit.credential_id %}
-                                            <span title="{{ audit.credential_id }}">{{ audit.credential_id|slice:":12" }}…</span>
-                                        {% else %}
-                                            <span class="text-muted">—</span>
-                                        {% endif %}
-                                    </td>
-                                {% else %}
-                                    <td>
-                                        <div class="text-nowrap">
-                                            <a class="audit-request-link" href="{% url 'requests:detail' audit.approval_request.id %}">{{ audit.approval_request.title }}</a>
-                                        </div>
-                                        <div class="small text-muted">#{{ audit.approval_request.id }}</div>
-                                    </td>
-                                    <td class="text-nowrap">{{ audit.action }}</td>
-                                {% endif %}
-
-                                <td class="text-nowrap">{% if audit.ip_address %}{{ audit.ip_address }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">{% trans "No audit records found." %}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% if page_obj.paginator.num_pages > 1 %}
-        <div class="card-footer">
-            <nav aria-label="pagination">
-                <ul class="pagination mb-0">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?type={{ audit_type }}{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><span class="page-link">{% trans "Previous" %}</span></li>
-                    {% endif %}
-
-                    <li class="page-item disabled"><span class="page-link">{% trans "Page" %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?type={{ audit_type }}{% if status %}&status={{ status }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><span class="page-link">{% trans "Next" %}</span></li>
-                    {% endif %}
-                </ul>
-            </nav>
+        {% if active_filters %}
+        <div class="audit-active-filters">
+            <span class="audit-muted small fw-semibold me-1">{% trans "Active filters" %}:</span>
+            {% for filter in active_filters %}
+                <a class="audit-filter-chip" href="?{{ filter.remove_query }}" aria-label="{% trans 'Remove filter' %} {{ filter.label }}">
+                    <strong>{{ filter.label }}:</strong> {{ filter.value }} <i class="bi bi-x" aria-hidden="true"></i>
+                </a>
+            {% endfor %}
+            <a class="small ms-1" href="?type={{ audit_type }}">{% trans "Clear all" %}</a>
         </div>
         {% endif %}
-    </div>
+    </section>
+
+    <section class="audit-table-card" aria-labelledby="auditResultsTitle">
+        <div class="audit-table-header">
+            <div>
+                <h2 id="auditResultsTitle" class="audit-table-title">
+                    {% if audit_type == 'terms' %}{% trans "Terms acceptance audits" %}{% else %}{% trans "Approval audits" %}{% endif %}
+                </h2>
+                <div class="audit-table-summary">
+                    {% if page_obj.paginator.count %}{% trans "Showing" %} {{ page_obj.start_index }}–{{ page_obj.end_index }} {% trans "of" %} {{ page_obj.paginator.count }}{% else %}{% trans "No results" %}{% endif %}
+                </div>
+            </div>
+            <span class="audit-filter-count">{% trans "Page" %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        </div>
+
+        <div class="audit-table-scroll" tabindex="0" aria-label="{% trans 'Scrollable audit results' %}">
+            <table class="table table-hover audit-table">
+                <caption class="visually-hidden">{% trans "High-security authentication audit events" %}</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">{% trans "When" %}</th>
+                        <th scope="col">{% trans "Status" %}</th>
+                        <th scope="col">{% trans "User" %}</th>
+                        {% if audit_type == 'terms' %}
+                            <th scope="col">{% trans "Document" %}</th>
+                        {% else %}
+                            <th scope="col">{% trans "Request" %}</th>
+                            <th scope="col">{% trans "Action" %}</th>
+                        {% endif %}
+                        <th scope="col">{% trans "IP address" %}</th>
+                        <th scope="col">{% trans "Evidence" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for audit in page_obj.object_list %}
+                        <tr{% if audit_type == 'approvals' %} class="audit-request-row" data-request-url="{% url 'requests:detail' audit.approval_request.id %}" tabindex="0" role="link" aria-label="{% trans 'Open request' %}: {{ audit.approval_request.title }}"{% endif %}>
+                            <td>
+                                <div class="audit-date">{{ audit.performed_at|date:"Y-m-d" }}</div>
+                                <div class="audit-time">{{ audit.performed_at|date:"H:i:s T" }}</div>
+                            </td>
+                            <td>
+                                <span class="audit-status {% if audit.status == 'success' %}audit-status-success{% elif audit.status == 'failed' %}audit-status-failed{% elif audit.status == 'expired' %}audit-status-expired{% else %}audit-status-neutral{% endif %}">
+                                    <i class="bi {% if audit.status == 'success' %}bi-check-circle{% elif audit.status == 'failed' %}bi-x-circle{% elif audit.status == 'expired' %}bi-clock-history{% else %}bi-slash-circle{% endif %}" aria-hidden="true"></i>{{ audit.get_status_display }}
+                                </span>
+                            </td>
+                            <td><div class="audit-user">{{ audit.user.email }}</div></td>
+
+                            {% if audit_type == 'terms' %}
+                                <td>
+                                    <div class="fw-semibold">{{ audit.document_type }}{% if audit.document_version %} v{{ audit.document_version }}{% endif %}</div>
+                                    {% if audit.document_hash %}<div class="audit-cell-meta" title="{{ audit.document_hash }}">{{ audit.document_hash|slice:":18" }}…</div>{% endif %}
+                                </td>
+                            {% else %}
+                                <td>
+                                    <a class="audit-request-link" href="{% url 'requests:detail' audit.approval_request.id %}">{{ audit.approval_request.title }}</a>
+                                    <div class="audit-cell-meta">#{{ audit.approval_request.id }} <i class="bi bi-arrow-up-right ms-1" aria-hidden="true"></i></div>
+                                </td>
+                                <td><span class="audit-action"><i class="bi {% if audit.action == 'approve' %}bi-check2{% else %}bi-x-lg{% endif %}" aria-hidden="true"></i>{{ audit.get_action_display }}</span></td>
+                            {% endif %}
+
+                            <td><span class="audit-date">{% if audit.ip_address %}{{ audit.ip_address }}{% else %}—{% endif %}</span></td>
+                            <td>
+                                <details class="audit-evidence">
+                                    <summary><i class="bi bi-fingerprint" aria-hidden="true"></i>{% trans "Details" %}</summary>
+                                    <div class="audit-evidence-content">
+                                        <div class="audit-evidence-item"><span class="audit-evidence-label">{% trans "Audit ID" %}</span><code class="audit-evidence-value">{{ audit.id }}</code></div>
+                                        {% if audit.challenge_id %}<div class="audit-evidence-item"><span class="audit-evidence-label">{% trans "Challenge" %}</span><code class="audit-evidence-value">{{ audit.challenge_id }}</code></div>{% endif %}
+                                        {% if audit.credential_id %}<div class="audit-evidence-item"><span class="audit-evidence-label">{% trans "Credential" %}</span><code class="audit-evidence-value">{{ audit.credential_id }}</code></div>{% endif %}
+                                        {% if audit_type == 'terms' and audit.initiated_by %}<div class="audit-evidence-item"><span class="audit-evidence-label">{% trans "Initiated by" %}</span><span class="audit-evidence-value">{{ audit.initiated_by.email }}</span></div>{% endif %}
+                                        {% if audit.user_agent %}<div class="audit-evidence-item"><span class="audit-evidence-label">{% trans "User agent" %}</span><span class="audit-evidence-value">{{ audit.user_agent }}</span></div>{% endif %}
+                                        {% if audit.error_message %}<div class="audit-evidence-item"><span class="audit-evidence-label">{% trans "Error" %}</span><span class="audit-evidence-value">{{ audit.error_message }}</span></div>{% endif %}
+                                        {% if audit.context_data %}<div><div class="audit-evidence-label mb-1">{% trans "Signed context" %}</div><pre class="audit-context"><code>{{ audit.context_json }}</code></pre></div>{% endif %}
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="{% if audit_type == 'terms' %}6{% else %}7{% endif %}" class="audit-empty">
+                                <span class="audit-empty-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
+                                <h3 class="h6 mb-2">{% trans "No audit records match these filters." %}</h3>
+                                <p class="audit-muted mb-3">{% trans "Try widening the date range or clearing one of the filters." %}</p>
+                                <a class="btn btn-outline-secondary" href="?type={{ audit_type }}">{% trans "Clear filters" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="audit-footer">
+            <span class="audit-muted small">{% trans "Rows per page" %}: {{ page_size }}</span>
+            {% if page_obj.paginator.num_pages > 1 %}
+            <nav aria-label="{% trans 'Pagination' %}">
+                <ul class="pagination mb-0">
+                    <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+                        {% if page_obj.has_previous %}<a class="page-link" href="?{{ pagination_query }}{% if pagination_query %}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% else %}<span class="page-link">{% trans "Previous" %}</span>{% endif %}
+                    </li>
+                    <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                    <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+                        {% if page_obj.has_next %}<a class="page-link" href="?{{ pagination_query }}{% if pagination_query %}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% else %}<span class="page-link">{% trans "Next" %}</span>{% endif %}
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+        </footer>
+    </section>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     document.querySelectorAll('.audit-request-row').forEach((row) => {
-        row.addEventListener('click', (event) => {
-            if (event.target.closest('a, button, input, select, textarea, label')) {
-                return;
-            }
-
+        const navigateToRequest = () => {
             const requestUrl = row.dataset.requestUrl;
-            if (requestUrl) {
-                window.location.assign(requestUrl);
-            }
+            if (requestUrl) window.location.assign(requestUrl);
+        };
+
+        row.addEventListener('click', (event) => {
+            if (event.target.closest('a, button, input, select, textarea, label, details, summary')) return;
+            navigateToRequest();
+        });
+
+        row.addEventListener('keydown', (event) => {
+            if (event.target !== row || !['Enter', ' '].includes(event.key)) return;
+            event.preventDefault();
+            navigateToRequest();
         });
     });
 </script>
