@@ -3552,6 +3552,51 @@ msgstr "Copiado"
 msgid "Copy failed"
 msgstr "Falha ao copiar"
 
+msgid "Iframe code ready to copy"
+msgstr "Código do iframe pronto para copiar"
+
+msgid "Paste this block into your application's page. The loader creates the secure iframe and starts WebAuthn."
+msgstr "Cole este bloco na página da sua aplicação. O loader cria o iframe seguro e inicia o WebAuthn."
+
+msgid "Ready to copy"
+msgstr "Pronto para copiar"
+
+msgid "Secure iframe embed"
+msgstr "Iframe seguro para incorporar"
+
+msgid "Generated automatically from the configuration below."
+msgstr "Gerado automaticamente a partir da configuração abaixo."
+
+msgid "Copy iframe code"
+msgstr "Copiar código do iframe"
+
+msgid "Your backend must expose the session and finalize endpoints shown below."
+msgstr "Seu backend deve expor os endpoints de sessão e finalização mostrados abaixo."
+
+msgid "Copy backend code"
+msgstr "Copiar código do backend"
+
+msgid "Copy curl command"
+msgstr "Copiar comando curl"
+
+msgid "Origin-bound WebAuthn transactions with server-verified results and copy-ready snippets."
+msgstr "Transações WebAuthn vinculadas à origem, resultados verificados pelo servidor e código pronto para copiar."
+
+msgid "Status endpoint base"
+msgstr "Base do endpoint de status"
+
+msgid "Your backend verifies the final WebAuthn result here before creating a session."
+msgstr "Seu backend verifica aqui o resultado final do WebAuthn antes de criar uma sessão."
+
+msgid "Your backend verifies transaction status with SecureApprove before creating its own login session."
+msgstr "Seu backend verifica o status da transação com o SecureApprove antes de criar sua própria sessão."
+
+msgid "Bind the exact parent origin, decision, document version, and SHA-256 server-side."
+msgstr "Vincule no servidor a origem pai exata, a decisão, a versão do documento e o SHA-256."
+
+msgid "Treat postMessage as a UI notification; trust only the authenticated status endpoint."
+msgstr "Trate postMessage como uma notificação de interface; confie apenas no endpoint de status autenticado."
+
 msgid "Invite User"
 msgstr "Convidar Usuário"
 

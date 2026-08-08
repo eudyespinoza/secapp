@@ -283,8 +283,8 @@ class TermsApprovalConfirmView(NoStoreAPIView):
             try:
                 session = (
                     TermsApprovalSession.objects
-                    .select_for_update()
                     .select_related('tenant', 'subject_user', 'created_by')
+                    .select_for_update(of=('self',))
                     .get(token_hash=token_hash)
                 )
             except TermsApprovalSession.DoesNotExist:

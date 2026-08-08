@@ -3439,3 +3439,48 @@ msgstr "Copiado"
 
 msgid "Copy failed"
 msgstr "Error al copiar"
+
+msgid "Iframe code ready to copy"
+msgstr "Código iframe listo para copiar"
+
+msgid "Paste this block into your application's page. The loader creates the secure iframe and starts WebAuthn."
+msgstr "Pega este bloque en la página de tu aplicación. El loader crea el iframe seguro e inicia WebAuthn."
+
+msgid "Ready to copy"
+msgstr "Listo para copiar"
+
+msgid "Secure iframe embed"
+msgstr "Iframe seguro para insertar"
+
+msgid "Generated automatically from the configuration below."
+msgstr "Se genera automáticamente a partir de la configuración inferior."
+
+msgid "Copy iframe code"
+msgstr "Copiar código del iframe"
+
+msgid "Your backend must expose the session and finalize endpoints shown below."
+msgstr "Tu backend debe exponer los endpoints de sesión y finalización que se muestran debajo."
+
+msgid "Copy backend code"
+msgstr "Copiar código backend"
+
+msgid "Copy curl command"
+msgstr "Copiar comando curl"
+
+msgid "Origin-bound WebAuthn transactions with server-verified results and copy-ready snippets."
+msgstr "Transacciones WebAuthn vinculadas al origen, resultados verificados por servidor y código listo para copiar."
+
+msgid "Status endpoint base"
+msgstr "Base del endpoint de estado"
+
+msgid "Your backend verifies the final WebAuthn result here before creating a session."
+msgstr "Tu backend verifica aquí el resultado WebAuthn final antes de crear una sesión."
+
+msgid "Your backend verifies transaction status with SecureApprove before creating its own login session."
+msgstr "Tu backend verifica el estado de la transacción con SecureApprove antes de crear su propia sesión."
+
+msgid "Bind the exact parent origin, decision, document version, and SHA-256 server-side."
+msgstr "Vincula en el servidor el origen padre exacto, la decisión, la versión del documento y su SHA-256."
+
+msgid "Treat postMessage as a UI notification; trust only the authenticated status endpoint."
+msgstr "Trata postMessage como una notificación de interfaz; confía únicamente en el endpoint de estado autenticado."

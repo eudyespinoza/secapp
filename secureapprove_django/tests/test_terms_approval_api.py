@@ -8,12 +8,16 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from apps.authentication.models import TermsAcceptanceAudit, TermsApprovalSession, User
+from apps.authentication.webauthn_service import webauthn_service
 from apps.tenants.models import Tenant
 
 
 class TermsApprovalAPITest(TestCase):
     def setUp(self):
         self.client = APIClient()
+        previous_origins = list(webauthn_service.allowed_origins)
+        self.addCleanup(setattr, webauthn_service, 'allowed_origins', previous_origins)
+        webauthn_service.allowed_origins = ['https://secureapprove.com']
         self.tenant = Tenant.objects.create(key='tenant-test', name='Tenant Test')
 
         self.admin = User.objects.create_user(
@@ -116,7 +120,7 @@ class TermsApprovalAPITest(TestCase):
             format='json',
         )
 
-        self.assertEqual(confirm_resp.status_code, 200)
+        self.assertEqual(confirm_resp.status_code, 200, confirm_resp.content)
         self.assertTrue(confirm_resp.json()['success'])
         self.assertTrue(confirm_resp.json()['approved'])
         self.assertEqual(confirm_resp.json()['status'], 'approved')
@@ -277,7 +281,14 @@ class TermsApprovalAPITest(TestCase):
         response = self.client.get('/en/dashboard/integrations/iframe/')
 
         self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
         self.assertContains(response, 'pendingSecureApprove')
         self.assertContains(response, 'secureapprove_transaction_mismatch')
         self.assertContains(response, 'transaction.parentOrigin === pending.parentOrigin')
         self.assertContains(response, '/api/secureapprove/session')
+        self.assertContains(response, 'Iframe code ready to copy')
+        self.assertContains(response, 'id="frontendSnippet"')
+        self.assertContains(response, 'Object.values(cfg)')
+        self.assertIn('<\\/script>', content)
+        self.assertNotIn('`<script src="${q(c.loaderUrl)}"></script>', content)
+        self.assertLess(content.index('id="frontendSnippet"'), content.index('id="cfgEnvironment"'))

@@ -5,21 +5,57 @@
 
 {% block extra_css %}
 <style>
+    .integration-page {
+        --integration-hero-start: #ffffff;
+        --integration-hero-end: #f1fbf4;
+        --integration-soft-surface: #f6faf8;
+        --integration-soft-border: #d8eadc;
+        --integration-soft-text: #315b43;
+        --integration-code-header: #17231c;
+        --integration-code-body: #0b1510;
+        --integration-code-text: #e7f6ec;
+        --integration-code-muted: #a9c8b4;
+    }
+
+    [data-theme="dark"] .integration-page {
+        --integration-hero-start: #1f2937;
+        --integration-hero-end: #17251f;
+        --integration-soft-surface: #253229;
+        --integration-soft-border: #3f5948;
+        --integration-soft-text: #d5eadc;
+        --integration-code-header: #111c16;
+        --integration-code-body: #09110d;
+        --integration-code-text: #e8f8ed;
+        --integration-code-muted: #b3cfbc;
+    }
+
     .integration-hero {
-        background: linear-gradient(135deg, #ffffff 0%, #f1fbf4 100%);
-        border: 1px solid #d8eadc;
+        background: linear-gradient(135deg, var(--integration-hero-start) 0%, var(--integration-hero-end) 100%);
+        border: 1px solid var(--integration-soft-border) !important;
+        color: var(--text-color);
+    }
+
+    .integration-page .card-body,
+    .integration-page .form-label,
+    .integration-page .card-header,
+    .integration-page h1,
+    .integration-page h2,
+    .integration-page h3,
+    .integration-page li {
+        color: var(--text-color);
     }
 
     .code-card {
-        border: 1px solid #dde8e1;
+        border: 1px solid var(--integration-soft-border);
         border-radius: 0.75rem;
-        background: #ffffff;
+        background: var(--card-bg);
         overflow: hidden;
     }
 
     .code-header {
-        background: #f6faf8;
-        border-bottom: 1px solid #e3ece6;
+        background: var(--integration-code-header);
+        color: #f8fafc;
+        border-bottom: 1px solid var(--integration-soft-border);
         padding: 0.75rem 1rem;
         display: flex;
         justify-content: space-between;
@@ -27,15 +63,86 @@
         gap: 0.75rem;
     }
 
+    .code-header strong,
+    .code-header .code-title,
+    .code-header .code-subtitle {
+        color: inherit;
+    }
+
+    .code-title {
+        display: block;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .code-subtitle {
+        display: block;
+        margin-top: 0.2rem;
+        color: var(--integration-code-muted) !important;
+        font-size: 0.78rem;
+        line-height: 1.4;
+    }
+
+    .code-copy-button {
+        min-height: 44px;
+        flex: 0 0 auto;
+    }
+
     .code-body {
-        background: #0f1a14;
-        color: #e7f6ec;
+        background: var(--integration-code-body);
+        color: var(--integration-code-text);
         padding: 1rem;
         margin: 0;
         max-height: 420px;
         overflow: auto;
         font-size: 0.82rem;
         line-height: 1.45;
+    }
+
+    .code-body code {
+        color: inherit;
+        white-space: inherit;
+    }
+
+    .copy-ready-section {
+        border: 1px solid var(--integration-soft-border);
+        border-radius: 1rem;
+        background: var(--card-bg);
+        box-shadow: 0 10px 30px var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .copy-ready-intro {
+        padding: 1.15rem 1.25rem;
+        border-bottom: 1px solid var(--integration-soft-border);
+        background: var(--integration-soft-surface);
+    }
+
+    .copy-ready-intro p,
+    .copy-ready-note {
+        color: var(--text-secondary);
+    }
+
+    .copy-ready-note {
+        padding: 0.8rem 1rem;
+        background: var(--card-bg);
+        border-top: 1px solid var(--integration-soft-border);
+        font-size: 0.82rem;
+    }
+
+    .ready-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-height: 32px;
+        border: 1px solid var(--integration-soft-border);
+        border-radius: 999px;
+        padding: 0.3rem 0.7rem;
+        color: var(--integration-soft-text);
+        background: var(--card-bg);
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
     }
 
     .step-chip {
@@ -54,18 +161,51 @@
     }
 
     .status-box {
-        border: 1px solid #d7e8dc;
-        background: #f8fcf9;
+        border: 1px solid var(--integration-soft-border);
+        background: var(--integration-soft-surface);
         border-radius: 0.75rem;
         padding: 0.85rem;
         font-size: 0.86rem;
-        color: #2e5f44;
+        color: var(--integration-soft-text);
     }
 
     .field-note {
         font-size: 0.78rem;
-        color: #5e7264;
+        color: var(--text-muted);
         margin-top: 0.25rem;
+    }
+
+    [data-theme="dark"] .integration-page .btn-outline-secondary {
+        color: #e5e7eb;
+        border-color: #64748b;
+    }
+
+    [data-theme="dark"] .integration-page .btn-outline-secondary:hover,
+    [data-theme="dark"] .integration-page .btn-outline-secondary:focus-visible {
+        color: #111827;
+        background: #e5e7eb;
+        border-color: #e5e7eb;
+    }
+
+    .integration-page button,
+    .integration-page .form-control,
+    .integration-page .form-select {
+        min-height: 44px;
+    }
+
+    @media (max-width: 575.98px) {
+        .code-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .code-copy-button {
+            width: 100%;
+        }
+
+        .code-body {
+            font-size: 0.76rem;
+        }
     }
 </style>
 {% endblock %}
@@ -80,7 +220,7 @@
 {{ actor_email|json_script:"ctx_actor_email" }}
 {{ backend_session_endpoint|json_script:"ctx_session_path" }}
 
-<div class="container py-4">
+<div class="container py-4 integration-page">
     <div class="row mb-4">
         <div class="col-12">
             <div class="card integration-hero shadow-sm border-0">
@@ -107,6 +247,35 @@
             </div>
         </div>
     </div>
+
+    <section class="copy-ready-section mb-4" aria-labelledby="copyReadyTitle">
+        <div class="copy-ready-intro d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div>
+                <h2 class="h4 mb-1" id="copyReadyTitle">{% trans "Iframe code ready to copy" %}</h2>
+                <p class="mb-0">
+                    {% trans "Paste this block into your application's page. The loader creates the secure iframe and starts WebAuthn." %}
+                </p>
+            </div>
+            <span class="ready-badge"><i class="bi bi-check-circle" aria-hidden="true"></i>{% trans "Ready to copy" %}</span>
+        </div>
+        <div class="code-card border-0 rounded-0">
+            <div class="code-header">
+                <div>
+                    <span class="code-title">{% trans "Secure iframe embed" %}</span>
+                    <span class="code-subtitle">{% trans "Generated automatically from the configuration below." %}</span>
+                </div>
+                <button type="button" class="btn btn-primary code-copy-button" data-copy-target="frontendSnippet" aria-label="{% trans 'Copy iframe code' %}">
+                    <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{% trans "Copy iframe code" %}
+                </button>
+            </div>
+            <pre class="code-body"><code id="frontendSnippet"></code></pre>
+            <div class="copy-ready-note">
+                <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                {% trans "Your backend must expose the session and finalize endpoints shown below." %}
+            </div>
+        </div>
+    </section>
+    <div id="copyStatus" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
 
     <div class="row g-4 mb-4">
         <div class="col-12 col-xl-5">
@@ -236,8 +405,8 @@
             <div class="code-card shadow-sm">
                 <div class="code-header">
                     <strong>{% trans "Backend session endpoint" %}</strong>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="backendSnippet">
-                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
+                    <button type="button" class="btn btn-sm btn-outline-secondary code-copy-button" data-copy-target="backendSnippet" aria-label="{% trans 'Copy backend code' %}">
+                        <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{% trans "Copy" %}
                     </button>
                 </div>
                 <pre class="code-body"><code id="backendSnippet"></code></pre>
@@ -247,21 +416,9 @@
         <div class="col-12">
             <div class="code-card shadow-sm">
                 <div class="code-header">
-                    <strong>{% trans "Frontend embed integration" %}</strong>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="frontendSnippet">
-                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
-                    </button>
-                </div>
-                <pre class="code-body"><code id="frontendSnippet"></code></pre>
-            </div>
-        </div>
-
-        <div class="col-12">
-            <div class="code-card shadow-sm">
-                <div class="code-header">
                     <strong>{% trans "Test request (curl)" %}</strong>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-copy-target="curlSnippet">
-                        <i class="bi bi-clipboard me-1"></i>{% trans "Copy" %}
+                    <button type="button" class="btn btn-sm btn-outline-secondary code-copy-button" data-copy-target="curlSnippet" aria-label="{% trans 'Copy curl command' %}">
+                        <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{% trans "Copy" %}
                     </button>
                 </div>
                 <pre class="code-body"><code id="curlSnippet"></code></pre>
@@ -296,6 +453,7 @@
     const backendSnippetEl = document.getElementById('backendSnippet');
     const frontendSnippetEl = document.getElementById('frontendSnippet');
     const curlSnippetEl = document.getElementById('curlSnippet');
+    const copyStatusEl = document.getElementById('copyStatus');
     const uiText = {
         copied: "{% trans 'Copied' %}",
         copyFailed: "{% trans 'Copy failed' %}"
@@ -461,7 +619,7 @@
 
     function frontendSnippet(c) {
         return `<!-- Load once per page -->\n` +
-`<script src="${q(c.loaderUrl)}"></script>\n\n` +
+`<script src="${q(c.loaderUrl)}"><\/script>\n\n` +
 `<div id="secureapprove-container"></div>\n\n` +
 `<script>\n` +
 `function getCookie(name) {\n` +
@@ -558,7 +716,22 @@
     async function copyById(id) {
         const el = document.getElementById(id);
         if (!el) return;
-        await navigator.clipboard.writeText(el.textContent || '');
+        const value = el.textContent || '';
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(value);
+            return;
+        }
+
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand('copy');
+        textarea.remove();
+        if (!copied) throw new Error('clipboard_unavailable');
     }
 
     function resetDefaults() {
@@ -583,11 +756,13 @@
             try {
                 await copyById(target);
                 button.innerHTML = '<i class="bi bi-check2 me-1"></i>' + uiText.copied;
+                copyStatusEl.textContent = uiText.copied;
                 setTimeout(() => {
                     button.innerHTML = original;
                 }, 1200);
             } catch (_) {
                 button.innerHTML = '<i class="bi bi-x-circle me-1"></i>' + uiText.copyFailed;
+                copyStatusEl.textContent = uiText.copyFailed;
                 setTimeout(() => {
                     button.innerHTML = original;
                 }, 1400);
@@ -597,6 +772,9 @@
 
     document.getElementById('btnGenerate').addEventListener('click', renderSnippets);
     document.getElementById('btnReset').addEventListener('click', resetDefaults);
+    Object.values(cfg).forEach((control) => {
+        control.addEventListener(control.tagName === 'SELECT' ? 'change' : 'input', renderSnippets);
+    });
 
     resetDefaults();
 })();
