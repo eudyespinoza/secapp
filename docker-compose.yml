@@ -72,6 +72,10 @@ services:
     command: vault server -config=/vault/config/vault.hcl
     cap_add:
       - IPC_LOCK
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     environment:
       VAULT_ADDR: https://127.0.0.1:8200
       VAULT_CACERT: /vault/tls/ca.crt
@@ -119,6 +123,10 @@ services:
     command: vault proxy -config=/vault/config/proxy.hcl
     cap_add:
       - IPC_LOCK
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     environment:
       VAULT_CACERT: /vault/tls/ca.crt
     volumes:
