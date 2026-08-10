@@ -13,7 +13,12 @@ import json
 import logging
 import math
 import os
+import re
+import ssl
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid
 from datetime import date, datetime, timezone as datetime_timezone
 from decimal import Decimal
@@ -38,6 +43,8 @@ SCHEMA = 'sap-proof-v1'
 CHALLENGE_PREFIX = b'SecureApprove-Proof-v1'
 ISSUER = 'https://secureapprove.com'
 P256_ORDER = int('FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551', 16)
+VAULT_RESPONSE_LIMIT = 1024 * 1024
+VAULT_PATH_SEGMENT = re.compile(r'^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$')
 
 
 class ProofUnavailable(RuntimeError):
@@ -200,16 +207,188 @@ def _kms_client(service='kms'):
     return boto3.client(service, **kwargs)
 
 
-def sync_active_signing_key():
+def _s3_client():
+    """Build an S3 client for AWS S3 or a private S3-compatible WORM store."""
+    try:
+        import boto3
+        from botocore.config import Config
+    except ImportError as exc:
+        raise ProofUnavailable('The S3 SDK is unavailable.') from exc
+
+    kwargs = {
+        'region_name': getattr(settings, 'SECUREAPPROVE_PROOF_ARCHIVE_REGION', '') or 'us-east-1',
+        'config': Config(
+            signature_version='s3v4',
+            retries={'max_attempts': 4, 'mode': 'standard'},
+            s3={
+                'addressing_style': getattr(
+                    settings, 'SECUREAPPROVE_PROOF_ARCHIVE_ADDRESSING_STYLE', 'auto'
+                )
+            },
+        ),
+    }
+    endpoint_url = getattr(settings, 'SECUREAPPROVE_PROOF_ARCHIVE_ENDPOINT_URL', '')
+    if endpoint_url:
+        kwargs['endpoint_url'] = endpoint_url
+    ca_bundle = getattr(settings, 'SECUREAPPROVE_PROOF_ARCHIVE_CA_BUNDLE', '')
+    if ca_bundle:
+        kwargs['verify'] = ca_bundle
+    return boto3.client('s3', **kwargs)
+
+
+def _vault_path_segment(value: str, setting_name: str) -> str:
+    if not value or not VAULT_PATH_SEGMENT.fullmatch(value):
+        raise ProofUnavailable(f'{setting_name} contains an invalid Vault path segment.')
+    return value
+
+
+def _vault_request(method: str, path: str, payload: dict | None = None) -> dict:
+    """Call Vault directly or through the dedicated Vault Proxy.
+
+    Production uses Vault Proxy with ``use_auto_auth_token = "force"``. Django
+    therefore never receives the AppRole secret or a Vault token.
+    """
+    base_url = getattr(settings, 'SECUREAPPROVE_VAULT_ADDR', '').rstrip('/')
+    if not base_url.startswith(('http://', 'https://')):
+        raise ProofUnavailable('SECUREAPPROVE_VAULT_ADDR must be an HTTP(S) URL.')
+    url = f"{base_url}/v1/{path.lstrip('/')}"
+    body = canonical_json_bytes(payload) if payload is not None else None
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Vault-Request': 'true',
+    }
+    token_file = getattr(settings, 'SECUREAPPROVE_VAULT_TOKEN_FILE', '')
+    if token_file:
+        try:
+            with open(token_file, 'r', encoding='utf-8') as token_handle:
+                token = token_handle.read(4097).strip()
+        except OSError as exc:
+            raise ProofUnavailable('The Vault token file is unavailable.') from exc
+        if not token or len(token) > 4096:
+            raise ProofUnavailable('The Vault token file is invalid.')
+        headers['X-Vault-Token'] = token
+
+    request = urllib.request.Request(url, data=body, headers=headers, method=method)
+    context = None
+    if url.startswith('https://'):
+        ca_bundle = getattr(settings, 'SECUREAPPROVE_VAULT_CA_BUNDLE', '') or None
+        context = ssl.create_default_context(cafile=ca_bundle)
+    timeout = getattr(settings, 'SECUREAPPROVE_VAULT_TIMEOUT_SECONDS', 5)
+    try:
+        with urllib.request.urlopen(request, timeout=timeout, context=context) as response:
+            raw = response.read(VAULT_RESPONSE_LIMIT + 1)
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise ProofUnavailable('Vault Transit is unavailable.') from exc
+    if len(raw) > VAULT_RESPONSE_LIMIT:
+        raise ProofUnavailable('Vault returned an oversized response.')
+    try:
+        result = json.loads(raw.decode('utf-8'))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ProofUnavailable('Vault returned an invalid response.') from exc
+    if not isinstance(result, dict) or not isinstance(result.get('data'), dict):
+        raise ProofUnavailable('Vault returned an incomplete response.')
+    return result['data']
+
+
+def _vault_signing_key_metadata():
+    mount = _vault_path_segment(
+        getattr(settings, 'SECUREAPPROVE_VAULT_TRANSIT_MOUNT', 'transit'),
+        'SECUREAPPROVE_VAULT_TRANSIT_MOUNT',
+    )
+    key_name = _vault_path_segment(
+        getattr(settings, 'SECUREAPPROVE_VAULT_SIGNING_KEY', ''),
+        'SECUREAPPROVE_VAULT_SIGNING_KEY',
+    )
+    data = _vault_request('GET', f'{mount}/keys/{urllib.parse.quote(key_name)}')
+    try:
+        version = int(data['latest_version'])
+        version_data = data['keys'][str(version)]
+        public_key = serialization.load_pem_public_key(version_data['public_key'].encode('ascii'))
+    except Exception as exc:
+        raise ProofUnavailable('Vault signing-key metadata is incomplete.') from exc
+    if not isinstance(public_key, ec.EllipticCurvePublicKey) or not isinstance(
+        public_key.curve, ec.SECP256R1
+    ):
+        raise ProofUnavailable('Vault Proof signing key must be ecdsa-p256.')
+    return mount, key_name, version, public_key
+
+
+def _vault_signing_reference(mount: str, key_name: str, version: int) -> str:
+    return f'vault:{mount}:{key_name}:v{version}'
+
+
+def _parse_vault_signing_reference(reference: str) -> tuple[str, str, int]:
+    try:
+        prefix, mount, key_name, version = reference.split(':', 3)
+        if prefix != 'vault' or not version.startswith('v'):
+            raise ValueError
+        return (
+            _vault_path_segment(mount, 'Vault signing-key reference'),
+            _vault_path_segment(key_name, 'Vault signing-key reference'),
+            int(version[1:]),
+        )
+    except (TypeError, ValueError) as exc:
+        raise ProofUnavailable('The stored Vault signing-key reference is invalid.') from exc
+
+
+def _vault_context(proof_id, tenant_id) -> str:
+    return base64.b64encode(_encryption_aad(proof_id, tenant_id)).decode('ascii')
+
+
+def _activate_signing_key(kid: str, key_arn: str, jwk: dict):
     from apps.authentication.models import ProofSigningKey
 
+    existing_key = ProofSigningKey.objects.filter(kid=kid).first()
+    if existing_key and existing_key.status == 'compromised':
+        raise ProofUnavailable(
+            'The configured proof signing kid is marked as compromised; rotate to a new kid.'
+        )
+    if existing_key and (
+        existing_key.key_arn != key_arn
+        or existing_key.algorithm != 'ES256'
+        or canonical_json_bytes(existing_key.public_jwk) != canonical_json_bytes(jwk)
+    ):
+        raise ProofUnavailable(
+            'The configured proof signing kid is already bound to different key material.'
+        )
+
+    if existing_key:
+        key = existing_key
+        if key.status != 'active' or key.deactivated_at is not None:
+            key.status = 'active'
+            key.deactivated_at = None
+            key.save(update_fields=['status', 'deactivated_at'])
+    else:
+        key = ProofSigningKey.objects.create(
+            kid=kid,
+            key_arn=key_arn,
+            algorithm='ES256',
+            public_jwk=jwk,
+            status='active',
+        )
+    ProofSigningKey.objects.filter(status='active').exclude(pk=key.pk).update(
+        status='retired', deactivated_at=timezone.now()
+    )
+    return key
+
+
+def sync_active_signing_key():
     signer = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNER', 'aws_kms')
-    kid = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNING_KID', '')
+    configured_kid = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNING_KID', '')
+    kid = configured_kid
     if signer == 'local':
         kid = kid or 'secureapprove-proof-local-v1'
         key_arn = ''
         jwk = _public_jwk(_local_private_key().public_key(), kid)
-    else:
+    elif signer == 'vault_transit':
+        if not configured_kid:
+            raise ProofUnavailable('A stable Vault signing kid prefix is required.')
+        mount, key_name, version, public_key = _vault_signing_key_metadata()
+        kid = f'{configured_kid}-v{version}'
+        key_arn = _vault_signing_reference(mount, key_name, version)
+        jwk = _public_jwk(public_key, kid)
+    elif signer == 'aws_kms':
         key_arn = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNING_KEY_ARN', '')
         if not key_arn or not kid:
             raise ProofUnavailable('Proof signing key ARN and kid are required.')
@@ -222,26 +401,10 @@ def sync_active_signing_key():
         if not isinstance(public_key, ec.EllipticCurvePublicKey) or not isinstance(public_key.curve, ec.SECP256R1):
             raise ProofUnavailable('Proof signing key must be ECC_NIST_P256.')
         jwk = _public_jwk(public_key, kid)
+    else:
+        raise ProofUnavailable('Unsupported SecureApprove Proof signing backend.')
 
-    existing_key = ProofSigningKey.objects.filter(kid=kid).first()
-    if existing_key and existing_key.status == 'compromised':
-        raise ProofUnavailable(
-            'The configured proof signing kid is marked as compromised; rotate to a new kid.'
-        )
-
-    key, _ = ProofSigningKey.objects.update_or_create(
-        kid=kid,
-        defaults={
-            'key_arn': key_arn,
-            'algorithm': 'ES256',
-            'public_jwk': jwk,
-            'status': 'active',
-        },
-    )
-    ProofSigningKey.objects.filter(status='active').exclude(pk=key.pk).update(
-        status='retired', deactivated_at=timezone.now()
-    )
-    return key
+    return _activate_signing_key(kid, key_arn, jwk)
 
 
 def _active_signing_key():
@@ -249,8 +412,24 @@ def _active_signing_key():
 
     key = ProofSigningKey.objects.filter(status='active').order_by('-activated_at').first()
     expected_kid = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNING_KID', '')
-    if key and (not expected_kid or key.kid == expected_kid):
-        return key
+    signer = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNER', 'aws_kms')
+    if signer == 'vault_transit':
+        if not expected_kid:
+            raise ProofUnavailable('A stable Vault signing kid prefix is required.')
+        mount, key_name, version, public_key = _vault_signing_key_metadata()
+        vault_kid = f'{expected_kid}-v{version}'
+        key_arn = _vault_signing_reference(mount, key_name, version)
+        jwk = _public_jwk(public_key, vault_kid)
+        if key and (
+            key.kid == vault_kid
+            and key.key_arn == key_arn
+            and canonical_json_bytes(key.public_jwk) == canonical_json_bytes(jwk)
+        ):
+            return key
+        return _activate_signing_key(vault_kid, key_arn, jwk)
+    if key:
+        if not expected_kid or key.kid == expected_kid:
+            return key
     return sync_active_signing_key()
 
 
@@ -258,7 +437,31 @@ def _sign_es256(signing_key, signing_input: bytes) -> bytes:
     signer = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNER', 'aws_kms')
     if signer == 'local':
         der_signature = _local_private_key().sign(signing_input, ec.ECDSA(hashes.SHA256()))
-    else:
+    elif signer == 'vault_transit':
+        mount, key_name, version = _parse_vault_signing_reference(signing_key.key_arn)
+        try:
+            response = _vault_request(
+                'POST',
+                f'{mount}/sign/{urllib.parse.quote(key_name)}/sha2-256',
+                {
+                    'input': base64.b64encode(signing_input).decode('ascii'),
+                    'key_version': version,
+                    'marshaling_algorithm': 'jws',
+                },
+            )
+            signature_parts = response['signature'].split(':', 2)
+            if signature_parts[:2] != ['vault', f'v{version}']:
+                raise ValueError('Unexpected Vault signature version.')
+            raw_signature = _b64url_decode(signature_parts[2])
+            if len(raw_signature) != 64:
+                raise ValueError('Unexpected Vault ES256 signature length.')
+            return raw_signature
+        except Exception as exc:
+            _metric('vault_signing_failures')
+            if isinstance(exc, ProofUnavailable):
+                raise
+            raise ProofUnavailable('Vault Transit could not sign the proof.') from exc
+    elif signer == 'aws_kms':
         try:
             response = _kms_client().sign(
                 KeyId=signing_key.key_arn,
@@ -270,6 +473,8 @@ def _sign_es256(signing_key, signing_input: bytes) -> bytes:
         except Exception as exc:
             _metric('kms_signing_failures')
             raise ProofUnavailable('AWS KMS could not sign the proof.') from exc
+    else:
+        raise ProofUnavailable('Unsupported SecureApprove Proof signing backend.')
     r, s = decode_dss_signature(der_signature)
     return r.to_bytes(32, 'big') + s.to_bytes(32, 'big')
 
@@ -295,7 +500,31 @@ def _encrypt_evidence(proof_id, tenant_id, evidence: dict) -> tuple[bytes, bytes
             raise ProofUnavailable('Local Proof encryption is not allowed in production.')
         data_key = hashlib.sha256((settings.SECRET_KEY + ':secureapprove-proof-evidence-v1').encode()).digest()
         encrypted_data_key = b'local-v1'
-    else:
+    elif backend == 'vault_transit':
+        mount = _vault_path_segment(
+            getattr(settings, 'SECUREAPPROVE_VAULT_TRANSIT_MOUNT', 'transit'),
+            'SECUREAPPROVE_VAULT_TRANSIT_MOUNT',
+        )
+        key_name = _vault_path_segment(
+            getattr(settings, 'SECUREAPPROVE_VAULT_ENCRYPTION_KEY', ''),
+            'SECUREAPPROVE_VAULT_ENCRYPTION_KEY',
+        )
+        try:
+            response = _vault_request(
+                'POST',
+                f'{mount}/datakey/plaintext/{urllib.parse.quote(key_name)}',
+                {'bits': 256, 'context': _vault_context(proof_id, tenant_id)},
+            )
+            data_key = base64.b64decode(response['plaintext'], validate=True)
+            encrypted_data_key = response['ciphertext'].encode('ascii')
+            if len(data_key) != 32 or not encrypted_data_key.startswith(b'vault:v'):
+                raise ValueError('Unexpected Vault data key.')
+        except Exception as exc:
+            _metric('vault_encryption_failures')
+            if isinstance(exc, ProofUnavailable):
+                raise
+            raise ProofUnavailable('Vault Transit could not create an evidence key.') from exc
+    elif backend == 'aws_kms':
         key_arn = getattr(settings, 'SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN', '')
         if not key_arn:
             raise ProofUnavailable('Proof encryption key ARN is required.')
@@ -310,6 +539,8 @@ def _encrypt_evidence(proof_id, tenant_id, evidence: dict) -> tuple[bytes, bytes
         except Exception as exc:
             _metric('kms_encryption_failures')
             raise ProofUnavailable('AWS KMS could not create an evidence key.') from exc
+    else:
+        raise ProofUnavailable('Unsupported SecureApprove Proof encryption backend.')
     nonce = os.urandom(12)
     ciphertext = AESGCM(data_key).encrypt(nonce, canonical_json_bytes(evidence), aad)
     return ciphertext, nonce, encrypted_data_key
@@ -321,7 +552,30 @@ def decrypt_evidence(proof) -> dict:
     backend = getattr(settings, 'SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND', 'aws_kms')
     if backend == 'local':
         data_key = hashlib.sha256((settings.SECRET_KEY + ':secureapprove-proof-evidence-v1').encode()).digest()
-    else:
+    elif backend == 'vault_transit':
+        mount = _vault_path_segment(
+            getattr(settings, 'SECUREAPPROVE_VAULT_TRANSIT_MOUNT', 'transit'),
+            'SECUREAPPROVE_VAULT_TRANSIT_MOUNT',
+        )
+        key_name = _vault_path_segment(
+            getattr(settings, 'SECUREAPPROVE_VAULT_ENCRYPTION_KEY', ''),
+            'SECUREAPPROVE_VAULT_ENCRYPTION_KEY',
+        )
+        try:
+            response = _vault_request(
+                'POST',
+                f'{mount}/decrypt/{urllib.parse.quote(key_name)}',
+                {
+                    'ciphertext': bytes(proof.encrypted_data_key).decode('ascii'),
+                    'context': _vault_context(proof.id, proof.tenant_id),
+                },
+            )
+            data_key = base64.b64decode(response['plaintext'], validate=True)
+            if len(data_key) != 32:
+                raise ValueError('Unexpected Vault data key.')
+        except Exception as exc:
+            raise InvalidProof('Private evidence could not be decrypted.') from exc
+    elif backend == 'aws_kms':
         try:
             response = _kms_client().decrypt(
                 CiphertextBlob=bytes(proof.encrypted_data_key),
@@ -331,6 +585,8 @@ def decrypt_evidence(proof) -> dict:
             data_key = response['Plaintext']
         except Exception as exc:
             raise InvalidProof('Private evidence could not be decrypted.') from exc
+    else:
+        raise InvalidProof('Unsupported SecureApprove Proof encryption backend.')
     plaintext = AESGCM(data_key).decrypt(
         bytes(proof.evidence_nonce),
         bytes(proof.evidence_ciphertext),

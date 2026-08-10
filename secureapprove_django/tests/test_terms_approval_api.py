@@ -3,7 +3,7 @@ import json
 from datetime import timedelta
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from rest_framework.test import APIClient
 
@@ -12,6 +12,7 @@ from apps.authentication.webauthn_service import webauthn_service
 from apps.tenants.models import Tenant
 
 
+@override_settings(SECUREAPPROVE_PROOF_ENABLED=False)
 class TermsApprovalAPITest(TestCase):
     def setUp(self):
         self.client = APIClient()

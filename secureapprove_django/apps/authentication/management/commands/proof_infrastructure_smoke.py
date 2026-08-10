@@ -13,7 +13,7 @@ from apps.authentication.proof_service import (
     SCHEMA,
     _encode_jws,
     _encrypt_evidence,
-    _kms_client,
+    _s3_client,
     decrypt_evidence,
     sync_active_signing_key,
     verify_compact_jws,
@@ -21,7 +21,7 @@ from apps.authentication.proof_service import (
 
 
 class Command(BaseCommand):
-    help = 'Smoke-test Proof KMS signing, verification, envelope encryption, and WORM storage.'
+    help = 'Smoke-test Proof signing, verification, envelope encryption, and WORM storage.'
 
     def add_arguments(self, parser):
         parser.add_argument('--skip-archive', action='store_true')
@@ -67,9 +67,11 @@ class Command(BaseCommand):
             if not bucket:
                 raise CommandError('SECUREAPPROVE_PROOF_ARCHIVE_BUCKET is required.')
             body = jws.encode('utf-8')
-            response = _kms_client('s3').put_object(
+            s3 = _s3_client()
+            object_key = f'proofs/smoke-tests/{proof_id}.jws'
+            response = s3.put_object(
                 Bucket=bucket,
-                Key=f'proofs/smoke-tests/{proof_id}.jws',
+                Key=object_key,
                 Body=body,
                 ContentType='application/jose',
                 ContentMD5=base64.b64encode(
@@ -83,6 +85,13 @@ class Command(BaseCommand):
             )
             if not response.get('VersionId'):
                 raise CommandError('WORM archive write did not return an S3 version ID.')
+            retention = s3.get_object_retention(
+                Bucket=bucket,
+                Key=object_key,
+                VersionId=response['VersionId'],
+            ).get('Retention', {})
+            if retention.get('Mode') != 'COMPLIANCE' or not retention.get('RetainUntilDate'):
+                raise CommandError('Archived proof is not protected by COMPLIANCE retention.')
 
         self.stdout.write(self.style.SUCCESS(
             f'SecureApprove Proof infrastructure smoke test passed (kid={signing_key.kid}).'

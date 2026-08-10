@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def archive_security_proof(self, proof_id):
     """Archive a public JWS in the Object Lock Compliance bucket."""
     from apps.authentication.models import SecurityProof
-    from apps.authentication.proof_service import _kms_client
+    from apps.authentication.proof_service import _s3_client
 
     proof = SecurityProof.objects.filter(pk=proof_id).first()
     if not proof or proof.archive_status in {'archived', 'disabled'}:
@@ -36,7 +36,7 @@ def archive_security_proof(self, proof_id):
         days=getattr(settings, 'SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS', 3650)
     )
     try:
-        response = _kms_client('s3').put_object(
+        response = _s3_client().put_object(
             Bucket=bucket,
             Key=object_key,
             Body=body,

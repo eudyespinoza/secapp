@@ -24,13 +24,45 @@ def secureapprove_proof_configuration_check(app_configs, **kwargs):
     if not enabled or settings.DEBUG or running_tests:
         return errors
 
+    signer = getattr(settings, 'SECUREAPPROVE_PROOF_SIGNER', '')
+    encryption_backend = getattr(settings, 'SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND', '')
     required = {
-        'SECUREAPPROVE_PROOF_SIGNING_KEY_ARN': 'the AWS KMS asymmetric signing key ARN',
         'SECUREAPPROVE_PROOF_SIGNING_KID': 'the public signing key identifier',
-        'SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN': 'the AWS KMS evidence key ARN',
         'SECUREAPPROVE_PROOF_ARCHIVE_BUCKET': 'the Object Lock archive bucket',
-        'AWS_REGION': 'the AWS region',
     }
+    if signer == 'aws_kms':
+        required.update({
+            'SECUREAPPROVE_PROOF_SIGNING_KEY_ARN': 'the AWS KMS asymmetric signing key ARN',
+            'AWS_REGION': 'the AWS region',
+        })
+    elif signer == 'vault_transit':
+        required.update({
+            'SECUREAPPROVE_VAULT_ADDR': 'the dedicated Vault Proxy URL',
+            'SECUREAPPROVE_VAULT_SIGNING_KEY': 'the Vault Transit ecdsa-p256 key name',
+            'SECUREAPPROVE_VAULT_TRANSIT_MOUNT': 'the Vault Transit mount name',
+        })
+    else:
+        errors.append(Error(
+            'Production SecureApprove Proof signing must use AWS KMS or Vault Transit.',
+            id='secureapprove.E002',
+        ))
+
+    if encryption_backend == 'aws_kms':
+        required.update({
+            'SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN': 'the AWS KMS evidence key ARN',
+            'AWS_REGION': 'the AWS region',
+        })
+    elif encryption_backend == 'vault_transit':
+        required.update({
+            'SECUREAPPROVE_VAULT_ADDR': 'the dedicated Vault Proxy URL',
+            'SECUREAPPROVE_VAULT_ENCRYPTION_KEY': 'the derived Vault Transit evidence key name',
+            'SECUREAPPROVE_VAULT_TRANSIT_MOUNT': 'the Vault Transit mount name',
+        })
+    else:
+        errors.append(Error(
+            'Production SecureApprove Proof evidence encryption must use AWS KMS or Vault Transit.',
+            id='secureapprove.E003',
+        ))
     for setting_name, purpose in required.items():
         if not getattr(settings, setting_name, ''):
             errors.append(Error(
@@ -38,16 +70,6 @@ def secureapprove_proof_configuration_check(app_configs, **kwargs):
                 hint=f'Configure {purpose}.',
                 id='secureapprove.E001',
             ))
-    if getattr(settings, 'SECUREAPPROVE_PROOF_SIGNER', '') != 'aws_kms':
-        errors.append(Error(
-            'Production SecureApprove Proof signing must use AWS KMS.',
-            id='secureapprove.E002',
-        ))
-    if getattr(settings, 'SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND', '') != 'aws_kms':
-        errors.append(Error(
-            'Production SecureApprove Proof evidence encryption must use AWS KMS.',
-            id='secureapprove.E003',
-        ))
     if not getattr(settings, 'SECUREAPPROVE_PROOF_ARCHIVE_ENABLED', False):
         errors.append(Error(
             'Production SecureApprove Proof issuance requires the WORM archive.',

@@ -1,11 +1,15 @@
 import base64
 import json
 import math
+import sys
 import uuid
 from datetime import datetime, timezone as datetime_timezone
 from decimal import Decimal
 from unittest.mock import patch
 
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 from django.db import transaction
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -38,6 +42,7 @@ from apps.authentication.proof_service import (
     verify_private_evidence_integrity,
     verify_compact_jws,
 )
+from apps.authentication.checks import secureapprove_proof_configuration_check
 from apps.authentication.tasks import purge_expired_proof_evidence
 from apps.authentication.webauthn_service import webauthn_service
 from apps.requests.models import ApprovalRequest
@@ -371,7 +376,8 @@ class ProofPublicApiIntegrationTests(ProofTestBase):
     def test_landing_promotes_proof_without_fake_statistics(self):
         response = self.client.get('/en/')
         self.assertContains(response, 'Every approval, bound to the exact content')
-        self.assertContains(response, 'AWS KMS')
+        self.assertContains(response, 'Vault Transit')
+        self.assertContains(response, 'MinIO Object Lock')
         self.assertContains(response, 'Exact content binding')
         self.assertNotContains(response, 'Seguridad avanzada')
         self.assertNotContains(response, '99.9%')
@@ -531,3 +537,117 @@ class ProofFlowIntegrationTests(ProofTestBase):
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()['error'], 'proof_signing_unavailable')
         self.assertEqual(SecurityProof.objects.count(), 0)
+
+
+VAULT_PROOF_SETTINGS = override_settings(
+    DEBUG=False,
+    SECUREAPPROVE_PROOF_ENABLED=True,
+    SECUREAPPROVE_PROOF_SIGNER='vault_transit',
+    SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND='vault_transit',
+    SECUREAPPROVE_PROOF_SIGNING_KID='secureapprove-proof-vault',
+    SECUREAPPROVE_VAULT_ADDR='http://vault-proxy:8100',
+    SECUREAPPROVE_VAULT_TRANSIT_MOUNT='transit',
+    SECUREAPPROVE_VAULT_SIGNING_KEY='secureapprove-proof-signing',
+    SECUREAPPROVE_VAULT_ENCRYPTION_KEY='secureapprove-proof-evidence',
+    SECUREAPPROVE_PROOF_ARCHIVE_ENABLED=True,
+    SECUREAPPROVE_PROOF_ARCHIVE_BUCKET='secureapprove-proofs',
+)
+
+
+@VAULT_PROOF_SETTINGS
+class VaultTransitProofTests(ProofTestBase):
+    def setUp(self):
+        super().setUp()
+        # The suite can reuse a PostgreSQL test database after infrastructure
+        # smoke tests. Vault kids are immutable, so each mocked key needs a
+        # clean signing-key registry.
+        ProofSigningKey.objects.all().delete()
+        self.vault_private_key = ec.generate_private_key(ec.SECP256R1())
+        self.vault_version = 1
+        self.data_key = b'v' * 32
+
+    def vault_response(self, method, path, payload=None):
+        if path == 'transit/keys/secureapprove-proof-signing':
+            public_pem = self.vault_private_key.public_key().public_bytes(
+                serialization.Encoding.PEM,
+                serialization.PublicFormat.SubjectPublicKeyInfo,
+            ).decode('ascii')
+            return {
+                'latest_version': self.vault_version,
+                'keys': {str(self.vault_version): {'public_key': public_pem}},
+            }
+        if path == 'transit/sign/secureapprove-proof-signing/sha2-256':
+            signing_input = base64.b64decode(payload['input'], validate=True)
+            der = self.vault_private_key.sign(signing_input, ec.ECDSA(hashes.SHA256()))
+            r, s = decode_dss_signature(der)
+            raw = r.to_bytes(32, 'big') + s.to_bytes(32, 'big')
+            encoded = base64.urlsafe_b64encode(raw).rstrip(b'=').decode('ascii')
+            self.assertEqual(payload['key_version'], self.vault_version)
+            return {'signature': f'vault:v{self.vault_version}:{encoded}'}
+        if path == 'transit/datakey/plaintext/secureapprove-proof-evidence':
+            self.assertEqual(payload['bits'], 256)
+            self.assertTrue(payload['context'])
+            return {
+                'plaintext': base64.b64encode(self.data_key).decode('ascii'),
+                'ciphertext': 'vault:v1:wrapped-data-key',
+            }
+        if path == 'transit/decrypt/secureapprove-proof-evidence':
+            self.assertEqual(payload['ciphertext'], 'vault:v1:wrapped-data-key')
+            self.assertTrue(payload['context'])
+            return {'plaintext': base64.b64encode(self.data_key).decode('ascii')}
+        raise AssertionError(f'Unexpected Vault request: {method} {path}')
+
+    @patch('apps.authentication.proof_service._vault_request')
+    def test_vault_issues_and_decrypts_a_verifiable_proof(self, vault_request):
+        vault_request.side_effect = self.vault_response
+        proof = self.issue('vault')
+        self.assertEqual(proof.signing_key.kid, 'secureapprove-proof-vault-v1')
+        self.assertEqual(
+            proof.signing_key.key_arn,
+            'vault:transit:secureapprove-proof-signing:v1',
+        )
+        self.assertTrue(verify_compact_jws(proof.jws)['payload'])
+        self.assertEqual(decrypt_evidence(proof)['transaction'], canonical_json_value(self.snapshot('vault')))
+
+    @patch('apps.authentication.proof_service._vault_request')
+    def test_vault_signatures_use_64_byte_jose_marshalling(self, vault_request):
+        vault_request.side_effect = self.vault_response
+        proof = self.issue('vault-jose')
+        raw = base64.urlsafe_b64decode(
+            proof.jws.split('.')[2] + '=' * ((4 - len(proof.jws.split('.')[2]) % 4) % 4)
+        )
+        self.assertEqual(len(raw), 64)
+
+    @patch('apps.authentication.proof_service._vault_request')
+    def test_vault_kid_cannot_be_rebound_to_different_key_material(self, vault_request):
+        vault_request.side_effect = self.vault_response
+        sync_active_signing_key()
+        self.vault_private_key = ec.generate_private_key(ec.SECP256R1())
+        with self.assertRaises(ProofUnavailable):
+            sync_active_signing_key()
+
+    @patch('apps.authentication.proof_service._vault_request')
+    def test_vault_rotation_is_detected_before_the_next_proof(self, vault_request):
+        vault_request.side_effect = self.vault_response
+        previous_key = sync_active_signing_key()
+        self.vault_version = 2
+        self.vault_private_key = ec.generate_private_key(ec.SECP256R1())
+        proof = self.issue('rotated')
+        previous_key.refresh_from_db()
+        self.assertEqual(previous_key.status, 'retired')
+        self.assertEqual(proof.signing_key.kid, 'secureapprove-proof-vault-v2')
+        self.assertTrue(verify_compact_jws(proof.jws)['payload'])
+
+    def test_production_configuration_accepts_vault_and_worm(self):
+        with patch.object(sys, 'argv', ['manage.py', 'check', '--deploy']):
+            proof_messages = [
+                message for message in secureapprove_proof_configuration_check(None)
+                if message.id.startswith('secureapprove.')
+            ]
+        self.assertEqual(proof_messages, [])
+
+    @override_settings(SECUREAPPROVE_PROOF_SIGNER='local')
+    def test_production_configuration_rejects_debug_signer(self):
+        with patch.object(sys, 'argv', ['manage.py', 'check', '--deploy']):
+            messages = secureapprove_proof_configuration_check(None)
+        self.assertIn('secureapprove.E002', {message.id for message in messages})

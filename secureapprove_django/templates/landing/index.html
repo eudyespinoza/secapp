@@ -354,16 +354,16 @@
                     <div class="row g-3">
                         <div class="col-md-4"><article class="proof-step"><span class="proof-step-number">1</span><h3 class="h5">{% trans "Seal the content" %}</h3><p class="text-muted-custom mb-0">{% trans "Canonical JSON and SHA-256 bind the exact transaction." %}</p></article></div>
                         <div class="col-md-4"><article class="proof-step"><span class="proof-step-number">2</span><h3 class="h5">{% trans "Verify the user" %}</h3><p class="text-muted-custom mb-0">{% trans "WebAuthn requires device-level user verification." %}</p></article></div>
-                        <div class="col-md-4"><article class="proof-step"><span class="proof-step-number">3</span><h3 class="h5">{% trans "Issue the receipt" %}</h3><p class="text-muted-custom mb-0">{% trans "AWS KMS signs an ES256 JWS and chains the ledger." %}</p></article></div>
+                        <div class="col-md-4"><article class="proof-step"><span class="proof-step-number">3</span><h3 class="h5">{% trans "Issue the receipt" %}</h3><p class="text-muted-custom mb-0">{% trans "Vault Transit signs an ES256 JWS and chains the ledger." %}</p></article></div>
                     </div>
                 </div>
                 <div class="col-lg-5">
                     <article class="proof-receipt" aria-label="{% trans 'Example of a valid SecureApprove Proof' %}">
                         <div class="proof-receipt-header"><div><strong>SecureApprove Proof</strong><div class="text-muted-custom small">sap-proof-v1</div></div><span class="proof-valid">✓ {% trans "Valid" %}</span></div>
                         <div class="proof-fact"><small>{% trans "Content fingerprint" %}</small><code class="proof-hash">7f83b1657ff1fc53b92dc18148a1d65dfa13514e…</code></div>
-                        <div class="proof-fact"><small>{% trans "Signature" %}</small><strong>ES256 · AWS KMS</strong></div>
+                        <div class="proof-fact"><small>{% trans "Signature" %}</small><strong>ES256 · Vault Transit</strong></div>
                         <div class="proof-fact"><small>{% trans "Ledger" %}</small><strong>{% trans "Hash chain verified" %}</strong></div>
-                        <div class="proof-fact"><small>{% trans "Archive" %}</small><strong>S3 Object Lock · WORM</strong></div>
+                        <div class="proof-fact"><small>{% trans "Archive" %}</small><strong>MinIO Object Lock · WORM</strong></div>
                     </article>
                 </div>
             </div>
@@ -415,8 +415,8 @@
                     <div class="card feature-card h-100 text-center p-4">
                         <div class="feature-icon bg-danger bg-opacity-10 mx-auto"><i class="bi bi-key text-danger fs-4"></i></div>
                         <div class="card-body">
-                            <h5 class="card-title fw-bold">{% trans "KMS-backed ES256 signatures" %}</h5>
-                            <p class="card-text text-muted-custom">{% trans "The signing key stays inside AWS KMS while every receipt remains independently verifiable." %}</p>
+                            <h5 class="card-title fw-bold">{% trans "Vault-backed ES256 signatures" %}</h5>
+                            <p class="card-text text-muted-custom">{% trans "The signing key stays inside Vault Transit while every receipt remains independently verifiable." %}</p>
                         </div>
                     </div>
                 </div>
@@ -542,7 +542,7 @@
             <div class="row row-cols-2 row-cols-md-5 g-2 text-center">
                 <div class="col"><div class="proof-tech"><i class="bi bi-fingerprint"></i>WebAuthn</div></div>
                 <div class="col"><div class="proof-tech"><i class="bi bi-hash"></i>SHA-256</div></div>
-                <div class="col"><div class="proof-tech"><i class="bi bi-key"></i>AWS KMS</div></div>
+                <div class="col"><div class="proof-tech"><i class="bi bi-key"></i>Vault Transit</div></div>
                 <div class="col"><div class="proof-tech"><i class="bi bi-patch-check"></i>ES256</div></div>
                 <div class="col"><div class="proof-tech"><i class="bi bi-archive"></i>WORM</div></div>
             </div>

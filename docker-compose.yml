@@ -39,6 +39,176 @@ services:
     networks:
       - internal
 
+  vault_storage_init:
+    image: hashicorp/vault:1.21.4
+    container_name: secureapprove_vault_storage_init
+    restart: "no"
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        chown -R 100:1000 /vault-data
+        cp /source-tls/ca.crt /vault-tls/ca.crt
+        cp /source-tls/server.crt /vault-tls/server.crt
+        cp /source-tls/server.key /vault-tls/server.key
+        chown 100:1000 /vault-tls/ca.crt /vault-tls/server.crt /vault-tls/server.key
+        chmod 0444 /vault-tls/ca.crt /vault-tls/server.crt
+        chmod 0400 /vault-tls/server.key
+    volumes:
+      - vault_data:/vault-data
+      - vault_tls:/vault-tls
+      - ${SECUREAPPROVE_SECRETS_DIR:-./secrets}/vault/tls:/source-tls:ro
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+
+  # Private key custody and envelope encryption. Vault is not exposed to the
+  # host or directly to Django; the dedicated proxy injects a renewable AppRole
+  # token and enforces the least-privilege application identity.
+  vault:
+    image: hashicorp/vault:1.21.4
+    container_name: secureapprove_vault
+    restart: unless-stopped
+    command: vault server -config=/vault/config/vault.hcl
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_ADDR: https://127.0.0.1:8200
+      VAULT_CACERT: /vault/tls/ca.crt
+    volumes:
+      - vault_data:/vault/data
+      - ./infra/vault/vault.hcl:/vault/config/vault.hcl:ro
+      - vault_tls:/vault/tls:ro
+    depends_on:
+      vault_storage_init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "vault status >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proof_vault_backend
+
+  vault_proxy_secrets_init:
+    image: hashicorp/vault:1.21.4
+    container_name: secureapprove_vault_proxy_secrets_init
+    restart: "no"
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        cp /source-auth/role-id /vault-auth/role-id
+        cp /source-auth/secret-id /vault-auth/secret-id
+        chown 100:1000 /vault-auth/role-id /vault-auth/secret-id
+        chmod 0400 /vault-auth/role-id /vault-auth/secret-id
+    volumes:
+      - ${SECUREAPPROVE_SECRETS_DIR:-./secrets}/vault:/source-auth:ro
+      - vault_auth:/vault-auth
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+
+  vault_proxy:
+    image: hashicorp/vault:1.21.4
+    container_name: secureapprove_vault_proxy
+    restart: unless-stopped
+    command: vault proxy -config=/vault/config/proxy.hcl
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_CACERT: /vault/tls/ca.crt
+    volumes:
+      - ./infra/vault/proxy.hcl:/vault/config/proxy.hcl:ro
+      - vault_tls:/vault/tls:ro
+      - vault_auth:/vault/auth:ro
+    depends_on:
+      vault:
+        condition: service_healthy
+      vault_proxy_secrets_init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "VAULT_ADDR=http://127.0.0.1:8100 vault status >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proof_vault_backend
+      - proof_vault_client
+
+  minio_secrets_init:
+    image: hashicorp/vault:1.21.4
+    container_name: secureapprove_minio_secrets_init
+    restart: "no"
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        cp /source-minio/minio.env /minio-root/minio.env
+        cp /source-minio/archive-credentials /proof-app/archive-credentials
+        chown 1000:1000 /minio-root/minio.env /proof-app/archive-credentials
+        chmod 0400 /minio-root/minio.env /proof-app/archive-credentials
+    volumes:
+      - ${SECUREAPPROVE_SECRETS_DIR:-./secrets}/minio:/source-minio:ro
+      - minio_root_secrets:/minio-root
+      - proof_app_secrets:/proof-app
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+
+  # Public JWS receipts are stored in a versioned Object Lock bucket. Only the
+  # application archive identity can write under proofs/; root credentials stay
+  # in a host-owned config file and are never mounted into Django.
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: secureapprove_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_CONFIG_ENV_FILE: /run/secrets/minio.env
+    volumes:
+      - minio_data:/data
+      - minio_root_secrets:/run/secrets:ro
+    depends_on:
+      minio_secrets_init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proof_archive
+
+  minio_init:
+    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
+    container_name: secureapprove_minio_init
+    restart: "no"
+    entrypoint: ["/bin/sh", "/bootstrap/minio-bootstrap.sh"]
+    environment:
+      PROOF_ARCHIVE_BUCKET: "${SECUREAPPROVE_PROOF_ARCHIVE_BUCKET:-secureapprove-proofs}"
+      PROOF_ARCHIVE_RETENTION_DAYS: "${SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS:-3650}"
+    volumes:
+      - ./infra/minio/minio-bootstrap.sh:/bootstrap/minio-bootstrap.sh:ro
+      - minio_root_secrets:/run/minio-secrets:ro
+      - proof_app_secrets:/run/app-secrets:ro
+    depends_on:
+      minio:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proof_archive
+
   # Django Web Application
   web:
     build: 
@@ -77,9 +247,18 @@ services:
       SECUREAPPROVE_PROOF_SIGNING_KEY_ARN: "${SECUREAPPROVE_PROOF_SIGNING_KEY_ARN:-}"
       SECUREAPPROVE_PROOF_SIGNING_KID: "${SECUREAPPROVE_PROOF_SIGNING_KID:-}"
       SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN: "${SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN:-}"
+      SECUREAPPROVE_VAULT_ADDR: "${SECUREAPPROVE_VAULT_ADDR:-http://vault_proxy:8100}"
+      SECUREAPPROVE_VAULT_TIMEOUT_SECONDS: "${SECUREAPPROVE_VAULT_TIMEOUT_SECONDS:-5}"
+      SECUREAPPROVE_VAULT_TRANSIT_MOUNT: "${SECUREAPPROVE_VAULT_TRANSIT_MOUNT:-transit}"
+      SECUREAPPROVE_VAULT_SIGNING_KEY: "${SECUREAPPROVE_VAULT_SIGNING_KEY:-secureapprove-proof-signing}"
+      SECUREAPPROVE_VAULT_ENCRYPTION_KEY: "${SECUREAPPROVE_VAULT_ENCRYPTION_KEY:-secureapprove-proof-evidence}"
       SECUREAPPROVE_PROOF_ARCHIVE_ENABLED: "${SECUREAPPROVE_PROOF_ARCHIVE_ENABLED:-False}"
       SECUREAPPROVE_PROOF_ARCHIVE_BUCKET: "${SECUREAPPROVE_PROOF_ARCHIVE_BUCKET:-}"
       SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS: "${SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS:-3650}"
+      SECUREAPPROVE_PROOF_ARCHIVE_ENDPOINT_URL: "${SECUREAPPROVE_PROOF_ARCHIVE_ENDPOINT_URL:-http://minio:9000}"
+      SECUREAPPROVE_PROOF_ARCHIVE_REGION: "${SECUREAPPROVE_PROOF_ARCHIVE_REGION:-us-east-1}"
+      SECUREAPPROVE_PROOF_ARCHIVE_ADDRESSING_STYLE: "${SECUREAPPROVE_PROOF_ARCHIVE_ADDRESSING_STYLE:-path}"
+      AWS_SHARED_CREDENTIALS_FILE: "/run/secrets/archive-credentials"
       AWS_REGION: "${AWS_REGION:-us-east-1}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID:-}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY:-}"
@@ -105,9 +284,12 @@ services:
     volumes:
       - ./secureapprove_django/media:/app/media
       - ./logs:/app/logs
+      - proof_app_secrets:/run/secrets:ro
     networks:
       - internal
       - secureapprove_proxy
+      - proof_vault_client
+      - proof_archive
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.secureapprove-web.rule=Host(`secureapprove.com`) || Host(`www.secureapprove.com`)"
@@ -152,9 +334,18 @@ services:
       SECUREAPPROVE_PROOF_SIGNING_KEY_ARN: "${SECUREAPPROVE_PROOF_SIGNING_KEY_ARN:-}"
       SECUREAPPROVE_PROOF_SIGNING_KID: "${SECUREAPPROVE_PROOF_SIGNING_KID:-}"
       SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN: "${SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN:-}"
+      SECUREAPPROVE_VAULT_ADDR: "${SECUREAPPROVE_VAULT_ADDR:-http://vault_proxy:8100}"
+      SECUREAPPROVE_VAULT_TIMEOUT_SECONDS: "${SECUREAPPROVE_VAULT_TIMEOUT_SECONDS:-5}"
+      SECUREAPPROVE_VAULT_TRANSIT_MOUNT: "${SECUREAPPROVE_VAULT_TRANSIT_MOUNT:-transit}"
+      SECUREAPPROVE_VAULT_SIGNING_KEY: "${SECUREAPPROVE_VAULT_SIGNING_KEY:-secureapprove-proof-signing}"
+      SECUREAPPROVE_VAULT_ENCRYPTION_KEY: "${SECUREAPPROVE_VAULT_ENCRYPTION_KEY:-secureapprove-proof-evidence}"
       SECUREAPPROVE_PROOF_ARCHIVE_ENABLED: "${SECUREAPPROVE_PROOF_ARCHIVE_ENABLED:-False}"
       SECUREAPPROVE_PROOF_ARCHIVE_BUCKET: "${SECUREAPPROVE_PROOF_ARCHIVE_BUCKET:-}"
       SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS: "${SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS:-3650}"
+      SECUREAPPROVE_PROOF_ARCHIVE_ENDPOINT_URL: "${SECUREAPPROVE_PROOF_ARCHIVE_ENDPOINT_URL:-http://minio:9000}"
+      SECUREAPPROVE_PROOF_ARCHIVE_REGION: "${SECUREAPPROVE_PROOF_ARCHIVE_REGION:-us-east-1}"
+      SECUREAPPROVE_PROOF_ARCHIVE_ADDRESSING_STYLE: "${SECUREAPPROVE_PROOF_ARCHIVE_ADDRESSING_STYLE:-path}"
+      AWS_SHARED_CREDENTIALS_FILE: "/run/secrets/archive-credentials"
       AWS_REGION: "${AWS_REGION:-us-east-1}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID:-}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY:-}"
@@ -175,6 +366,7 @@ services:
     volumes:
       - ./secureapprove_django/media:/app/media
       - ./logs:/app/logs
+      - proof_app_secrets:/run/secrets:ro
     depends_on:
       db:
         condition: service_healthy
@@ -188,6 +380,7 @@ services:
       start_period: 30s
     networks:
       - internal
+      - proof_archive
 
   celery_beat:
     extends:
@@ -202,12 +395,39 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  vault_data:
+    driver: local
+  vault_tls:
+    driver: local
+  vault_auth:
+    driver: local
+  minio_data:
+    driver: local
+  minio_root_secrets:
+    driver: local
+  proof_app_secrets:
+    driver: local
 
 networks:
   # Red interna para comunicación entre servicios
   internal:
     name: secureapprove_internal
     driver: bridge
+
+  proof_vault_backend:
+    name: secureapprove_proof_vault_backend
+    driver: bridge
+    internal: true
+
+  proof_vault_client:
+    name: secureapprove_proof_vault_client
+    driver: bridge
+    internal: true
+
+  proof_archive:
+    name: secureapprove_proof_archive
+    driver: bridge
+    internal: true
   
   # Red externa de Traefik (debe existir previamente)
   secureapprove_proxy:
