@@ -1893,6 +1893,9 @@ msgstr "Esta solicitud está esperando la aprobación de un administrador."
 msgid "This request was approved on"
 msgstr "Esta solicitud fue aprobada el"
 
+msgid "This request was rejected on"
+msgstr "Esta solicitud fue rechazada el"
+
 msgid "by"
 msgstr "por"
 
@@ -3260,10 +3263,9 @@ msgid "Authenticate"
 msgstr "Autenticar"
 
 msgid "request in total"
-msgstr "solicitud en total"
-
-msgid "requests in total"
-msgstr "solicitudes en total"
+msgid_plural "requests in total"
+msgstr[0] "solicitud en total"
+msgstr[1] "solicitudes en total"
 
 msgid "Filter Requests"
 msgstr "Filtrar Solicitudes"

@@ -2171,7 +2171,10 @@ msgstr "Esta solicitação está aguardando aprovação de um administrador."
 
 #: templates/requests/detail.html:136
 msgid "This request was approved on"
-msgstr "A solicitação foi aprovada."
+msgstr "Esta solicitação foi aprovada em"
+
+msgid "This request was rejected on"
+msgstr "Esta solicitação foi rejeitada em"
 
 #: templates/requests/detail.html:137 templates/requests/detail.html:220
 #: templates/requests/detail.html:235
@@ -3387,10 +3390,9 @@ msgid "WebAuthn is not supported on this device/browser."
 msgstr "WebAuthn não é suportado neste dispositivo/navegador."
 
 msgid "request in total"
-msgstr "solicitação no total"
-
-msgid "requests in total"
-msgstr "solicitações no total"
+msgid_plural "requests in total"
+msgstr[0] "solicitação no total"
+msgstr[1] "solicitações no total"
 
 msgid "Filter Requests"
 msgstr "Filtrar Solicitações"

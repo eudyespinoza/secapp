@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n request_formatting %}
 
 {% block title %}{{ request_obj.title }} - SecureApprove{% endblock %}
 
@@ -332,9 +332,9 @@
                         </p>
                     </div>
                     {% if request_obj.amount %}
-                        <div class="amount-display" aria-label="{% trans 'Amount' %}: $ {{ request_obj.amount|floatformat:'2g' }}">
+                        <div class="amount-display" aria-label="{% trans 'Amount' %}: $ {{ request_obj.amount|format_amount }}">
                             <span class="amount-label">{% trans "Amount" %}</span>
-                            <span class="amount-value">$&nbsp;{{ request_obj.amount|floatformat:"2g" }}</span>
+                            <span class="amount-value">$&nbsp;{{ request_obj.amount|format_amount }}</span>
                         </div>
                     {% endif %}
                 </div>
@@ -561,7 +561,7 @@
                         {% if request_obj.amount %}
                             <tr>
                                 <td class="text-muted">{% trans "Amount:" %}</td>
-                                <td><span class="request-amount-inline">$&nbsp;{{ request_obj.amount|floatformat:"2g" }}</span></td>
+                                <td><span class="request-amount-inline">$&nbsp;{{ request_obj.amount|format_amount }}</span></td>
                             </tr>
                         {% endif %}
                     </table>

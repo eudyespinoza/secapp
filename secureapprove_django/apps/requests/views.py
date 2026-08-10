@@ -22,6 +22,32 @@ from .serializers import ApprovalRequestSerializer
 # Web Views (Django Templates)
 # ==================================================
 
+def _build_metadata_items(metadata):
+    metadata_labels = {
+        'vendor': _('Vendor'),
+        'cost_center': _('Cost Center'),
+        'expense_category': _('Expense Category'),
+        'receipt_ref': _('Receipt Reference'),
+        'destination': _('Destination'),
+        'start_date': _('Start Date'),
+        'end_date': _('End Date'),
+        'document_id': _('Document ID'),
+        'reason': _('Reason'),
+    }
+
+    metadata_items = []
+    for key, value in (metadata or {}).items():
+        if not value:
+            continue
+
+        label = metadata_labels.get(key)
+        if label is None:
+            label = key.replace('_', ' ').strip().title()
+
+        metadata_items.append({'label': label, 'value': value})
+
+    return metadata_items
+
 @login_required
 def request_list(request):
     """List all requests for the current user"""
@@ -56,6 +82,9 @@ def request_list(request):
     paginator = Paginator(requests_qs, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    for request_obj in page_obj.object_list:
+        request_obj.metadata_items = _build_metadata_items(request_obj.metadata)
     
     context = {
         'page_obj': page_obj,
@@ -160,31 +189,11 @@ def request_detail(request, pk):
         approval_request.status == 'pending' and
         approval_request.requester != request.user
     )
-
-    metadata_labels = {
-        'vendor': _('Vendor'),
-        'cost_center': _('Cost Center'),
-        'expense_category': _('Expense Category'),
-        'receipt_ref': _('Receipt Reference'),
-        'destination': _('Destination'),
-        'start_date': _('Start Date'),
-        'end_date': _('End Date'),
-        'document_id': _('Document ID'),
-        'reason': _('Reason'),
-    }
-    metadata_items = []
-    for key, value in (approval_request.metadata or {}).items():
-        if not value:
-            continue
-        label = metadata_labels.get(key)
-        if label is None:
-            label = key.replace('_', ' ').strip().title()
-        metadata_items.append({'label': label, 'value': value})
     
     context = {
         'request_obj': approval_request,
         'can_approve': can_approve,
-        'metadata_items': metadata_items,
+        'metadata_items': _build_metadata_items(approval_request.metadata),
     }
     
     return render(request, 'requests/detail.html', context)

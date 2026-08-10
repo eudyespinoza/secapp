@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n request_formatting %}
 
 {% block title %}{% trans "Requests" %} - SecureApprove{% endblock %}
 
@@ -496,7 +496,7 @@
                     </h1>
                     <p class="requests-count">
                         <span class="count-number">{{ page_obj.paginator.count }}</span>
-                        {% blocktrans count total=page_obj.paginator.count %}
+                        {% blocktrans trimmed count total=page_obj.paginator.count %}
                             request in total
                         {% plural %}
                             requests in total
@@ -588,20 +588,18 @@
                                         {{ request_obj.get_category_display }}
                                     </span>
                                     {% if request_obj.amount %}
-                                        <span class="amount-display">${{ request_obj.amount|floatformat:2 }}</span>
+                                        <span class="amount-display">$&nbsp;{{ request_obj.amount|format_amount }}</span>
                                     {% endif %}
                                 </div>
                                 
                                 <!-- Metadata -->
-                                {% if request_obj.metadata %}
+                                {% if request_obj.metadata_items %}
                                     <div class="metadata-pills">
-                                        {% for key, value in request_obj.metadata.items %}
-                                            {% if value %}
-                                                <span class="metadata-pill">
-                                                    <i class="bi bi-info-circle"></i>
-                                                    {{ key|title }}: {{ value|truncatechars:15 }}
-                                                </span>
-                                            {% endif %}
+                                        {% for item in request_obj.metadata_items %}
+                                            <span class="metadata-pill">
+                                                <i class="bi bi-info-circle"></i>
+                                                {{ item.label }}: {{ item.value|truncatechars:15 }}
+                                            </span>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -737,6 +735,18 @@
         }
     }
 
+    function formatAmount(value) {
+        const amount = Number(value);
+        if (!Number.isFinite(amount)) {
+            return '';
+        }
+
+        return amount.toLocaleString('de-DE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
     // Real-time Updates
     window.addEventListener('approval-request-received', function(event) {
         const notificationData = event.detail;
@@ -775,7 +785,7 @@
                                     <i class="bi bi-tag"></i>
                                     ${data.category_display || data.category || '{% trans "Request" %}'}
                                 </span>
-                                ${data.amount ? `<span class="amount-display">$${parseFloat(data.amount).toFixed(2)}</span>` : ''}
+                                ${data.amount ? `<span class="amount-display">$&nbsp;${formatAmount(data.amount)}</span>` : ''}
                             </div>
                             <div class="request-card-footer">
                                 <div class="requester-info">
