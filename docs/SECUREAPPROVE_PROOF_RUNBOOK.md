@@ -14,6 +14,11 @@ AWS KMS does not automatically rotate asymmetric keys. Once per year:
 
 Do not schedule deletion of an old KMS key until its retention and incident requirements have been reviewed. Public JWK rows and archived JWS objects are permanent verification dependencies.
 
+On a non-AWS host, install short-lived workload credentials in the protected
+production environment (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and when
+applicable `AWS_SESSION_TOKEN`). Prefer an assumable role or IAM Roles Anywhere
+over a long-lived IAM user key.
+
 ## Incident behavior
 
 - KMS signing or encryption failure: new approvals return `503 proof_signing_unavailable`; do not bypass Proof.
