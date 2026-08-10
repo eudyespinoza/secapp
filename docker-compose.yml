@@ -135,6 +135,7 @@ services:
       # Django
       DEBUG: "False"
       SECRET_KEY: "${SECRET_KEY:?SECRET_KEY is required}"
+      SECUREAPPROVE_RUN_INITIALIZATION: "False"
       ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
       
       # Security

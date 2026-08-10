@@ -5,6 +5,13 @@
 
 set -e
 
+# Workers share the image but must never race the web process through schema
+# migrations or one-time bootstrap work.
+case "${SECUREAPPROVE_RUN_INITIALIZATION:-true}" in
+  true|True|1) ;;
+  *) exec "$@" ;;
+esac
+
 echo "[*] Starting SecureApprove initialization..."
 
 # Ensure media directories exist and are writable
