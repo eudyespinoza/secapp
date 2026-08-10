@@ -97,25 +97,8 @@ class ProofVerifierView(TemplateView):
         return self.render_to_response(context)
 
 class DemoPageView(TemplateView):
-    """Demo page showing sample approval request"""
+    """Public animated walkthrough of the SecureApprove Proof process."""
     template_name = 'landing/demo.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Demo de solicitud de aprobación
-        demo_request = {
-            'title': 'Aprobar Compra de Equipos',
-            'amount': '$2,500.00',
-            'department': 'IT',
-            'requestor': 'Juan Pérez',
-            'date': '2024-01-15',
-            'priority': 'Media',
-            'description': 'Compra de 2 laptops para nuevos desarrolladores del equipo de IT.'
-        }
-        
-        context['demo_request'] = demo_request
-        return context
 
 class TermsView(TemplateView):
     """Terms and Conditions page"""

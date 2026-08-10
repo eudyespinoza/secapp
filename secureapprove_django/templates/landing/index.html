@@ -125,6 +125,28 @@
             background: #bfdbfe;
         }
 
+        .hero-proof-link {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            min-height: 44px;
+            margin-top: 1rem;
+            color: #1d4ed8;
+            font-weight: 750;
+            text-underline-offset: .25rem;
+        }
+
+        .hero-proof-link:hover { color: #1e40af; }
+
+        .hero-proof-link:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, .35);
+            outline-offset: 4px;
+            border-radius: .35rem;
+        }
+
+        [data-theme="dark"] .hero-proof-link { color: #bfdbfe; }
+        [data-theme="dark"] .hero-proof-link:hover { color: #e0f2fe; }
+
         .stats-section {
             background: var(--primary-color);
         }
@@ -333,11 +355,16 @@
                             <i class="bi bi-fingerprint me-2"></i>
                             {% if proof_marketing_enabled %}{% trans "Try SecureApprove" %}{% else %}{% trans "Comenzar Ahora" %}{% endif %}
                         </a>
-                        <a href="{% if proof_marketing_enabled %}{% url 'landing:proof_verify' %}{% else %}{% url 'landing:demo' %}{% endif %}" class="btn btn-outline-custom btn-lg">
-                            <i class="bi {% if proof_marketing_enabled %}bi-patch-check{% else %}bi-play-circle{% endif %} me-2"></i>
-                            {% if proof_marketing_enabled %}{% trans "Verify a proof" %}{% else %}{% trans "Ver Demo" %}{% endif %}
+                        <a href="{% url 'landing:demo' %}" class="btn btn-outline-custom btn-lg">
+                            <i class="bi bi-play-circle me-2" aria-hidden="true"></i>
+                            {% trans "Watch animated demo" %}
                         </a>
                     </div>
+                    {% if proof_marketing_enabled %}
+                    <a href="{% url 'landing:proof_verify' %}" class="hero-proof-link">
+                        <i class="bi bi-patch-check" aria-hidden="true"></i>{% trans "Verify a proof" %}
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

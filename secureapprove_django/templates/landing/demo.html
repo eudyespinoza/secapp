@@ -1,608 +1,973 @@
 {% extends 'base.html' %}
 {% load i18n static %}
 
-{% block title %}{% trans "Demo - SecureApprove" %}{% endblock %}
+{% block title %}{% trans "Animated demo - SecureApprove Proof" %}{% endblock %}
+{% block description %}{% trans "See how SecureApprove binds content, WebAuthn verification, the decision, and a cryptographic proof." %}{% endblock %}
 
 {% block extra_css %}
 <style>
-        /* Demo-specific styles */
-        .demo-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .approval-card {
-            box-shadow: 0 4px 15px var(--card-shadow);
-            border: none;
-            border-radius: 12px;
-            background-color: var(--card-bg);
-        }
-        
-        [data-theme="dark"] .approval-card {
-            background-color: var(--card-bg) !important;
-            border: 1px solid var(--border-color) !important;
-        }
-        
-        [data-theme="dark"] .approval-card .card-header {
-            background-color: var(--bg-secondary) !important;
-            border-color: var(--border-color) !important;
-        }
-        
-        [data-theme="dark"] .approval-card .card-body {
-            color: var(--text-color) !important;
-        }
-        
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        [data-theme="dark"] .status-pending {
-            background: #451a03;
-            color: #fbbf24;
-        }
-        
-        .priority-badge {
-            font-size: 0.875rem;
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-        }
-        
-        .priority-high { background: #dc3545; color: white; }
-        .priority-medium { background: #ffc107; color: #212529; }
-        .priority-low { background: #28a745; color: white; }
-        
-        [data-theme="dark"] .priority-medium {
-            background: #b45309;
-            color: #fef3c7;
-        }
-        
-        .category-badge {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .status-card {
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #212529;
-        }
-        
-        .status-card-pending { 
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
-        }
-        
-        [data-theme="dark"] .status-card-pending {
-            background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
-            color: #fef3c7 !important;
-        }
-        
-        [data-theme="dark"] .status-card-pending h5,
-        [data-theme="dark"] .status-card-pending p {
-            color: #fef3c7 !important;
-        }
-        
-        .amount-display {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #2c3e50;
-            background: var(--bg-secondary, #f8f9fa);
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        [data-theme="dark"] .amount-display {
-            color: #10b981 !important;
-            background: rgba(16, 185, 129, 0.15) !important;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        
-        .btn-approve {
-            background: var(--secondary-color);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-approve:hover {
-            background: #059669;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-        
-        .btn-reject {
-            background: #dc2626;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-reject:hover {
-            background: #b91c1c;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-        }
-        
-        .demo-note {
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        [data-theme="dark"] .demo-note {
-            background: linear-gradient(135deg, #1e3a8a, #1e40af);
-            color: #dbeafe;
-        }
-        
-        [data-theme="dark"] .demo-note p {
-            color: #93c5fd !important;
-        }
-        
-        .metadata-table th {
-            background-color: var(--bg-secondary, #f8f9fa);
-            font-weight: 600;
-            width: 35%;
-            color: var(--text-primary, #212529);
-        }
-        
-        .metadata-table td {
-            color: var(--text-primary, #212529);
-        }
-        
-        [data-theme="dark"] .metadata-table {
-            --bs-table-bg: var(--card-bg);
-        }
-        
-        [data-theme="dark"] .metadata-table th {
-            background-color: var(--bg-secondary) !important;
-            color: var(--text-color) !important;
-        }
-        
-        [data-theme="dark"] .metadata-table td {
-            color: var(--text-color) !important;
-        }
-        
-        .timeline-item {
-            position: relative;
-            padding-left: 2rem;
-            border-left: 2px solid var(--border-color, #dee2e6);
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-        }
-        
-        .timeline-item:last-child {
-            border-left: 2px solid transparent;
-        }
-        
-        .timeline-icon {
-            position: absolute;
-            left: -0.625rem;
-            top: 0;
-            width: 1.25rem;
-            height: 1.25rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-        }
-        
-        [data-theme="dark"] .timeline-item {
-            color: var(--text-color) !important;
-        }
-        
-        [data-theme="dark"] .bg-secondary-custom,
-        [data-theme="dark"] .bg-light {
-            background-color: var(--bg-secondary) !important;
-        }
-        
-        [data-theme="dark"] .text-muted-custom,
-        [data-theme="dark"] .form-label {
-            color: var(--text-muted) !important;
-        }
-        
-        [data-theme="dark"] .fw-semibold,
-        [data-theme="dark"] .fw-bold {
-            color: var(--text-color) !important;
-        }
-        
-        .detail-section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-        
-        .detail-section-header {
-            background: var(--bg-secondary);
-            padding: 1rem 1.5rem;
+    .proof-demo-page {
+        --demo-blue: #2563eb;
+        --demo-blue-soft: #dbeafe;
+        --demo-green: #15803d;
+        --demo-green-soft: #dcfce7;
+        --demo-amber: #a16207;
+        --demo-amber-soft: #fef3c7;
+        --demo-ink: #0f172a;
+        min-height: calc(100vh - 80px);
+        background:
+            radial-gradient(circle at 12% 12%, rgba(37, 99, 235, .12), transparent 28rem),
+            radial-gradient(circle at 88% 18%, rgba(14, 165, 233, .10), transparent 24rem),
+            var(--bg-color);
+    }
+
+    [data-theme="dark"] .proof-demo-page {
+        --demo-blue-soft: #172554;
+        --demo-green-soft: #123d2c;
+        --demo-amber-soft: #422006;
+        --demo-ink: #f8fafc;
+        background:
+            radial-gradient(circle at 12% 12%, rgba(37, 99, 235, .18), transparent 28rem),
+            radial-gradient(circle at 88% 18%, rgba(14, 165, 233, .12), transparent 24rem),
+            var(--bg-color);
+    }
+
+    .proof-demo-hero {
+        padding: 4.5rem 0 2.5rem;
+        text-align: center;
+    }
+
+    .proof-demo-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        margin-bottom: 1rem;
+        padding: .55rem .85rem;
+        border: 1px solid rgba(37, 99, 235, .32);
+        border-radius: 999px;
+        color: #1d4ed8;
+        background: rgba(219, 234, 254, .76);
+        font-weight: 750;
+    }
+
+    [data-theme="dark"] .proof-demo-eyebrow {
+        color: #bfdbfe;
+        background: rgba(23, 37, 84, .9);
+        border-color: #3b82f6;
+    }
+
+    .proof-demo-title {
+        max-width: 900px;
+        margin-inline: auto;
+        font-size: clamp(2.1rem, 5vw, 4.4rem);
+        line-height: 1.03;
+        letter-spacing: -.045em;
+    }
+
+    .proof-demo-lead {
+        max-width: 760px;
+        margin-inline: auto;
+        color: var(--text-muted);
+        font-size: clamp(1rem, 2vw, 1.22rem);
+        line-height: 1.7;
+    }
+
+    .proof-demo-disclaimer {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        margin-top: 1rem;
+        color: var(--text-secondary);
+        font-weight: 650;
+    }
+
+    .proof-demo-shell {
+        display: grid;
+        grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+        max-width: 1240px;
+        margin: 0 auto;
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        overflow: hidden;
+        background: var(--card-bg);
+        box-shadow: 0 28px 80px rgba(15, 23, 42, .14);
+    }
+
+    [data-theme="dark"] .proof-demo-shell {
+        box-shadow: 0 28px 80px rgba(0, 0, 0, .32);
+    }
+
+    .proof-demo-sidebar {
+        padding: 1.25rem;
+        border-right: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+    }
+
+    .proof-demo-sidebar-title {
+        margin: .35rem .4rem 1rem;
+        color: var(--text-muted);
+        font-size: .78rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .proof-demo-step {
+        display: grid;
+        grid-template-columns: 2.4rem 1fr auto;
+        align-items: center;
+        width: 100%;
+        min-height: 64px;
+        margin-bottom: .5rem;
+        padding: .65rem .7rem;
+        border: 1px solid transparent;
+        border-radius: 14px;
+        color: var(--text-secondary);
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .proof-demo-step:hover {
+        border-color: var(--border-color);
+        background: var(--card-bg);
+    }
+
+    .proof-demo-step:focus-visible,
+    .proof-demo-control:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, .35);
+        outline-offset: 2px;
+    }
+
+    .proof-demo-step.is-active {
+        border-color: rgba(37, 99, 235, .45);
+        color: var(--text-color);
+        background: var(--card-bg);
+        box-shadow: 0 8px 22px rgba(37, 99, 235, .10);
+    }
+
+    .proof-demo-step-number {
+        display: grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 10px;
+        color: #1d4ed8;
+        background: var(--demo-blue-soft);
+        font-weight: 850;
+    }
+
+    .proof-demo-step.is-active .proof-demo-step-number {
+        color: #fff;
+        background: var(--demo-blue);
+    }
+
+    .proof-demo-step.is-complete .proof-demo-step-number {
+        color: #fff;
+        background: var(--demo-green);
+    }
+
+    .proof-demo-step-label {
+        padding-inline: .65rem;
+        font-size: .9rem;
+        font-weight: 750;
+        line-height: 1.25;
+    }
+
+    .proof-demo-step-state {
+        color: var(--text-muted);
+    }
+
+    .proof-demo-step.is-active .proof-demo-step-state {
+        color: var(--demo-blue);
+    }
+
+    .proof-demo-step.is-complete .proof-demo-step-state {
+        color: var(--demo-green);
+    }
+
+    .proof-demo-main {
+        min-width: 0;
+        padding: 1.25rem;
+    }
+
+    .proof-demo-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .proof-demo-progress-wrap {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .proof-demo-progress-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: .45rem;
+        color: var(--text-muted);
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .proof-demo-progress {
+        height: 7px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: var(--border-color);
+    }
+
+    .proof-demo-progress-fill {
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #2563eb, #0ea5e9);
+        transform: scaleX(.2);
+        transform-origin: left center;
+        transition: transform .28s ease-out;
+    }
+
+    .proof-demo-controls {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .proof-demo-control {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .45rem;
+        min-width: 46px;
+        min-height: 46px;
+        padding: .6rem .8rem;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-color);
+        background: var(--card-bg);
+        font-weight: 750;
+        cursor: pointer;
+        transition: border-color .2s ease, background-color .2s ease;
+    }
+
+    .proof-demo-control:hover:not(:disabled) {
+        border-color: var(--demo-blue);
+        background: var(--demo-blue-soft);
+    }
+
+    .proof-demo-control:disabled {
+        opacity: .42;
+        cursor: not-allowed;
+    }
+
+    .proof-demo-control-primary {
+        min-width: 128px;
+        color: #fff;
+        border-color: var(--demo-blue);
+        background: var(--demo-blue);
+    }
+
+    .proof-demo-control-primary:hover:not(:disabled) {
+        color: #fff;
+        background: #1d4ed8;
+    }
+
+    .proof-demo-stage {
+        position: relative;
+        min-height: 550px;
+        padding: clamp(1rem, 3vw, 2rem);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        background:
+            linear-gradient(rgba(148, 163, 184, .09) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, .09) 1px, transparent 1px),
+            var(--bg-secondary);
+        background-size: 28px 28px;
+    }
+
+    .proof-demo-panel {
+        display: none;
+        min-height: 484px;
+    }
+
+    .proof-demo-panel.is-active {
+        display: grid;
+        align-content: center;
+        animation: proof-demo-enter .28s ease-out both;
+    }
+
+    @keyframes proof-demo-enter {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .proof-demo-panel-heading {
+        max-width: 680px;
+        margin: 0 auto 1.4rem;
+        text-align: center;
+    }
+
+    .proof-demo-panel-heading i {
+        display: grid;
+        place-items: center;
+        width: 3rem;
+        height: 3rem;
+        margin: 0 auto .85rem;
+        border-radius: 14px;
+        color: #fff;
+        background: var(--demo-blue);
+        font-size: 1.35rem;
+    }
+
+    .proof-demo-panel-heading h2 {
+        margin-bottom: .5rem;
+        font-size: clamp(1.35rem, 3vw, 2rem);
+        letter-spacing: -.025em;
+    }
+
+    .proof-demo-panel-heading p {
+        margin: 0;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    .proof-demo-card {
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        background: var(--card-bg);
+        box-shadow: 0 16px 38px rgba(15, 23, 42, .10);
+    }
+
+    .proof-demo-transaction {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(230px, .72fr);
+        max-width: 780px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    .proof-demo-transaction-main,
+    .proof-demo-transaction-hash {
+        padding: 1.25rem;
+    }
+
+    .proof-demo-transaction-hash {
+        color: #dbeafe;
+        background: #0f172a;
+    }
+
+    .proof-demo-kicker {
+        color: var(--text-muted);
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .proof-demo-amount {
+        margin: .75rem 0;
+        font-size: clamp(1.7rem, 4vw, 2.6rem);
+        font-weight: 850;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -.04em;
+    }
+
+    .proof-demo-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .proof-demo-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .38rem .58rem;
+        border-radius: 999px;
+        color: var(--text-secondary);
+        background: var(--bg-secondary);
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    .proof-demo-code {
+        display: block;
+        margin-top: .85rem;
+        overflow-wrap: anywhere;
+        color: #7dd3fc;
+        font: .78rem/1.6 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .proof-demo-device-layout {
+        display: grid;
+        grid-template-columns: minmax(210px, 300px) minmax(0, 380px);
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
+    .proof-demo-phone {
+        position: relative;
+        width: min(100%, 260px);
+        min-height: 330px;
+        margin: 0 auto;
+        padding: 1rem;
+        border: 8px solid #0f172a;
+        border-radius: 34px;
+        background: var(--card-bg);
+        box-shadow: 0 24px 55px rgba(15, 23, 42, .22);
+    }
+
+    .proof-demo-phone-speaker {
+        width: 72px;
+        height: 6px;
+        margin: 0 auto 2rem;
+        border-radius: 999px;
+        background: #334155;
+    }
+
+    .proof-demo-fingerprint {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 96px;
+        height: 96px;
+        margin: 1rem auto;
+        border-radius: 50%;
+        color: #2563eb;
+        background: var(--demo-blue-soft);
+        font-size: 3rem;
+    }
+
+    .proof-demo-panel.is-active .proof-demo-fingerprint::after {
+        content: '';
+        position: absolute;
+        inset: -8px;
+        border: 2px solid rgba(37, 99, 235, .35);
+        border-radius: inherit;
+        animation: proof-demo-pulse 1.5s ease-out infinite;
+    }
+
+    @keyframes proof-demo-pulse {
+        0% { opacity: .8; transform: scale(.88); }
+        75%, 100% { opacity: 0; transform: scale(1.16); }
+    }
+
+    .proof-demo-security-list {
+        padding: 1.25rem;
+    }
+
+    .proof-demo-security-item {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: .8rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .proof-demo-security-item:last-child { border-bottom: 0; }
+    .proof-demo-security-item i { color: var(--demo-green); font-size: 1.1rem; }
+    .proof-demo-security-item small { display: block; color: var(--text-muted); }
+
+    .proof-demo-decision {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 1.4rem;
+    }
+
+    .proof-demo-approved {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .6rem .8rem;
+        border-radius: 12px;
+        color: #166534;
+        background: var(--demo-green-soft);
+        font-weight: 800;
+    }
+
+    [data-theme="dark"] .proof-demo-approved { color: #bbf7d0; }
+
+    .proof-demo-chain {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: stretch;
+        gap: 1rem;
+        max-width: 860px;
+        margin: 0 auto;
+    }
+
+    .proof-demo-chain-card {
+        position: relative;
+        padding: 1.2rem;
+        text-align: center;
+    }
+
+    .proof-demo-chain-card:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: calc(100% + 1px);
+        width: 1rem;
+        border-top: 2px dashed #60a5fa;
+    }
+
+    .proof-demo-chain-icon {
+        display: grid;
+        place-items: center;
+        width: 2.7rem;
+        height: 2.7rem;
+        margin: 0 auto .75rem;
+        border-radius: 12px;
+        color: #fff;
+        background: var(--demo-blue);
+        font-size: 1.2rem;
+    }
+
+    .proof-demo-chain-card small { color: var(--text-muted); }
+
+    .proof-demo-receipt {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 1.35rem;
+    }
+
+    .proof-demo-receipt-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .proof-demo-valid {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .4rem .65rem;
+        border-radius: 999px;
+        color: #166534;
+        background: var(--demo-green-soft);
+        font-weight: 850;
+    }
+
+    [data-theme="dark"] .proof-demo-valid { color: #bbf7d0; }
+
+    .proof-demo-receipt-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0;
+    }
+
+    .proof-demo-fact {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .proof-demo-fact:nth-child(odd) { border-right: 1px solid var(--border-color); }
+    .proof-demo-fact small { display: block; margin-bottom: .25rem; color: var(--text-muted); }
+    .proof-demo-fact code { overflow-wrap: anywhere; color: #0369a1; }
+    [data-theme="dark"] .proof-demo-fact code { color: #7dd3fc; }
+
+    .proof-demo-status {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        margin-top: 1rem;
+        padding: .85rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        color: var(--text-secondary);
+        background: var(--card-bg);
+        font-weight: 700;
+    }
+
+    .proof-demo-status i { color: var(--demo-blue); }
+
+    .proof-demo-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        max-width: 1240px;
+        margin: 2rem auto 0;
+        padding: 1.25rem 0 4rem;
+    }
+
+    .proof-demo-footer-copy { max-width: 670px; }
+
+    @media (max-width: 991.98px) {
+        .proof-demo-shell { grid-template-columns: 1fr; }
+        .proof-demo-sidebar {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            gap: .5rem;
+            overflow-x: auto;
+            border-right: 0;
             border-bottom: 1px solid var(--border-color);
         }
-        
-        [data-theme="dark"] .detail-section {
-            background: var(--card-bg) !important;
-            border-color: var(--border-color) !important;
-        }
-        
-        [data-theme="dark"] .detail-section-header {
-            background: var(--bg-secondary) !important;
-        }
-        
-        [data-theme="dark"] .detail-section-header h5 {
-            color: var(--text-color) !important;
-        }
-        
-        .attachment-item {
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            transition: all 0.2s ease;
-        }
-        
-        .attachment-item:hover {
-            background: var(--card-hover-bg, #e9ecef);
-        }
-        
-        [data-theme="dark"] .attachment-item:hover {
-            background: var(--bg-tertiary, #3b4a5a) !important;
-        }
+        .proof-demo-sidebar-title { grid-column: 1 / -1; margin-bottom: 0; }
+        .proof-demo-step { margin-bottom: 0; }
+        .proof-demo-step-state { display: none; }
+    }
+
+    @media (max-width: 767.98px) {
+        .proof-demo-hero { padding: 2.5rem 0 1.75rem; }
+        .proof-demo-main { padding: .75rem; }
+        .proof-demo-toolbar { align-items: stretch; flex-direction: column; }
+        .proof-demo-controls { justify-content: space-between; }
+        .proof-demo-control-primary { flex: 1; min-width: 0; }
+        .proof-demo-stage { min-height: 620px; padding: 1rem; }
+        .proof-demo-panel { min-height: 584px; }
+        .proof-demo-transaction,
+        .proof-demo-device-layout,
+        .proof-demo-chain,
+        .proof-demo-receipt-grid { grid-template-columns: 1fr; }
+        .proof-demo-transaction-hash { min-height: 150px; }
+        .proof-demo-decision { grid-template-columns: 1fr; text-align: center; }
+        .proof-demo-chain-card:not(:last-child)::after { display: none; }
+        .proof-demo-fact:nth-child(odd) { border-right: 0; }
+        .proof-demo-footer { align-items: stretch; flex-direction: column; padding-bottom: 2.5rem; }
+        .proof-demo-footer .btn { width: 100%; min-height: 48px; }
+    }
+
+    @media (max-width: 430px) {
+        .proof-demo-sidebar { grid-template-columns: repeat(5, minmax(104px, 1fr)); }
+        .proof-demo-step { grid-template-columns: 2rem 1fr; min-height: 56px; padding: .45rem; }
+        .proof-demo-step-label { font-size: .8rem; }
+        .proof-demo-control { padding: .5rem; }
+        .proof-demo-control span { display: none; }
+        .proof-demo-control-primary span { display: inline; }
+        .proof-demo-stage { min-height: 660px; }
+        .proof-demo-panel { min-height: 624px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .proof-demo-progress-fill,
+        .proof-demo-step,
+        .proof-demo-control { transition: none; }
+        .proof-demo-panel.is-active { animation: none; }
+        .proof-demo-panel.is-active .proof-demo-fingerprint::after { animation: none; opacity: .55; }
+    }
 </style>
 {% endblock %}
 
-{% block header %}
-<!-- Demo page header -->
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'landing:index' %}">
-            <img src="{% static 'img/logo.png' %}" alt="SecureApprove" height="32" class="app-brand-logo me-2">
-            <span class="fw-bold">SecureApprove</span>
-            <span class="badge bg-info ms-2">DEMO</span>
-        </a>
-        
-        <div class="d-flex align-items-center gap-3">
-            <!-- Theme Switcher -->
-            <div class="dropdown">
-                <button class="control-button" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-sun" id="themeIcon"></i>
-                    <span id="themeText">{% trans "Claro" %}</span>
-                    <i class="bi bi-chevron-down"></i>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="themeDropdown">
-                    <li><button class="dropdown-item" onclick="setTheme('light')" data-theme-option="light">
-                        <i class="bi bi-sun me-2"></i> {% trans "Claro" %}
-                    </button></li>
-                    <li><button class="dropdown-item" onclick="setTheme('dark')" data-theme-option="dark">
-                        <i class="bi bi-moon me-2"></i> {% trans "Oscuro" %}
-                    </button></li>
-                    <li><button class="dropdown-item" onclick="setTheme('system')" data-theme-option="system">
-                        <i class="bi bi-display me-2"></i> {% trans "Sistema" %}
-                    </button></li>
-                </ul>
-            </div>
-            
-            <!-- Language Switcher -->
-            <div class="dropdown">
-                <button class="control-button" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span id="currentFlag">🇪🇸</span>
-                    <span id="currentLang">ES</span>
-                    <i class="bi bi-chevron-down"></i>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                    {% get_available_languages as LANGUAGES %}
-                    {% get_current_language as LANGUAGE_CODE %}
-                    {% for lang_code, lang_name in LANGUAGES %}
-                    <li>
-                        <form action="{% url 'set_language' %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <input name="next" type="hidden" value="{{ request.get_full_path }}" />
-                            <input name="language" type="hidden" value="{{ lang_code }}" />
-                            <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == lang_code %}active{% endif %}" data-lang="{{ lang_code }}">
-                                {% if lang_code == 'es' %}<span class="me-2">🇪🇸</span> Español
-                                {% elif lang_code == 'en' %}<span class="me-2">🇺🇸</span> English
-                                {% elif lang_code == 'pt-br' %}<span class="me-2">🇧🇷</span> Português
-                                {% endif %}
-                            </button>
-                        </form>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            
-            <a href="{% url 'landing:index' %}" class="btn btn-outline-primary">
-                <i class="bi bi-arrow-left me-1"></i>
-                {% trans "Volver" %}
-            </a>
-            <a href="{% url 'billing:select_plan' %}" class="btn btn-primary-custom">
-                {% trans "Comenzar Ahora" %}
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div style="padding-top: 80px;">
-{% endblock %}
-
 {% block content %}
-<!-- Demo Content -->
-<section class="py-5">
-    <div class="container">
-        <div class="demo-container">
-            <!-- Demo Info -->
-            <div class="demo-note p-4 rounded-3 mb-4">
-                <div class="d-flex align-items-center mb-2">
-                    <i class="bi bi-info-circle-fill text-primary-custom me-2"></i>
-                    <h5 class="mb-0 fw-bold">{% trans "Demostración Interactiva" %}</h5>
-                </div>
-                <p class="mb-0 text-muted-custom">
-                    {% trans "Esta es una demo de cómo funciona el proceso de aprobación en SecureApprove. Los botones son interactivos para simular la experiencia real." %}
-                </p>
-            </div>
+<main class="proof-demo-page">
+    <section class="proof-demo-hero" aria-labelledby="demoTitle">
+        <div class="container">
+            <div class="proof-demo-eyebrow"><i class="bi bi-play-circle-fill" aria-hidden="true"></i>{% trans "Animated product demo" %}</div>
+            <h1 id="demoTitle" class="proof-demo-title fw-bold mb-3">{% trans "Watch a secure approval become verifiable evidence" %}</h1>
+            <p class="proof-demo-lead mb-0">{% trans "Follow the exact content from the approval request through WebAuthn, Vault Transit, the tamper-evident ledger, and the public receipt." %}</p>
+            <div class="proof-demo-disclaimer"><i class="bi bi-info-circle" aria-hidden="true"></i>{% trans "This simulation does not create a real approval or request biometric data." %}</div>
+        </div>
+    </section>
 
-            <!-- Approval Request Card -->
-            <div class="card approval-card">
-                <!-- Header with title and badges -->
-                <div class="card-header py-3">
-                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                        <div>
-                            <h4 class="mb-2 fw-bold">{% trans "Compra de Equipos de Oficina" %}</h4>
-                            <div class="d-flex gap-2 flex-wrap">
-                                <span class="category-badge">
-                                    <i class="bi bi-cart me-1"></i>
-                                    {% trans "Compra" %}
-                                </span>
-                                <span class="priority-badge priority-medium">
-                                    {% trans "Prioridad Media" %}
-                                </span>
-                                <small class="text-muted-custom d-flex align-items-center">
-                                    <i class="bi bi-calendar me-1"></i>
-                                    <span class="local-datetime"></span>
-                                </small>
-                            </div>
+    <section class="container pb-3" aria-label="{% trans 'SecureApprove Proof process demo' %}">
+        <div id="proofDemo" class="proof-demo-shell" data-playing="true">
+            <nav class="proof-demo-sidebar" aria-label="{% trans 'Demo steps' %}">
+                <div class="proof-demo-sidebar-title">{% trans "Approval journey" %}</div>
+                <button class="proof-demo-step is-active" type="button" data-step="0" aria-controls="proofDemoStage" aria-current="step">
+                    <span class="proof-demo-step-number">1</span><span class="proof-demo-step-label">{% trans "Seal the content" %}</span><i class="proof-demo-step-state bi bi-play-fill" aria-hidden="true"></i>
+                </button>
+                <button class="proof-demo-step" type="button" data-step="1" aria-controls="proofDemoStage">
+                    <span class="proof-demo-step-number">2</span><span class="proof-demo-step-label">{% trans "Verify the user" %}</span><i class="proof-demo-step-state bi bi-circle" aria-hidden="true"></i>
+                </button>
+                <button class="proof-demo-step" type="button" data-step="2" aria-controls="proofDemoStage">
+                    <span class="proof-demo-step-number">3</span><span class="proof-demo-step-label">{% trans "Capture the decision" %}</span><i class="proof-demo-step-state bi bi-circle" aria-hidden="true"></i>
+                </button>
+                <button class="proof-demo-step" type="button" data-step="3" aria-controls="proofDemoStage">
+                    <span class="proof-demo-step-number">4</span><span class="proof-demo-step-label">{% trans "Sign and archive" %}</span><i class="proof-demo-step-state bi bi-circle" aria-hidden="true"></i>
+                </button>
+                <button class="proof-demo-step" type="button" data-step="4" aria-controls="proofDemoStage">
+                    <span class="proof-demo-step-number">5</span><span class="proof-demo-step-label">{% trans "Verify the proof" %}</span><i class="proof-demo-step-state bi bi-circle" aria-hidden="true"></i>
+                </button>
+            </nav>
+
+            <div class="proof-demo-main">
+                <div class="proof-demo-toolbar">
+                    <div class="proof-demo-progress-wrap">
+                        <div class="proof-demo-progress-meta"><span id="proofDemoCounter">{% blocktrans %}Step 1 of 5{% endblocktrans %}</span><span id="proofDemoShortStatus">{% trans "Content bound" %}</span></div>
+                        <div id="proofDemoProgress" class="proof-demo-progress" role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" aria-label="{% trans 'Demo progress' %}">
+                            <div class="proof-demo-progress-fill"></div>
                         </div>
                     </div>
+                    <div class="proof-demo-controls" aria-label="{% trans 'Demo playback controls' %}">
+                        <button id="proofDemoPrevious" class="proof-demo-control" type="button" aria-label="{% trans 'Previous step' %}" title="{% trans 'Previous step' %}" disabled><i class="bi bi-arrow-left" aria-hidden="true"></i><span>{% trans "Previous" %}</span></button>
+                        <button id="proofDemoPlay" class="proof-demo-control proof-demo-control-primary" type="button" aria-pressed="true"><i class="bi bi-pause-fill" aria-hidden="true"></i><span>{% trans "Pause demo" %}</span></button>
+                        <button id="proofDemoNext" class="proof-demo-control" type="button" aria-label="{% trans 'Next step' %}" title="{% trans 'Next step' %}"><span>{% trans "Next" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+                    </div>
                 </div>
-                
-                <div class="card-body">
-                    <!-- Status Card -->
-                    <div class="status-card status-card-pending mb-4">
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+
+                <div id="proofDemoStage" class="proof-demo-stage" tabindex="0" aria-label="{% trans 'Animated approval process' %}">
+                    <article class="proof-demo-panel is-active" data-panel="0">
+                        <div class="proof-demo-panel-heading">
+                            <i class="bi bi-braces" aria-hidden="true"></i>
+                            <h2>{% trans "The exact transaction is sealed" %}</h2>
+                            <p>{% trans "SecureApprove canonicalizes the request and calculates a SHA-256 fingerprint before the authentication ceremony begins." %}</p>
+                        </div>
+                        <div class="proof-demo-transaction proof-demo-card">
+                            <div class="proof-demo-transaction-main">
+                                <div class="proof-demo-kicker">{% trans "Approval request" %} · #SAP-2048</div>
+                                <h3 class="h4 fw-bold mt-2 mb-1">{% trans "Production payment authorization" %}</h3>
+                                <div class="proof-demo-amount">$ 6.500.000,00</div>
+                                <div class="proof-demo-details">
+                                    <span class="proof-demo-chip"><i class="bi bi-shield-lock" aria-hidden="true"></i>{% trans "High priority" %}</span>
+                                    <span class="proof-demo-chip"><i class="bi bi-file-earmark-text" aria-hidden="true"></i>invoice-v3.pdf</span>
+                                </div>
+                            </div>
+                            <div class="proof-demo-transaction-hash">
+                                <div class="proof-demo-kicker text-info">transaction_sha256</div>
+                                <code class="proof-demo-code">7f83b1657ff1fc53b92dc18148a1d65dfa13514e…</code>
+                                <div class="mt-3 small text-light"><i class="bi bi-link-45deg me-1" aria-hidden="true"></i>{% trans "Bound to amount, document, metadata, and decision context" %}</div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="proof-demo-panel" data-panel="1" aria-hidden="true">
+                        <div class="proof-demo-panel-heading">
+                            <i class="bi bi-fingerprint" aria-hidden="true"></i>
+                            <h2>{% trans "WebAuthn verifies the person" %}</h2>
+                            <p>{% trans "The browser requires user presence and device-level verification. The biometric never leaves the device." %}</p>
+                        </div>
+                        <div class="proof-demo-device-layout">
+                            <div class="proof-demo-phone" aria-label="{% trans 'Device authentication simulation' %}">
+                                <div class="proof-demo-phone-speaker"></div>
+                                <div class="text-center fw-bold">SecureApprove</div>
+                                <div class="proof-demo-fingerprint"><i class="bi bi-fingerprint" aria-hidden="true"></i></div>
+                                <div class="text-center fw-bold">{% trans "Identity verified" %}</div>
+                                <div class="text-center text-muted-custom small mt-2">WebAuthn · UV=true · UP=true</div>
+                            </div>
+                            <div class="proof-demo-security-list proof-demo-card">
+                                <div class="proof-demo-security-item"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><div><strong>{% trans "Challenge bound to the transaction" %}</strong><small>{% trans "A different content fingerprint invalidates the ceremony." %}</small></div></div>
+                                <div class="proof-demo-security-item"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><div><strong>{% trans "Origin and RP ID validated" %}</strong><small>{% trans "The browser proves where the approval was requested." %}</small></div></div>
+                                <div class="proof-demo-security-item"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><div><strong>{% trans "Biometric stays private" %}</strong><small>{% trans "SecureApprove receives a signed assertion, never biometric data." %}</small></div></div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="proof-demo-panel" data-panel="2" aria-hidden="true">
+                        <div class="proof-demo-panel-heading">
+                            <i class="bi bi-check2-square" aria-hidden="true"></i>
+                            <h2>{% trans "The decision is captured atomically" %}</h2>
+                            <p>{% trans "The approved decision, comment, actor, and transaction fingerprint are persisted together. Changed content cannot reuse this ceremony." %}</p>
+                        </div>
+                        <div class="proof-demo-decision proof-demo-card">
                             <div>
-                                <h5 class="mb-1">
-                                    <i class="bi bi-clock text-warning me-2"></i>
-                                    {% trans "Pendiente de Aprobación" %}
-                                </h5>
-                                <p class="mb-0">
-                                    {% trans "Esta solicitud está esperando aprobación de un administrador." %}
-                                </p>
+                                <div class="proof-demo-kicker">{% trans "Signed decision" %}</div>
+                                <h3 class="h4 fw-bold mt-2">{% trans "Approve production payment" %}</h3>
+                                <p class="text-muted-custom mb-0">{% trans "Comment: Documentation reviewed and amount confirmed." %}</p>
                             </div>
-                            <div class="amount-display">
-                                $2,500.00
-                            </div>
+                            <div class="proof-demo-approved"><i class="bi bi-check-circle-fill" aria-hidden="true"></i>{% trans "Approved" %}</div>
                         </div>
-                    </div>
-                    
-                    <!-- Request Details Section -->
-                    <div class="detail-section mb-4">
-                        <div class="detail-section-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-file-text me-2"></i>
-                                {% trans "Detalles de la Solicitud" %}
-                            </h5>
-                        </div>
-                        <div class="p-4">
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <h6 class="text-muted-custom small fw-bold mb-2">{% trans "DESCRIPCIÓN" %}</h6>
-                                    <p class="mb-0">{% trans "Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables para el nuevo equipo de trabajo remoto." %}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="text-muted-custom small fw-bold mb-2">{% trans "SOLICITANTE" %}</h6>
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
-                                            <span class="text-white fw-bold">A</span>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold">{% trans "Ana García" %}</div>
-                                            <small class="text-muted-custom">ana.garcia@empresa.com</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    </article>
 
-                            <!-- Metadata Table -->
-                            <h6 class="text-muted-custom small fw-bold mb-2">{% trans "INFORMACIÓN ADICIONAL" %}</h6>
-                            <table class="table table-sm metadata-table mb-0">
-                                <tr>
-                                    <th>{% trans "Proveedor" %}</th>
-                                    <td>Ergonomic Solutions S.A.</td>
-                                </tr>
-                                <tr>
-                                    <th>{% trans "Centro de Costo" %}</th>
-                                    <td>CC-2024-045</td>
-                                </tr>
-                            </table>
+                    <article class="proof-demo-panel" data-panel="3" aria-hidden="true">
+                        <div class="proof-demo-panel-heading">
+                            <i class="bi bi-key" aria-hidden="true"></i>
+                            <h2>{% trans "Vault signs and the archive locks the receipt" %}</h2>
+                            <p>{% trans "The private signing key stays inside Vault Transit. The public JWS is chained in the ledger and retained under WORM compliance." %}</p>
                         </div>
-                    </div>
+                        <div class="proof-demo-chain">
+                            <div class="proof-demo-chain-card proof-demo-card"><div class="proof-demo-chain-icon"><i class="bi bi-key-fill" aria-hidden="true"></i></div><strong>Vault Transit</strong><small class="d-block mt-1">ECDSA P-256 · ES256</small></div>
+                            <div class="proof-demo-chain-card proof-demo-card"><div class="proof-demo-chain-icon"><i class="bi bi-diagram-3" aria-hidden="true"></i></div><strong>{% trans "Tamper-evident ledger" %}</strong><small class="d-block mt-1">previous_hash → entry_hash</small></div>
+                            <div class="proof-demo-chain-card proof-demo-card"><div class="proof-demo-chain-icon"><i class="bi bi-archive-fill" aria-hidden="true"></i></div><strong>MinIO Object Lock</strong><small class="d-block mt-1">COMPLIANCE · WORM</small></div>
+                        </div>
+                    </article>
 
-                    <!-- Attachments Section -->
-                    <div class="detail-section mb-4">
-                        <div class="detail-section-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-paperclip me-2"></i>
-                                {% trans "Documentos Adjuntos" %}
-                            </h5>
+                    <article class="proof-demo-panel" data-panel="4" aria-hidden="true">
+                        <div class="proof-demo-panel-heading">
+                            <i class="bi bi-patch-check-fill" aria-hidden="true"></i>
+                            <h2>{% trans "The proof can be verified without exposing private data" %}</h2>
+                            <p>{% trans "The public verifier checks the signature, content fingerprint, and ledger chain without publishing names, emails, amounts, or biometric information." %}</p>
                         </div>
-                        <div class="p-4">
-                            <div class="d-flex gap-2 flex-wrap">
-                                <div class="attachment-item d-flex align-items-center">
-                                    <i class="bi bi-file-pdf text-danger me-2 fs-5"></i>
-                                    <div>
-                                        <div class="small fw-semibold">cotizacion_equipos.pdf</div>
-                                        <small class="text-muted-custom">245 KB</small>
-                                    </div>
-                                </div>
-                                <div class="attachment-item d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-spreadsheet text-success me-2 fs-5"></i>
-                                    <div>
-                                        <div class="small fw-semibold">presupuesto_detalle.xlsx</div>
-                                        <small class="text-muted-custom">128 KB</small>
-                                    </div>
-                                </div>
+                        <div class="proof-demo-receipt proof-demo-card">
+                            <div class="proof-demo-receipt-head"><div><strong>SecureApprove Proof</strong><div class="text-muted-custom small">sap-proof-v1 · proof-7c92…</div></div><span class="proof-demo-valid"><i class="bi bi-check-circle-fill" aria-hidden="true"></i>{% trans "Valid" %}</span></div>
+                            <div class="proof-demo-receipt-grid">
+                                <div class="proof-demo-fact"><small>{% trans "Decision" %}</small><strong>approve</strong></div>
+                                <div class="proof-demo-fact"><small>{% trans "Signature" %}</small><strong>ES256 · secureapprove-proof-vault-v1</strong></div>
+                                <div class="proof-demo-fact"><small>transaction_sha256</small><code>7f83b165…a13514e</code></div>
+                                <div class="proof-demo-fact"><small>{% trans "Archive" %}</small><strong>COMPLIANCE · 3650 days</strong></div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Timeline Section -->
-                    <div class="detail-section mb-4">
-                        <div class="detail-section-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-clock-history me-2"></i>
-                                {% trans "Historial" %}
-                            </h5>
-                        </div>
-                        <div class="p-4">
-                            <div class="timeline">
-                                <div class="timeline-item">
-                                    <div class="timeline-icon bg-primary text-white">
-                                        <i class="bi bi-plus"></i>
-                                    </div>
-                                    <div>
-                                        <strong>{% trans "Solicitud creada" %}</strong>
-                                        <p class="mb-0 text-muted-custom small">{% trans "Ana García creó esta solicitud" %}</p>
-                                        <small class="text-muted-custom local-datetime"></small>
-                                    </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <div class="timeline-icon bg-warning text-dark">
-                                        <i class="bi bi-clock"></i>
-                                    </div>
-                                    <div>
-                                        <strong>{% trans "Esperando aprobación" %}</strong>
-                                        <p class="mb-0 text-muted-custom small">{% trans "La solicitud está pendiente de revisión" %}</p>
-                                        <small class="text-muted-custom local-datetime"></small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="d-flex flex-column flex-md-row gap-3 pt-3 border-top border-custom">
-                        <button class="btn btn-approve flex-fill" onclick="simulateApproval()">
-                            <i class="bi bi-check-circle me-2"></i>
-                            {% trans "Aprobar Solicitud" %}
-                        </button>
-                        <button class="btn btn-reject flex-fill" onclick="simulateRejection()">
-                            <i class="bi bi-x-circle me-2"></i>
-                            {% trans "Rechazar" %}
-                        </button>
-                        <button class="btn btn-outline-primary flex-fill" onclick="requestMoreInfo()">
-                            <i class="bi bi-chat-dots me-2"></i>
-                            {% trans "Solicitar Info" %}
-                        </button>
-                    </div>
+                    </article>
                 </div>
-            </div>
 
-            <!-- Demo Results -->
-            <div id="demo-result" class="mt-4" style="display: none;">
-                <!-- Results will be shown here -->
-            </div>
-
-            <!-- CTA Section -->
-            <div class="text-center mt-5">
-                <div class="card text-white border-0" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6);">
-                    <div class="card-body p-5">
-                        <h3 class="fw-bold mb-3">{% trans "¿Te gusta lo que ves?" %}</h3>
-                        <p class="fs-5 mb-4 opacity-90">
-                            {% trans "Comienza a gestionar tus aprobaciones de manera profesional" %}
-                        </p>
-                        <a href="{% url 'billing:select_plan' %}" class="btn btn-light btn-lg fw-bold" style="color: #4f46e5 !important;">
-                            <i class="bi bi-rocket-takeoff me-2"></i>
-                            {% trans "Suscribirme Ahora" %}
-                        </a>
-                    </div>
-                </div>
+                <div class="proof-demo-status" aria-live="polite" aria-atomic="true"><i id="proofDemoStatusIcon" class="bi bi-link-45deg" aria-hidden="true"></i><span id="proofDemoStatus">{% trans "The request content is now bound to its SHA-256 fingerprint." %}</span></div>
             </div>
         </div>
-    </div>
-</section>
+
+        <div class="proof-demo-footer">
+            <div class="proof-demo-footer-copy"><h2 class="h4 fw-bold mb-2">{% trans "Ready to verify a real receipt?" %}</h2><p class="text-muted-custom mb-0">{% trans "Paste a SecureApprove Proof JWS or open a verification link. The public result never reveals private evidence." %}</p></div>
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <a href="{% url 'landing:proof_verify' %}" class="btn btn-outline-primary btn-lg"><i class="bi bi-patch-check me-2" aria-hidden="true"></i>{% trans "Verify a proof" %}</a>
+                <a href="{% url 'authentication:webauthn_login' %}" class="btn btn-primary-custom btn-lg"><i class="bi bi-fingerprint me-2" aria-hidden="true"></i>{% trans "Try SecureApprove" %}</a>
+            </div>
+        </div>
+    </section>
+</main>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-        // Demo Interactions
-        function simulateApproval() {
-            showResult('success', '{% trans "¡Solicitud Aprobada!" %}', '{% trans "La solicitud ha sido aprobada exitosamente. Se ha enviado notificación al solicitante y se procederá con la compra." %}');
+    (function () {
+        const root = document.getElementById('proofDemo');
+        if (!root) return;
+
+        const steps = Array.from(root.querySelectorAll('[data-step]'));
+        const panels = Array.from(root.querySelectorAll('[data-panel]'));
+        const previousButton = document.getElementById('proofDemoPrevious');
+        const nextButton = document.getElementById('proofDemoNext');
+        const playButton = document.getElementById('proofDemoPlay');
+        const playIcon = playButton.querySelector('i');
+        const playText = playButton.querySelector('span');
+        const progress = document.getElementById('proofDemoProgress');
+        const progressFill = progress.querySelector('.proof-demo-progress-fill');
+        const counter = document.getElementById('proofDemoCounter');
+        const shortStatus = document.getElementById('proofDemoShortStatus');
+        const status = document.getElementById('proofDemoStatus');
+        const statusIcon = document.getElementById('proofDemoStatusIcon');
+        const stage = document.getElementById('proofDemoStage');
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const labels = {
+            step: "{% trans 'Step' %}",
+            of: "{% trans 'of' %}",
+            play: "{% trans 'Play demo' %}",
+            pause: "{% trans 'Pause demo' %}"
+        };
+        const states = [
+            { short: "{% trans 'Content bound' %}", status: "{% trans 'The request content is now bound to its SHA-256 fingerprint.' %}", icon: 'bi-link-45deg' },
+            { short: "{% trans 'User verified' %}", status: "{% trans 'WebAuthn confirmed user presence, device verification, origin, and RP ID.' %}", icon: 'bi-fingerprint' },
+            { short: "{% trans 'Decision captured' %}", status: "{% trans 'The decision and WebAuthn assertion were persisted in the same protected transaction.' %}", icon: 'bi-check2-square' },
+            { short: "{% trans 'Receipt signed' %}", status: "{% trans 'Vault Transit signed the JWS and MinIO applied COMPLIANCE retention.' %}", icon: 'bi-key' },
+            { short: "{% trans 'Proof verified' %}", status: "{% trans 'The public proof verifies successfully without exposing personal or commercial data.' %}", icon: 'bi-patch-check-fill' }
+        ];
+
+        let activeIndex = 0;
+        let timer = null;
+        let isPlaying = !reducedMotion;
+
+        function render(index) {
+            activeIndex = Math.max(0, Math.min(index, steps.length - 1));
+            steps.forEach(function (step, stepIndex) {
+                const isActive = stepIndex === activeIndex;
+                const isComplete = stepIndex < activeIndex;
+                step.classList.toggle('is-active', isActive);
+                step.classList.toggle('is-complete', isComplete);
+                if (isActive) step.setAttribute('aria-current', 'step');
+                else step.removeAttribute('aria-current');
+                const icon = step.querySelector('.proof-demo-step-state');
+                icon.className = 'proof-demo-step-state bi ' + (isComplete ? 'bi-check-circle-fill' : (isActive ? 'bi-play-fill' : 'bi-circle'));
+            });
+            panels.forEach(function (panel, panelIndex) {
+                const isActive = panelIndex === activeIndex;
+                panel.classList.toggle('is-active', isActive);
+                panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+            });
+            previousButton.disabled = activeIndex === 0;
+            nextButton.disabled = false;
+            nextButton.setAttribute('aria-label', activeIndex === steps.length - 1 ? labels.play : "{% trans 'Next step' %}");
+            progress.setAttribute('aria-valuenow', String(activeIndex + 1));
+            progressFill.style.transform = 'scaleX(' + ((activeIndex + 1) / steps.length) + ')';
+            counter.textContent = labels.step + ' ' + (activeIndex + 1) + ' ' + labels.of + ' ' + steps.length;
+            shortStatus.textContent = states[activeIndex].short;
+            status.textContent = states[activeIndex].status;
+            statusIcon.className = 'bi ' + states[activeIndex].icon;
         }
 
-        function simulateRejection() {
-            showResult('danger', '{% trans "Solicitud Rechazada" %}', '{% trans "La solicitud ha sido rechazada. Se ha enviado notificación al solicitante con los motivos del rechazo." %}');
+        function schedule() {
+            window.clearTimeout(timer);
+            if (!isPlaying) return;
+            timer = window.setTimeout(function () {
+                render((activeIndex + 1) % steps.length);
+                schedule();
+            }, 2600);
         }
 
-        function requestMoreInfo() {
-            showResult('info', '{% trans "Información Solicitada" %}', '{% trans "Se ha enviado una solicitud de información adicional al solicitante. La aprobación quedará pendiente hasta recibir los datos necesarios." %}');
+        function updatePlaybackButton() {
+            root.dataset.playing = isPlaying ? 'true' : 'false';
+            playButton.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
+            playIcon.className = 'bi ' + (isPlaying ? 'bi-pause-fill' : 'bi-play-fill');
+            playText.textContent = isPlaying ? labels.pause : labels.play;
         }
 
-        function showResult(type, title, message) {
-            const resultDiv = document.getElementById('demo-result');
-            const iconMap = {
-                'success': 'bi-check-circle-fill',
-                'danger': 'bi-x-circle-fill',
-                'info': 'bi-info-circle-fill'
-            };
-            
-            resultDiv.innerHTML = `
-                <div class="alert alert-${type} d-flex align-items-center" role="alert">
-                    <i class="${iconMap[type]} me-3 fs-4"></i>
-                    <div>
-                        <h5 class="alert-heading mb-1">${title}</h5>
-                        <p class="mb-0">${message}</p>
-                    </div>
-                </div>
-            `;
-            
-            resultDiv.style.display = 'block';
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        function setPlaying(value) {
+            isPlaying = Boolean(value) && !reducedMotion;
+            updatePlaybackButton();
+            schedule();
         }
-        
-        // Set local datetime for timeline items
-        document.addEventListener('DOMContentLoaded', function() {
-            const now = new Date();
-            const options = { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            };
-            const localDateTime = now.toLocaleString(undefined, options);
-            
-            document.querySelectorAll('.local-datetime').forEach(function(el) {
-                el.textContent = localDateTime;
+
+        steps.forEach(function (step) {
+            step.addEventListener('click', function () {
+                setPlaying(false);
+                render(Number(step.dataset.step));
             });
         });
+
+        previousButton.addEventListener('click', function () {
+            setPlaying(false);
+            render(activeIndex - 1);
+        });
+
+        nextButton.addEventListener('click', function () {
+            setPlaying(false);
+            render(activeIndex === steps.length - 1 ? 0 : activeIndex + 1);
+        });
+
+        playButton.addEventListener('click', function () {
+            if (reducedMotion) {
+                render(activeIndex === steps.length - 1 ? 0 : activeIndex + 1);
+                return;
+            }
+            setPlaying(!isPlaying);
+        });
+
+        stage.addEventListener('keydown', function (event) {
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                setPlaying(false);
+                render(activeIndex - 1);
+            } else if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                setPlaying(false);
+                render(activeIndex === steps.length - 1 ? 0 : activeIndex + 1);
+            } else if (event.key === ' ') {
+                event.preventDefault();
+                playButton.click();
+            }
+        });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                window.clearTimeout(timer);
+            } else {
+                schedule();
+            }
+        });
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(function (entries) {
+                if (!entries[0].isIntersecting) window.clearTimeout(timer);
+                else schedule();
+            }, { threshold: .2 });
+            observer.observe(root);
+        }
+
+        updatePlaybackButton();
+        render(0);
+        schedule();
+    })();
 </script>
 {% endblock %}

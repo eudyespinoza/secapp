@@ -5112,3 +5112,180 @@ msgstr "Identificador único del inquilino (ej. nombre-empresa)"
 #~ msgstr ""
 #~ "Tu backend verifica el estado de la transacción con SecureApprove antes "
 #~ "de crear su propia sesión."
+# SecureApprove Proof animated demo
+msgid "Animated demo - SecureApprove Proof"
+msgstr "Demo animada - SecureApprove Proof"
+
+msgid "See how SecureApprove binds content, WebAuthn verification, the decision, and a cryptographic proof."
+msgstr "Mira cómo SecureApprove vincula el contenido, la verificación WebAuthn, la decisión y un comprobante criptográfico."
+
+msgid "Animated product demo"
+msgstr "Demo animada del producto"
+
+msgid "Watch a secure approval become verifiable evidence"
+msgstr "Mira cómo una aprobación segura se convierte en evidencia verificable"
+
+msgid "Follow the exact content from the approval request through WebAuthn, Vault Transit, the tamper-evident ledger, and the public receipt."
+msgstr "Sigue el contenido exacto desde la solicitud de aprobación, pasando por WebAuthn, Vault Transit, el registro a prueba de alteraciones y el comprobante público."
+
+msgid "This simulation does not create a real approval or request biometric data."
+msgstr "Esta simulación no crea una aprobación real ni solicita datos biométricos."
+
+msgid "SecureApprove Proof process demo"
+msgstr "Demo del proceso SecureApprove Proof"
+
+msgid "Demo steps"
+msgstr "Pasos de la demo"
+
+msgid "Approval journey"
+msgstr "Recorrido de la aprobación"
+
+msgid "Capture the decision"
+msgstr "Capturar la decisión"
+
+msgid "Sign and archive"
+msgstr "Firmar y archivar"
+
+msgid "Verify the proof"
+msgstr "Verificar el comprobante"
+
+msgid "Step 1 of 5"
+msgstr "Paso 1 de 5"
+
+msgid "Content bound"
+msgstr "Contenido vinculado"
+
+msgid "Demo progress"
+msgstr "Progreso de la demo"
+
+msgid "Demo playback controls"
+msgstr "Controles de reproducción de la demo"
+
+msgid "Previous step"
+msgstr "Paso anterior"
+
+msgid "Pause demo"
+msgstr "Pausar demo"
+
+msgid "Play demo"
+msgstr "Reproducir demo"
+
+msgid "Next step"
+msgstr "Paso siguiente"
+
+msgid "Animated approval process"
+msgstr "Proceso animado de aprobación"
+
+msgid "The exact transaction is sealed"
+msgstr "La transacción exacta queda sellada"
+
+msgid "SecureApprove canonicalizes the request and calculates a SHA-256 fingerprint before the authentication ceremony begins."
+msgstr "SecureApprove canonicaliza la solicitud y calcula una huella SHA-256 antes de iniciar la ceremonia de autenticación."
+
+msgid "Approval request"
+msgstr "Solicitud de aprobación"
+
+msgid "Production payment authorization"
+msgstr "Autorización de pago de producción"
+
+msgid "High priority"
+msgstr "Prioridad alta"
+
+msgid "Bound to amount, document, metadata, and decision context"
+msgstr "Vinculado al monto, documento, metadata y contexto de decisión"
+
+msgid "WebAuthn verifies the person"
+msgstr "WebAuthn verifica a la persona"
+
+msgid "The browser requires user presence and device-level verification. The biometric never leaves the device."
+msgstr "El navegador exige presencia del usuario y verificación a nivel del dispositivo. La biometría nunca sale del dispositivo."
+
+msgid "Device authentication simulation"
+msgstr "Simulación de autenticación del dispositivo"
+
+msgid "Identity verified"
+msgstr "Identidad verificada"
+
+msgid "Challenge bound to the transaction"
+msgstr "Desafío vinculado a la transacción"
+
+msgid "A different content fingerprint invalidates the ceremony."
+msgstr "Una huella de contenido diferente invalida la ceremonia."
+
+msgid "Origin and RP ID validated"
+msgstr "Origen y RP ID validados"
+
+msgid "The browser proves where the approval was requested."
+msgstr "El navegador demuestra desde dónde se solicitó la aprobación."
+
+msgid "Biometric stays private"
+msgstr "La biometría permanece privada"
+
+msgid "SecureApprove receives a signed assertion, never biometric data."
+msgstr "SecureApprove recibe una aserción firmada, nunca datos biométricos."
+
+msgid "The decision is captured atomically"
+msgstr "La decisión se captura de forma atómica"
+
+msgid "The approved decision, comment, actor, and transaction fingerprint are persisted together. Changed content cannot reuse this ceremony."
+msgstr "La decisión aprobada, el comentario, el actor y la huella de la transacción se guardan juntos. Un contenido modificado no puede reutilizar esta ceremonia."
+
+msgid "Signed decision"
+msgstr "Decisión firmada"
+
+msgid "Approve production payment"
+msgstr "Aprobar pago de producción"
+
+msgid "Comment: Documentation reviewed and amount confirmed."
+msgstr "Comentario: documentación revisada y monto confirmado."
+
+msgid "Vault signs and the archive locks the receipt"
+msgstr "Vault firma y el archivo bloquea el comprobante"
+
+msgid "The private signing key stays inside Vault Transit. The public JWS is chained in the ledger and retained under WORM compliance."
+msgstr "La clave privada de firma permanece dentro de Vault Transit. El JWS público se encadena en el registro y se conserva bajo cumplimiento WORM."
+
+msgid "The proof can be verified without exposing private data"
+msgstr "El comprobante puede verificarse sin exponer datos privados"
+
+msgid "The public verifier checks the signature, content fingerprint, and ledger chain without publishing names, emails, amounts, or biometric information."
+msgstr "El verificador público comprueba la firma, la huella del contenido y la cadena del registro sin publicar nombres, correos, montos ni información biométrica."
+
+msgid "The request content is now bound to its SHA-256 fingerprint."
+msgstr "El contenido de la solicitud quedó vinculado a su huella SHA-256."
+
+msgid "Ready to verify a real receipt?"
+msgstr "¿Listo para verificar un comprobante real?"
+
+msgid "Paste a SecureApprove Proof JWS or open a verification link. The public result never reveals private evidence."
+msgstr "Pega un JWS de SecureApprove Proof o abre un enlace de verificación. El resultado público nunca revela evidencia privada."
+
+msgid "Step"
+msgstr "Paso"
+
+msgid "User verified"
+msgstr "Usuario verificado"
+
+msgid "WebAuthn confirmed user presence, device verification, origin, and RP ID."
+msgstr "WebAuthn confirmó la presencia del usuario, la verificación del dispositivo, el origen y el RP ID."
+
+msgid "Decision captured"
+msgstr "Decisión capturada"
+
+msgid "The decision and WebAuthn assertion were persisted in the same protected transaction."
+msgstr "La decisión y la aserción WebAuthn se guardaron en la misma transacción protegida."
+
+msgid "Receipt signed"
+msgstr "Comprobante firmado"
+
+msgid "Vault Transit signed the JWS and MinIO applied COMPLIANCE retention."
+msgstr "Vault Transit firmó el JWS y MinIO aplicó retención COMPLIANCE."
+
+msgid "Proof verified"
+msgstr "Comprobante verificado"
+
+msgid "The public proof verifies successfully without exposing personal or commercial data."
+msgstr "El comprobante público se verifica correctamente sin exponer datos personales ni comerciales."
+
+msgid "Watch animated demo"
+msgstr "Ver demo animada"
