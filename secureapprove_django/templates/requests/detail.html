@@ -721,7 +721,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
-                body: JSON.stringify({ action: action })
+                body: JSON.stringify({ action: action, ...extraData })
             });
 
             if (!optionsResponse.ok) {

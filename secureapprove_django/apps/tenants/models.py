@@ -29,6 +29,14 @@ class Tenant(models.Model):
         ('cancelled', _('Cancelled')),
         ('trial', _('Trial')),
     ]
+
+    PROOF_RETENTION_CHOICES = [
+        (1, _('1 year')),
+        (3, _('3 years')),
+        (5, _('5 years')),
+        (7, _('7 years')),
+        (10, _('10 years')),
+    ]
     
     # Basic information
     key = models.SlugField(_('Key'), max_length=50, unique=True)
@@ -57,6 +65,13 @@ class Tenant(models.Model):
         default=dict,
         blank=True,
         help_text=_('Additional tenant configuration and data')
+    )
+
+    proof_retention_years = models.PositiveSmallIntegerField(
+        _('SecureApprove Proof evidence retention'),
+        choices=PROOF_RETENTION_CHOICES,
+        default=7,
+        help_text=_('Applies to private evidence created after this setting is changed.'),
     )
     
     # Timestamps
@@ -428,4 +443,3 @@ class ApprovalTypeConfig(models.Model):
         
         # Check if user is in designated approvers
         return self.designated_approvers.filter(id=user.id).exists()
-

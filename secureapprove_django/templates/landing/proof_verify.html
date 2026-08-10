@@ -1,0 +1,106 @@
+{% load i18n %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{% trans "Verify a SecureApprove Proof" %}</title>
+  <script>
+    (function () {
+      var theme = 'system';
+      try { theme = localStorage.getItem('theme') || 'system'; } catch (error) {}
+      var resolved = theme === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : theme;
+      document.documentElement.setAttribute('data-theme', resolved);
+      document.documentElement.style.colorScheme = resolved;
+    }());
+  </script>
+  <style>
+    :root { color-scheme: light dark; --bg:#f8fafc; --surface:#fff; --soft:#eff6ff; --text:#172033; --muted:#526176; --border:#cbd5e1; --brand:#2563eb; --ok:#166534; --ok-bg:#dcfce7; --bad:#991b1b; --bad-bg:#fee2e2; --warn:#854d0e; --warn-bg:#fef3c7; }
+    @media (prefers-color-scheme:dark) { :root { --bg:#0f172a; --surface:#182338; --soft:#15213a; --text:#f8fafc; --muted:#c3cede; --border:#42516a; --brand:#60a5fa; --ok:#bbf7d0; --ok-bg:#123d2c; --bad:#fecdd3; --bad-bg:#4a1d27; --warn:#fde68a; --warn-bg:#493518; } }
+    [data-theme="dark"] { color-scheme:dark; --bg:#0f172a; --surface:#182338; --soft:#15213a; --text:#f8fafc; --muted:#c3cede; --border:#42516a; --brand:#60a5fa; --ok:#bbf7d0; --ok-bg:#123d2c; --bad:#fecdd3; --bad-bg:#4a1d27; --warn:#fde68a; --warn-bg:#493518; }
+    * { box-sizing:border-box; } body { margin:0; min-height:100vh; background:var(--bg); color:var(--text); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    a { color:var(--brand); } a:focus-visible,button:focus-visible,textarea:focus-visible { outline:3px solid var(--brand); outline-offset:3px; }
+    .nav,.main { width:min(100% - 32px,1040px); margin-inline:auto; } .nav { min-height:72px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { color:var(--text); text-decoration:none; font-weight:800; display:flex; gap:10px; align-items:center; } .brand-mark { color:var(--brand); font-size:24px; }
+    .main { padding:52px 0 80px; } .eyebrow { color:var(--brand); font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-size:.78rem; }
+    h1 { max-width:780px; margin:.35rem 0 .75rem; font-size:clamp(2rem,5vw,3.5rem); line-height:1.08; letter-spacing:-.04em; } .lead { color:var(--muted); max-width:720px; font-size:1.08rem; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr); gap:24px; margin-top:32px; align-items:start; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:24px; box-shadow:0 18px 50px rgba(15,23,42,.08); }
+    label { display:block; font-weight:750; margin-bottom:8px; } textarea { width:100%; min-height:190px; resize:vertical; border:1px solid var(--border); border-radius:12px; padding:14px; background:var(--bg); color:var(--text); font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    button { min-height:46px; border:0; border-radius:10px; padding:0 20px; margin-top:14px; color:#fff; background:#2563eb; font-weight:800; cursor:pointer; }
+    .nav-actions { display:flex; align-items:center; gap:14px; }
+    button.theme-toggle { width:40px; min-height:40px; margin:0; padding:0; border:1px solid var(--border); color:var(--text); background:var(--surface); font-size:1.05rem; }
+    .result { border-radius:14px; padding:18px; } .result.valid { color:var(--ok); background:var(--ok-bg); } .result.invalid { color:var(--bad); background:var(--bad-bg); } .result.warning { color:var(--warn); background:var(--warn-bg); }
+    .result h2 { margin:0 0 6px; font-size:1.25rem; } .facts { margin:18px 0 0; display:grid; gap:12px; } .fact { border-top:1px solid var(--border); padding-top:12px; } .fact span { display:block; color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; } .hash { overflow-wrap:anywhere; font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .privacy { margin-top:18px; padding:14px; border-radius:12px; background:var(--soft); color:var(--muted); }
+    @media(max-width:768px){ .grid{grid-template-columns:1fr}.main{padding-top:30px}.card{padding:18px} }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="{% trans 'Main navigation' %}">
+    <a class="brand" href="{% url 'landing:index' %}"><span class="brand-mark" aria-hidden="true">◇</span> SecureApprove</a>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="{% trans 'Toggle theme' %}" title="{% trans 'Toggle theme' %}">☾</button>
+      <a href="{% url 'landing:index' %}">{% trans "Back to home" %}</a>
+    </div>
+  </nav>
+  <main class="main">
+    <div class="eyebrow">SecureApprove Proof · ES256</div>
+    <h1>{% trans "Verify a cryptographic approval receipt" %}</h1>
+    <p class="lead">{% trans "Paste the compact JWS. Verification is public and does not reveal names, email addresses, amounts, IP addresses, or business content." %}</p>
+    <div class="grid">
+      <form class="card" method="post" action="{% url 'landing:proof_verify' %}">
+        {% csrf_token %}
+        <label for="proof-jws">{% trans "SecureApprove Proof JWS" %}</label>
+        <textarea id="proof-jws" name="jws" maxlength="16384" spellcheck="false" autocomplete="off" placeholder="eyJhbGciOiJFUzI1NiIs...">{{ submitted_jws|default:'' }}</textarea>
+        <button type="submit">{% trans "Verify proof" %}</button>
+        <p class="privacy">{% trans "The biometric never leaves the device. This verifier checks the SecureApprove signature and public integrity hashes only." %}</p>
+      </form>
+      <section class="card" aria-live="polite" aria-atomic="true">
+        {% if result %}
+          {% if result.status == 'valid' %}
+            <div class="result valid"><h2>✓ {% trans "Valid proof" %}</h2><div>{% trans "Signature and registered hashes match." %}</div></div>
+          {% elif result.status == 'evidence_expired' %}
+            <div class="result warning"><h2>✓ {% trans "Valid proof · private evidence expired" %}</h2><div>{% trans "The public proof remains verifiable after the retention period." %}</div></div>
+          {% elif result.status == 'key_compromised' %}
+            <div class="result warning"><h2>! {% trans "Signing key marked as compromised" %}</h2><div>{% trans "The signature is mathematically valid, but this key must not be trusted." %}</div></div>
+          {% elif result.status == 'unknown' %}
+            <div class="result warning"><h2>? {% trans "Unknown proof" %}</h2><div>{% trans "No matching SecureApprove record was found." %}</div></div>
+          {% else %}
+            <div class="result invalid"><h2>× {% trans "Altered or invalid proof" %}</h2><div>{% trans "The signature or registered content does not match." %}</div></div>
+          {% endif %}
+          {% if result.proof_id %}
+          <div class="facts">
+            <div class="fact"><span>{% trans "Proof ID" %}</span><strong>{{ result.proof_id }}</strong></div>
+            <div class="fact"><span>{% trans "Decision" %}</span><strong>{% if result.decision == 'approve' %}{% trans "Approved" %}{% elif result.decision == 'reject' %}{% trans "Rejected" %}{% else %}{{ result.decision|default:'—' }}{% endif %}</strong></div>
+            <div class="fact"><span>SHA-256</span><div class="hash">{{ result.transaction_sha256|default:'—' }}</div></div>
+            <div class="fact"><span>{% trans "WORM archive" %}</span><strong>{% if result.archive_status == 'archived' %}{% trans "Archived" %}{% elif result.archive_status == 'pending' %}{% trans "Pending" %}{% elif result.archive_status == 'failed' %}{% trans "Attention required" %}{% elif result.archive_status == 'disabled' %}{% trans "Disabled" %}{% else %}{{ result.archive_status|default:'—' }}{% endif %}</strong></div>
+          </div>
+          {% endif %}
+        {% else %}
+          <div class="result warning"><h2>{% trans "Ready to verify" %}</h2><div>{% trans "Paste a proof to check its ES256 signature and integrity record." %}</div></div>
+        {% endif %}
+      </section>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var button = document.getElementById('theme-toggle');
+      function updateIcon() {
+        button.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾';
+      }
+      button.addEventListener('click', function () {
+        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        document.documentElement.style.colorScheme = next;
+        try { localStorage.setItem('theme', next); } catch (error) {}
+        updateIcon();
+      });
+      updateIcon();
+    }());
+  </script>
+</body>
+</html>

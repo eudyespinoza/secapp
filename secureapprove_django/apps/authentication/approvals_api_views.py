@@ -20,6 +20,12 @@ from apps.authentication.approvals_api_serializers import (
 )
 from apps.authentication.models import TermsAcceptanceAudit, TermsApprovalSession, User
 from apps.authentication.webauthn_service import webauthn_service
+from apps.authentication.proof_service import (
+    ProofUnavailable,
+    issue_security_proof,
+    proof_api_payload,
+    proofs_enabled,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +82,9 @@ def _approval_context(session: TermsApprovalSession) -> dict:
     return context_data
 
 
-def _transaction_payload(session: TermsApprovalSession, audit=None) -> dict:
+def _transaction_payload(session: TermsApprovalSession, audit=None, request=None) -> dict:
     completed = session.result_status in {'approved', 'rejected'}
-    return {
+    payload = {
         'id': str(session.id),
         'state': session.result_status,
         'decision': session.decision,
@@ -110,6 +116,14 @@ def _transaction_payload(session: TermsApprovalSession, audit=None) -> dict:
             'userVerification': 'required',
         },
     }
+    if audit:
+        try:
+            proof = audit.security_proof
+        except Exception:
+            proof = None
+        if proof:
+            payload['proof'] = proof_api_payload(proof, request)
+    return payload
 
 
 def create_terms_approval_session(*, created_by: User, subject_user: User, data: dict):
@@ -138,6 +152,7 @@ def create_terms_approval_session(*, created_by: User, subject_user: User, data:
             user=subject_user,
             approval_id=session.approval_id,
             context_data=_approval_context(session),
+            proof_binding=proofs_enabled(),
         )
     except Exception:
         session.delete()
@@ -279,6 +294,8 @@ class TermsApprovalConfirmView(NoStoreAPIView):
         data = serializer.validated_data
         token_hash = _sha256_hex(data['approval_token'])
 
+        proof_error = None
+        proof = None
         with transaction.atomic():
             try:
                 session = (
@@ -349,14 +366,51 @@ class TermsApprovalConfirmView(NoStoreAPIView):
                 verification_result=verification_result,
             )
 
+            try:
+                proof = issue_security_proof(
+                    tenant=session.tenant,
+                    subject_user=session.subject_user,
+                    actor_user=session.subject_user,
+                    event_type='iframe_acceptance',
+                    decision=session.decision,
+                    transaction_snapshot=_approval_context(session),
+                    verification_result=verification_result,
+                    terms_audit=audit,
+                )
+            except ProofUnavailable as exc:
+                proof_error = exc
+                transaction.set_rollback(True)
+
+        if proof_error:
+            with transaction.atomic():
+                failed_session = (
+                    TermsApprovalSession.objects.select_related('tenant', 'subject_user', 'created_by')
+                    .select_for_update(of=('self',))
+                    .get(token_hash=token_hash)
+                )
+                failed_session.consumed_at = timezone.now()
+                failed_session.completed_at = failed_session.consumed_at
+                failed_session.result_status = 'failed'
+                failed_session.save(update_fields=['consumed_at', 'completed_at', 'result_status'])
+                _create_audit(
+                    failed_session,
+                    request,
+                    status='failed',
+                    context_data=_approval_context(failed_session),
+                    error_message=str(proof_error),
+                )
+            return Response({
+                'error': 'proof_signing_unavailable',
+                'detail': 'The cryptographic proof could not be issued. Start a new WebAuthn ceremony.',
+            }, status=503)
+
         logger.info(
             'Terms approval confirmed: tenant=%s user=%s result=%s',
             session.tenant_id,
             session.subject_user_id,
             result_status,
         )
-        return Response(
-            {
+        result = {
                 'success': True,
                 'approved': session.decision == 'approve',
                 'status': result_status,
@@ -364,9 +418,10 @@ class TermsApprovalConfirmView(NoStoreAPIView):
                 'verification_passed': True,
                 'transaction_id': str(session.id),
                 'audit_id': str(audit.id),
-            },
-            status=200,
-        )
+            }
+        if proof:
+            result['proof'] = proof_api_payload(proof, request)
+        return Response(result, status=200)
 
 
 class TermsApprovalStatusView(NoStoreAPIView):
@@ -388,7 +443,7 @@ class TermsApprovalStatusView(NoStoreAPIView):
 
         audit = session.audits.order_by('-performed_at').first()
         return Response({
-            'transaction': _transaction_payload(session, audit),
+            'transaction': _transaction_payload(session, audit, request),
             'authenticated': session.result_status == 'approved',
             'verification_passed': session.result_status in {'approved', 'rejected'},
         })

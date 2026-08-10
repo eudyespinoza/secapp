@@ -64,12 +64,21 @@ services:
       # Django
       DEBUG: "True"
       SECRET_KEY: "sdkfnklnrvknlrberggerg"
+      SECUREAPPROVE_BOOTSTRAP_ADMIN_EMAIL: "admin@secureapprove.com"
+      SECUREAPPROVE_BOOTSTRAP_ADMIN_PASSWORD: "admin123"
+      SECUREAPPROVE_BOOTSTRAP_PRIMARY_EMAIL: "eudyespinoza@gmail.com"
       ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
       
       # Security
       WEBAUTHN_RP_NAME: "SecureApprove (Local)"
       WEBAUTHN_RP_ID: "localhost"
       WEBAUTHN_ORIGIN: "http://localhost:8005"
+      SECUREAPPROVE_PROOF_ENABLED: "${SECUREAPPROVE_PROOF_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_MARKETING_ENABLED: "${SECUREAPPROVE_PROOF_MARKETING_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_SIGNER: "local"
+      SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND: "local"
+      SECUREAPPROVE_PROOF_SIGNING_KID: "secureapprove-proof-local-v1"
+      SECUREAPPROVE_PROOF_ARCHIVE_ENABLED: "False"
       
       # Email (configure for production)
       EMAIL_HOST: "smtp.gmail.com"
@@ -150,6 +159,12 @@ services:
       WEBAUTHN_RP_NAME: "SecureApprove (Local)"
       WEBAUTHN_RP_ID: "localhost"
       WEBAUTHN_ORIGIN: "http://localhost:8005"
+      SECUREAPPROVE_PROOF_ENABLED: "${SECUREAPPROVE_PROOF_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_MARKETING_ENABLED: "${SECUREAPPROVE_PROOF_MARKETING_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_SIGNER: "local"
+      SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND: "local"
+      SECUREAPPROVE_PROOF_SIGNING_KID: "secureapprove-proof-local-v1"
+      SECUREAPPROVE_PROOF_ARCHIVE_ENABLED: "False"
       EMAIL_HOST: "smtp.gmail.com"
       EMAIL_PORT: "587"
       EMAIL_USE_TLS: "True"
@@ -175,6 +190,14 @@ services:
     networks:
       - internal
 
+  celery_beat:
+    extends:
+      service: celery
+    container_name: secureapprove_celery_beat
+    command: celery -A config beat -l info --schedule=/tmp/celerybeat-schedule
+    healthcheck:
+      disable: true
+
 volumes:
   postgres_data:
     driver: local
@@ -190,4 +213,3 @@ networks:
   # Red externa de Traefik (debe existir previamente)
   traefik_proxy:
     external: true
-

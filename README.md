@@ -332,7 +332,8 @@ docker-compose -f docker-compose.simple.yml ps
 
 - **Web:** http://localhost:8000- **JWT**: Secret keys for token signing
 
-- **Admin:** http://localhost:8000/admin (admin@secureapprove.com / admin123)- **SSL/TLS**: Certificate paths for HTTPS
+- **Admin:** http://localhost:8000/admin (use operator-managed credentials)
+- **SSL/TLS**: Certificate paths for HTTPS
 
 - **WebAuthn User:** eudyespinoza@gmail.com (configurado automáticamente)- **WebAuthn**: Relying Party configuration
 

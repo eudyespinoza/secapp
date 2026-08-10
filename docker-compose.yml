@@ -11,7 +11,7 @@ services:
     environment:
       POSTGRES_DB: secureapprove
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backups:/backups
@@ -56,32 +56,48 @@ services:
       DB_PORT: 5432
       DB_NAME: secureapprove
       DB_USER: postgres
-      DB_PASSWORD: postgres123
+      DB_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
       
       # Redis
       REDIS_URL: redis://redis:6379/1
       
       # Django
       DEBUG: "False"
-      SECRET_KEY: "sdkfnklnrvknlrberggerg"
+      SECRET_KEY: "${SECRET_KEY:?SECRET_KEY is required}"
       ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
       
       # Security
       WEBAUTHN_RP_NAME: "SecureApprove"
       WEBAUTHN_RP_ID: "secureapprove.com"
       WEBAUTHN_ORIGIN: "https://secureapprove.com"
+      SECUREAPPROVE_PROOF_ENABLED: "${SECUREAPPROVE_PROOF_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_MARKETING_ENABLED: "${SECUREAPPROVE_PROOF_MARKETING_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_SIGNER: "${SECUREAPPROVE_PROOF_SIGNER:-aws_kms}"
+      SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND: "${SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND:-aws_kms}"
+      SECUREAPPROVE_PROOF_SIGNING_KEY_ARN: "${SECUREAPPROVE_PROOF_SIGNING_KEY_ARN:-}"
+      SECUREAPPROVE_PROOF_SIGNING_KID: "${SECUREAPPROVE_PROOF_SIGNING_KID:-}"
+      SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN: "${SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN:-}"
+      SECUREAPPROVE_PROOF_ARCHIVE_ENABLED: "${SECUREAPPROVE_PROOF_ARCHIVE_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_ARCHIVE_BUCKET: "${SECUREAPPROVE_PROOF_ARCHIVE_BUCKET:-}"
+      SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS: "${SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS:-3650}"
+      AWS_REGION: "${AWS_REGION:-us-east-1}"
       
       # Email (configure for production)
       EMAIL_HOST: "smtp.gmail.com"
       EMAIL_PORT: "587"
       EMAIL_USE_TLS: "True"
-      EMAIL_HOST_USER: ""
-      EMAIL_HOST_PASSWORD: ""
+      EMAIL_HOST_USER: "${EMAIL_HOST_USER:-}"
+      EMAIL_HOST_PASSWORD: "${EMAIL_HOST_PASSWORD:-}"
       DEFAULT_FROM_EMAIL: "noreply@secureapprove.com"
       
       # Billing (configure for production)
-      MERCADOPAGO_ACCESS_TOKEN: ""
+      MERCADOPAGO_ACCESS_TOKEN: "${MERCADOPAGO_ACCESS_TOKEN:-}"
       MERCADOPAGO_WEBHOOK_URL: "https://api.secureapprove.com/api/billing/webhooks/mercadopago/"
+
+      # Optional one-time bootstrap. Leave unset in normal production operation.
+      SECUREAPPROVE_BOOTSTRAP_ADMIN_EMAIL: "${SECUREAPPROVE_BOOTSTRAP_ADMIN_EMAIL:-}"
+      SECUREAPPROVE_BOOTSTRAP_ADMIN_PASSWORD: "${SECUREAPPROVE_BOOTSTRAP_ADMIN_PASSWORD:-}"
+      SECUREAPPROVE_BOOTSTRAP_PRIMARY_EMAIL: "${SECUREAPPROVE_BOOTSTRAP_PRIMARY_EMAIL:-}"
     
     volumes:
       - ./secureapprove_django/media:/app/media
@@ -111,31 +127,42 @@ services:
       DB_PORT: 5432
       DB_NAME: secureapprove
       DB_USER: postgres
-      DB_PASSWORD: postgres123
+      DB_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
       
       # Redis
       REDIS_URL: redis://redis:6379/1
       
       # Django
       DEBUG: "False"
-      SECRET_KEY: "sdkfnklnrvknlrberggerg"
+      SECRET_KEY: "${SECRET_KEY:?SECRET_KEY is required}"
       ALLOWED_HOSTS: "localhost,127.0.0.1,secureapprove.com,www.secureapprove.com,api.secureapprove.com"
       
       # Security
       WEBAUTHN_RP_NAME: "SecureApprove"
       WEBAUTHN_RP_ID: "secureapprove.com"
       WEBAUTHN_ORIGIN: "https://secureapprove.com"
+      SECUREAPPROVE_PROOF_ENABLED: "${SECUREAPPROVE_PROOF_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_MARKETING_ENABLED: "${SECUREAPPROVE_PROOF_MARKETING_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_SIGNER: "${SECUREAPPROVE_PROOF_SIGNER:-aws_kms}"
+      SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND: "${SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND:-aws_kms}"
+      SECUREAPPROVE_PROOF_SIGNING_KEY_ARN: "${SECUREAPPROVE_PROOF_SIGNING_KEY_ARN:-}"
+      SECUREAPPROVE_PROOF_SIGNING_KID: "${SECUREAPPROVE_PROOF_SIGNING_KID:-}"
+      SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN: "${SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN:-}"
+      SECUREAPPROVE_PROOF_ARCHIVE_ENABLED: "${SECUREAPPROVE_PROOF_ARCHIVE_ENABLED:-False}"
+      SECUREAPPROVE_PROOF_ARCHIVE_BUCKET: "${SECUREAPPROVE_PROOF_ARCHIVE_BUCKET:-}"
+      SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS: "${SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS:-3650}"
+      AWS_REGION: "${AWS_REGION:-us-east-1}"
       
       # Email
       EMAIL_HOST: "smtp.gmail.com"
       EMAIL_PORT: "587"
       EMAIL_USE_TLS: "True"
-      EMAIL_HOST_USER: ""
-      EMAIL_HOST_PASSWORD: ""
+      EMAIL_HOST_USER: "${EMAIL_HOST_USER:-}"
+      EMAIL_HOST_PASSWORD: "${EMAIL_HOST_PASSWORD:-}"
       DEFAULT_FROM_EMAIL: "noreply@secureapprove.com"
       
       # Billing
-      MERCADOPAGO_ACCESS_TOKEN: ""
+      MERCADOPAGO_ACCESS_TOKEN: "${MERCADOPAGO_ACCESS_TOKEN:-}"
       MERCADOPAGO_WEBHOOK_URL: "https://api.secureapprove.com/api/billing/webhooks/mercadopago/"
     
     volumes:
@@ -154,6 +181,14 @@ services:
       start_period: 30s
     networks:
       - internal
+
+  celery_beat:
+    extends:
+      service: celery
+    container_name: secureapprove_celery_beat
+    command: celery -A config beat -l info --schedule=/tmp/celerybeat-schedule
+    healthcheck:
+      disable: true
 
 volumes:
   postgres_data:

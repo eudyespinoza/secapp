@@ -16,6 +16,7 @@ from django.urls import translate_url
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+from apps.authentication.proof_views import proof_jwks
 
 from django.views.generic import TemplateView
 import os
@@ -147,6 +148,7 @@ api_urlpatterns = [
     path('api/approvals/', include('apps.authentication.approvals_api_urls')),
     path('api/requests/', include(('apps.requests.urls', 'requests'), namespace='api-requests')),
     path('api/chat/', include(('apps.chat.urls', 'chat'), namespace='api-chat')),
+    path('api/proofs/', include('apps.authentication.proof_urls')),
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 
@@ -156,6 +158,7 @@ urlpatterns = [
     
     # Health check (no i18n)
     path('health/', health_check, name='health'),
+    path('.well-known/secureapprove-proof-jwks.json', proof_jwks, name='secureapprove-proof-jwks'),
     
     # Service Worker
     path('service-worker.js', service_worker, name='service-worker'),

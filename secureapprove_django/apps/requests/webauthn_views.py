@@ -6,19 +6,54 @@ import json
 import logging
 import secrets
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from django.core.cache import cache
+from django.db import transaction
 
 from .models import ApprovalRequest
 from apps.authentication.models import ApprovalAudit
 from apps.authentication.webauthn_service import webauthn_service
+from apps.authentication.proof_service import (
+    ProofUnavailable,
+    canonical_json_value,
+    issue_security_proof,
+    proof_api_payload,
+    proofs_enabled,
+)
 
 logger = logging.getLogger(__name__)
+
+
+def _approval_proof_snapshot(approval_request, approver, action, comment='', reason=''):
+    """Complete immutable snapshot covered by the WebAuthn challenge and Proof JWS."""
+    amount = None
+    if approval_request.amount is not None:
+        amount = format(approval_request.amount.quantize(approval_request.amount.__class__('0.01')), 'f')
+    return {
+        'schema': 'sap-proof-v1',
+        'event_type': 'approval_request',
+        'request': {
+            'id': str(approval_request.pk),
+            'tenant_id': str(approval_request.tenant_id),
+            'requester_id': str(approval_request.requester_id),
+            'approver_id': str(approver.pk),
+            'title': approval_request.title,
+            'description': approval_request.description,
+            'category': approval_request.category,
+            'priority': approval_request.priority,
+            'amount': amount,
+            'metadata': approval_request.metadata or {},
+            'created_at': approval_request.created_at,
+            'expires_at': approval_request.expires_at,
+        },
+        'decision': action,
+        'comment': comment if action == 'approve' else '',
+        'rejection_reason': reason if action == 'reject' else '',
+    }
 
 
 def get_client_ip(request):
@@ -73,27 +108,28 @@ def approval_webauthn_options(request, approval_id):
         # Parse action from request body
         data = json.loads(request.body)
         action = data.get('action', 'approve')  # 'approve' or 'reject'
+        comment = data.get('comment', '')
+        reason = data.get('reason', '')
         
         if action not in ['approve', 'reject']:
             return JsonResponse({
                 'error': _('Invalid action. Must be "approve" or "reject".')
             }, status=400)
+
+        if action == 'reject' and not reason:
+            return JsonResponse({'error': _('Rejection reason is required')}, status=400)
         
         # Prepare context data for cryptographic binding (optional)
-        context_data = {
-            'approval_id': str(approval_request.pk),
-            'action': action,
-            'title': approval_request.title,
-            'category': approval_request.category,
-            'amount': str(approval_request.amount) if approval_request.amount else None,
-            'requester_id': str(approval_request.requester.id),
-        }
+        context_data = _approval_proof_snapshot(
+            approval_request, request.user, action, comment=comment, reason=reason
+        )
         
         # Generate WebAuthn challenge for this specific approval
         options = webauthn_service.generate_approval_challenge(
             user=request.user,
             approval_id=str(approval_request.pk),
-            context_data=context_data
+            context_data=context_data,
+            proof_binding=proofs_enabled(),
         )
         
         logger.info(
@@ -126,28 +162,11 @@ def approval_webauthn_verify(request, approval_id):
     try:
         data = json.loads(request.body)
         
-        # Get approval request
-        approval_request = get_object_or_404(
-            ApprovalRequest,
-            pk=approval_id,
-            tenant=request.user.tenant
-        )
-        
         # Validate user can approve
         if not request.user.can_approve_requests():
             return JsonResponse({
                 'error': _('You do not have permission to approve requests')
             }, status=403)
-        
-        if approval_request.status != 'pending':
-            return JsonResponse({
-                'error': _('This request has already been processed')
-            }, status=400)
-        
-        if approval_request.requester == request.user:
-            return JsonResponse({
-                'error': _('You cannot approve your own request')
-            }, status=400)
         
         # Extract data from request
         action = data.get('action', 'approve')
@@ -170,24 +189,70 @@ def approval_webauthn_verify(request, approval_id):
                 'error': _('Rejection reason is required')
             }, status=400)
         
-        # Prepare context data (must match what was sent in options)
-        context_data = {
-            'approval_id': str(approval_request.pk),
-            'action': action,
-            'title': approval_request.title,
-            'category': approval_request.category,
-            'amount': str(approval_request.amount) if approval_request.amount else None,
-            'requester_id': str(approval_request.requester.id),
-        }
-        
-        # Verify WebAuthn response
+        approval_request = get_object_or_404(
+            ApprovalRequest.objects.select_related('tenant', 'requester'),
+            pk=approval_id,
+            tenant=request.user.tenant,
+        )
+        if approval_request.status != 'pending':
+            return JsonResponse({'error': _('This request has already been processed')}, status=400)
+        if approval_request.requester == request.user:
+            return JsonResponse({'error': _('You cannot approve your own request')}, status=400)
+
+        context_data = _approval_proof_snapshot(
+            approval_request, request.user, action, comment=comment, reason=reason
+        )
+
         try:
-            verification_result = webauthn_service.verify_approval_response(
-                user=request.user,
-                approval_id=str(approval_request.pk),
-                credential_data=credential_data,
-                context_data=context_data
-            )
+            with transaction.atomic():
+                approval_request = (
+                    ApprovalRequest.objects.select_related('tenant', 'requester')
+                    .select_for_update()
+                    .get(pk=approval_id, tenant=request.user.tenant)
+                )
+                if approval_request.status != 'pending':
+                    return JsonResponse({'error': _('This request has already been processed')}, status=409)
+
+                current_snapshot = _approval_proof_snapshot(
+                    approval_request, request.user, action, comment=comment, reason=reason
+                )
+                verification_result = webauthn_service.verify_approval_response(
+                    user=request.user,
+                    approval_id=str(approval_request.pk),
+                    credential_data=credential_data,
+                    context_data=canonical_json_value(current_snapshot),
+                )
+                if not verification_result.get('verified'):
+                    raise ValueError('Verification returned false')
+
+                if action == 'approve':
+                    approval_request.approve(request.user, comment)
+                    message = _('Request approved successfully')
+                else:
+                    approval_request.reject(request.user, reason)
+                    message = _('Request rejected successfully')
+
+                audit = ApprovalAudit.objects.create(
+                    approval_request=approval_request,
+                    user=request.user,
+                    credential_id=verification_result['credential_id'],
+                    challenge_id=verification_result['challenge_id'],
+                    action=action,
+                    status='success',
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    context_data=canonical_json_value(current_snapshot),
+                )
+                proof = issue_security_proof(
+                    tenant=approval_request.tenant,
+                    subject_user=approval_request.requester,
+                    actor_user=request.user,
+                    event_type='approval_request',
+                    decision=action,
+                    transaction_snapshot=current_snapshot,
+                    verification_result=verification_result,
+                    approval_audit=audit,
+                )
         except ValueError as e:
             # Create failed audit log
             ApprovalAudit.objects.create(
@@ -199,7 +264,7 @@ def approval_webauthn_verify(request, approval_id):
                 status='failed',
                 ip_address=get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                context_data=context_data,
+                context_data=canonical_json_value(context_data),
                 error_message=str(e)
             )
             
@@ -210,84 +275,39 @@ def approval_webauthn_verify(request, approval_id):
             return JsonResponse({
                 'error': _('Authentication verification failed: {}').format(str(e))
             }, status=400)
-        
-        if not verification_result.get('verified'):
-            # Create failed audit log
+        except ProofUnavailable as exc:
             ApprovalAudit.objects.create(
                 approval_request=approval_request,
                 user=request.user,
-                credential_id=verification_result.get('credential_id', 'unknown'),
-                challenge_id=verification_result.get('challenge_id', 'unknown'),
+                credential_id='proof-signing-unavailable',
+                challenge_id='consumed',
                 action=action,
                 status='failed',
                 ip_address=get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                context_data=context_data,
-                error_message='Verification returned false'
+                context_data=canonical_json_value(context_data),
+                error_message=str(exc),
             )
-            
             return JsonResponse({
-                'error': _('Authentication verification failed')
-            }, status=400)
-        
-        # WebAuthn verified successfully - perform the action
-        try:
-            if action == 'approve':
-                approval_request.approve(request.user, comment)
-                message = _('Request approved successfully')
-            else:  # reject
-                approval_request.reject(request.user, reason)
-                message = _('Request rejected successfully')
-            
-            # Update session flag
-            request.session['last_webauthn_at'] = timezone.now().isoformat()
-            
-            # Create success audit log
-            audit = ApprovalAudit.objects.create(
-                approval_request=approval_request,
-                user=request.user,
-                credential_id=verification_result['credential_id'],
-                challenge_id=verification_result['challenge_id'],
-                action=action,
-                status='success',
-                ip_address=get_client_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                context_data=context_data
-            )
-            
-            logger.info(
-                f"User {request.user.email} {action}ed approval {approval_request.pk} "
-                f"with WebAuthn credential {verification_result['credential_id'][:16]}..."
-            )
-            
-            return JsonResponse({
-                'success': True,
-                'message': message,
-                'approval': {
-                    'id': str(approval_request.pk),
-                    'status': approval_request.status,
-                    'action': action,
-                },
-                'audit_id': str(audit.id),
-            })
-            
-        except Exception as e:
-            # Create failed audit log
-            ApprovalAudit.objects.create(
-                approval_request=approval_request,
-                user=request.user,
-                credential_id=verification_result['credential_id'],
-                challenge_id=verification_result['challenge_id'],
-                action=action,
-                status='failed',
-                ip_address=get_client_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                context_data=context_data,
-                error_message=str(e)
-            )
-            
-            logger.error(f"Error performing approval action: {str(e)}")
-            return JsonResponse({'error': str(e)}, status=500)
+                'error': 'proof_signing_unavailable',
+                'detail': _('The cryptographic proof could not be issued. Start a new WebAuthn confirmation.'),
+            }, status=503)
+
+        request.session['last_webauthn_at'] = timezone.now().isoformat()
+        logger.info('User %s completed %s for approval %s with SecureApprove Proof', request.user.pk, action, approval_request.pk)
+        response = {
+            'success': True,
+            'message': message,
+            'approval': {
+                'id': str(approval_request.pk),
+                'status': approval_request.status,
+                'action': action,
+            },
+            'audit_id': str(audit.id),
+        }
+        if proof:
+            response['proof'] = proof_api_payload(proof, request)
+        return JsonResponse(response)
         
     except json.JSONDecodeError:
         return JsonResponse({'error': _('Invalid JSON data')}, status=400)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SecureApprove 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-14 00:06+0000\n"
+"POT-Creation-Date: 2026-08-10 02:21+0000\n"
 "PO-Revision-Date: 2025-11-13 12:00+0000\n"
 "Last-Translator: SecureApprove Team\n"
 "Language-Team: Portuguese (Brazil)\n"
@@ -17,677 +17,1030 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "Pricing is based on the number of users in your organization."
-msgstr "A cobrança é baseada no número de usuários da sua organização."
-
-msgid "Simple per-user pricing"
-msgstr "Precificação simples por usuário"
-
-msgid ""
-"Choose how many users you need; the price per user adjusts automatically."
-msgstr ""
-"Escolha quantos usuários você precisa; o preço por usuário se ajusta "
-"automaticamente."
-
-msgid "Users"
-msgstr "Usuários"
-
-msgid "Number of users in your organization (minimum 2)."
-msgstr "Número de usuários na sua organização (mínimo 2)."
-
-msgid "Precios por número de usuarios"
-msgstr "Preços por número de usuários"
-
-msgid "El precio se calcula por usuario según el tamaño de tu equipo."
-msgstr ""
-"O preço é calculado por usuário de acordo com o tamanho da sua equipe."
-
-msgid "Precio por usuario (USD/mes)"
-msgstr "Preço por usuário (USD/mês)"
-
-msgid "De 2 a 6 usuarios"
-msgstr "De 2 a 6 usuários"
-
-msgid "De 7 a 12 usuarios"
-msgstr "De 7 a 12 usuários"
-
-msgid "Más de 12 usuarios"
-msgstr "Mais de 12 usuários"
-
-msgid ""
-"El administrador de cada tenant puede agregar la cantidad de usuarios que "
-"desee; el monto mensual se calcula multiplicando el precio por usuario por "
-"el número total de usuarios."
-msgstr ""
-"O administrador de cada tenant pode adicionar quantos usuários desejar; o "
-"valor mensal é calculado multiplicando o preço por usuário pelo número total"
-" de usuários."
-
-msgid "Ir a seleccionar plan"
-msgstr "Ir para selecionar plano"
-
-#: apps/authentication/forms.py:25
 msgid "Required. Enter a valid email address."
 msgstr "Por favor, insira um endereço de email válido."
 
-#: apps/authentication/forms.py:30 apps/authentication/forms.py:35
 msgid "Required."
 msgstr "Obrigatório."
 
-#: apps/authentication/forms.py:39
 msgid "I accept the Terms of Service and Privacy Policy"
 msgstr "Aceito os Termos de Serviço e Política de Privacidade"
 
-#: apps/authentication/forms.py:51 apps/authentication/forms.py:116
-#: templates/authentication/webauthn_login.html:204
 msgid "Enter your email address"
 msgstr "Por favor, insira um endereço de email válido."
 
-#: apps/authentication/forms.py:55 apps/authentication/forms.py:167
 msgid "Enter your first name"
 msgstr "Digite seu nome"
 
-#: apps/authentication/forms.py:59 apps/authentication/forms.py:171
 msgid "Enter your last name"
 msgstr "Digite seu sobrenome"
 
-#: apps/authentication/forms.py:63
 msgid "Create a strong password"
 msgstr "Crie uma senha forte"
 
-#: apps/authentication/forms.py:67
 msgid "Confirm your password"
 msgstr "Confirmar Senha"
 
-#: apps/authentication/forms.py:84
 msgid "Create Account"
 msgstr "Criar Conta"
 
-#: apps/authentication/forms.py:108
 msgid "Remember me for 30 days"
 msgstr "Lembrar-me"
 
-#: apps/authentication/forms.py:121
 msgid "Enter your password"
 msgstr "Esqueceu a senha?"
 
-#: apps/authentication/forms.py:126 apps/authentication/models.py:49
-#: templates/authentication/profile.html:145
-#: templates/authentication/webauthn_login.html:202
-#: templates/billing/subscribe.html:166
 msgid "Email Address"
 msgstr "Endereço de E-mail"
 
-#: apps/authentication/forms.py:127
 msgid "Password"
 msgstr "Senha"
 
-#: apps/authentication/forms.py:175
 msgid "Enter your phone number"
 msgstr "Digite seu número de telefone"
 
-#: apps/authentication/forms.py:179
 msgid "Enter your company name"
 msgstr "Digite o nome da sua empresa"
 
-#: apps/authentication/forms.py:198
 msgid "Update Profile"
 msgstr "Perfil"
 
-#: apps/authentication/forms.py:211
 msgid "Current Password"
 msgstr "Plano Atual"
 
-#: apps/authentication/forms.py:213
 msgid "Enter your current password"
 msgstr "Digite sua senha atual"
 
-#: apps/authentication/forms.py:218
 msgid "New Password"
 msgstr "Senha"
 
-#: apps/authentication/forms.py:220
 msgid "Enter your new password"
 msgstr "Digite sua nova senha"
 
-#: apps/authentication/forms.py:225
 msgid "Confirm New Password"
 msgstr "Confirmar Senha"
 
-#: apps/authentication/forms.py:227
 msgid "Confirm your new password"
 msgstr "Confirmar Senha"
 
-#: apps/authentication/forms.py:243
 msgid "Change Password"
 msgstr "Confirmar Senha"
 
-#: apps/authentication/forms.py:250
 msgid "Current password is incorrect."
 msgstr "A senha atual está incorreta."
 
-#: apps/authentication/forms.py:260
 msgid "The two password fields must match."
 msgstr "As senhas não coincidem."
 
-#: apps/authentication/models.py:15 apps/requests/models.py:61
 msgid "Requester"
 msgstr "Solicitante"
 
-#: apps/authentication/models.py:16 apps/requests/models.py:70
 msgid "Approver"
 msgstr "Aprovador"
 
-#: apps/authentication/models.py:17
 msgid "Tenant Admin"
 msgstr "Administrador de locatário"
 
-#: apps/authentication/models.py:18
 msgid "Super Admin"
 msgstr "Superadministrador"
 
-#: apps/authentication/models.py:22 templates/authentication/profile.html:141
 msgid "Full Name"
 msgstr "Nome"
 
-#: apps/authentication/models.py:23
 msgid "Role"
 msgstr "Papel"
 
-#: apps/authentication/models.py:36
 msgid "WebAuthn Credentials"
 msgstr "Credenciais WebAuthn"
 
-#: apps/authentication/models.py:39
 msgid "Stored WebAuthn credentials for biometric authentication"
 msgstr "Credenciais WebAuthn armazenadas para autenticação biométrica"
 
-#: apps/authentication/models.py:43 apps/billing/models.py:153
-#: apps/tenants/models.py:20 apps/tenants/models.py:36
 msgid "Active"
 msgstr "Ativo"
 
 # ================================================
 # Authentication
 # ================================================
-#: apps/authentication/models.py:44
 msgid "Last Login"
 msgstr "Entrar"
 
-#: apps/authentication/models.py:45 apps/requests/models.py:100
-#: apps/tenants/models.py:56
+# ================================================
+# Authentication
+# ================================================
+#, fuzzy
+#| msgid "Last Login"
+msgid "Last WebAuthn Login"
+msgstr "Entrar"
+
 msgid "Created At"
 msgstr "Criado"
 
-#: apps/authentication/models.py:46 apps/requests/models.py:101
-#: apps/tenants/models.py:57
 msgid "Updated At"
 msgstr "Atualizado em"
 
-#: apps/authentication/models.py:55 templates/authentication/profile.html:132
 msgid "User"
 msgstr "Usuário"
 
-#: apps/authentication/views.py:51 apps/authentication/views.py:58
+msgid "Users"
+msgstr "Usuários"
+
+msgid "Pending"
+msgstr "Pendente"
+
+msgid "Completed"
+msgstr ""
+
+msgid "Expired"
+msgstr "Expirado"
+
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgid "Pairing Token"
+msgstr ""
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Expires At"
+msgstr "Expira em"
+
+#, fuzzy
+#| msgid "Created At"
+msgid "Paired At"
+msgstr "Criado"
+
+#, fuzzy
+#| msgid "User agent"
+msgid "Paired User Agent"
+msgstr "Agente do usuário"
+
+msgid "Paired Platform"
+msgstr ""
+
+#, fuzzy
+#| msgid "Device Paired Successfully!"
+msgid "Device Pairing Session"
+msgstr "Device Paired Successfully!"
+
+#, fuzzy
+#| msgid "Device Paired Successfully!"
+msgid "Device Pairing Sessions"
+msgstr "Device Paired Successfully!"
+
+msgid "Success"
+msgstr "Sucesso"
+
+msgid "Failed"
+msgstr "Falhou"
+
+msgid "Approval Request"
+msgstr "Aprovar Solicitação"
+
+#, fuzzy
+#| msgid "Credential"
+msgid "Credential ID"
+msgstr "Credencial"
+
+#, fuzzy
+#| msgid "No WebAuthn credentials registered for this user"
+msgid "Base64-encoded WebAuthn credential ID used for this approval"
+msgstr "Nenhuma credencial WebAuthn registrada para este usuário"
+
+#, fuzzy
+#| msgid "Challenge"
+msgid "Challenge ID"
+msgstr "Desafio"
+
+#, fuzzy
+#| msgid "Unique identifier for the tenant (e.g. company-name)"
+msgid "Unique identifier for the challenge"
+msgstr "Identificador único do locatário (ex. nome-empresa)"
+
+#, fuzzy
+#| msgid "All actions"
+msgid "Action"
+msgstr "Todas as ações"
+
+msgid "Approve"
+msgstr "Aprovar"
+
+msgid "Reject"
+msgstr "Rejeitar"
+
+#, fuzzy
+#| msgid "Approval Actions"
+msgid "Type of approval action"
+msgstr "Ações de aprovação"
+
+#, fuzzy
+#| msgid "IP address"
+msgid "IP Address"
+msgstr "Endereço IP"
+
+#, fuzzy
+#| msgid "User agent"
+msgid "User Agent"
+msgstr "Agente do usuário"
+
+#, fuzzy
+#| msgid "Context"
+msgid "Context Data"
+msgstr "Contexto"
+
+msgid "Additional context: approval amount, type, etc."
+msgstr ""
+
+#, fuzzy
+#| msgid "Approved At"
+msgid "Performed At"
+msgstr "Aprovado"
+
+#, fuzzy
+#| msgid "Messages"
+msgid "Error Message"
+msgstr "Mensagens"
+
+#, fuzzy
+#| msgid "Approval audits"
+msgid "Approval Audit"
+msgstr "Auditorias de aprovação"
+
+#, fuzzy
+#| msgid "Approval audits"
+msgid "Approval Audits"
+msgstr "Auditorias de aprovação"
+
+#, fuzzy
+#| msgid "Iframe Acceptance"
+msgid "Terms Acceptance"
+msgstr "Aceitação por iframe"
+
+#, fuzzy
+#| msgid "General"
+msgid "Generic"
+msgstr "Geral"
+
+msgid "Approved"
+msgstr "Aprovado"
+
+msgid "Rejected"
+msgstr "Rejeitado"
+
+msgid "Tenant"
+msgstr "Organização"
+
+#, fuzzy
+#| msgid "Created"
+msgid "Created By"
+msgstr "Criado"
+
+msgid "Purpose"
+msgstr ""
+
+#, fuzzy
+#| msgid "Document type"
+msgid "Document Type"
+msgstr "Tipo de documento"
+
+#, fuzzy
+#| msgid "Document version"
+msgid "Document Version"
+msgstr "Versão do documento"
+
+#, fuzzy
+#| msgid "Document hash"
+msgid "Document Hash"
+msgstr "Hash do documento"
+
+msgid "Decision"
+msgstr "Decisão"
+
+msgid "Parent Origin"
+msgstr ""
+
+msgid "Exact top-level origin authorized to host this WebAuthn ceremony"
+msgstr ""
+
+#, fuzzy
+#| msgid "Approvals"
+msgid "Approval ID"
+msgstr "Aprovações"
+
+msgid "Token Hash"
+msgstr ""
+
+msgid "Consumed At"
+msgstr ""
+
+#, fuzzy
+#| msgid "Created At"
+msgid "Completed At"
+msgstr "Criado"
+
+#, fuzzy
+#| msgid "All Statuses"
+msgid "Result Status"
+msgstr "Status"
+
+#, fuzzy
+#| msgid "Approval Actions"
+msgid "Terms Approval Session"
+msgstr "Ações de aprovação"
+
+#, fuzzy
+#| msgid "Approval Actions"
+msgid "Terms Approval Sessions"
+msgstr "Ações de aprovação"
+
+#, fuzzy
+#| msgid "Initiated by"
+msgid "Initiated By"
+msgstr "Iniciado por"
+
+#, fuzzy
+#| msgid "Approval Actions"
+msgid "Approval Session"
+msgstr "Ações de aprovação"
+
+#, fuzzy
+#| msgid "User agent"
+msgid "User Snapshot"
+msgstr "Agente do usuário"
+
+msgid "Snapshot of user fields at the time of acceptance"
+msgstr ""
+
+#, fuzzy
+#| msgid "Terms acceptance audits"
+msgid "Terms Acceptance Audit"
+msgstr "Auditorias de aceitação de termos"
+
+#, fuzzy
+#| msgid "Terms acceptance audits"
+msgid "Terms Acceptance Audits"
+msgstr "Auditorias de aceitação de termos"
+
+#, fuzzy
+#| msgid "Required."
+msgid "Retired"
+msgstr "Obrigatório."
+
+msgid "Compromised"
+msgstr ""
+
+msgid "Key ID"
+msgstr ""
+
+msgid "AWS KMS key ARN"
+msgstr ""
+
+msgid "Algorithm"
+msgstr ""
+
+msgid "Public JWK"
+msgstr ""
+
+#, fuzzy
+#| msgid "Active chat"
+msgid "Activated At"
+msgstr "Chat ativo"
+
+#, fuzzy
+#| msgid "Created At"
+msgid "Deactivated At"
+msgstr "Criado"
+
+msgid "Proof Signing Key"
+msgstr "Chave de assinatura de comprovantes"
+
+msgid "Proof Signing Keys"
+msgstr "Chaves de assinatura de comprovantes"
+
+msgid "Proof Ledger Head"
+msgstr "Cabeçalho do registro de comprovantes"
+
+msgid "Proof Ledger Heads"
+msgstr "Cabeçalhos do registro de comprovantes"
+
+msgid "Iframe Acceptance"
+msgstr "Aceitação por iframe"
+
+msgid "Archived"
+msgstr "Arquivado"
+
+msgid "Delayed"
+msgstr ""
+
+msgid "Disabled"
+msgstr "Desativado"
+
+msgid "Security Proof"
+msgstr "Comprovante de segurança"
+
+msgid "Security Proofs"
+msgstr "Comprovantes de segurança"
+
 msgid "Please select a subscription plan to get started."
 msgstr "Selecione um plano de assinatura para começar."
 
 # ================================================
 # Messages
 # ================================================
-#: apps/authentication/views.py:70
 msgid "You have been successfully logged out."
 msgstr "Sua solicitação foi enviada com sucesso."
 
-#: apps/authentication/views.py:88
 msgid "Name and email are required"
 msgstr "Nome e e-mail são obrigatórios"
 
-#: apps/authentication/views.py:101
 msgid "User exists but needs to complete WebAuthn registration"
 msgstr "O usuário existe, mas precisa concluir o registro do WebAuthn"
 
-#: apps/authentication/views.py:104
 msgid "Email already registered with WebAuthn credentials"
 msgstr "Email já cadastrado com credenciais WebAuthn"
 
-#: apps/authentication/views.py:124
+#, fuzzy
+#| msgid ""
+#| "No account found with this email. Please subscribe to a plan to get "
+#| "started."
+msgid ""
+"No account found for this email. Please subscribe to a plan or ask your "
+"administrator to add you."
+msgstr "Nenhuma conta encontrada com este e-mail.Assine um plano para começar."
+
 msgid "User created successfully. Now register WebAuthn credential."
 msgstr "Usuário criado com sucesso.Agora registre a credencial WebAuthn."
 
-#: apps/authentication/views.py:128 apps/authentication/views.py:165
-#: apps/authentication/views.py:213 apps/authentication/views.py:249
-#: apps/authentication/views.py:298 apps/authentication/views.py:412
-#: apps/authentication/views.py:481
 msgid "Invalid JSON data"
 msgstr "Dados inválidos fornecidos."
 
-#: apps/authentication/views.py:131
 msgid "Registration failed"
 msgstr "Falha no registro"
+
+#, fuzzy
+#| msgid "Credential ID is required"
+msgid "Credential data is required"
+msgstr "O ID da credencial é obrigatório"
 
 # ================================================
 # Forms & Validation
 # ================================================
-#: apps/authentication/views.py:143 apps/authentication/views.py:427
 msgid "User ID is required"
 msgstr "Este campo é obrigatório."
 
-#: apps/authentication/views.py:163 apps/authentication/views.py:211
-#: apps/authentication/views.py:233 apps/authentication/views.py:296
 msgid "User not found"
 msgstr "Usuário não encontrado"
 
-#: apps/authentication/views.py:168
 msgid "Failed to generate registration options"
 msgstr "Falha ao gerar opções de registro"
 
-#: apps/authentication/views.py:181 apps/authentication/views.py:265
 msgid "User ID and response are required"
 msgstr "O ID do usuário e a resposta são obrigatórios"
 
-#: apps/authentication/views.py:205
 msgid "Registration successful! Redirecting..."
 msgstr "¡Registro exitoso! Redirigiendo..."
 
-#: apps/authentication/views.py:208
-#: apps/authentication/webauthn_service.py:181
 msgid "Registration verification failed"
 msgstr "Falha na verificação do registro"
 
 # ================================================
 # Forms & Validation
 # ================================================
-#: apps/authentication/views.py:228 apps/authentication/views.py:355
-#: apps/billing/views.py:97
 msgid "Email is required"
 msgstr "Este campo é obrigatório."
 
-#: apps/authentication/views.py:236
 msgid "No WebAuthn credentials registered for this user"
 msgstr "Nenhuma credencial WebAuthn registrada para este usuário"
 
-#: apps/authentication/views.py:293
-#: apps/authentication/webauthn_service.py:307
 msgid "Authentication verification failed"
 msgstr "Falha na verificação de autenticação"
 
-#: apps/authentication/views.py:336
 msgid "Profile updated successfully."
 msgstr "Operação concluída com sucesso."
 
-#: apps/authentication/views.py:381
 msgid "Credential ID is required"
 msgstr "O ID da credencial é obrigatório"
 
-#: apps/authentication/views.py:407
+msgid "Cannot delete last active credential. Register another device first."
+msgstr ""
+
 msgid "Device removed successfully"
 msgstr "Operação concluída com sucesso."
 
-#: apps/authentication/views.py:467
-msgid "Fallback credential created successfully"
-msgstr "Operação concluída com sucesso."
-
-#: apps/authentication/webauthn_service.py:126
-#: apps/authentication/webauthn_service.py:237
-msgid "Challenge not found or expired"
-msgstr "Desafio não encontrado ou expirou"
-
-#: apps/authentication/webauthn_service.py:189
-msgid "No credentials registered for this user"
-msgstr "Nenhuma credencial registrada para este usuário"
-
-#: apps/authentication/webauthn_service.py:263
 msgid "Credential not found"
 msgstr "Credencial não encontrada"
 
-#: apps/billing/admin.py:21
+# ================================================
+# Forms & Validation
+# ================================================
+#, fuzzy
+#| msgid "User ID is required"
+msgid "New name is required"
+msgstr "Este campo é obrigatório."
+
+#, fuzzy
+#| msgid "Device removed successfully"
+msgid "Device renamed successfully"
+msgstr "Operação concluída com sucesso."
+
+msgid "Cannot deactivate last active credential."
+msgstr ""
+
+#, fuzzy
+#| msgid "Device removed successfully"
+msgid "Device {} successfully"
+msgstr "Operação concluída com sucesso."
+
+#, fuzzy
+#| msgid "Active"
+msgid "activated"
+msgstr "Ativo"
+
+msgid "deactivated"
+msgstr ""
+
+msgid ""
+"Fallback authentication has been disabled. Use a registered WebAuthn passkey."
+msgstr ""
+
+msgid "Pairing session not found or expired."
+msgstr "Pairing session not found or expired."
+
+#, fuzzy
+#| msgid "Pairing session not found or expired."
+msgid "Pairing session not found."
+msgstr "Pairing session not found or expired."
+
+#, fuzzy
+#| msgid "Challenge not found or expired"
+msgid "Challenge not found or expired. Please try again."
+msgstr "Desafio não encontrado ou expirou"
+
+msgid "No credentials registered for this user"
+msgstr "Nenhuma credencial registrada para este usuário"
+
+#, fuzzy
+#| msgid "Stored WebAuthn credentials for biometric authentication"
+msgid "No active credentials available for authentication"
+msgstr "Credenciais WebAuthn armazenadas para autenticação biométrica"
+
+msgid "Challenge not found or expired"
+msgstr "Desafio não encontrado ou expirou"
+
+#, fuzzy
+#| msgid "Credential not found"
+msgid "Credential not found or inactive"
+msgstr "Credencial não encontrada"
+
+#, fuzzy
+#| msgid "No matching credential found on this device."
+msgid "No active credentials found"
+msgstr "Nenhuma credencial correspondente encontrada neste dispositivo."
+
+#, fuzzy
+#| msgid "Process and manage approval requests."
+msgid "Challenge does not match the approval request"
+msgstr "Processar e gerenciar solicitações de aprovação."
+
+msgid "Approval context has changed. Please try again."
+msgstr ""
+
+#, fuzzy
+#| msgid "Failed to create payment session. Please try again."
+msgid "Invalid proof-bound challenge. Please try again."
+msgstr "Falha ao criar sessão de pagamento.Por favor, tente novamente."
+
+#, fuzzy
+#| msgid "This request was rejected."
+msgid "This credential has been deactivated"
+msgstr "A solicitação foi rejeitada."
+
+#, fuzzy
+#| msgid "Verification failed"
+msgid "Approval verification failed"
+msgstr "A verificação falhou"
+
 msgid "Basic Information"
 msgstr "Informação"
 
-#: apps/billing/admin.py:24
 msgid "Pricing"
 msgstr "Preços"
 
-#: apps/billing/admin.py:27
 msgid "Limits"
 msgstr "Limites"
 
-#: apps/billing/admin.py:30
 msgid "Features"
 msgstr "Recursos"
 
-#: apps/billing/admin.py:37
 msgid "Yearly Price"
 msgstr "Anual"
 
-#: apps/billing/admin.py:50
 msgid "Subscription Details"
 msgstr "Assinatura"
 
 # ================================================
 # Billing
 # ================================================
-#: apps/billing/admin.py:53
 msgid "Billing Period"
 msgstr "Faturamento"
 
-#: apps/billing/admin.py:56 apps/billing/admin.py:86
 msgid "Mercado Pago"
 msgstr "Mercado de pagamentos"
 
-#: apps/billing/admin.py:59 apps/billing/admin.py:119
-#: apps/billing/admin.py:163
 msgid "Timestamps"
 msgstr "Carimbos de data e hora"
 
-#: apps/billing/admin.py:67 apps/tenants/models.py:23
 msgid "Trial"
 msgstr "Julgamento"
 
-#: apps/billing/admin.py:80
 msgid "Payment Details"
 msgstr "Detalhes da Solicitação"
 
-#: apps/billing/admin.py:83 apps/billing/admin.py:154
 msgid "Dates"
 msgstr "Data de Fim"
 
-#: apps/billing/admin.py:89
 msgid "Additional Data"
 msgstr "Informações Adicionais"
 
-#: apps/billing/admin.py:96 apps/billing/admin.py:126
-#: apps/billing/admin.py:170 apps/requests/models.py:77
-#: apps/tenants/models.py:60
-msgid "Tenant"
-msgstr "Organização"
-
-#: apps/billing/admin.py:110 apps/billing/admin.py:157
 msgid "Period"
 msgstr "Período"
 
-#: apps/billing/admin.py:113
 msgid "Request Metrics"
 msgstr "Detalhes da Solicitação"
 
-#: apps/billing/admin.py:116
 msgid "User Activity"
 msgstr "Atividade do usuário"
 
-#: apps/billing/admin.py:135
 msgid "Approval Rate"
 msgstr "Aprovado"
 
-#: apps/billing/admin.py:148
 msgid "Invoice Details"
 msgstr "Fatura"
 
-#: apps/billing/admin.py:151
 msgid "Amounts"
 msgstr "Valor"
 
-#: apps/billing/admin.py:160 apps/billing/models.py:294
 msgid "Payment"
 msgstr "Pagamento"
 
 # ================================================
 # Billing
 # ================================================
-#: apps/billing/apps.py:11
 msgid "Billing"
 msgstr "Faturamento"
 
-#: apps/billing/models.py:18 templates/billing/select_plan.html:170
 msgid "Starter"
 msgstr "Inicial"
 
-#: apps/billing/models.py:19 templates/billing/select_plan.html:194
 msgid "Growth"
 msgstr "Crescimento"
 
-#: apps/billing/models.py:20 templates/billing/select_plan.html:219
 msgid "Scale"
 msgstr "Escala"
 
-#: apps/billing/models.py:39
+msgid "Small Team"
+msgstr ""
+
+#, fuzzy
+#| msgid "Medium"
+msgid "Medium Team"
+msgstr "Média"
+
+msgid "Large Team"
+msgstr ""
+
 msgid "Yearly price (optional, defaults to monthly * 10)"
 msgstr "Preço anual (opcional, o padrão é mensal * 10)"
 
-#: apps/billing/models.py:44
 msgid "Maximum number of approvers allowed"
 msgstr "Número máximo de aprovadores permitidos"
 
-#: apps/billing/models.py:47
 msgid "Maximum requests per month (0 = unlimited)"
 msgstr "Máximo de solicitações por mês (0 = ilimitado)"
 
-#: apps/billing/models.py:50
 msgid "Maximum users in tenant (0 = unlimited)"
 msgstr "Máximo de usuários no locatário (0 = ilimitado)"
 
-#: apps/billing/models.py:61
 msgid "Display order"
 msgstr "Ordem de exibição"
 
-#: apps/billing/models.py:68 apps/tenants/models.py:31
-#: templates/billing/subscribe.html:132
 msgid "Plan"
 msgstr "Plano"
 
-#: apps/billing/models.py:69
 msgid "Plans"
 msgstr "Plano"
 
-#: apps/billing/models.py:154 apps/billing/models.py:249
-#: apps/billing/models.py:363 apps/requests/models.py:36
-#: apps/tenants/models.py:22
-msgid "Cancelled"
-msgstr "Cancelado"
-
-#: apps/billing/models.py:155
 msgid "Past Due"
 msgstr "Vencido"
 
-#: apps/billing/models.py:156 apps/tenants/models.py:21
 msgid "Suspended"
 msgstr "Suspended"
 
 # ================================================
 # Billing
 # ================================================
-#: apps/billing/models.py:157
 msgid "Trialing"
 msgstr "Faturamento"
 
-#: apps/billing/models.py:161
 msgid "Monthly"
 msgstr "Mensal"
 
-#: apps/billing/models.py:162
 msgid "Yearly"
 msgstr "Anual"
 
-#: apps/billing/models.py:197
 msgid "Mercado Pago subscription ID"
 msgstr "Mercado Pago subscription ID"
 
-#: apps/billing/models.py:203
 msgid "Mercado Pago customer ID"
 msgstr "Mercado Pago customer ID"
 
-#: apps/billing/models.py:207
 msgid "Subscription"
 msgstr "Assinatura"
 
-#: apps/billing/models.py:208
 msgid "Subscriptions"
 msgstr "Assinatura"
 
-#: apps/billing/models.py:246 apps/requests/models.py:33
-#: templates/dashboard/index.html:125 templates/test_i18n.html:33
-msgid "Pending"
-msgstr "Pendente"
-
-#: apps/billing/models.py:247 apps/requests/models.py:34
-#: templates/dashboard/index.html:141 templates/requests/detail.html:126
-#: templates/test_i18n.html:34
-msgid "Approved"
-msgstr "Aprovado"
-
-#: apps/billing/models.py:248 apps/requests/models.py:35
-#: templates/requests/detail.html:129 templates/requests/list.html:192
-msgid "Rejected"
-msgstr "Rejeitado"
-
-#: apps/billing/models.py:250
 msgid "Refunded"
 msgstr "Refunded"
 
-#: apps/billing/models.py:278
 msgid "Mercado Pago payment ID"
 msgstr "ID de pagamento do Mercado Pago"
 
-#: apps/billing/models.py:284
 msgid "Mercado Pago preference ID"
 msgstr "ID de preferência de pagamento de mercado"
 
-#: apps/billing/models.py:295
 msgid "Payments"
 msgstr "Pagamento"
 
-#: apps/billing/models.py:336 apps/billing/models.py:337
 msgid "Usage Metrics"
 msgstr "Métricas de uso"
 
-#: apps/billing/models.py:359
 msgid "Draft"
 msgstr "Rascunho"
 
-#: apps/billing/models.py:360
 msgid "Sent"
 msgstr "Enviado"
 
-#: apps/billing/models.py:361
 msgid "Paid"
 msgstr "Paid"
 
-#: apps/billing/models.py:362
 msgid "Overdue"
 msgstr "Overdue"
 
-#: apps/billing/models.py:403
 msgid "Invoice"
 msgstr "Fatura"
 
-#: apps/billing/models.py:404
 msgid "Invoices"
 msgstr "Fatura"
 
-#: apps/billing/serializers.py:142 apps/billing/serializers.py:162
-#: apps/billing/views.py:166
 msgid "Invalid plan selected."
 msgstr "Plano inválido selecionado."
 
-#: apps/billing/views.py:107
 msgid "Payment system not configured. Please contact support."
 msgstr "Sistema de pagamento não configurado.Entre em contato com o suporte."
 
-#: apps/billing/views.py:146
 msgid "Failed to create payment session. Please try again."
 msgstr "Falha ao criar sessão de pagamento.Por favor, tente novamente."
 
-#: apps/billing/views.py:150
 msgid "Failed to create checkout session. Please contact support."
 msgstr "Falha ao criar sessão de checkout.Entre em contato com o suporte."
 
-#: apps/billing/views.py:176
 msgid "Plan changed successfully."
 msgstr "Operação concluída com sucesso."
 
-#: apps/billing/views.py:193
 msgid "Subscription cancelled successfully."
 msgstr "Operação concluída com sucesso."
 
-#: apps/billing/views.py:195
 msgid "Failed to cancel subscription."
 msgstr "Cancelar Assinatura"
 
-#: apps/requests/forms.py:20
+#, fuzzy
+#| msgid "Name and email are required"
+msgid "Name and email are required."
+msgstr "Nome e e-mail são obrigatórios"
+
+msgid "User already exists. Please log in."
+msgstr ""
+
+msgid "You already have a pending invitation. Please register."
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| "An unexpected error occurred while adding this device. Please try again."
+msgid "An error occurred. Please try again."
+msgstr ""
+"An unexpected error occurred while adding this device. Please try again."
+
+# ================================================
+# Request Fields
+# ================================================
+msgid "Title"
+msgstr "Título"
+
+msgid "Optional title for group conversations"
+msgstr ""
+
+#, fuzzy
+#| msgid "Groups"
+msgid "Is Group"
+msgstr "Grupos"
+
+msgid "True for group conversations, False for 1-to-1"
+msgstr ""
+
+msgid "Cache of last message for quick access"
+msgstr ""
+
+#, fuzzy
+#| msgid "Conversation"
+msgid "Chat Conversation"
+msgstr "Conversa"
+
+#, fuzzy
+#| msgid "Conversations"
+msgid "Chat Conversations"
+msgstr "Conversas"
+
+#, fuzzy
+#| msgid "Create Account"
+msgid "Unread Count"
+msgstr "Criar Conta"
+
+msgid "Cached count of unread messages"
+msgstr ""
+
+msgid "Last message this user has read"
+msgstr ""
+
+#, fuzzy
+#| msgid "Archive"
+msgid "Is Archived"
+msgstr "Arquivo"
+
+msgid "User has archived this conversation"
+msgstr ""
+
+msgid "Is Muted"
+msgstr ""
+
+#, fuzzy
+#| msgid "No biometric authentication set up for this account."
+msgid "User has muted notifications for this conversation"
+msgstr "No hay autenticação biométrica configurada para esta conta."
+
+#, fuzzy
+#| msgid "Add Participants"
+msgid "Chat Participant"
+msgstr "Adicionar Participantes"
+
+#, fuzzy
+#| msgid "Add Participants"
+msgid "Chat Participants"
+msgstr "Adicionar Participantes"
+
+msgid "Delivered"
+msgstr ""
+
+msgid "Read"
+msgstr ""
+
+#, fuzzy
+#| msgid "Context"
+msgid "Content"
+msgstr "Contexto"
+
+#, fuzzy
+#| msgid "Seal the content"
+msgid "Message text content"
+msgstr "Selar o conteúdo"
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Has Attachments"
+msgstr "Anexos"
+
+msgid "Aggregated delivery status"
+msgstr ""
+
+#, fuzzy
+#| msgid "Messages"
+msgid "Chat Message"
+msgstr "Mensagens"
+
+#, fuzzy
+#| msgid "Messages"
+msgid "Chat Messages"
+msgstr "Mensagens"
+
+msgid "File"
+msgstr ""
+
+msgid "Filename"
+msgstr ""
+
+#, fuzzy
+#| msgid "Document type"
+msgid "Content Type"
+msgstr "Tipo de documento"
+
+msgid "Size (bytes)"
+msgstr ""
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Chat Attachment"
+msgstr "Anexos"
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Chat Attachments"
+msgstr "Anexos"
+
+msgid "Chat Message Delivery"
+msgstr ""
+
+msgid "Chat Message Deliveries"
+msgstr ""
+
+#, fuzzy
+#| msgid "User Activity"
+msgid "Last Activity"
+msgstr "Atividade do usuário"
+
+#, fuzzy
+#| msgid "Online"
+msgid "Is Online"
+msgstr "Online"
+
+msgid "Computed field: online if last_activity is recent"
+msgstr ""
+
+#, fuzzy
+#| msgid "User agent"
+msgid "User Presence"
+msgstr "Agente do usuário"
+
+msgid "User Presences"
+msgstr ""
+
+#, python-brace-format
+msgid "New message from {name}"
+msgstr ""
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Sent an attachment"
+msgstr "Anexos"
+
 msgid "Vendor"
 msgstr "Fornecedor"
 
-#: apps/requests/forms.py:23
 msgid "Vendor name"
 msgstr "Fornecedor"
 
-#: apps/requests/forms.py:27
 msgid "Cost Center"
 msgstr "Centro de Custo"
 
-#: apps/requests/forms.py:30
 msgid "Cost center code"
 msgstr "Centro de Custo"
 
-#: apps/requests/forms.py:34
 msgid "Expense Category"
 msgstr "Categoria de Despesas"
 
-#: apps/requests/forms.py:37
 msgid "Meals, Transportation, etc."
 msgstr "Refeições, Transporte, etc."
 
-#: apps/requests/forms.py:41
 msgid "Receipt Reference"
 msgstr "Referência do Recibo"
 
-#: apps/requests/forms.py:44
 msgid "Receipt number or reference"
 msgstr "Referência do Recibo"
 
-#: apps/requests/forms.py:48
 msgid "Destination"
 msgstr "Destino"
 
-#: apps/requests/forms.py:51
 msgid "Travel destination"
 msgstr "Destino"
 
-#: apps/requests/forms.py:55
 msgid "Start Date"
 msgstr "Data de Início"
 
-#: apps/requests/forms.py:61
 msgid "End Date"
 msgstr "Data de Fim"
 
-#: apps/requests/forms.py:67
 msgid "Document ID"
 msgstr "ID do Documento"
 
-#: apps/requests/forms.py:70
 msgid "Document ID or reference"
 msgstr "ID do Documento"
 
-#: apps/requests/forms.py:74
 msgid "Reason"
 msgstr "Motivo"
 
-#: apps/requests/forms.py:77
 msgid "Explain the reason for this request"
 msgstr "Explique o motivo desta solicitação"
-
-#: apps/requests/forms.py:86
-msgid "Request title"
-msgstr "Detalhes da Solicitação"
-
-#: apps/requests/forms.py:91
-msgid "Detailed description of your request"
-msgstr "Descrição detalhada do seu pedido"
-
-#: apps/requests/forms.py:139 templates/requests/detail.html:330
-msgid "Request Information"
-msgstr "Informações da Solicitação"
 
 msgid "Attachments"
 msgstr "Anexos"
@@ -696,1737 +1049,496 @@ msgid "You can select multiple files. Max size 25MB per file."
 msgstr ""
 "Você pode selecionar vários arquivos. Tamanho máximo de 25MB por arquivo."
 
+msgid "Request title"
+msgstr "Detalhes da Solicitação"
+
+msgid "Detailed description of your request"
+msgstr "Descrição detalhada do seu pedido"
+
+msgid "Request Information"
+msgstr "Informações da Solicitação"
+
 # ================================================
 # Request Actions
 # ================================================
-#: apps/requests/forms.py:156
 msgid "Submit Request"
 msgstr "Enviar Solicitação"
 
-#: apps/requests/forms.py:198 templates/requests/detail.html:186
 msgid "Additional Information"
 msgstr "Informações Adicionais"
 
 # ================================================
 # Forms & Validation
 # ================================================
-#: apps/requests/forms.py:251 apps/requests/serializers.py:135
 msgid "This field is required for this category."
 msgstr "Este campo é obrigatório."
 
-#: apps/requests/forms.py:257 apps/requests/serializers.py:54
-#: apps/requests/serializers.py:126
 msgid "Amount is required and must be greater than 0 for this category."
 msgstr "O valor é obrigatório e deve ser maior que 0 para esta categoria."
 
-#: apps/requests/forms.py:264 apps/requests/serializers.py:146
 msgid "End date must be after start date."
 msgstr "A data de término deve ser posterior à data de início."
 
-#: apps/requests/models.py:17
+#, fuzzy
+#| msgid "File is too large"
+msgid "File {} is too large. Max size is 25MB."
+msgstr "O arquivo é muito grande"
+
 msgid "Expense Reimbursement"
 msgstr "Reembolso de Despesas"
 
-#: apps/requests/models.py:18
 msgid "Purchase Request"
 msgstr "Nova Solicitação"
 
-#: apps/requests/models.py:19
 msgid "Travel Approval"
 msgstr "Aprovações Pendentes"
 
-#: apps/requests/models.py:20
 msgid "Contract Approval"
 msgstr "Contratos"
 
-#: apps/requests/models.py:21
 msgid "Document Withdrawal"
 msgstr "ID do Documento"
 
-#: apps/requests/models.py:22 templates/requests/create.html:116
 msgid "Other"
 msgstr "Outros"
 
-#: apps/requests/models.py:26
 msgid "Low"
 msgstr "Baixa"
 
-#: apps/requests/models.py:27
 msgid "Medium"
 msgstr "Média"
 
-#: apps/requests/models.py:28
 msgid "High"
 msgstr "Alta"
 
-#: apps/requests/models.py:29
 msgid "Critical"
 msgstr "Critical"
 
-# ================================================
-# Request Fields
-# ================================================
-#: apps/requests/models.py:40
-msgid "Title"
-msgstr "Título"
-
-#: apps/requests/models.py:41 templates/requests/detail.html:165
 msgid "Description"
 msgstr "Descrição"
 
-#: apps/requests/models.py:42 templates/requests/create.html:273
-#: templates/requests/list.html:97
 msgid "Category"
 msgstr "Categoria"
 
-#: apps/requests/models.py:43 templates/requests/create.html:285
-#: templates/requests/detail.html:100
 msgid "Priority"
 msgstr "Prioridade"
 
-#: apps/requests/models.py:44 apps/tenants/models.py:37
-#: templates/requests/list.html:87
-msgid "Status"
-msgstr "Status"
-
-#: apps/requests/models.py:48 templates/requests/create.html:296
 msgid "Amount"
 msgstr "Valor"
 
-#: apps/requests/models.py:53
 msgid "Amount for expense, purchase, or travel requests"
 msgstr "Valor para despesas, compras ou solicitações de viagem"
 
-#: apps/requests/models.py:81
 msgid "Approver Comment"
 msgstr "Aprovar Solicitação"
 
-#: apps/requests/models.py:82
 msgid "Approved At"
 msgstr "Aprovado"
 
-#: apps/requests/models.py:85
 msgid "Rejection Reason"
 msgstr "Rejeitar Solicitação"
 
-#: apps/requests/models.py:86
 msgid "Rejected At"
 msgstr "Rejeitado"
 
-#: apps/requests/models.py:90 apps/tenants/models.py:49
 msgid "Metadata"
 msgstr "Metadados"
 
-#: apps/requests/models.py:93
 msgid "Category-specific data: vendor, cost_center, destination, etc."
 msgstr ""
 "Dados específicos da categoria: fornecedor, centro de custo, destino, etc."
 
-#: apps/requests/models.py:97
-msgid "Expires At"
-msgstr "Expira em"
-
-#: apps/requests/models.py:104
-msgid "Approval Request"
-msgstr "Aprovar Solicitação"
-
-#: apps/requests/models.py:105 templates/requests/list.html:68
 msgid "Approval Requests"
 msgstr "Aprovar Solicitação"
+
+msgid "Request"
+msgstr "Solicitação"
+
+msgid "File Size"
+msgstr ""
+
+#, fuzzy
+#| msgid "Updated At"
+msgid "Uploaded At"
+msgstr "Atualizado em"
+
+#, fuzzy
+#| msgid "Request title"
+msgid "Request Attachment"
+msgstr "Detalhes da Solicitação"
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Request Attachments"
+msgstr "Anexos"
 
 # ================================================
 # Forms & Validation
 # ================================================
-#: apps/requests/serializers.py:115
 msgid "This field is required."
 msgstr "Este campo é obrigatório."
+
+#, python-brace-format
+msgid "New request from {name}: {title}"
+msgstr ""
+
+msgid "New Request"
+msgstr "Nova Solicitação"
+
+msgid "View"
+msgstr ""
+
+msgid "Close"
+msgstr "Fechar"
+
+#, fuzzy, python-brace-format
+#| msgid "Request Created"
+msgid "Request created: {title}"
+msgstr "Solicitação Criada"
 
 # ================================================
 # Messages
 # ================================================
-#: apps/requests/views.py:77
+#, fuzzy, python-brace-format
+#| msgid "Your request \"{}\" has been submitted successfully."
+msgid "Your request '{title}' has been {status}."
+msgstr "Sua solicitação foi enviada com sucesso."
+
+#, fuzzy, python-brace-format
+#| msgid "Request Details"
+msgid "Request {status}"
+msgstr "Detalhes da Solicitação"
+
+#, fuzzy
+#| msgid "No biometric authentication set up for this account."
+msgid "Biometric authentication is required to create a request."
+msgstr "No hay autenticação biométrica configurada para esta conta."
+
+#, fuzzy
+#| msgid "Authenticating your identity"
+msgid "Authentication expired. Please verify your identity again."
+msgstr "Autenticando seu identidade"
+
+# ================================================
+# Messages
+# ================================================
 msgid "Your request \"{}\" has been submitted successfully."
 msgstr "Sua solicitação foi enviada com sucesso."
 
-#: apps/requests/views.py:85 templates/dashboard/index.html:93
-#: templates/dashboard/index.html:289 templates/requests/create.html:4
-#: templates/requests/create.html:47 templates/requests/list.html:79
-#: templates/test_i18n.html:32
-msgid "New Request"
-msgstr "Nova Solicitação"
-
-#: apps/requests/views.py:127
 msgid "You do not have permission to approve requests."
 msgstr "Você não tem permissão para realizar esta ação."
 
-#: apps/requests/views.py:131 apps/requests/views.py:165
 msgid "This request has already been processed."
 msgstr "Esta solicitação já foi processada."
 
-#: apps/requests/views.py:135
 msgid "You cannot approve your own request."
 msgstr "Você não pode aprovar sua própria solicitação."
 
-#: apps/requests/views.py:143
+msgid ""
+"For security reasons, you must confirm with your biometric on this device "
+"before approving. Please try again."
+msgstr ""
+
 msgid "Request \"{}\" has been approved."
 msgstr "A solicitação foi aprovada."
 
-#: apps/requests/views.py:161
 msgid "You do not have permission to reject requests."
 msgstr "Você não tem permissão para realizar esta ação."
 
-#: apps/requests/views.py:169
 msgid "You cannot reject your own request."
 msgstr "Você não pode aprovar sua própria solicitação."
 
-#: apps/requests/views.py:175
+msgid ""
+"For security reasons, you must confirm with your biometric on this device "
+"before rejecting. Please try again."
+msgstr ""
+
 msgid "Please provide a reason for rejection."
 msgstr "Por favor, forneça um motivo para a rejeição."
 
-#: apps/requests/views.py:183
 msgid "Request \"{}\" has been rejected."
 msgstr "A solicitação foi rejeitada."
 
-#: apps/tenants/models.py:14
-msgid "Starter - Up to 2 approvers"
-msgstr "Iniciante - Até 2 aprovadores"
+#, fuzzy
+#| msgid "You do not have permission to approve requests."
+msgid "You do not have permission to approve requests"
+msgstr "Você não tem permissão para realizar esta ação."
 
-#: apps/tenants/models.py:15
-msgid "Growth - Up to 6 approvers"
-msgstr "Crescimento - Até 6 aprovadores"
+#, fuzzy
+#| msgid "This request has already been processed."
+msgid "This request has already been processed"
+msgstr "Esta solicitação já foi processada."
 
-#: apps/tenants/models.py:16
-msgid "Scale - Unlimited approvers"
-msgstr "Escala - Aprovadores ilimitados"
+#, fuzzy
+#| msgid "You cannot approve your own request."
+msgid "You cannot approve your own request"
+msgstr "Você não pode aprovar sua própria solicitação."
 
-#: apps/tenants/models.py:27
+#, fuzzy
+#| msgid ""
+#| "No biometric credentials registered. Please register a device from your "
+#| "profile first."
+msgid "No WebAuthn credentials registered. Please register a device first."
+msgstr ""
+"Nenhuma credencial biométrica registrada. Por favor, registre um dispositivo "
+"no seu perfil primeiro."
+
+msgid "Invalid action. Must be \"approve\" or \"reject\"."
+msgstr ""
+
+#, fuzzy
+#| msgid "Rejection Reason"
+msgid "Rejection reason is required"
+msgstr "Rejeitar Solicitação"
+
+#, fuzzy
+#| msgid "User ID and response are required"
+msgid "WebAuthn response is required"
+msgstr "O ID do usuário e a resposta são obrigatórios"
+
+#, fuzzy
+#| msgid "Invalid JSON data"
+msgid "Invalid action"
+msgstr "Dados inválidos fornecidos."
+
+#, fuzzy
+#| msgid "Device removed successfully"
+msgid "Request approved successfully"
+msgstr "Operação concluída com sucesso."
+
+#, fuzzy
+#| msgid "Group created successfully"
+msgid "Request rejected successfully"
+msgstr "Grupo criado com sucesso"
+
+#, fuzzy
+#| msgid "Authentication verification failed"
+msgid "Authentication verification failed: {}"
+msgstr "Falha na verificação de autenticação"
+
+msgid ""
+"The cryptographic proof could not be issued. Start a new WebAuthn "
+"confirmation."
+msgstr ""
+"Não foi possível emitir o comprovante criptográfico. Inicie uma nova "
+"confirmação WebAuthn."
+
+#, fuzzy
+#| msgid "Credential ID is required"
+msgid "Creation token is required"
+msgstr "O ID da credencial é obrigatório"
+
+#, fuzzy
+#| msgid "Biometric authentication was cancelled or denied. Please try again."
+msgid "Creation token expired or invalid. Please try again."
+msgstr ""
+"A autenticação biométrica foi cancelada ou negada. Por favor, tente "
+"novamente."
+
+#, fuzzy
+#| msgid "Authentication successful! Welcome back."
+msgid "Authentication successful. You can now submit your request."
+msgstr "¡Autenticação exitosa! Bienvenido de vuelta."
+
+# ================================================
+# Updated Plan Names (per-user pricing)
+# ================================================
+msgid "2-6 users - $90/user/month"
+msgstr "2-6 usuários - $90/usuário/mês"
+
+msgid "7-12 users - $75/user/month"
+msgstr "7-12 usuários - $75/usuário/mês"
+
+msgid "12+ users - $65/user/month"
+msgstr "12+ usuários - $65/usuário/mês"
+
+# SecureApprove Proof
+msgid "1 year"
+msgstr "1 ano"
+
+msgid "3 years"
+msgstr "3 anos"
+
+msgid "5 years"
+msgstr "5 anos"
+
+msgid "7 years"
+msgstr "7 anos"
+
+msgid "10 years"
+msgstr "10 anos"
+
 msgid "Key"
 msgstr "Chave"
 
-#: apps/tenants/models.py:28
 msgid "Name"
 msgstr "Sobrenome"
 
-#: apps/tenants/models.py:32
 msgid "Seats"
 msgstr "Assentos"
 
-#: apps/tenants/models.py:33
 msgid "Approver Limit"
 msgstr "Aprovado por"
 
-#: apps/tenants/models.py:41
 msgid "Billing Information"
 msgstr "Informação"
 
-#: apps/tenants/models.py:44
 msgid "Stores billing provider data, subscription IDs, etc."
 msgstr "Armazena dados do provedor de cobrança, IDs de assinatura, etc."
 
-#: apps/tenants/models.py:52
 msgid "Additional tenant configuration and data"
 msgstr "Informações Adicionais"
 
-#: apps/tenants/models.py:61
+msgid "SecureApprove Proof evidence retention"
+msgstr "Retenção de evidências do SecureApprove Proof"
+
+msgid "Applies to private evidence created after this setting is changed."
+msgstr ""
+"Aplica-se às evidências privadas criadas depois que esta configuração for "
+"alterada."
+
 msgid "Tenants"
 msgstr "Inquilinos"
 
-#: templates/account/login.html:5 templates/account/login.html:25
-#: templates/account/login.html:90
-msgid "Iniciar sesión"
-msgstr "Conecte-se"
+msgid "Accepted"
+msgstr "Aceito"
 
-#: templates/account/login.html:20
-msgid "Sistema de Aprobaciones Seguras"
-msgstr "Sistema de Aprobações Seguras"
-
-#: templates/account/login.html:39
 msgid "Email"
 msgstr "Email"
 
-#: templates/account/login.html:46
-msgid "Ingrese su email"
-msgstr "Ingrese seu email"
-
-#: templates/account/login.html:58
-msgid "Contraseña"
-msgstr "Contratos"
-
-#: templates/account/login.html:64
-msgid "Ingrese su contraseña"
-msgstr "Ingrese seu contraseña"
-
-#: templates/account/login.html:82
-msgid "Recordarme"
-msgstr "lembre de mim"
-
-#: templates/account/login.html:96
-msgid "¿Olvidó su contraseña?"
-msgstr "¿Olvidó seu contraseña?"
-
-#: templates/account/login.html:105
-msgid "¿No tiene una cuenta?"
-msgstr "¿No tiene uma cuenta?"
-
-#: templates/account/login.html:107
-msgid "Suscribirse"
-msgstr "Assinatura"
-
-#: templates/account/login.html:117 templates/landing/index.html:381
-msgid "Todos los derechos reservados."
-msgstr "Todos os direitos reservados."
-
-#: templates/authentication/login.html:5
-#: templates/authentication/login.html:40
-#: templates/authentication/webauthn_login.html:165
-msgid "Sign In"
-msgstr "Entrar"
-
-# ================================================
-# Dashboard
-# ================================================
-#: templates/authentication/login.html:14
-msgid "Welcome back!"
-msgstr "Bem-vindo de volta"
-
-#: templates/authentication/login.html:15
-msgid "Sign in to access your approval workflow dashboard"
-msgstr "Faça login para acessar o painel do fluxo de trabalho de aprovação"
-
-#: templates/authentication/login.html:20
-msgid "Fast"
-msgstr "Fast"
-
-# ================================================
-# Common Terms
-# ================================================
-#: templates/authentication/login.html:24
-msgid "Secure"
-msgstr "SecureApprove"
-
-#: templates/authentication/login.html:28
-msgid "Efficient"
-msgstr "Eficiente"
-
-#: templates/authentication/login.html:41
-msgid "Enter your credentials to access your account"
-msgstr "Insira suas credenciais para acessar sua conta"
-
-#: templates/authentication/login.html:61
-msgid "Forgot your password?"
-msgstr "Esqueceu a senha?"
-
-#: templates/authentication/login.html:68
-#: templates/authentication/webauthn_login.html:261
-msgid "Don't have an account?"
-msgstr "¿No tienes uma cuenta?"
-
-#: templates/authentication/login.html:70
-msgid "Subscribe Now"
-msgstr "Assinatura"
-
-#: templates/authentication/login.html:80
-msgid "Demo Credentials:"
-msgstr "Credenciais de demonstração:"
-
-#: templates/authentication/login.html:81
-msgid "Email:"
-msgstr "Email"
-
-#: templates/authentication/login.html:82
-msgid "Password:"
-msgstr "Senha"
-
-#: templates/authentication/login.html:99
-msgid ""
-"WebAuthn is not fully implemented yet. Please use email/password login."
+msgid "Token"
 msgstr ""
-"WebAuthn ainda não está totalmente implementado.Por favor, use login por "
-"e-mail/senha."
 
-# ================================================
-# Common Terms
-# ================================================
-#: templates/authentication/profile.html:4
-msgid "Profile - SecureApprove"
-msgstr "SecureApprove"
-
-#: templates/authentication/profile.html:128
-msgid "Administrator"
-msgstr "Administrator"
-
-#: templates/authentication/profile.html:130
-msgid "Staff Member"
-msgstr "Setembro"
-
-#: templates/authentication/profile.html:149
-msgid "Company"
-msgstr "Empresa"
-
-#: templates/authentication/profile.html:153
-msgid "Member Since"
-msgstr "Lembrar-me"
-
-#: templates/authentication/profile.html:162
-msgid "Biometric Authentication"
-msgstr "Autenticação Biométrica"
-
-#: templates/authentication/profile.html:166
-msgid "Add Device"
-msgstr "Adicionar dispositivo"
-
-#: templates/authentication/profile.html:179
-msgid "Authentication Device"
-msgstr "Dispositivo de autenticação"
-
-#: templates/authentication/profile.html:182
-msgid "Registered on"
-msgstr "Registrar"
-
-#: templates/authentication/profile.html:184
-msgid "Registered device"
-msgstr "Registrar"
-
-#: templates/authentication/profile.html:200
-msgid "No biometric devices registered"
-msgstr "Nenhum dispositivo biométrico registrado"
-
-#: templates/authentication/profile.html:201
-msgid "Add a biometric device to enhance your account security"
-msgstr ""
-"Adicione um dispositivo biométrico para aumentar a segurança da sua conta"
-
-#: templates/authentication/profile.html:211
-msgid "Security Information"
-msgstr "Informações da Solicitação"
-
-#: templates/authentication/profile.html:214
-msgid ""
-"Your biometric data is stored securely on your devices and never transmitted"
-" to our servers. Each device creates a unique cryptographic key for "
-"authentication."
-msgstr ""
-"Seus dados biométricos são armazenados de forma segura em seus dispositivos "
-"e nunca são transmitidos para nossos servidores.Cada dispositivo cria uma "
-"chave criptográfica exclusiva para autenticação."
-
-#: templates/authentication/profile.html:222
-msgid "Edit Profile"
-msgstr "Perfil"
-
-#: templates/authentication/profile.html:226
-msgid "Sign Out"
-msgstr "Sair"
-
-#: templates/authentication/profile.html:242
-msgid "Add Biometric Device"
-msgstr "Adicionar dispositivo biométrico"
-
-#: templates/authentication/profile.html:252
-msgid "Preparing Device Registration"
-msgstr "Preparando o registro do dispositivo"
-
-#: templates/authentication/profile.html:253
-msgid "Get ready to use your biometric sensor"
-msgstr "Prepare-se para usar seu sensor biométrico"
-
-#: templates/authentication/profile.html:259
-#: templates/authentication/webauthn_login.html:235
-msgid "Touch Your Sensor"
-msgstr "Toca seu Sensor"
-
-#: templates/authentication/profile.html:260
-msgid "Use your fingerprint, Face ID, or security key"
-msgstr "Use sua impressão digital, Face ID ou chave de segurança"
-
-#: templates/authentication/profile.html:266
-msgid "Device Added Successfully!"
-msgstr "Operação concluída com sucesso."
-
-#: templates/authentication/profile.html:267
-msgid "Your new device has been registered"
-msgstr "Seu novo dispositivo foi registrado"
-
-#: templates/authentication/profile.html:272
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: templates/authentication/profile.html:274
-msgid "Start Registration"
-msgstr "Iniciar registro"
-
-#: templates/authentication/profile.html:294
-msgid "Are you sure you want to remove this device?"
-msgstr "Tem certeza de que deseja remover este dispositivo?"
-
-#: templates/authentication/profile.html:319
-#: templates/authentication/profile.html:324
-msgid "Failed to remove device"
-msgstr "Falha ao remover o dispositivo"
-
-#: templates/authentication/profile.html:396
-msgid "Failed to add device"
-msgstr "Falha ao adicionar dispositivo"
-
-# ================================================
-# Common Terms
-# ================================================
-#: templates/authentication/webauthn_login.html:4
-msgid "Sign In - SecureApprove"
-msgstr "SecureApprove"
-
-#: templates/authentication/webauthn_login.html:166
-msgid "Secure passwordless authentication with biometrics"
-msgstr "Autenticação segura sem contraseñas com biometría"
-
-#: templates/authentication/webauthn_login.html:209
-#: templates/authentication/webauthn_login.html:494
-msgid "Sign In with Biometrics"
-msgstr "Entrar com impressão digital"
-
-#: templates/authentication/webauthn_login.html:214
-msgid "Check Account"
-msgstr "Verificar Cuenta"
-
-#: templates/authentication/webauthn_login.html:226
-msgid "Preparing Authentication"
-msgstr "Preparando Autenticação"
-
-#: templates/authentication/webauthn_login.html:227
-msgid "Setting up your biometric login..."
-msgstr "Configurando seu login biométrico..."
-
-#: templates/authentication/webauthn_login.html:236
-msgid "Please use your fingerprint, Face ID, or security key to sign in"
-msgstr ""
-"Por favor usa seu huella dactilar, Face ID, ou llave de seguridade para "
-"iniciar sesión"
-
-#: templates/authentication/webauthn_login.html:244
-msgid "Verifying..."
-msgstr "Verificando..."
-
-#: templates/authentication/webauthn_login.html:245
-msgid "Authenticating your identity"
-msgstr "Autenticando seu identidade"
-
-#: templates/authentication/webauthn_login.html:253
-msgid "Authentication Successful!"
-msgstr "¡Autenticação Exitosa!"
-
-# ================================================
-# Dashboard
-# ================================================
-#: templates/authentication/webauthn_login.html:254
-msgid "Welcome back! Redirecting..."
-msgstr "Bem-vindo de volta"
-
-#: templates/authentication/webauthn_login.html:263
-msgid "Subscribe to Get Started"
-msgstr "Inscreva-se para começar"
-
-#: templates/authentication/webauthn_login.html:272
-msgid "About Biometric Authentication"
-msgstr "Acerca de a Autenticação Biométrica"
-
-#: templates/authentication/webauthn_login.html:275
-msgid ""
-"We use WebAuthn for secure, passwordless authentication. Your biometric data"
-" stays on your device and is never shared."
-msgstr ""
-"Usamos WebAuthn para autenticação segura e sem senha.Seus dados biométricos "
-"permanecem no seu dispositivo e nunca são compartilhados."
-
-#: templates/authentication/webauthn_login.html:305
-msgid "Please enter your email address"
-msgstr "Por favor, insira um endereço de email válido."
-
-#: templates/authentication/webauthn_login.html:311
-msgid "Checking Account..."
-msgstr "Verificando Cuenta..."
-
-#: templates/authentication/webauthn_login.html:318
-msgid ""
-"No account found with this email. Please subscribe to a plan to get started."
-msgstr ""
-"Nenhuma conta encontrada com este e-mail.Assine um plano para começar."
-
-#: templates/authentication/webauthn_login.html:322
-msgid ""
-"No biometric authentication set up for this account. Please contact support."
-msgstr ""
-"Nenhuma autenticação biométrica configurada para esta conta.Entre em contato"
-" com o suporte."
-
-#: templates/authentication/webauthn_login.html:362
-msgid "WebAuthn authentication was cancelled"
-msgstr "La autenticação WebAuthn fue cancelada"
-
-#: templates/authentication/webauthn_login.html:402
-msgid "Authentication successful! Welcome back."
-msgstr "¡Autenticação exitosa! Bienvenido de vuelta."
-
-#: templates/authentication/webauthn_login.html:449
-msgid "No biometric authentication set up for this account."
-msgstr "No hay autenticação biométrica configurada para esta conta."
-
-#: templates/authentication/webauthn_login.html:501
-msgid ""
-"WebAuthn is not supported in your browser. Please use Chrome, Firefox, "
-"Safari, or Edge."
-msgstr ""
-"WebAuthn não é compatível com seu navegador.Use Chrome, Firefox, Safari ou "
-"Edge."
-
-#: templates/base.html:329 templates/base.html:334 templates/base.html:469
-msgid "Light"
-msgstr "Claro"
-
-#: templates/base.html:337 templates/base.html:473
-msgid "Dark"
-msgstr "Escuro"
-
-#: templates/base.html:340 templates/base.html:477
-msgid "System"
-msgstr "Sistema"
-
-#: templates/base.html:376 templates/dashboard/index.html:4
-#: templates/dashboard/index.html:84 templates/test_i18n.html:29
-msgid "Dashboard"
-msgstr "Painel"
-
-#: templates/base.html:379 templates/requests/list.html:4
-#: templates/test_i18n.html:31
-msgid "Requests"
-msgstr "Solicitações"
-
-#: templates/base.html:389
-msgid "Profile"
-msgstr "Perfil"
-
-#: templates/base.html:393
-msgid "Administration"
-msgstr "Administração"
-
-#: templates/base.html:401
-msgid "Logout"
-msgstr "Sair"
-
-# ================================================
-# Authentication
-# ================================================
-#: templates/base.html:410
-msgid "Login"
-msgstr "Entrar"
-
-#: templates/base.html:413
-msgid "Subscribe"
-msgstr "Assinatura"
-
-# ================================================
-# Common Terms
-# ================================================
-#: templates/billing/payment_failure.html:4
-msgid "Payment Failed - SecureApprove"
-msgstr "SecureApprove"
-
-#: templates/billing/payment_failure.html:90
-msgid "Payment Failed"
-msgstr "Pagamento"
-
-#: templates/billing/payment_failure.html:93
-msgid ""
-"We're sorry, but your payment could not be processed. Please try again or "
-"contact our support team for assistance."
-msgstr ""
-"Lamentamos, mas não foi possível processar o seu pagamento.Tente novamente "
-"ou entre em contato com nossa equipe de suporte para obter assistência."
-
-#: templates/billing/payment_failure.html:100
-msgid "Common reasons for payment failures:"
-msgstr "Razões comuns para falhas de pagamento:"
-
-#: templates/billing/payment_failure.html:102
-msgid "Insufficient funds"
-msgstr "Fundos insuficientes"
-
-#: templates/billing/payment_failure.html:103
-msgid "Incorrect card details"
-msgstr "Dados incorretos do cartão"
-
-#: templates/billing/payment_failure.html:104
-msgid "Card blocked by bank"
-msgstr "Cartão bloqueado pelo banco"
-
-#: templates/billing/payment_failure.html:105
-msgid "Expired card"
-msgstr "Cartão expirado"
-
-#: templates/billing/payment_failure.html:114
-msgid "Try Again"
-msgstr "Tente novamente"
-
-#: templates/billing/payment_failure.html:118
-msgid "Contact Support"
-msgstr "Contratos"
-
-#: templates/billing/payment_failure.html:125
-#: templates/billing/payment_pending.html:92
-#: templates/billing/payment_success.html:114
-msgid "Back to Home"
-msgstr "Voltar às Solicitações"
-
-#: templates/billing/payment_pending.html:4
-msgid "Payment Pending - SecureApprove"
-msgstr "Pagamento pendente - SecureApprove"
-
-#: templates/billing/payment_pending.html:71
-msgid "Payment Pending"
-msgstr "Pendente"
-
-#: templates/billing/payment_pending.html:74
-msgid ""
-"Your payment is being processed. This may take a few minutes. We'll send you"
-" an email confirmation once it's complete."
-msgstr ""
-"Seu pagamento está sendo processado.Isso pode levar alguns "
-"minutos.Enviaremos um e-mail de confirmação assim que estiver concluído."
-
-#: templates/billing/payment_pending.html:81
-#: templates/billing/payment_success.html:100
-msgid "What happens next?"
-msgstr "¿Qué sigue?"
-
-#: templates/billing/payment_pending.html:83
-msgid ""
-"You'll receive an email notification once your payment is approved. Your "
-"SecureApprove account will be activated automatically."
-msgstr ""
-"Você receberá uma notificação por e-mail assim que seu pagamento for "
-"aprovado.Sua conta SecureApprove será ativada automaticamente."
-
-#: templates/billing/payment_pending.html:98
-msgid "Questions about your payment?"
-msgstr "Dúvidas sobre seu pagamento?"
-
-#: templates/billing/payment_success.html:4
-msgid "Payment Successful - SecureApprove"
-msgstr "Pagamento realizado com sucesso - SecureApprove"
-
-#: templates/billing/payment_success.html:90
-msgid "Payment Successful!"
-msgstr "¡Pago Exitoso!"
-
-#: templates/billing/payment_success.html:93
-msgid ""
-"Thank you for subscribing to SecureApprove. Your account is being set up and"
-" you'll receive a confirmation email shortly."
-msgstr ""
-"Obrigado por assinar o SecureApprove.Sua conta está sendo configurada e você"
-" receberá um e-mail de confirmação em breve."
-
-#: templates/billing/payment_success.html:102
-msgid ""
-"Your account and tenant have been created. Please set up your biometric "
-"authentication to access your dashboard."
-msgstr ""
-"Sua conta e inquilino foram criados.Configure sua autenticação biométrica "
-"para acessar seu painel."
-
-#: templates/billing/payment_success.html:111
-msgid "Setup Biometric Login"
-msgstr "Configurar Inicio Biométrico"
-
-#: templates/billing/payment_success.html:120
-msgid "Need help? Contact our support team at"
-msgstr "¿Necesitas ayuda? Contacta a nuestro equipo de soporte en"
-
-#: templates/billing/select_plan.html:4
-msgid "Choose Your Plan - SecureApprove"
-msgstr "Escolha Seu Plano"
-
-#: templates/billing/select_plan.html:45
-msgid "Most Popular"
-msgstr "Más Popular"
-
-#: templates/billing/select_plan.html:161
-msgid "Choose Your Plan"
-msgstr "Escolha Seu Plano"
-
-#: templates/billing/select_plan.html:162
-msgid "Select the perfect plan for your organization's approval needs"
-msgstr ""
-"Selecciona o plan perfecto para as necesidadees de aprobação de seu "
-"organização"
-
-#: templates/billing/select_plan.html:171
-#: templates/billing/select_plan.html:195
-#: templates/billing/select_plan.html:220 templates/billing/subscribe.html:133
-msgid "month"
-msgstr "Este mês"
-
-#: templates/billing/select_plan.html:172
-msgid "Perfect for small teams"
-msgstr "Perfecto para equipos pequeños"
-
-#: templates/billing/select_plan.html:176 templates/billing/subscribe.html:138
-msgid "Up to 2 approvers"
-msgstr "Hasta 2 aprobadores"
-
-#: templates/billing/select_plan.html:177 templates/billing/subscribe.html:139
-msgid "10 team members"
-msgstr "10 miembros do equipo"
-
-#: templates/billing/select_plan.html:178 templates/billing/subscribe.html:140
-msgid "Basic workflow templates"
-msgstr "Plantillas de flujo de trabalho básicas"
-
-#: templates/billing/select_plan.html:179
-msgid "Email notifications"
-msgstr "Notificações por correo"
-
-#: templates/billing/select_plan.html:180
-msgid "Basic reporting"
-msgstr "Reportes básicos"
-
-#: templates/billing/select_plan.html:181
-msgid "WebAuthn security"
-msgstr "Seguridade WebAuthn"
-
-#: templates/billing/select_plan.html:184
-#: templates/billing/select_plan.html:209 templates/billing/subscribe.html:192
-msgid "Start Free Trial"
-msgstr "Inicial"
-
-#: templates/billing/select_plan.html:196
-msgid "Ideal for growing companies"
-msgstr "Ideal para empresas em crecimiento"
-
-#: templates/billing/select_plan.html:200 templates/billing/subscribe.html:142
-msgid "Up to 6 approvers"
-msgstr "Hasta 6 aprobadores"
-
-#: templates/billing/select_plan.html:201 templates/billing/subscribe.html:143
-msgid "25 team members"
-msgstr "25 miembros do equipo"
-
-#: templates/billing/select_plan.html:202 templates/billing/subscribe.html:144
-msgid "Advanced workflow automation"
-msgstr "Automatização de flujo de trabalho avanzada"
-
-#: templates/billing/select_plan.html:203
-msgid "Slack & Teams integration"
-msgstr "Integração com Slack e Teams"
-
-#: templates/billing/select_plan.html:204
-msgid "Advanced analytics"
-msgstr "Análisis avanzado"
-
-#: templates/billing/select_plan.html:205 templates/billing/subscribe.html:145
-msgid "API access"
-msgstr "Acceso API"
-
-#: templates/billing/select_plan.html:206
-msgid "Priority support"
-msgstr "Prioridade"
-
-#: templates/billing/select_plan.html:221
-msgid "For enterprise organizations"
-msgstr "Para organizações empresariales"
-
-#: templates/billing/select_plan.html:225 templates/billing/subscribe.html:147
-msgid "Unlimited approvers"
-msgstr "Aprobadores ilimitados"
-
-#: templates/billing/select_plan.html:226 templates/billing/subscribe.html:148
-msgid "Unlimited team members"
-msgstr "Miembros do equipo ilimitados"
-
-#: templates/billing/select_plan.html:227 templates/billing/subscribe.html:149
-msgid "Custom workflow builder"
-msgstr "Constructor de flujos personalizado"
-
-#: templates/billing/select_plan.html:228
-msgid "Advanced integrations"
-msgstr "Integrações avanzadas"
-
-#: templates/billing/select_plan.html:229
-msgid "Enterprise analytics"
-msgstr "Análisis empresarial"
-
-#: templates/billing/select_plan.html:230
-msgid "Dedicated support"
-msgstr "Soporte dedicado"
-
-#: templates/billing/select_plan.html:231
-msgid "SLA guarantee"
-msgstr "Garantía SLA"
-
-#: templates/billing/select_plan.html:234
-msgid "Contact Sales"
-msgstr "Contratos"
-
-#: templates/billing/select_plan.html:243
-msgid "All plans include"
-msgstr "Todos os planes incluyen"
-
-#: templates/billing/select_plan.html:247
-msgid "WebAuthn Security"
-msgstr "Seguridade WebAuthn"
-
-#: templates/billing/select_plan.html:248
-msgid "Passwordless biometric authentication"
-msgstr "Autenticação biométrica sem contraseña"
-
-#: templates/billing/select_plan.html:252
-msgid "Cloud Hosting"
-msgstr "Hospedaje em a Nube"
-
-#: templates/billing/select_plan.html:253
-msgid "Secure, reliable cloud infrastructure"
-msgstr "Infraestrutura em a nube segura e confiable"
-
-#: templates/billing/select_plan.html:257
-msgid "Mobile Ready"
-msgstr "Listo para Móveis"
-
-#: templates/billing/select_plan.html:258
-msgid "Works perfectly on any device"
-msgstr "Funciona perfectamente em cualquier dispositivo"
-
-#: templates/billing/select_plan.html:262
-msgid "24/7 Support"
-msgstr "Soporte 24/7"
-
-#: templates/billing/select_plan.html:263
-msgid "Get help whenever you need it"
-msgstr "Obtén ayuda cuando a necesites"
-
-#: templates/billing/select_plan.html:270
-msgid "Frequently Asked Questions"
-msgstr "Preguntas Frecuentes"
-
-#: templates/billing/select_plan.html:277
-msgid "Can I change my plan later?"
-msgstr "¿Puedo cambiar mi plan mais adelante?"
-
-#: templates/billing/select_plan.html:282
-msgid ""
-"Yes, you can upgrade or downgrade your plan at any time. Changes take effect"
-" immediately."
-msgstr ""
-"Sim, você pode fazer upgrade ou downgrade do seu plano a qualquer momento.As"
-" alterações entram em vigor imediatamente."
-
-#: templates/billing/select_plan.html:289
-msgid "Is there a free trial?"
-msgstr "¿Hay uma prueba gratuita?"
-
-#: templates/billing/select_plan.html:294
-msgid ""
-"Yes, we offer a 14-day free trial for all plans. No credit card required to "
-"start."
-msgstr ""
-"Sim, oferecemos um teste gratuito de 3 dias para todos os planos. Não é "
-"necessário cartão de crédito para começar."
-
-#: templates/billing/select_plan.html:301
-msgid "What payment methods do you accept?"
-msgstr "¿Qué métodos de pago aceptan?"
-
-#: templates/billing/select_plan.html:306
-msgid ""
-"We accept all major credit cards, PayPal, and bank transfers through "
-"MercadoPago."
-msgstr ""
-"Aceitamos todos os principais cartões de crédito, PayPal e transferências "
-"bancárias através do MercadoPago."
-
-#: templates/billing/select_plan.html:317
-msgid "Questions about our plans?"
-msgstr "¿Preguntas sobre nuestros planes?"
-
-#: templates/billing/select_plan.html:318
-msgid "Contact our sales team"
-msgstr "Contacta a nuestro equipo de ventas"
-
-#: templates/billing/subscribe.html:4
-msgid "Subscribe to"
-msgstr "Assinatura"
-
-#: templates/billing/subscribe.html:125
-msgid "Complete Your Subscription"
-msgstr "Cancelar Assinatura"
-
-#: templates/billing/subscribe.html:126
-msgid "You're just one step away from accessing SecureApprove"
-msgstr "Estás a solo um paso de acceder a SecureApprove"
-
-#: templates/billing/subscribe.html:150
-msgid "Enterprise features"
-msgstr "Recursos empresariais"
-
-#: templates/billing/subscribe.html:177
-msgid "This email will be used for your account and billing notifications"
-msgstr "Este correo se usará para seu cuenta e notificações de facturação"
-
-#: templates/billing/subscribe.html:185
-msgid "14-Day Free Trial"
-msgstr "Teste Grátis de 3 Dias"
-
-#: templates/billing/subscribe.html:186
-msgid "No charge for the first 14 days. Cancel anytime."
-msgstr "Sem cobrança nos primeiros 3 dias. Cancele quando quiser."
-
-#: templates/billing/subscribe.html:195
-msgid "Processing..."
-msgstr "Carregando..."
-
-#: templates/billing/subscribe.html:204
-msgid "Secure & Protected"
-msgstr "Seguro e Protegido"
-
-#: templates/billing/subscribe.html:207
-msgid ""
-"Your payment is processed securely through MercadoPago. We never store your "
-"payment information."
-msgstr ""
-"Seu pagamento é processado de forma segura através do MercadoPago.Nunca "
-"armazenamos suas informações de pagamento."
-
-#: templates/billing/subscribe.html:215
-msgid "Back to plan selection"
-msgstr "Volver a selecção de planes"
-
-#: templates/billing/subscribe.html:272
-msgid "Error starting subscription"
-msgstr "Cancelar Assinatura"
-
-# ================================================
-# Dashboard
-# ================================================
-#: templates/dashboard/index.html:86 templates/test_i18n.html:30
-msgid "Welcome back"
-msgstr "Bem-vindo de volta"
-
-#: templates/dashboard/index.html:87
-msgid "Here's what's happening with your requests."
-msgstr "Aqui está o que está acontecendo com suas solicitações."
-
-#: templates/dashboard/index.html:97 templates/dashboard/index.html:306
-msgid "All Requests"
-msgstr "Todas as Solicitações"
-
-#: templates/dashboard/index.html:109
-msgid "Total Requests"
-msgstr "Total de Solicitações"
-
-#: templates/dashboard/index.html:157
-msgid "My Requests"
-msgstr "Minhas Solicitações"
-
-#: templates/dashboard/index.html:177
-msgid "Requests by Category"
-msgstr "Solicitações por Categoria"
-
-#: templates/dashboard/index.html:179
-msgid "Last 30 days"
-msgstr "Últimos 30 dias"
-
-#: templates/dashboard/index.html:193
-msgid "Activity Timeline"
-msgstr "Linha do Tempo de Atividades"
-
-#: templates/dashboard/index.html:212
-msgid "Pending Approvals"
-msgstr "Aprovações Pendentes"
-
-#: templates/dashboard/index.html:227 templates/dashboard/index.html:264
-msgid "ago"
-msgstr "atrás"
-
-#: templates/dashboard/index.html:236
-msgid "View All Pending"
-msgstr "Revisar Pendentes"
-
-#: templates/dashboard/index.html:247
-msgid "Recent Requests"
-msgstr "Solicitações Recentes"
-
-#: templates/dashboard/index.html:271
-msgid "No requests yet"
-msgstr "Ainda não há solicitações"
-
-#: templates/dashboard/index.html:282
-msgid "Quick Actions"
-msgstr "Ações Rápidas"
-
-#: templates/dashboard/index.html:295
-msgid "Review Pending"
-msgstr "Revisar Pendentes"
-
-#: templates/dashboard/index.html:301
-msgid "View Approved"
-msgstr "Ver Aprovados"
-
-# ================================================
-# Common Terms
-# ================================================
-#: templates/landing/demo.html:4
-msgid "Demo - SecureApprove"
-msgstr "SecureApprove"
-
-#: templates/landing/demo.html:107 templates/landing/demo.html:112
-msgid "Claro"
-msgstr "Claro"
-
-#: templates/landing/demo.html:115
-msgid "Oscuro"
-msgstr "Escuro"
-
-#: templates/landing/demo.html:118
-msgid "Sistema"
-msgstr "Sistema"
-
-#: templates/landing/demo.html:153
-msgid "Volver"
-msgstr "Voltar"
-
-#: templates/landing/demo.html:156 templates/landing/index.html:164
-msgid "Comenzar Ahora"
-msgstr "Começar Agora"
-
-#: templates/landing/demo.html:174
-msgid "Demostración Interactiva"
-msgstr "Demonstração Interativa"
-
-#: templates/landing/demo.html:177
-msgid ""
-"Esta es una demo de cómo funciona el proceso de aprobación en SecureApprove."
-" Los botones son interactivos para simular la experiencia real."
-msgstr ""
-"Esta é uma demonstração de como funciona o processo de aprovação no "
-"SecureApprove. Os botões são interativos para simular a experiência real."
-
-#: templates/landing/demo.html:186
-msgid "Compra de Equipos de Oficina"
-msgstr "Compra de Equipamentos de Escritório"
-
-#: templates/landing/demo.html:190
-msgid "Pendiente"
-msgstr "Pendente"
-
-#: templates/landing/demo.html:193
-msgid "Prioridad"
-msgstr "Prioridade"
-
-#: templates/landing/demo.html:193
-msgid "Media"
-msgstr "Média"
-
-#: templates/landing/demo.html:208
-msgid "SOLICITANTE"
-msgstr "SOLICITANTE"
-
-#: templates/landing/demo.html:213
-msgid "Ana García"
-msgstr "Ana García"
-
-#: templates/landing/demo.html:219
-msgid "DEPARTAMENTO"
-msgstr "DEPARTAMENTO"
-
-#: templates/landing/demo.html:222
-msgid "Recursos Humanos"
-msgstr "Recursos Humanos"
-
-#: templates/landing/demo.html:229
-msgid "DESCRIPCIÓN"
-msgstr "DESCRIÇÃO"
-
-#: templates/landing/demo.html:231
-msgid ""
-"Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables "
-"para el nuevo equipo de trabajo remoto. Los equipos actuales no cumplen con "
-"los estándares ergonómicos necesarios para el trabajo prolongado."
-msgstr ""
-"Solicitação para compra de 3 cadeiras ergonômicas e 2 mesas ajustáveis para "
-"a nova equipe de trabalho remoto. Os equipamentos atuais não atendem aos "
-"padrões ergonômicos necessários para o trabalho prolongado."
-
-#: templates/landing/demo.html:236
-msgid "DOCUMENTOS ADJUNTOS"
-msgstr "DOCUMENTOS ANEXADOS"
-
-#: templates/landing/demo.html:253
-msgid "Aprobar Solicitud"
-msgstr "Aprovar Solicitação"
-
-#: templates/landing/demo.html:257
-msgid "Rechazar"
-msgstr "Rejeitar"
-
-#: templates/landing/demo.html:261
-msgid "Solicitar Info"
-msgstr "Solicitar Info"
-
-#: templates/landing/demo.html:276
-msgid "¿Te gusta lo que ves?"
-msgstr "Você gosta do que vê?"
-
-#: templates/landing/demo.html:278
-msgid "Comienza a gestionar tus aprobaciones de manera profesional"
-msgstr "Comece a gerenciar suas aprovações profissionalmente"
-
-#: templates/landing/demo.html:282
-msgid "Suscribirme Ahora"
-msgstr "Assinar Agora"
-
-#: templates/landing/demo.html:296
-msgid "¡Solicitud Aprobada!"
-msgstr "Solicitação Aprovada!"
-
-#: templates/landing/demo.html:296
-msgid ""
-"La solicitud ha sido aprobada exitosamente. Se ha enviado notificación al "
-"solicitante y se procederá con la compra."
-msgstr ""
-"A solicitação foi aprovada com sucesso. A notificação foi enviada ao "
-"solicitante e a compra será processada."
-
-#: templates/landing/demo.html:300
-msgid "Solicitud Rechazada"
-msgstr "Solicitação Rejeitada"
-
-#: templates/landing/demo.html:300
-msgid ""
-"La solicitud ha sido rechazada. Se ha enviado notificación al solicitante "
-"con los motivos del rechazo."
-msgstr ""
-"A solicitação foi rejeitada. A notificação foi enviada ao solicitante com os"
-" motivos da rejeição."
-
-#: templates/landing/demo.html:304
-msgid "Información Solicitada"
-msgstr "Informação Solicitada"
-
-#: templates/landing/demo.html:304
-msgid ""
-"Se ha enviado una solicitud de información adicional al solicitante. La "
-"aprobación quedará pendiente hasta recibir los datos necesarios."
-msgstr ""
-"Uma solicitação de informações adicionais foi enviada ao solicitante. A "
-"aprovação ficará pendente até receber os dados necessários."
-
-#: templates/landing/index.html:4
-msgid "SecureApprove - Sistema de Aprobaciones Seguras"
-msgstr "SecureApprove - Sistema de Aprovações Seguras"
-
-#: templates/landing/index.html:154
-msgid "Sistema de Aprobaciones Seguras con Autenticación Biométrica"
-msgstr "Sistema de Aprovações Seguras com Autenticação Biométrica"
-
-#: templates/landing/index.html:158
-msgid ""
-"Automatiza tus procesos de aprobación con seguridad de nivel empresarial y "
-"autenticación biométrica avanzada."
-msgstr ""
-"Automatize seus processos de aprovação com segurança de nível empresarial e "
-"autenticação biométrica avançada."
-
-#: templates/landing/index.html:168
-msgid "Ver Demo"
-msgstr "Ver Demonstração"
-
-#: templates/landing/index.html:182
-msgid "Características Principales"
-msgstr "Características Principais"
-
-#: templates/landing/index.html:185
-msgid "Tecnología avanzada para procesos de aprobación seguros y eficientes"
-msgstr "Tecnologia avançada para processos de aprovação seguros e eficientes"
-
-#: templates/landing/index.html:197
-msgid "Autenticación Biométrica"
-msgstr "Autenticação Biométrica"
-
-#: templates/landing/index.html:198
-msgid "Seguridad avanzada com WebAuthn e autenticación biométrica"
-msgstr "Segurança avançada com WebAuthn e autenticação biométrica"
-
-#: templates/landing/index.html:209
-msgid "Tiempo Real"
-msgstr "Tempo Real"
-
-#: templates/landing/index.html:210
-msgid "Notificaciones instantáneas y actualizaciones en tiempo real"
-msgstr "Notificações instantâneas e atualizações em tempo real"
-
-#: templates/landing/index.html:221
-msgid "Seguridad Empresarial"
-msgstr "Segurança Empresarial"
-
-#: templates/landing/index.html:222
-msgid "Cifrado de 256-bit y cumplimiento de estándares de seguridad"
-msgstr "Criptografia de 256 bits e conformidade com padrões de segurança"
-
-#: templates/landing/index.html:233
-msgid "Auditoría Completa"
-msgstr "Auditoria Completa"
-
-#: templates/landing/index.html:234
-msgid "Trazabilidad completa y reportes detallados de actividad"
-msgstr "Rastreabilidade completa e relatórios detalhados de atividade"
-
-#: templates/landing/index.html:248
-msgid "Disponibilidad"
-msgstr "Disponibilidade"
-
-#: templates/landing/index.html:252
-msgid "Tiempo de Respuesta"
-msgstr "Tempo de Resposta"
-
-#: templates/landing/index.html:256
-msgid "Solicitudes Procesadas"
-msgstr "Solicitações Processadas"
-
-#: templates/landing/index.html:260
-msgid "Cifrado"
-msgstr "Criptografia"
-
-#: templates/landing/index.html:271
-msgid "Planes de Suscripción"
-msgstr "Planos de Assinatura"
-
-#: templates/landing/index.html:272
-msgid "Elige el plan que se adapta a tu equipo"
-msgstr "Escolha o plano que se adapta à sua equipe"
-
-#: templates/landing/index.html:282
-msgid "Hasta 2 aprobadores"
-msgstr "Até 2 aprovadores"
-
-#: templates/landing/index.html:285
-msgid "2 aprobadores"
-msgstr "2 aprovadores"
-
-#: templates/landing/index.html:286 templates/landing/index.html:307
-#: templates/landing/index.html:327
-msgid "Solicitudes ilimitadas"
-msgstr "Solicitações ilimitadas"
-
-#: templates/landing/index.html:287
-msgid "Autenticación biométrica"
-msgstr "Autenticação biométrica"
-
-#: templates/landing/index.html:288
-msgid "Soporte básico"
-msgstr "Suporte básico"
-
-#: templates/landing/index.html:291 templates/landing/index.html:312
-#: templates/landing/index.html:332
-msgid "Suscribirme"
-msgstr "Assinar"
-
-#: templates/landing/index.html:300
-msgid "Popular"
-msgstr "Popular"
-
-#: templates/landing/index.html:303
-msgid "Hasta 6 aprobadores"
-msgstr "Até 6 aprovadores"
-
-#: templates/landing/index.html:306
-msgid "6 aprobadores"
-msgstr "6 aprovadores"
-
-#: templates/landing/index.html:308
-msgid "Auditoría avanzada"
-msgstr "Auditoria avançada"
-
-#: templates/landing/index.html:309
-msgid "Integraciones API"
-msgstr "Integrações API"
-
-#: templates/landing/index.html:323 templates/landing/index.html:326
-msgid "Aprobadores ilimitados"
-msgstr "Aprovadores ilimitados"
-
-#: templates/landing/index.html:328
-msgid "Integraciones premium"
-msgstr "Integrações premium"
-
-#: templates/landing/index.html:329
-msgid "Soporte prioritario"
-msgstr "Suporte prioritário"
-
-#: templates/landing/index.html:347
-msgid "¿Listo para transformar tus aprobaciones?"
-msgstr "Pronto para transformar suas aprovações?"
-
-#: templates/landing/index.html:349
-msgid "Únete a empresas que ya optimizaron sus procesos con SecureApprove"
-msgstr ""
-"Junte-se a empresas que já otimizaram seus processos com o "
-"SecureApproveJunte-se a empresas que já otimizaram seus processos com o "
-"SecureApprove"
-
-#: templates/landing/index.html:353
-msgid "Ver Planes"
-msgstr "Ver Planos"
-
-#: templates/landing/index.html:373
-msgid "Sistema de aprobaciones seguras para empresas modernas."
-msgstr "Sistema de aprovações seguras para empresas modernas."
-
-#: templates/landing/index.html:376
-msgid "Construido con ❤️ para la Seguridad Empresarial"
-msgstr "Construído com ❤️ para Segurança Empresarial"
-
-# ================================================
-# Request Actions
-# ================================================
-#: templates/requests/create.html:48
-msgid "Submit a new approval request"
-msgstr "Enviar Solicitação"
-
-#: templates/requests/create.html:52 templates/requests/detail.html:110
-msgid "Back to Requests"
-msgstr "Voltar às Solicitações"
-
-#: templates/requests/create.html:75
-msgid "Request Categories"
-msgstr "Solicitações por Categoria"
-
-# ================================================
-# Request Categories
-# ================================================
-#: templates/requests/create.html:81
-msgid "Expense"
-msgstr "Despesas"
-
-#: templates/requests/create.html:83
-msgid "Business expenses like meals, transportation, office supplies"
-msgstr ""
-"Despesas comerciais como refeições, transporte, material de escritório"
-
-#: templates/requests/create.html:88
-msgid "Purchase"
-msgstr "Compras"
-
-#: templates/requests/create.html:90
-msgid "Equipment, software, or service purchases"
-msgstr "Compras de equipamentos, software ou serviços"
-
-#: templates/requests/create.html:95
-msgid "Travel"
-msgstr "Viagens"
-
-#: templates/requests/create.html:97
-msgid "Travel arrangements and related expenses"
-msgstr "Organização de viagens e despesas relacionadas"
-
-#: templates/requests/create.html:102
-msgid "Contract"
-msgstr "Contratos"
-
-#: templates/requests/create.html:104
-msgid "Contract approvals and vendor agreements"
-msgstr "Aprovações de contratos e acordos de fornecedores"
-
-#: templates/requests/create.html:109
-msgid "Document"
-msgstr "Documentos"
-
-#: templates/requests/create.html:111
-msgid "Document approvals and reviews"
-msgstr "Aprovações e revisões de documentos"
-
-#: templates/requests/create.html:118
-msgid "Any other type of approval request"
-msgstr "Qualquer outro tipo de solicitação de aprovação"
-
-# ================================================
-# Pagination
-# ================================================
-#: templates/requests/create.html:130
-msgid "Preview"
-msgstr "Anterior"
-
-#: templates/requests/create.html:332
-msgid "Please fill in all required fields."
-msgstr "Por favor, preencha todos os campos obrigatórios."
-
-#: templates/requests/detail.html:104
-msgid "Created"
-msgstr "Criado"
-
-#: templates/requests/detail.html:123
-msgid "Pending Approval"
-msgstr "Aprovações Pendentes"
-
-#: templates/requests/detail.html:134
-msgid "This request is waiting for approval from an administrator."
-msgstr "Esta solicitação está aguardando aprovação de um administrador."
-
-#: templates/requests/detail.html:136
-msgid "This request was approved on"
-msgstr "Esta solicitação foi aprovada em"
-
-msgid "This request was rejected on"
-msgstr "Esta solicitação foi rejeitada em"
-
-#: templates/requests/detail.html:137 templates/requests/detail.html:220
-#: templates/requests/detail.html:235
-msgid "by"
-msgstr "por"
-
-#: templates/requests/detail.html:139
-msgid "This request was rejected."
-msgstr "A solicitação foi rejeitada."
-
-#: templates/requests/detail.html:141 templates/requests/detail.html:251
-msgid "Reason:"
-msgstr "Motivo"
-
-#: templates/requests/detail.html:159
-msgid "Request Details"
-msgstr "Detalhes da Solicitação"
-
-#: templates/requests/detail.html:169
-msgid "Requested by"
-msgstr "Rejeitado por"
-
-#: templates/requests/detail.html:206
-msgid "Timeline"
-msgstr "Cronologia"
-
-#: templates/requests/detail.html:217
-msgid "Request Created"
-msgstr "Solicitação Criada"
-
-#: templates/requests/detail.html:232
-msgid "Request Approved"
-msgstr "Solicitação Aprovada"
-
-#: templates/requests/detail.html:245
-msgid "Request Rejected"
-msgstr "Solicitação Rejeitada"
-
-#: templates/requests/detail.html:268
-msgid "Approval Actions"
-msgstr "Ações de aprovação"
-
-#: templates/requests/detail.html:271
-msgid "You have permission to approve or reject this request."
-msgstr "Você não tem permissão para realizar esta ação."
-
-#: templates/requests/detail.html:278 templates/requests/detail.html:287
-msgid "Approve Request"
-msgstr "Aprovar Solicitação"
-
-#: templates/requests/detail.html:281
-msgid "Approving this request will allow the requester to proceed."
-msgstr "A aprovação desta solicitação permitirá que o solicitante prossiga."
-
-#: templates/requests/detail.html:285
-msgid "Are you sure you want to approve this request?"
-msgstr "Tem certeza de que deseja aprovar esta solicitação?"
-
-#: templates/requests/detail.html:296 templates/requests/detail.html:308
-msgid "Reject Request"
-msgstr "Rejeitar Solicitação"
-
-#: templates/requests/detail.html:302
-msgid "Reason for rejection"
-msgstr "Por favor, forneça um motivo para a rejeição."
-
-#: templates/requests/detail.html:304
-msgid "Please explain why you are rejecting this request..."
-msgstr "Por favor, explique por que você está rejeitando esta solicitação..."
-
-#: templates/requests/detail.html:306
-msgid "Are you sure you want to reject this request?"
-msgstr "Tem certeza de que deseja rejeitar esta solicitação?"
-
-#: templates/requests/detail.html:317
-msgid "Waiting for Approval"
-msgstr "Aprovações Pendentes"
-
-#: templates/requests/detail.html:319
-msgid "This request is pending review by an administrator."
-msgstr "Esta solicitação está pendente de análise por um administrador."
-
-#: templates/requests/detail.html:336
-msgid "ID:"
-msgstr "EU IA:"
-
-#: templates/requests/detail.html:340
-msgid "Category:"
-msgstr "Categoria"
-
-#: templates/requests/detail.html:344
-msgid "Priority:"
-msgstr "Prioridade"
-
-#: templates/requests/detail.html:348
-msgid "Status:"
-msgstr "Status"
-
-#: templates/requests/detail.html:357
-msgid "Amount:"
-msgstr "Valor"
-
-#: templates/requests/list.html:70
-#, python-format
-msgid ""
-"\n"
-"                    %(total)s request\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(total)s requests\n"
-"                "
-msgstr[0] ""
-"\n"
-"                    %(total)s solicitação\n"
-"                "
-msgstr[1] ""
-"\n"
-"                    %(total)s solicitações\n"
-"                "
-
-#: templates/requests/list.html:89
-msgid "All Statuses"
-msgstr "Status"
-
-#: templates/requests/list.html:99
-msgid "All Categories"
-msgstr "Categoria"
-
-#: templates/requests/list.html:107
-msgid "Search"
-msgstr "Buscar"
-
-#: templates/requests/list.html:108
-msgid "Search by title or description..."
-msgstr "Pesquise por título ou descrição..."
-
-#: templates/requests/list.html:116
-msgid "Filter"
-msgstr "Filtrar"
-
-#: templates/requests/list.html:187
-msgid "Approved by"
-msgstr "Aprovado por"
-
-#: templates/requests/list.html:204
-msgid "Requests pagination"
-msgstr "Informações da Solicitação"
-
-# ================================================
-# Pagination
-# ================================================
-#: templates/requests/list.html:210
-msgid "Previous"
-msgstr "Anterior"
-
-#: templates/requests/list.html:230
-msgid "Next"
-msgstr "Próximo"
-
-#: templates/requests/list.html:244
-msgid "No requests found"
-msgstr "Nenhuma solicitação encontrada"
-
-#: templates/requests/list.html:247
-msgid "Try adjusting your filters or search terms."
-msgstr "Tente ajustar seus filtros ou termos de pesquisa."
-
-#: templates/requests/list.html:249
-msgid "Start by creating your first approval request."
-msgstr "Comece criando sua primeira solicitação de aprovação."
-
-#: templates/requests/list.html:255
-msgid "Create First Request"
-msgstr "Rejeitar Solicitação"
-
-#: templates/requests/list.html:260
-msgid "Clear Filters"
-msgstr "Filtrar"
-
-msgid "Tenant Chat"
-msgstr "Chat do Tenant"
-
-msgid "Conversations"
-msgstr "Conversas"
-
-msgid "Select a conversation"
-msgstr "Selecione uma conversa"
-
-msgid "Typing..."
-msgstr "Digitando..."
-
-msgid "Write a message"
-msgstr "Escreva uma mensagem"
-
-msgid "Send"
-msgstr "Enviar"
-
-msgid "users online"
-msgstr "usuários online"
-
-msgid "No users online"
-msgstr "Nenhum usuário online"
-
-msgid "New conversation"
-msgstr "Nova conversa"
-
-msgid "Conversation"
-msgstr "Conversa"
-
-msgid "7-Day Free Trial"
-msgstr "Teste gratuito de 7 dias"
-
-msgid "No charge for the first 7 days. Cancel anytime."
-msgstr "Sem cobrança nos primeiros 7 dias. Cancele a qualquer momento."
-
-msgid "Tenant Settings"
-msgstr "Configuração do Tenant"
-
-msgid "Tenant Information"
-msgstr "Informação do Tenant"
-
-msgid "Tenant Users"
+#, fuzzy
+#| msgid "Accepted"
+msgid "Accepted At"
+msgstr "Aceito"
+
+#, fuzzy
+#| msgid "Tenant Users"
+msgid "Tenant User Invite"
 msgstr "Usuários do Tenant"
 
-msgid ""
-"Request categories are currently global. Future versions will allow per-"
-"tenant customization."
+#, fuzzy
+#| msgid "Tenant Users"
+msgid "Tenant User Invites"
+msgstr "Usuários do Tenant"
+
+#, fuzzy
+#| msgid "Category"
+msgid "Category Key"
+msgstr "Categoria"
+
+#, fuzzy
+#| msgid "Unique identifier for the tenant (e.g. company-name)"
+msgid "Unique identifier for this approval type within the tenant"
+msgstr "Identificador único do locatário (ex. nome-empresa)"
+
+msgid "Display name for this approval type"
 msgstr ""
-"As categorias de solicitação são atualmente globais. Versões futuras "
-"permitirão personalização por tenant."
 
-msgid "Contacts"
-msgstr "Contatos"
+#, fuzzy
+#| msgid "Optional description..."
+msgid "Optional description of this approval type"
+msgstr "Descrição opcional..."
 
-msgid "Online"
-msgstr "Online"
+msgid "Icon"
+msgstr ""
 
-msgid "Offline"
-msgstr "Offline"
+msgid "Bootstrap Icons class (e.g., bi-cash, bi-cart)"
+msgstr ""
 
-msgid "Open chat"
-msgstr "Abrir chat"
+msgid "Color"
+msgstr ""
 
-msgid "Active chat"
-msgstr "Chat ativo"
+msgid "Bootstrap color class (primary, success, warning, danger, info)"
+msgstr ""
 
-msgid "Chats"
-msgstr "Chats"
+#, fuzzy
+#| msgid "enabled"
+msgid "Enabled"
+msgstr "habilitado"
 
-msgid "Users & Groups"
-msgstr "Usuários e grupos"
+msgid "Whether this approval type is available for new requests"
+msgstr ""
+
+#, fuzzy
+#| msgid "Custom"
+msgid "Custom Type"
+msgstr "Personalizado"
+
+msgid "True if this is a custom type created by the tenant"
+msgstr ""
+
+msgid "Required Approvers"
+msgstr "Aprovadores Necessários"
+
+#, fuzzy
+#| msgid "Number of approvals needed to approve requests of this type"
+msgid "Number of approvers required to approve requests of this type"
+msgstr "Número de aprovações necessárias para aprovar solicitações deste tipo"
+
+msgid "Designated Approvers"
+msgstr "Aprovadores Designados"
+
+msgid "Specific users who can approve this type. Leave empty for any approver."
+msgstr ""
+
+#, fuzzy
+#| msgid "Show amount field"
+msgid "Show Amount Field"
+msgstr "Mostrar campo de valor"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this approval type?"
+msgid "Whether to show the amount field for this approval type"
+msgstr "Tem certeza de que deseja excluir este tipo de aprovação?"
+
+msgid "Extra Fields"
+msgstr ""
+
+#, fuzzy
+#| msgid "Additional tenant configuration and data"
+msgid "Additional fields configuration for this approval type"
+msgstr "Informações Adicionais"
+
+#, fuzzy
+#| msgid "Sort order"
+msgid "Sort Order"
+msgstr "Ordem"
+
+msgid "Order in which this type appears in lists"
+msgstr ""
+
+#, fuzzy
+#| msgid "No approval types configured."
+msgid "Approval Type Configuration"
+msgstr "Nenhum tipo de aprovação configurado."
+
+# ================================================
+# Approval Type Configuration
+# ================================================
+#, fuzzy
+#| msgid "Approval Types"
+msgid "Approval Type Configurations"
+msgstr "Tipos de Aprovação"
+
+msgid "Select a valid evidence retention period."
+msgstr "Selecione um período válido de retenção de evidências."
+
+msgid "SecureApprove Proof retention updated for future evidence."
+msgstr ""
+"A retenção do SecureApprove Proof foi atualizada para evidências futuras."
+
+#, fuzzy
+#| msgid "Profile updated successfully."
+msgid "User updated successfully."
+msgstr "Operação concluída com sucesso."
+
+#, fuzzy
+#| msgid "Invalid plan selected."
+msgid "Invalid role selected."
+msgstr "Plano inválido selecionado."
 
 msgid "Email is required to invite a user."
 msgstr "E-mail e obrigatorio para convidar um usuario."
@@ -2435,8 +1547,8 @@ msgid ""
 "You have reached the maximum number of users for your current seats. Please "
 "upgrade your subscription to add more users."
 msgstr ""
-"Voce atingiu o numero maximo de usuarios para seus assentos atuais. Atualize"
-" sua assinatura para adicionar mais usuarios."
+"Voce atingiu o numero maximo de usuarios para seus assentos atuais. Atualize "
+"sua assinatura para adicionar mais usuarios."
 
 msgid "Your current subscription does not allow adding more users this month."
 msgstr "Sua assinatura atual nao permite adicionar mais usuarios este mes."
@@ -2444,25 +1556,147 @@ msgstr "Sua assinatura atual nao permite adicionar mais usuarios este mes."
 msgid "You have been invited to SecureApprove"
 msgstr "Voce foi convidado para o SecureApprove"
 
+#, fuzzy, python-format
+#| msgid ""
+#| "You have been invited to join the tenant '%(tenant)s' on SecureApprove."
+#| "\\n\\nTo accept the invitation and access the platform, please click the "
+#| "following link:\\n\\n%(url)s\\n\\nIf you did not expect this invitation, "
+#| "you can ignore this email."
 msgid ""
-"You have been invited to join the tenant '%(tenant)s' on "
-"SecureApprove.\\n\\nTo accept the invitation and access the platform, please"
-" click the following link:\\n\\n%(url)s\\n\\nIf you did not expect this "
-"invitation, you can ignore this email."
+"You have been invited to join the tenant '%(tenant)s' on SecureApprove.\n"
+"\n"
+"To accept the invitation and access the platform, please click the following "
+"link:\n"
+"\n"
+"%(url)s\n"
+"\n"
+"If you did not expect this invitation, you can ignore this email."
 msgstr ""
-"Voce foi convidado para participar do tenant '%(tenant)s' no "
-"SecureApprove.\\n\\nPara aceitar o convite e acessar a plataforma, clique no"
-" seguinte link:\\n\\n%(url)s\\n\\nSe voce nao esperava este convite, pode "
-"ignorar este e-mail."
+"Voce foi convidado para participar do tenant '%(tenant)s' no SecureApprove."
+"\\n\\nPara aceitar o convite e acessar a plataforma, clique no seguinte link:"
+"\\n\\n%(url)s\\n\\nSe voce nao esperava este convite, pode ignorar este e-"
+"mail."
 
+#, python-format
 msgid "Invitation created successfully for %(email)s."
 msgstr "Convite criado com sucesso para %(email)s."
 
+#, python-format
 msgid "Invitation updated for %(email)s."
 msgstr "Convite atualizado para %(email)s."
 
+#, python-format
 msgid "Invitation for %(email)s has been cancelled."
 msgstr "O convite para %(email)s foi cancelado."
+
+msgid "enabled"
+msgstr "habilitado"
+
+msgid "disabled"
+msgstr "desabilitado"
+
+#, python-format
+msgid "Approval type '%(name)s' has been %(status)s."
+msgstr "O tipo de aprovação '%(name)s' foi %(status)s."
+
+msgid "Approval type not found."
+msgstr "Tipo de aprovação não encontrado."
+
+#, python-format
+msgid "Approval type '%(name)s' has been updated."
+msgstr "O tipo de aprovação '%(name)s' foi atualizado."
+
+msgid "Name and key are required."
+msgstr "Nome e chave são obrigatórios."
+
+msgid "An approval type with this key already exists."
+msgstr "Já existe um tipo de aprovação com esta chave."
+
+#, python-format
+msgid "Approval type '%(name)s' has been created."
+msgstr "O tipo de aprovação '%(name)s' foi criado."
+
+msgid "Cannot delete default approval types. You can disable them instead."
+msgstr ""
+"Não é possível excluir tipos de aprovação padrão. Você pode desativá-los."
+
+#, python-format
+msgid "Approval type '%(name)s' has been deleted."
+msgstr "O tipo de aprovação '%(name)s' foi excluído."
+
+msgid "Enter a valid start date."
+msgstr "Insira uma data inicial válida."
+
+msgid "Enter a valid end date."
+msgstr "Insira uma data final válida."
+
+msgid "The start date must be before the end date."
+msgstr "A data inicial deve ser anterior à data final."
+
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Insira um endereço IPv4 ou IPv6 válido."
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Start date"
+msgstr "Data inicial"
+
+msgid "End date"
+msgstr "Data final"
+
+msgid "IP address"
+msgstr "Endereço IP"
+
+#, fuzzy
+#| msgid "SecureApprove Proof JWS"
+msgid "SecureApprove Proof"
+msgstr "JWS do SecureApprove Proof"
+
+msgid "Timestamp"
+msgstr "Data e hora"
+
+msgid "Initiated by"
+msgstr "Iniciado por"
+
+msgid "Document type"
+msgstr "Tipo de documento"
+
+msgid "Document version"
+msgstr "Versão do documento"
+
+msgid "Document hash"
+msgstr "Hash do documento"
+
+msgid "Credential"
+msgstr "Credencial"
+
+msgid "Challenge"
+msgstr "Desafio"
+
+msgid "User agent"
+msgstr "Agente do usuário"
+
+msgid "Error"
+msgstr "Erro"
+
+msgid "Context"
+msgstr "Contexto"
+
+msgid "Audit ID"
+msgstr "ID da auditoria"
+
+msgid "Proof ID"
+msgstr "ID do comprovante"
+
+msgid "Proof archive status"
+msgstr "Status do arquivo do comprovante"
+
+msgid "Transaction SHA-256"
+msgstr "SHA-256 da transação"
+
+msgid "Request ID"
+msgstr "ID da solicitação"
 
 msgid "This invitation is no longer valid."
 msgstr "Este convite nao e mais valido."
@@ -2482,30 +1716,121 @@ msgstr ""
 msgid "Welcome! Your invitation has been accepted and your account is ready."
 msgstr "Bem-vindo. Seu convite foi aceito e sua conta esta pronta."
 
+# ================================================
+# Forms & Validation
+# ================================================
+#, fuzzy
+#| msgid "This field is required."
+msgid "All fields are required."
+msgstr "Este campo é obrigatório."
+
+#, fuzzy
+#| msgid "An approval type with this key already exists."
+msgid "Tenant key already exists."
+msgstr "Já existe um tipo de aprovação com esta chave."
+
+#, fuzzy
+#| msgid "Group created successfully"
+msgid "Tenant created successfully."
+msgstr "Grupo criado com sucesso"
+
+#, fuzzy
+#| msgid "Profile updated successfully."
+msgid "Tenant updated successfully."
+msgstr "Operação concluída com sucesso."
+
+#, fuzzy
+#| msgid "Name and email are required"
+msgid "Tenant and Email are required."
+msgstr "Nome e e-mail são obrigatórios"
+
+#, fuzzy, python-format
+#| msgid "You have been invited to SecureApprove"
+msgid "You have been invited to manage '%(tenant)s'"
+msgstr "Voce foi convidado para o SecureApprove"
+
+#, fuzzy, python-format
+#| msgid ""
+#| "You have been invited to join the tenant '%(tenant)s' on SecureApprove."
+#| "\\n\\nTo accept the invitation and access the platform, please click the "
+#| "following link:\\n\\n%(url)s\\n\\nIf you did not expect this invitation, "
+#| "you can ignore this email."
+msgid ""
+"You have been invited to be the administrator for tenant '%(tenant)s' on "
+"SecureApprove.\n"
+"\n"
+"To accept the invitation and set up your account, please click the following "
+"link:\n"
+"\n"
+"%(url)s\n"
+"\n"
+msgstr ""
+"Voce foi convidado para participar do tenant '%(tenant)s' no SecureApprove."
+"\\n\\nPara aceitar o convite e acessar a plataforma, clique no seguinte link:"
+"\\n\\n%(url)s\\n\\nSe voce nao esperava este convite, pode ignorar este e-"
+"mail."
+
+#, fuzzy, python-format
+#| msgid "Invitation updated for %(email)s."
+msgid "Invitation sent to %(email)s"
+msgstr "Convite atualizado para %(email)s."
+
+msgid "Iniciar sesión"
+msgstr "Conecte-se"
+
+msgid "Sistema de Aprobaciones Seguras"
+msgstr "Sistema de Aprobações Seguras"
+
+msgid "Ingrese su email"
+msgstr "Ingrese seu email"
+
+msgid "Contraseña"
+msgstr "Contratos"
+
+msgid "Ingrese su contraseña"
+msgstr "Ingrese seu contraseña"
+
+msgid "Recordarme"
+msgstr "lembre de mim"
+
+msgid "¿Olvidó su contraseña?"
+msgstr "¿Olvidó seu contraseña?"
+
+msgid "¿No tiene una cuenta?"
+msgstr "¿No tiene uma cuenta?"
+
+msgid "Suscribirse"
+msgstr "Assinatura"
+
+msgid "Todos los derechos reservados."
+msgstr "Todos os direitos reservados."
+
 msgid "Pair a New Device - SecureApprove"
 msgstr "Pair a New Device - SecureApprove"
 
-msgid "Pairing link created. Open this URL on the device you want to pair:"
-msgstr "Pairing link created. Open this URL on the device you want to pair:"
-
-msgid "Pairing session not found or expired."
-msgstr "Pairing session not found or expired."
-
-msgid "Pair This Device"
-msgstr "Pair This Device"
-
-msgid "Pair This Device and set up biometric authentication"
-msgstr "Pair This Device and set up biometric authentication"
+msgid "OK"
+msgstr ""
 
 msgid "Pairing Link Invalid or Expired"
 msgstr "Pairing Link Invalid or Expired"
 
 msgid ""
-"This device pairing link is no longer valid. Please generate a new link from"
-" your SecureApprove profile."
+"This device pairing link is no longer valid. Please generate a new link from "
+"your SecureApprove profile."
 msgstr ""
-"This device pairing link is no longer valid. Please generate a new link from"
-" your SecureApprove profile."
+"This device pairing link is no longer valid. Please generate a new link from "
+"your SecureApprove profile."
+
+msgid "Pair This Device"
+msgstr "Pair This Device"
+
+#, python-format
+msgid ""
+"\n"
+"                        You are about to pair this device with the account "
+"%(email)s.\n"
+"                        "
+msgstr ""
 
 msgid "Prepare Your Biometric Sensor"
 msgstr "Prepare Your Biometric Sensor"
@@ -2524,6 +1849,18 @@ msgstr ""
 "This device will be added as an additional authenticator for your existing "
 "SecureApprove account."
 
+msgid "Touch Your Sensor"
+msgstr "Toca seu Sensor"
+
+#, fuzzy
+#| msgid "Please use your fingerprint, Face ID, or security key to sign in"
+msgid ""
+"Use your fingerprint, Face ID, or security key on this device to complete "
+"the pairing."
+msgstr ""
+"Por favor usa seu huella dactilar, Face ID, ou llave de seguridade para "
+"iniciar sesión"
+
 msgid "Device Paired Successfully!"
 msgstr "Device Paired Successfully!"
 
@@ -2534,11 +1871,250 @@ msgstr ""
 "You can now sign in to SecureApprove from this device using your biometric "
 "authentication."
 
+# ================================================
+# Forms & Validation
+# ================================================
+#, fuzzy
+#| msgid "This field is required."
+msgid "This Device is Already Paired!"
+msgstr "Este campo é obrigatório."
+
+msgid ""
+"Good news! You already have a passkey for this account on this device. You "
+"can sign in directly without needing to pair again."
+msgstr ""
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Warning"
+msgstr "Aviso"
+
+#, fuzzy
+#| msgid "Basic Information"
+msgid "Information"
+msgstr "Informação"
+
+#, fuzzy
+#| msgid "Sign In"
+msgid "Sign In Now"
+msgstr "Entrar"
+
+msgid ""
+"The biometric prompt was cancelled or timed out. Please try again and make "
+"sure to confirm with your fingerprint, Face ID, or security key."
+msgstr ""
+"The biometric prompt was cancelled or timed out. Please try again and make "
+"sure to confirm with your fingerprint, Face ID, or security key."
+
+msgid ""
+"A security error occurred while creating the credential. Please ensure you "
+"are accessing SecureApprove directly over HTTPS and not inside another "
+"application."
+msgstr ""
+"A security error occurred while creating the credential. Please ensure you "
+"are accessing SecureApprove directly over HTTPS and not inside another "
+"application."
+
+msgid ""
+"This browser or device does not fully support WebAuthn passkeys for this "
+"site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) "
+"with passkeys enabled."
+msgstr ""
+"This browser or device does not fully support WebAuthn passkeys for this "
+"site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) "
+"with passkeys enabled."
+
+msgid ""
+"The operation either timed out or was not allowed by the browser. Please try "
+"again, and check your browser privacy settings."
+msgstr ""
+"The operation either timed out or was not allowed by the browser. Please try "
+"again, and check your browser privacy settings."
+
+msgid ""
+"An unexpected error occurred while adding this device. Please try again."
+msgstr ""
+"An unexpected error occurred while adding this device. Please try again."
+
+msgid ""
+"WebAuthn is not supported in your browser. Please use Chrome, Firefox, "
+"Safari, or Edge."
+msgstr ""
+"WebAuthn não é compatível com seu navegador.Use Chrome, Firefox, Safari ou "
+"Edge."
+
+#, fuzzy
+#| msgid "WebAuthn authentication was cancelled"
+msgid "WebAuthn registration was cancelled"
+msgstr "La autenticação WebAuthn fue cancelada"
+
 msgid "Go to Login"
 msgstr "Go to Login"
 
-msgid "Failed to create pairing session"
-msgstr "Failed to create pairing session"
+msgid "Sign In"
+msgstr "Entrar"
+
+# ================================================
+# Dashboard
+# ================================================
+msgid "Welcome back!"
+msgstr "Bem-vindo de volta"
+
+msgid "Sign in to access your approval workflow dashboard"
+msgstr "Faça login para acessar o painel do fluxo de trabalho de aprovação"
+
+msgid "Fast"
+msgstr "Fast"
+
+# ================================================
+# Common Terms
+# ================================================
+msgid "Secure"
+msgstr "SecureApprove"
+
+msgid "Efficient"
+msgstr "Eficiente"
+
+msgid "Enter your credentials to access your account"
+msgstr "Insira suas credenciais para acessar sua conta"
+
+msgid "Forgot your password?"
+msgstr "Esqueceu a senha?"
+
+msgid "Don't have an account?"
+msgstr "¿No tienes uma cuenta?"
+
+msgid "Subscribe Now"
+msgstr "Assinatura"
+
+msgid "Demo Credentials:"
+msgstr "Credenciais de demonstração:"
+
+msgid "Email:"
+msgstr "Email"
+
+msgid "Password:"
+msgstr "Senha"
+
+msgid "WebAuthn is not fully implemented yet. Please use email/password login."
+msgstr ""
+"WebAuthn ainda não está totalmente implementado.Por favor, use login por e-"
+"mail/senha."
+
+# ================================================
+# Common Terms
+# ================================================
+msgid "Profile - SecureApprove"
+msgstr "SecureApprove"
+
+#, fuzzy
+#| msgid "Name"
+msgid "Edit Name"
+msgstr "Sobrenome"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Staff Member"
+msgstr "Setembro"
+
+msgid "Company"
+msgstr "Empresa"
+
+msgid "Member Since"
+msgstr "Lembrar-me"
+
+msgid "Biometric Authentication"
+msgstr "Autenticação Biométrica"
+
+msgid "Add Device"
+msgstr "Adicionar dispositivo"
+
+#, fuzzy
+#| msgid "Active"
+msgid "Inactive"
+msgstr "Ativo"
+
+msgid "Added"
+msgstr ""
+
+msgid "Registered device"
+msgstr "Registrar"
+
+#, fuzzy
+#| msgid "Past Due"
+msgid "Last used"
+msgstr "Vencido"
+
+#, fuzzy
+#| msgid "Registered device"
+msgid "Rename device"
+msgstr "Registrar"
+
+#, fuzzy
+#| msgid "Active chat"
+msgid "Activate/Deactivate"
+msgstr "Chat ativo"
+
+#, fuzzy
+#| msgid "Remove filter"
+msgid "Remove device"
+msgstr "Remover filtro"
+
+msgid "No biometric devices registered"
+msgstr "Nenhum dispositivo biométrico registrado"
+
+msgid "Add a biometric device to enhance your account security"
+msgstr ""
+"Adicione um dispositivo biométrico para aumentar a segurança da sua conta"
+
+msgid "Security Information"
+msgstr "Informações da Solicitação"
+
+msgid ""
+"Your biometric data is stored securely on your devices and never transmitted "
+"to our servers. Each device creates a unique cryptographic key for "
+"authentication."
+msgstr ""
+"Seus dados biométricos são armazenados de forma segura em seus dispositivos "
+"e nunca são transmitidos para nossos servidores.Cada dispositivo cria uma "
+"chave criptográfica exclusiva para autenticação."
+
+msgid "Edit Profile"
+msgstr "Perfil"
+
+#, fuzzy
+#| msgid "Pair This Device"
+msgid "Pair a New Device"
+msgstr "Pair This Device"
+
+msgid "Sign Out"
+msgstr "Sair"
+
+msgid "Add Biometric Device"
+msgstr "Adicionar dispositivo biométrico"
+
+msgid "Preparing Device Registration"
+msgstr "Preparando o registro do dispositivo"
+
+msgid "Get ready to use your biometric sensor"
+msgstr "Prepare-se para usar seu sensor biométrico"
+
+msgid "Use your fingerprint, Face ID, or security key"
+msgstr "Use sua impressão digital, Face ID ou chave de segurança"
+
+msgid "Device Added Successfully!"
+msgstr "Operação concluída com sucesso."
+
+msgid "Your new device has been registered"
+msgstr "Seu novo dispositivo foi registrado"
+
+msgid "Start Registration"
+msgstr "Iniciar registro"
+
+msgid "Pairing link"
+msgstr ""
 
 msgid "Copy link"
 msgstr "Copy link"
@@ -2546,8 +2122,44 @@ msgstr "Copy link"
 msgid "Scan this QR code with the device you want to pair."
 msgstr "Scan this QR code with the device you want to pair."
 
-msgid "Close"
-msgstr "Fechar"
+msgid "Are you sure you want to remove this device?"
+msgstr "Tem certeza de que deseja remover este dispositivo?"
+
+msgid "Failed to remove device"
+msgstr "Falha ao remover o dispositivo"
+
+#, fuzzy
+#| msgid "Enter your first name"
+msgid "Enter new device name:"
+msgstr "Digite seu nome"
+
+#, fuzzy
+#| msgid "Failed to remove device"
+msgid "Failed to rename device"
+msgstr "Falha ao remover o dispositivo"
+
+#, fuzzy
+#| msgid "Are you sure you want to remove this device?"
+msgid "Are you sure you want to activate this device?"
+msgstr "Tem certeza de que deseja remover este dispositivo?"
+
+#, fuzzy
+#| msgid "Are you sure you want to remove this device?"
+msgid "Are you sure you want to deactivate this device?"
+msgstr "Tem certeza de que deseja remover este dispositivo?"
+
+#, fuzzy
+#| msgid "Failed"
+msgid "Failed to"
+msgstr "Falhou"
+
+#, fuzzy
+#| msgid "Add Device"
+msgid "device"
+msgstr "Adicionar dispositivo"
+
+msgid "Failed to add device"
+msgstr "Falha ao adicionar dispositivo"
 
 msgid "Link copied to clipboard."
 msgstr "Link copied to clipboard."
@@ -2555,297 +2167,429 @@ msgstr "Link copied to clipboard."
 msgid "Failed to copy link."
 msgstr "Failed to copy link."
 
-msgid ""
-"The biometric prompt was cancelled or timed out. Please try again and make "
-"sure to confirm with your fingerprint, Face ID, or security key."
-msgstr ""
-"The biometric prompt was cancelled or timed out. Please try again and make "
-"sure to confirm with your fingerprint, Face ID, or security key."
+msgid "Pairing link created. Open this URL on the device you want to pair:"
+msgstr "Pairing link created. Open this URL on the device you want to pair:"
 
-msgid ""
-"A security error occurred while creating the credential. Please ensure you "
-"are accessing SecureApprove directly over HTTPS and not inside another "
-"application."
-msgstr ""
-"A security error occurred while creating the credential. Please ensure you "
-"are accessing SecureApprove directly over HTTPS and not inside another "
-"application."
-
-msgid ""
-"This browser or device does not fully support WebAuthn passkeys for this "
-"site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) "
-"with passkeys enabled."
-msgstr ""
-"This browser or device does not fully support WebAuthn passkeys for this "
-"site. Please use a compatible browser (Chrome, Safari, Edge, or Firefox) "
-"with passkeys enabled."
-
-msgid ""
-"A credential for this account already exists on this device. Try signing in "
-"instead of pairing again."
-msgstr ""
-"A credential for this account already exists on this device. Try signing in "
-"instead of pairing again."
-
-msgid ""
-"The operation either timed out or was not allowed by the browser. Please try"
-" again, and check your browser privacy settings."
-msgstr ""
-"The operation either timed out or was not allowed by the browser. Please try"
-" again, and check your browser privacy settings."
-
-msgid ""
-"An unexpected error occurred while adding this device. Please try again."
-msgstr ""
-"An unexpected error occurred while adding this device. Please try again."
+msgid "Failed to create pairing session"
+msgstr "Failed to create pairing session"
 
 # ================================================
-# 3-Day Free Trial
+# Common Terms
 # ================================================
-msgid "Start Your 3-Day Free Trial"
-msgstr "Comece seu teste gratuito de 3 dias"
+#, fuzzy
+#| msgid "Profile - SecureApprove"
+msgid "Edit Profile - SecureApprove"
+msgstr "SecureApprove"
 
-msgid "No credit card required. Full access for 3 days."
-msgstr "Não é necessário cartão de crédito. Acesso total por 3 dias."
-
-msgid "Work Email"
-msgstr "E-mail corporativo"
-
-msgid "Start Trial"
-msgstr "Começar teste"
-
-msgid "By signing up, you agree to our Terms of Service and Privacy Policy."
+msgid "This name will be displayed in chats and other interactions."
 msgstr ""
-"Ao se inscrever, você concorda com nossos Termos de Serviço e Política de "
-"Privacidade."
 
-msgid "Already have an account?"
-msgstr "Já tem uma conta?"
-
-msgid "Log in"
-msgstr "Entrar"
-
-msgid "Just now"
-msgstr "Agora mesmo"
-
-msgid "General"
-msgstr "Geral"
-
-# ================================================
-# Approval Type Configuration
-# ================================================
-msgid "Approval Types"
-msgstr "Tipos de Aprovação"
-
-msgid "Create Approval Type"
-msgstr "Criar Tipo de Aprovação"
-
-msgid "Edit Approval Type"
-msgstr "Editar Tipo de Aprovação"
-
-msgid "Custom"
-msgstr "Personalizado"
-
-msgid "approver"
-msgstr "aprovador"
-
-msgid "approvers"
-msgstr "aprovadores"
-
-msgid "Designated approvers:"
-msgstr "Aprovadores designados:"
-
-msgid "Required Approvers"
-msgstr "Aprovadores Necessários"
-
-msgid "Designated Approvers"
-msgstr "Aprovadores Designados"
-
-msgid "Number of approvals needed to approve requests of this type"
-msgstr "Número de aprovações necessárias para aprovar solicitações deste tipo"
-
-msgid "Number of approvals needed"
-msgstr "Número de aprovações necessárias"
-
-msgid "Leave empty to allow any approver. Hold Ctrl/Cmd to select multiple."
+msgid "Email address cannot be changed."
 msgstr ""
-"Deixe vazio para permitir qualquer aprovador. Segure Ctrl/Cmd para "
-"selecionar vários."
-
-msgid "Leave empty to allow any approver"
-msgstr "Deixe vazio para permitir qualquer aprovador"
-
-msgid "Show amount field"
-msgstr "Mostrar campo de valor"
-
-msgid "enabled"
-msgstr "habilitado"
-
-msgid "disabled"
-msgstr "desabilitado"
-
-msgid "Approval type '%(name)s' has been %(status)s."
-msgstr "O tipo de aprovação '%(name)s' foi %(status)s."
-
-msgid "Approval type '%(name)s' has been updated."
-msgstr "O tipo de aprovação '%(name)s' foi atualizado."
-
-msgid "Approval type '%(name)s' has been created."
-msgstr "O tipo de aprovação '%(name)s' foi criado."
-
-msgid "Approval type '%(name)s' has been deleted."
-msgstr "O tipo de aprovação '%(name)s' foi excluído."
-
-msgid "Cannot delete default approval types. You can disable them instead."
-msgstr ""
-"Não é possível excluir tipos de aprovação padrão. Você pode desativá-los."
-
-msgid "Approval type not found."
-msgstr "Tipo de aprovação não encontrado."
-
-msgid "Manage your organization profile, users, and settings"
-msgstr "Gerencie o perfil, usuários e configurações da sua organização"
-
-msgid "Name and key are required."
-msgstr "Nome e chave são obrigatórios."
-
-msgid "An approval type with this key already exists."
-msgstr "Já existe um tipo de aprovação com esta chave."
-
-msgid "Lowercase letters, numbers, and underscores only"
-msgstr "Apenas letras minúsculas, números e sublinhados"
-
-msgid "e.g., Vacation Request"
-msgstr "ex., Solicitação de Férias"
-
-msgid "e.g., vacation"
-msgstr "ex., ferias"
-
-msgid "Optional description..."
-msgstr "Descrição opcional..."
-
-msgid "Cash"
-msgstr "Dinheiro"
-
-msgid "Cart"
-msgstr "Carrinho"
-
-msgid "Download"
-msgstr "Download"
-
-msgid "Calendar"
-msgstr "Calendário"
-
-msgid "Person"
-msgstr "Pessoa"
-
-msgid "Building"
-msgstr "Prédio"
-
-msgid "Tools"
-msgstr "Ferramentas"
-
-msgid "Laptop"
-msgstr "Notebook"
-
-msgid "Check"
-msgstr "Verificar"
-
-msgid "Health"
-msgstr "Saúde"
-
-msgid "Education"
-msgstr "Educação"
-
-msgid "Time"
-msgstr "Tempo"
-
-msgid "Primary"
-msgstr "Primário"
-
-msgid "Success"
-msgstr "Sucesso"
-
-msgid "Warning"
-msgstr "Aviso"
-
-msgid "Danger"
-msgstr "Perigo"
-
-msgid "Info"
-msgstr "Informação"
-
-msgid "Secondary"
-msgstr "Secundário"
-
-msgid "Are you sure you want to delete this approval type?"
-msgstr "Tem certeza de que deseja excluir este tipo de aprovação?"
-
-msgid "No approval types configured."
-msgstr "Nenhum tipo de aprovação configurado."
 
 msgid "Save Changes"
 msgstr "Salvar Alterações"
 
 # ================================================
-# Super Admin Translations
+# Common Terms
 # ================================================
-msgid "Super Admin - Tenant Management"
-msgstr "Super Admin - Gerenciamento de Locatários"
+msgid "Sign In - SecureApprove"
+msgstr "SecureApprove"
 
-msgid "Tenant Administration"
-msgstr "Administração de Locatários"
+msgid "Secure passwordless authentication with biometrics"
+msgstr "Autenticação segura sem contraseñas com biometría"
 
-msgid "Manage tenants, plans, and administrators."
-msgstr "Gerencie locatários, planos e administradores."
+msgid "Sign In with Biometrics"
+msgstr "Entrar com impressão digital"
 
-msgid "Create Tenant"
-msgstr "Criar Locatário"
+msgid "Check Account"
+msgstr "Verificar Cuenta"
 
-msgid "Pricing Reference"
-msgstr "Referência de Preços"
+msgid "Preparing Authentication"
+msgstr "Preparando Autenticação"
 
-msgid "USD / user / month"
-msgstr "USD / usuário / mês"
+msgid "Setting up your biometric login..."
+msgstr "Configurando seu login biométrico..."
 
-msgid "Edit Tenant"
-msgstr "Editar Locatário"
+msgid "Please use your fingerprint, Face ID, or security key to sign in"
+msgstr ""
+"Por favor usa seu huella dactilar, Face ID, ou llave de seguridade para "
+"iniciar sesión"
 
-msgid "Invite Admin"
-msgstr "Convidar Administrador"
+msgid "Verifying..."
+msgstr "Verificando..."
 
-msgid "Invite Primary Admin"
-msgstr "Convidar Administrador Principal"
+msgid "Authenticating your identity"
+msgstr "Autenticando seu identidade"
 
-msgid "Invite a user to be the Tenant Admin for"
-msgstr "Convidar um usuário para ser Administrador do Locatário de"
+msgid "Authentication Successful!"
+msgstr "¡Autenticação Exitosa!"
 
-msgid "Send Invitation"
-msgstr "Enviar Convite"
+# ================================================
+# Dashboard
+# ================================================
+msgid "Welcome back! Redirecting..."
+msgstr "Bem-vindo de volta"
 
-msgid "No tenants found."
-msgstr "Nenhum locatário encontrado."
+msgid "Subscribe to Get Started"
+msgstr "Inscreva-se para começar"
 
-msgid "Create New Tenant"
-msgstr "Criar Novo Locatário"
+msgid "About Biometric Authentication"
+msgstr "Acerca de a Autenticação Biométrica"
 
-msgid "Key (Slug)"
-msgstr "Chave (Slug)"
+msgid ""
+"We use WebAuthn for secure, passwordless authentication. Your biometric data "
+"stays on your device and is never shared."
+msgstr ""
+"Usamos WebAuthn para autenticação segura e sem senha.Seus dados biométricos "
+"permanecem no seu dispositivo e nunca são compartilhados."
 
-msgid "Unique identifier for the tenant (e.g. company-name)"
-msgstr "Identificador único do locatário (ex. nome-empresa)"
+msgid "Please enter your email address"
+msgstr "Por favor, insira um endereço de email válido."
 
-msgid "Max Users (Seats)"
-msgstr "Máximo de Usuários (Assentos)"
+msgid "Checking Account..."
+msgstr "Verificando Cuenta..."
 
-msgid "Manually set the maximum number of users allowed."
-msgstr "Definir manualmente o número máximo de usuários permitidos."
+msgid ""
+"No account found with this email. Please subscribe to a plan to get started."
+msgstr "Nenhuma conta encontrada com este e-mail.Assine um plano para começar."
 
-msgid "Terms & Conditions"
-msgstr "Termos e Condições"
+msgid "WebAuthn authentication was cancelled"
+msgstr "La autenticação WebAuthn fue cancelada"
 
-msgid "All rights reserved."
-msgstr "Todos os direitos reservados."
+msgid "Authentication successful! Welcome back."
+msgstr "¡Autenticação exitosa! Bienvenido de vuelta."
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Dark"
+msgstr "Escuro"
+
+msgid "System"
+msgstr "Sistema"
+
+msgid "Dashboard"
+msgstr "Painel"
+
+msgid "Requests"
+msgstr "Solicitações"
+
+msgid "Profile"
+msgstr "Perfil"
+
+#, fuzzy
+#| msgid "Email notifications"
+msgid "Enable Notifications"
+msgstr "Notificações por correo"
+
+msgid "Administration"
+msgstr "Administração"
+
+msgid "Logout"
+msgstr "Sair"
+
+# ================================================
+# Authentication
+# ================================================
+msgid "Login"
+msgstr "Entrar"
+
+msgid "Subscribe"
+msgstr "Assinatura"
+
+#, fuzzy
+#| msgid "Chats"
+msgid "Chat"
+msgstr "Chats"
+
+msgid "Chats"
+msgstr "Chats"
+
+msgid "Messages"
+msgstr "Mensagens"
+
+msgid "Groups"
+msgstr "Grupos"
+
+msgid "Create New Group"
+msgstr "Criar Novo Grupo"
+
+msgid "Enter group name..."
+msgstr "Digite o nome do grupo..."
+
+msgid "Select users for group:"
+msgstr "Selecionar usuários para o grupo:"
+
+#, fuzzy
+#| msgid "Created"
+msgid "Create"
+msgstr "Criado"
+
+msgid "Group Conversations"
+msgstr "Conversas em Grupo"
+
+#, fuzzy
+#| msgid "10 team members"
+msgid "View members"
+msgstr "10 miembros do equipo"
+
+msgid "Typing..."
+msgstr "Digitando..."
+
+msgid "Write a message"
+msgstr "Escreva uma mensagem"
+
+msgid "Max 25MB. Any file type is allowed."
+msgstr "Máx 25MB. Qualquer tipo de arquivo é permitido."
+
+msgid "Send"
+msgstr "Enviar"
+
+#, fuzzy
+#| msgid "Write a message"
+msgid "New chat message"
+msgstr "Escreva uma mensagem"
+
+#, fuzzy
+#| msgid "Write a message"
+msgid "New chat messages"
+msgstr "Escreva uma mensagem"
+
+#, fuzzy
+#| msgid "Write a message"
+msgid "unread messages"
+msgstr "Escreva uma mensagem"
+
+msgid "users online"
+msgstr "usuários online"
+
+msgid "No users online"
+msgstr "Nenhum usuário online"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "Offline"
+msgstr "Offline"
+
+#, fuzzy
+#| msgid "No users available"
+msgid "Chat service unavailable"
+msgstr "Nenhum usuário disponível"
+
+#, fuzzy
+#| msgid "No chats yet. Start a conversation from Users tab."
+msgid "No messages yet. Start the conversation."
+msgstr "Ainda não há chats. Inicie uma conversa na aba Usuários."
+
+msgid "Conversation"
+msgstr "Conversa"
+
+msgid "New conversation"
+msgstr "Nova conversa"
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Attachment"
+msgstr "Anexos"
+
+#, fuzzy
+#| msgid "Select a conversation"
+msgid "Could not start conversation"
+msgstr "Selecione uma conversa"
+
+msgid "Could not load messages"
+msgstr ""
+
+msgid "Could not send message"
+msgstr ""
+
+#, fuzzy
+#| msgid "File is too large"
+msgid "File is too large (max 25MB)"
+msgstr "O arquivo é muito grande"
+
+#, fuzzy
+#| msgid "Max 25MB. Any file type is allowed."
+msgid "File type not allowed"
+msgstr "Máx 25MB. Qualquer tipo de arquivo é permitido."
+
+# Chat UI Additional Translations
+msgid "Loading messages..."
+msgstr "Carregando mensagens..."
+
+#, fuzzy
+#| msgid "Unknown proof"
+msgid "Unknown user"
+msgstr "Comprovante desconhecido"
+
+# ================================================
+# Chat Group Features
+# ================================================
+msgid "Create Group"
+msgstr "Criar Grupo"
+
+msgid "Please enter a group name"
+msgstr "Por favor, digite um nome para o grupo"
+
+msgid "Select at least 2 users for the group"
+msgstr "Selecione pelo menos 2 usuários para o grupo"
+
+msgid "Select at least one user"
+msgstr "Selecione pelo menos um usuário"
+
+msgid "Select users for group"
+msgstr "Selecione usuários para o grupo"
+
+msgid "Group created successfully"
+msgstr "Grupo criado com sucesso"
+
+msgid "Could not create group"
+msgstr "Não foi possível criar o grupo"
+
+msgid "Leave Group"
+msgstr "Sair do Grupo"
+
+msgid "Add Participants"
+msgstr "Adicionar Participantes"
+
+msgid "Group Members"
+msgstr "Membros do Grupo"
+
+msgid "No chats yet. Start a conversation from Users tab."
+msgstr "Ainda não há chats. Inicie uma conversa na aba Usuários."
+
+msgid "No group chats yet. Create one above."
+msgstr "Ainda não há grupos. Crie um acima."
+
+msgid "No users available"
+msgstr "Nenhum usuário disponível"
+
+# ================================================
+# Common Terms
+# ================================================
+msgid "Payment Failed - SecureApprove"
+msgstr "SecureApprove"
+
+msgid "Payment Failed"
+msgstr "Pagamento"
+
+msgid ""
+"We're sorry, but your payment could not be processed. Please try again or "
+"contact our support team for assistance."
+msgstr ""
+"Lamentamos, mas não foi possível processar o seu pagamento.Tente novamente "
+"ou entre em contato com nossa equipe de suporte para obter assistência."
+
+msgid "Common reasons for payment failures:"
+msgstr "Razões comuns para falhas de pagamento:"
+
+msgid "Insufficient funds"
+msgstr "Fundos insuficientes"
+
+msgid "Incorrect card details"
+msgstr "Dados incorretos do cartão"
+
+msgid "Card blocked by bank"
+msgstr "Cartão bloqueado pelo banco"
+
+msgid "Expired card"
+msgstr "Cartão expirado"
+
+msgid "Try Again"
+msgstr "Tente novamente"
+
+msgid "Contact Support"
+msgstr "Contratos"
+
+msgid "Back to Home"
+msgstr "Voltar às Solicitações"
+
+msgid "Payment Pending - SecureApprove"
+msgstr "Pagamento pendente - SecureApprove"
+
+msgid "Payment Pending"
+msgstr "Pendente"
+
+msgid ""
+"Your payment is being processed. This may take a few minutes. We'll send you "
+"an email confirmation once it's complete."
+msgstr ""
+"Seu pagamento está sendo processado.Isso pode levar alguns "
+"minutos.Enviaremos um e-mail de confirmação assim que estiver concluído."
+
+msgid "What happens next?"
+msgstr "¿Qué sigue?"
+
+msgid ""
+"You'll receive an email notification once your payment is approved. Your "
+"SecureApprove account will be activated automatically."
+msgstr ""
+"Você receberá uma notificação por e-mail assim que seu pagamento for "
+"aprovado.Sua conta SecureApprove será ativada automaticamente."
+
+msgid "Questions about your payment?"
+msgstr "Dúvidas sobre seu pagamento?"
+
+msgid "Payment Successful - SecureApprove"
+msgstr "Pagamento realizado com sucesso - SecureApprove"
+
+msgid "Payment Successful!"
+msgstr "¡Pago Exitoso!"
+
+msgid ""
+"Thank you for subscribing to SecureApprove. Your account is being set up and "
+"you'll receive a confirmation email shortly."
+msgstr ""
+"Obrigado por assinar o SecureApprove.Sua conta está sendo configurada e você "
+"receberá um e-mail de confirmação em breve."
+
+msgid ""
+"Your account and tenant have been created. Please set up your biometric "
+"authentication to access your dashboard."
+msgstr ""
+"Sua conta e inquilino foram criados.Configure sua autenticação biométrica "
+"para acessar seu painel."
+
+msgid "Setup Biometric Login"
+msgstr "Configurar Inicio Biométrico"
+
+msgid "Need help? Contact our support team at"
+msgstr "¿Necesitas ayuda? Contacta a nuestro equipo de soporte en"
+
+msgid "Choose Your Plan - SecureApprove"
+msgstr "Escolha Seu Plano"
+
+msgid "Most Popular"
+msgstr "Más Popular"
+
+msgid "Choose Your Plan"
+msgstr "Escolha Seu Plano"
+
+msgid "Pricing is based on the number of users in your organization."
+msgstr "A cobrança é baseada no número de usuários da sua organização."
+
+msgid "Simple per-user pricing"
+msgstr "Precificação simples por usuário"
+
+msgid ""
+"Choose how many users you need; the price per user adjusts automatically."
+msgstr ""
+"Escolha quantos usuários você precisa; o preço por usuário se ajusta "
+"automaticamente."
+
+msgid "Price per user (USD / month)"
+msgstr "Preço por usuário (USD/mês)"
+
+msgid "2 to 6 users"
+msgstr "De 2 a 6 usuários"
+
+msgid "7 to 12 users"
+msgstr "De 7 a 12 usuários"
+
+msgid "More than 12 users"
+msgstr "Mais de 12 usuários"
 
 # ================================================
 # Billing / Select Plan Translations
@@ -2857,29 +2601,51 @@ msgstr ""
 "O administrador do locatário pode adicionar quantos usuários precisar; o "
 "valor da sua assinatura será calculado com base no número total de assentos."
 
-msgid "2 to 6 users"
-msgstr "De 2 a 6 usuários"
+msgid "Start Free Trial"
+msgstr "Inicial"
 
-msgid "7 to 12 users"
-msgstr "De 7 a 12 usuários"
+msgid "All plans include"
+msgstr "Todos os planes incluyen"
 
-msgid "More than 12 users"
-msgstr "Mais de 12 usuários"
+msgid "WebAuthn Security"
+msgstr "Seguridade WebAuthn"
 
-msgid "Price per user (USD / month)"
-msgstr "Preço por usuário (USD/mês)"
+msgid "Passwordless biometric authentication"
+msgstr "Autenticação biométrica sem contraseña"
 
-# ================================================
-# Updated Plan Names (per-user pricing)
-# ================================================
-msgid "2-6 users - $90/user/month"
-msgstr "2-6 usuários - $90/usuário/mês"
+msgid "Cloud Hosting"
+msgstr "Hospedaje em a Nube"
 
-msgid "7-12 users - $75/user/month"
-msgstr "7-12 usuários - $75/usuário/mês"
+msgid "Secure, reliable cloud infrastructure"
+msgstr "Infraestrutura em a nube segura e confiable"
 
-msgid "12+ users - $65/user/month"
-msgstr "12+ usuários - $65/usuário/mês"
+msgid "Mobile Ready"
+msgstr "Listo para Móveis"
+
+msgid "Works perfectly on any device"
+msgstr "Funciona perfectamente em cualquier dispositivo"
+
+msgid "24/7 Support"
+msgstr "Soporte 24/7"
+
+msgid "Get help whenever you need it"
+msgstr "Obtén ayuda cuando a necesites"
+
+msgid "Frequently Asked Questions"
+msgstr "Preguntas Frecuentes"
+
+msgid "Can I change my plan later?"
+msgstr "¿Puedo cambiar mi plan mais adelante?"
+
+msgid ""
+"Yes, you can upgrade or downgrade your plan at any time. Changes take effect "
+"immediately."
+msgstr ""
+"Sim, você pode fazer upgrade ou downgrade do seu plano a qualquer momento.As "
+"alterações entram em vigor imediatamente."
+
+msgid "Is there a free trial?"
+msgstr "¿Hay uma prueba gratuita?"
 
 msgid ""
 "Yes, we offer a 3-day free trial for all plans. No credit card required to "
@@ -2888,20 +2654,187 @@ msgstr ""
 "Sim, oferecemos um teste gratuito de 3 dias para todos os planos. Não é "
 "necessário cartão de crédito para começar."
 
+msgid "What payment methods do you accept?"
+msgstr "¿Qué métodos de pago aceptan?"
+
+msgid ""
+"We accept all major credit cards, PayPal, and bank transfers through "
+"MercadoPago."
+msgstr ""
+"Aceitamos todos os principais cartões de crédito, PayPal e transferências "
+"bancárias através do MercadoPago."
+
+msgid "Questions about our plans?"
+msgstr "¿Preguntas sobre nuestros planes?"
+
+msgid "Contact our sales team"
+msgstr "Contacta a nuestro equipo de ventas"
+
 # ================================================
-# Privacy Policy Page
+# Common Terms
 # ================================================
-msgid "Privacy Policy - SecureApprove"
-msgstr "Política de Privacidade - SecureApprove"
+#, fuzzy
+#| msgid "Payment Failed - SecureApprove"
+msgid "Start Free Trial - SecureApprove"
+msgstr "SecureApprove"
+
+# ================================================
+# 3-Day Free Trial
+# ================================================
+msgid "Start Your 3-Day Free Trial"
+msgstr "Comece seu teste gratuito de 3 dias"
+
+msgid "No credit card required. Full access for 3 days."
+msgstr "Não é necessário cartão de crédito. Acesso total por 3 dias."
+
+msgid "John Doe"
+msgstr ""
+
+msgid "Work Email"
+msgstr "E-mail corporativo"
+
+msgid "john@company.com"
+msgstr ""
+
+msgid "I have read and agree to the"
+msgstr ""
+
+msgid "Terms and Conditions"
+msgstr "Termos e Condições"
+
+msgid "and"
+msgstr ""
 
 msgid "Privacy Policy"
 msgstr "Política de Privacidade"
 
-msgid "Last updated: December 6, 2025"
+msgid "Start Trial"
+msgstr "Começar teste"
+
+msgid "Already have an account?"
+msgstr "Já tem uma conta?"
+
+msgid "Log in"
+msgstr "Entrar"
+
+#, fuzzy
+#| msgid "Last updated: December 6, 2025"
+msgid "Last updated: November 23, 2025"
 msgstr "Última atualização: 6 de dezembro de 2025"
 
 msgid "1. Introduction"
 msgstr "1. Introdução"
+
+msgid ""
+"Welcome to SecureApprove. By accessing or using our website and services, "
+"you agree to be bound by these Terms and Conditions and our Privacy Policy."
+msgstr ""
+
+#, fuzzy
+#| msgid "Add Biometric Device"
+msgid "2. Biometric Data Privacy"
+msgstr "Adicionar dispositivo biométrico"
+
+msgid "Important Privacy Notice:"
+msgstr ""
+
+msgid "We do not collect, store, or transmit your biometric data."
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| "SecureApprove uses WebAuthn technology for passwordless authentication. "
+#| "This means:"
+msgid ""
+"SecureApprove utilizes WebAuthn standards for passwordless authentication. "
+"This means:"
+msgstr ""
+"SecureApprove usa tecnologia WebAuthn para autenticação sem senha. Isso "
+"significa:"
+
+#, fuzzy
+#| msgid ""
+#| "Your biometric data (fingerprint, face scan, etc.) never leaves your "
+#| "device."
+msgid ""
+"Your biometric data (fingerprint, face scan, etc.) remains exclusively on "
+"your personal device."
+msgstr ""
+"Seus dados biométricos (impressão digital, escaneamento facial, etc.) nunca "
+"saem do seu dispositivo."
+
+msgid "We never receive or store your raw biometric information."
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| "We only receive a cryptographic signature that proves you authenticated "
+#| "successfully."
+msgid ""
+"Our servers only receive a cryptographic proof that you have successfully "
+"authenticated with your device."
+msgstr ""
+"Recebemos apenas uma assinatura criptográfica que comprova que você se "
+"autenticou com sucesso."
+
+#, fuzzy
+#| msgid ""
+#| "You can delete your authentication credentials from your device at any "
+#| "time."
+msgid ""
+"You retain full control over your biometric credentials and can remove them "
+"from your device at any time."
+msgstr ""
+"Você pode excluir suas credenciais de autenticação do seu dispositivo a "
+"qualquer momento."
+
+msgid "3. Data Usage and Sharing"
+msgstr ""
+
+msgid "We are committed to protecting your privacy and data security:"
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| "We do not sell, trade, or rent your personal information to third "
+#| "parties. We may share your information only in the following "
+#| "circumstances:"
+msgid ""
+"We do not sell, trade, or rent your personal identification information to "
+"others."
+msgstr ""
+"Não vendemos, trocamos ou alugamos suas informações pessoais a terceiros. "
+"Podemos compartilhar suas informações apenas nas seguintes circunstâncias:"
+
+msgid "We do not share your data with third parties for marketing purposes."
+msgstr ""
+
+msgid ""
+"Your data is used solely for the purpose of providing the SecureApprove "
+"service, including processing approvals and managing your account."
+msgstr ""
+
+msgid "4. User Responsibilities"
+msgstr ""
+
+msgid ""
+"You are responsible for maintaining the confidentiality of your account and "
+"for restricting access to your devices. You agree to accept responsibility "
+"for all activities that occur under your account."
+msgstr ""
+
+msgid "5. Limitation of Liability"
+msgstr ""
+
+msgid ""
+"SecureApprove shall not be liable for any indirect, incidental, special, "
+"consequential or punitive damages, including without limitation, loss of "
+"profits, data, use, goodwill, or other intangible losses, resulting from "
+"your access to or use of or inability to access or use the service."
+msgstr ""
+
+msgid "Last updated: December 6, 2025"
+msgstr "Última atualização: 6 de dezembro de 2025"
 
 msgid ""
 "At SecureApprove, we take your privacy seriously. This Privacy Policy "
@@ -2942,8 +2875,8 @@ msgid "3. Biometric Authentication"
 msgstr "3. Autenticação Biométrica"
 
 msgid ""
-"SecureApprove uses WebAuthn technology for passwordless authentication. This"
-" means:"
+"SecureApprove uses WebAuthn technology for passwordless authentication. This "
+"means:"
 msgstr ""
 "SecureApprove usa tecnologia WebAuthn para autenticação sem senha. Isso "
 "significa:"
@@ -3043,26 +2976,14 @@ msgid "Regular security audits and vulnerability assessments."
 msgstr "Auditorias de segurança regulares e avaliações de vulnerabilidade."
 
 msgid "Access controls and authentication requirements for our systems."
-msgstr ""
-"Controles de acesso e requisitos de autenticação para nossos sistemas."
+msgstr "Controles de acesso e requisitos de autenticação para nossos sistemas."
 
 msgid "Secure data centers with physical security measures."
 msgstr "Data centers seguros com medidas de segurança física."
 
-msgid "7. Data Retention"
-msgstr "7. Retenção de Dados"
-
-msgid ""
-"We retain your personal information for as long as your account is active or"
-" as needed to provide you services. You may request deletion of your account"
-" and associated data at any time by contacting us."
-msgstr ""
-"Mantemos suas informações pessoais enquanto sua conta estiver ativa ou "
-"conforme necessário para fornecer serviços. Você pode solicitar a exclusão "
-"da sua conta e dados associados a qualquer momento entrando em contato "
-"conosco."
-
-msgid "8. Your Rights"
+#, fuzzy
+#| msgid "8. Your Rights"
+msgid "7. Your Rights"
 msgstr "8. Seus Direitos"
 
 msgid "You have the right to:"
@@ -3083,29 +3004,9 @@ msgstr "Opor-se ou restringir o processamento de suas informações."
 msgid "Export your data in a portable format."
 msgstr "Exportar seus dados em formato portátil."
 
-msgid "9. Cookies and Tracking"
-msgstr "9. Cookies e Rastreamento"
-
-msgid ""
-"We use essential cookies to maintain your session and preferences. We do not"
-" use third-party tracking cookies or advertising trackers."
-msgstr ""
-"Usamos cookies essenciais para manter sua sessão e preferências. Não usamos "
-"cookies de rastreamento de terceiros ou rastreadores de publicidade."
-
-msgid "10. Changes to This Policy"
-msgstr "10. Alterações nesta Política"
-
-msgid ""
-"We may update this Privacy Policy from time to time. We will notify you of "
-"any changes by posting the new Privacy Policy on this page and updating the "
-"'Last updated' date."
-msgstr ""
-"Podemos atualizar esta Política de Privacidade de tempos em tempos. "
-"Notificaremos você sobre quaisquer alterações publicando a nova Política de "
-"Privacidade nesta página e atualizando a data de 'Última atualização'."
-
-msgid "11. Contact Us"
+#, fuzzy
+#| msgid "11. Contact Us"
+msgid "8. Contact Us"
 msgstr "11. Entre em Contato"
 
 msgid ""
@@ -3114,306 +3015,151 @@ msgstr ""
 "Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em "
 "contato conosco em:"
 
-# ================================================
-# Terms and Conditions Page
-# ================================================
-msgid "Terms and Conditions - SecureApprove"
-msgstr "Termos e Condições - SecureApprove"
+msgid "Subscribe to"
+msgstr "Assinatura"
 
-msgid "Terms and Conditions"
-msgstr "Termos e Condições"
+msgid "Complete Your Subscription"
+msgstr "Cancelar Assinatura"
 
-msgid "Terms of Service"
-msgstr "Termos de Serviço"
+msgid "You're just one step away from accessing SecureApprove"
+msgstr "Estás a solo um paso de acceder a SecureApprove"
 
-# ================================================
-# Landing Page - New Features (Updated)
-# ================================================
-msgid "Advanced security and biometric authentication"
-msgstr "Segurança avançada e autenticação biométrica"
+msgid "month"
+msgstr "Este mês"
 
-msgid "Compliance with security standards"
-msgstr "Conformidade com padrões de segurança"
+msgid "Up to 2 approvers"
+msgstr "Hasta 2 aprobadores"
 
-msgid "Compatible with PC, Android and iOS"
-msgstr "Compatível com PC, Android e iOS"
+msgid "10 team members"
+msgstr "10 miembros do equipo"
 
-msgid "Approve from any device"
-msgstr "Aprove de qualquer dispositivo"
+msgid "Basic workflow templates"
+msgstr "Plantillas de flujo de trabalho básicas"
 
-msgid "Instant communication with your team"
-msgstr "Comunicação instantânea com sua equipe"
+msgid "Up to 6 approvers"
+msgstr "Hasta 6 aprobadores"
 
-msgid "100%"
-msgstr "100%"
+msgid "25 team members"
+msgstr "25 miembros do equipo"
 
-msgid "Certified Security"
-msgstr "Segurança Certificada"
+msgid "Advanced workflow automation"
+msgstr "Automatização de flujo de trabalho avanzada"
 
-msgid "Multi-platform Compatibility"
-msgstr "Compatibilidade Multiplataforma"
+msgid "API access"
+msgstr "Acceso API"
 
-msgid "Integrated Chat"
-msgstr "Chat Integrado"
+msgid "Unlimited approvers"
+msgstr "Aprobadores ilimitados"
 
-# ================================================
-# Demo Page - Updated Structure
-# ================================================
-msgid "Pendiente de Aprobación"
-msgstr "Aguardando Aprovação"
+msgid "Unlimited team members"
+msgstr "Miembros do equipo ilimitados"
 
-msgid "Esta solicitud está esperando aprobación de un administrador."
-msgstr "Esta solicitação está aguardando aprovação de um administrador."
+msgid "Custom workflow builder"
+msgstr "Constructor de flujos personalizado"
 
-msgid "Detalles de la Solicitud"
-msgstr "Detalhes da Solicitação"
+msgid "Enterprise features"
+msgstr "Recursos empresariais"
 
-msgid "INFORMACIÓN ADICIONAL"
-msgstr "INFORMAÇÕES ADICIONAIS"
+msgid "This email will be used for your account and billing notifications"
+msgstr "Este correo se usará para seu cuenta e notificações de facturação"
 
-msgid "Proveedor"
-msgstr "Fornecedor"
+msgid "Number of users in your organization (minimum 2)."
+msgstr "Número de usuários na sua organização (mínimo 2)."
 
-msgid "Centro de Costo"
-msgstr "Centro de Custo"
+msgid "7-Day Free Trial"
+msgstr "Teste gratuito de 7 dias"
 
-msgid "Documentos Adjuntos"
-msgstr "Documentos Anexos"
+msgid "No charge for the first 7 days. Cancel anytime."
+msgstr "Sem cobrança nos primeiros 7 dias. Cancele a qualquer momento."
 
-msgid "Historial"
-msgstr "Histórico"
-
-msgid "Solicitud creada"
-msgstr "Solicitação criada"
-
-msgid "Ana García creó esta solicitud"
-msgstr "Ana García criou esta solicitação"
-
-msgid "Esperando aprobación"
-msgstr "Aguardando aprovação"
-
-msgid "La solicitud está pendiente de revisión"
-msgstr "A solicitação está pendente de revisão"
-
-msgid "Prioridad Media"
-msgstr "Prioridade Média"
-
-msgid "Compra"
-msgstr "Compra"
-
-# ================================================
-# Chat Group Features
-# ================================================
-msgid "Create Group"
-msgstr "Criar Grupo"
-
-msgid "Enter group name..."
-msgstr "Digite o nome do grupo..."
-
-msgid "Please enter a group name"
-msgstr "Por favor, digite um nome para o grupo"
-
-msgid "Select at least 2 users for the group"
-msgstr "Selecione pelo menos 2 usuários para o grupo"
-
-msgid "Select users for group"
-msgstr "Selecione usuários para o grupo"
-
-msgid "Group created successfully"
-msgstr "Grupo criado com sucesso"
-
-msgid "Could not create group"
-msgstr "Não foi possível criar o grupo"
-
-msgid "Leave Group"
-msgstr "Sair do Grupo"
-
-msgid "Add Participants"
-msgstr "Adicionar Participantes"
-
-msgid "Group Members"
-msgstr "Membros do Grupo"
-
-msgid "Select at least one user"
-msgstr "Selecione pelo menos um usuário"
-
-msgid "No chats yet. Start a conversation from Users tab."
-msgstr "Ainda não há chats. Inicie uma conversa na aba Usuários."
-
-msgid "No group chats yet. Create one above."
-msgstr "Ainda não há grupos. Crie um acima."
-
-msgid "No users available"
-msgstr "Nenhum usuário disponível"
-
-msgid "Groups"
-msgstr "Grupos"
-
-msgid "Messages"
-msgstr "Mensagens"
-
-msgid "Create New Group"
-msgstr "Criar Novo Grupo"
-
-msgid "Group Conversations"
-msgstr "Conversas em Grupo"
-
-# Chat UI Additional Translations
-msgid "Loading messages..."
-msgstr "Carregando mensagens..."
-
-msgid "Max 25MB. Any file type is allowed."
-msgstr "Máx 25MB. Qualquer tipo de arquivo é permitido."
-
-msgid "Select users for group:"
-msgstr "Selecionar usuários para o grupo:"
-
-msgid "Submit a new approval request for review"
-msgstr "Envie uma nova solicitação de aprovação para revisão"
-
-msgid "Details"
-msgstr "Detalhes"
-
-msgid "Review"
-msgstr "Revisar"
-
-msgid "Select Request Category"
-msgstr "Selecione a Categoria da Solicitação"
-
-msgid "Choose the type of request you want to submit"
-msgstr "Escolha o tipo de solicitação que deseja enviar"
-
-msgid "Reimbursements"
-msgstr "Reembolsos"
-
-msgid "Equipment & supplies"
-msgstr "Equipamentos e suprimentos"
-
-msgid "Trips & logistics"
-msgstr "Viagens e logística"
-
-msgid "Agreements"
-msgstr "Acordos"
-
-msgid "Approvals"
-msgstr "Aprovações"
-
-msgid "Enter a descriptive title for your request"
-msgstr "Digite um título descritivo para sua solicitação"
-
-msgid "Provide detailed information about your request"
-msgstr "Forneça informações detalhadas sobre sua solicitação"
-
-msgid "Receipt number"
-msgstr "Número do recibo"
-
-msgid "Drag and drop files here or click to browse"
-msgstr "Arraste e solte arquivos aqui ou clique para navegar"
-
-msgid "PDF, Word, Excel, Images (Max 25MB per file)"
-msgstr "PDF, Word, Excel, Imagens (Máx 25MB por arquivo)"
-
-msgid "Request Preview"
-msgstr "Prévia da Solicitação"
-
-msgid "Fill in the form to see a preview"
-msgstr "Preencha o formulário para ver uma prévia"
-
-msgid "Confirm Your Identity"
-msgstr "Confirme Sua Identidade"
-
-msgid "Biometric Verification Required"
-msgstr "Verificação Biométrica Necessária"
+msgid "Secure & Protected"
+msgstr "Seguro e Protegido"
 
 msgid ""
-"Please authenticate using your fingerprint, face recognition, or security "
-"key to submit this request."
+"Your payment is processed securely through MercadoPago. We never store your "
+"payment information."
 msgstr ""
-"Por favor, autentique-se usando sua impressão digital, reconhecimento facial"
-" ou chave de segurança para enviar esta solicitação."
+"Seu pagamento é processado de forma segura através do MercadoPago.Nunca "
+"armazenamos suas informações de pagamento."
 
-msgid "Loading..."
-msgstr "Carregando..."
+msgid "Back to plan selection"
+msgstr "Volver a selecção de planes"
 
-msgid "Waiting for authentication..."
-msgstr "Aguardando autenticação..."
+# ================================================
+# Common Terms
+# ================================================
+#, fuzzy
+#| msgid "Profile - SecureApprove"
+msgid "Trial Started - SecureApprove"
+msgstr "SecureApprove"
 
-msgid "Please complete the biometric prompt on your device."
-msgstr "Por favor, complete o prompt biométrico no seu dispositivo."
-
-msgid "Authentication Successful"
-msgstr "Autenticação Bem-sucedida"
-
-msgid "Submitting your request..."
-msgstr "Enviando sua solicitação..."
-
-msgid "Authentication Failed"
-msgstr "Autenticação Falhou"
-
-msgid "Please try again."
-msgstr "Por favor, tente novamente."
-
-msgid "Authenticate"
-msgstr "Autenticar"
-
-msgid "File is too large"
-msgstr "O arquivo é muito grande"
-
-msgid "file(s)"
-msgstr "arquivo(s)"
-
-msgid ""
-"No biometric credentials registered. Please register a device from your "
-"profile first."
+msgid "Your Trial is Ready!"
 msgstr ""
-"Nenhuma credencial biométrica registrada. Por favor, registre um dispositivo"
-" no seu perfil primeiro."
 
-msgid "Failed to get authentication options"
-msgstr "Falha ao obter opções de autenticação"
-
-msgid "Verification failed"
-msgstr "A verificação falhou"
-
-msgid "Biometric authentication was cancelled or denied. Please try again."
+msgid "We have created your account and workspace."
 msgstr ""
-"A autenticação biométrica foi cancelada ou negada. Por favor, tente "
-"novamente."
 
-msgid "No matching credential found on this device."
-msgstr "Nenhuma credencial correspondente encontrada neste dispositivo."
+msgid "Please proceed to registration to set up your biometric credentials."
+msgstr ""
 
-msgid "This device does not support the required authentication method."
-msgstr "Este dispositivo não suporta o método de autenticação necessário."
+#, fuzzy
+#| msgid "Registered on"
+msgid "Register Now"
+msgstr "Registrar"
 
-msgid "WebAuthn is not supported on this device/browser."
-msgstr "WebAuthn não é suportado neste dispositivo/navegador."
+# ================================================
+# Dashboard
+# ================================================
+msgid "Welcome back"
+msgstr "Bem-vindo de volta"
 
-msgid "request in total"
-msgid_plural "requests in total"
-msgstr[0] "solicitação no total"
-msgstr[1] "solicitações no total"
+msgid "Here's what's happening with your requests."
+msgstr "Aqui está o que está acontecendo com suas solicitações."
 
-msgid "Filter Requests"
-msgstr "Filtrar Solicitações"
+msgid "Review Pending"
+msgstr "Revisar Pendentes"
 
-msgid "Clear"
-msgstr "Limpar"
+msgid "View Approved"
+msgstr "Ver Aprovados"
 
-msgid "Request"
-msgstr "Solicitação"
-
-msgid "No requests match your search."
-msgstr "Nenhuma solicitação corresponde à sua pesquisa."
-
-msgid "request"
-msgstr "solicitação"
-
-msgid "requests"
-msgstr "solicitações"
+msgid "All Requests"
+msgstr "Todas as Solicitações"
 
 msgid "Total"
 msgstr "Total"
+
+msgid "My Requests"
+msgstr "Minhas Solicitações"
+
+msgid "Requests by Category"
+msgstr "Solicitações por Categoria"
+
+msgid "Last 30 days"
+msgstr "Últimos 30 dias"
+
+msgid "Activity Timeline"
+msgstr "Linha do Tempo de Atividades"
+
+msgid "Pending Approvals"
+msgstr "Aprovações Pendentes"
+
+msgid "ago"
+msgstr "atrás"
+
+msgid "View All Pending"
+msgstr "Revisar Pendentes"
+
+msgid "Recent Requests"
+msgstr "Solicitações Recentes"
+
+msgid "No requests yet"
+msgstr "Ainda não há solicitações"
+
+msgid "Just now"
+msgstr "Agora mesmo"
+
+msgid "General"
+msgstr "Geral"
 
 # Iframe integration guide
 msgid "Iframe integration"
@@ -3422,8 +3168,12 @@ msgstr "Integração iframe"
 msgid "SecureApprove iframe integration"
 msgstr "Integração iframe do SecureApprove"
 
-msgid "Production-ready module with secure handshake, ephemeral token flow, and copy-ready snippets."
-msgstr "Módulo pronto para produção com handshake seguro, fluxo de token efêmero e snippets prontos para copiar."
+msgid ""
+"Origin-bound WebAuthn transactions with server-verified results and copy-"
+"ready snippets."
+msgstr ""
+"Transações WebAuthn vinculadas à origem, resultados verificados pelo "
+"servidor e código pronto para copiar."
 
 msgid "Security-first"
 msgstr "Segurança primeiro"
@@ -3436,6 +3186,33 @@ msgstr "Código gerado"
 
 msgid "Actor"
 msgstr "Ator"
+
+msgid "Iframe code ready to copy"
+msgstr "Código do iframe pronto para copiar"
+
+msgid ""
+"Paste this block into your application's page. The loader creates the secure "
+"iframe and starts WebAuthn."
+msgstr ""
+"Cole este bloco na página da sua aplicação. O loader cria o iframe seguro e "
+"inicia o WebAuthn."
+
+msgid "Ready to copy"
+msgstr "Pronto para copiar"
+
+msgid "Secure iframe embed"
+msgstr "Iframe seguro para incorporar"
+
+msgid "Generated automatically from the configuration below."
+msgstr "Gerado automaticamente a partir da configuração abaixo."
+
+msgid "Copy iframe code"
+msgstr "Copiar código do iframe"
+
+msgid ""
+"Your backend must expose the session and finalize endpoints shown below."
+msgstr ""
+"Seu backend deve expor os endpoints de sessão e finalização mostrados abaixo."
 
 msgid "Configuration"
 msgstr "Configuração"
@@ -3466,6 +3243,16 @@ msgstr "Endpoint de token"
 
 msgid "Server-to-server endpoint used by your backend."
 msgstr "Endpoint server-to-server consumido pelo seu backend."
+
+msgid "Status endpoint base"
+msgstr "Base do endpoint de status"
+
+msgid ""
+"Your backend verifies the final WebAuthn result here before creating a "
+"session."
+msgstr ""
+"Seu backend verifica aqui o resultado final do WebAuthn antes de criar uma "
+"sessão."
 
 msgid "Iframe URL"
 msgstr "URL do iframe"
@@ -3503,7 +3290,9 @@ msgstr "Passos de implementação"
 msgid "Functional"
 msgstr "Funcional"
 
-msgid "Your backend validates tenant/user context and requests token from SecureApprove."
+msgid ""
+"Your backend validates tenant/user context and requests token from "
+"SecureApprove."
 msgstr "Seu backend valida tenant/usuário e solicita token ao SecureApprove."
 
 msgid "Browser requests only ephemeral session data from your backend."
@@ -3512,11 +3301,18 @@ msgstr "O navegador solicita apenas dados efêmeros de sessão ao seu backend."
 msgid "Loader creates iframe and executes strict origin + nonce handshake."
 msgstr "O loader cria o iframe e executa handshake estrito com origin + nonce."
 
-msgid "Iframe performs biometric challenge and confirms /api/approvals/terms/confirm/."
-msgstr "O iframe executa desafio biométrico e confirma /api/approvals/terms/confirm/."
+msgid ""
+"Iframe performs biometric challenge and confirms /api/approvals/terms/"
+"confirm/."
+msgstr ""
+"O iframe executa desafio biométrico e confirma /api/approvals/terms/confirm/."
 
-msgid "Store audit_id from result for compliance and traceability."
-msgstr "Armazene audit_id do resultado para compliance e rastreabilidade."
+msgid ""
+"Your backend verifies transaction status, stores proof.id and proof.jws, and "
+"only then creates its own login session."
+msgstr ""
+"Seu backend verifica o status da transação, armazena proof.id e proof.jws e "
+"só então cria sua própria sessão."
 
 msgid "Security checklist"
 msgstr "Checklist de segurança"
@@ -3530,8 +3326,31 @@ msgstr "Emita apenas tokens de aprovação de uso único e curta duração."
 msgid "Validate decision, approval type, and subject user server-side."
 msgstr "Valide no servidor decisão, tipo de aprovação e usuário alvo."
 
-msgid "Enforce HTTPS and validate parent origin in frontend."
-msgstr "Exija HTTPS e valide parent origin no frontend."
+msgid ""
+"Bind the exact parent origin, decision, document version, and SHA-256 server-"
+"side."
+msgstr ""
+"Vincule no servidor a origem pai exata, a decisão, a versão do documento e o "
+"SHA-256."
+
+msgid ""
+"Bind the transaction ID to the host's pre-authentication session and rotate "
+"that session after success."
+msgstr ""
+
+msgid ""
+"Treat postMessage as a UI notification; trust only the authenticated status "
+"endpoint."
+msgstr ""
+"Trate postMessage como uma notificação de interface; confie apenas no "
+"endpoint de status autenticado."
+
+msgid ""
+"Store proof.id and proof.jws in your backend audit record; never rely on the "
+"browser copy."
+msgstr ""
+"Armazene proof.id e proof.jws na auditoria do seu backend; nunca confie na "
+"cópia do navegador."
 
 msgid "Do not persist approvalToken in localStorage/sessionStorage."
 msgstr "Não persista approvalToken em localStorage/sessionStorage."
@@ -3539,14 +3358,17 @@ msgstr "Não persista approvalToken em localStorage/sessionStorage."
 msgid "Backend session endpoint"
 msgstr "Endpoint de sessão backend"
 
-msgid "Frontend embed integration"
-msgstr "Integração frontend embed"
+msgid "Copy backend code"
+msgstr "Copiar código do backend"
+
+msgid "Copy"
+msgstr "Copiar"
 
 msgid "Test request (curl)"
 msgstr "Requisição de teste (curl)"
 
-msgid "Copy"
-msgstr "Copiar"
+msgid "Copy curl command"
+msgstr "Copiar comando curl"
 
 msgid "Copied"
 msgstr "Copiado"
@@ -3554,80 +3376,881 @@ msgstr "Copiado"
 msgid "Copy failed"
 msgstr "Falha ao copiar"
 
-msgid "Iframe code ready to copy"
-msgstr "Código do iframe pronto para copiar"
+# ================================================
+# Common Terms
+# ================================================
+msgid "Demo - SecureApprove"
+msgstr "SecureApprove"
 
-msgid "Paste this block into your application's page. The loader creates the secure iframe and starts WebAuthn."
-msgstr "Cole este bloco na página da sua aplicação. O loader cria o iframe seguro e inicia o WebAuthn."
+msgid "Claro"
+msgstr "Claro"
 
-msgid "Ready to copy"
-msgstr "Pronto para copiar"
+msgid "Oscuro"
+msgstr "Escuro"
 
-msgid "Secure iframe embed"
-msgstr "Iframe seguro para incorporar"
+msgid "Sistema"
+msgstr "Sistema"
 
-msgid "Generated automatically from the configuration below."
-msgstr "Gerado automaticamente a partir da configuração abaixo."
+msgid "Volver"
+msgstr "Voltar"
 
-msgid "Copy iframe code"
-msgstr "Copiar código do iframe"
+msgid "Comenzar Ahora"
+msgstr "Começar Agora"
 
-msgid "Your backend must expose the session and finalize endpoints shown below."
-msgstr "Seu backend deve expor os endpoints de sessão e finalização mostrados abaixo."
+msgid "Demostración Interactiva"
+msgstr "Demonstração Interativa"
 
-msgid "Copy backend code"
-msgstr "Copiar código do backend"
+msgid ""
+"Esta es una demo de cómo funciona el proceso de aprobación en SecureApprove. "
+"Los botones son interactivos para simular la experiencia real."
+msgstr ""
+"Esta é uma demonstração de como funciona o processo de aprovação no "
+"SecureApprove. Os botões são interativos para simular a experiência real."
 
-msgid "Copy curl command"
-msgstr "Copiar comando curl"
+msgid "Compra de Equipos de Oficina"
+msgstr "Compra de Equipamentos de Escritório"
 
-msgid "Origin-bound WebAuthn transactions with server-verified results and copy-ready snippets."
-msgstr "Transações WebAuthn vinculadas à origem, resultados verificados pelo servidor e código pronto para copiar."
+msgid "Compra"
+msgstr "Compra"
 
-msgid "Status endpoint base"
-msgstr "Base do endpoint de status"
+msgid "Prioridad Media"
+msgstr "Prioridade Média"
 
-msgid "Your backend verifies the final WebAuthn result here before creating a session."
-msgstr "Seu backend verifica aqui o resultado final do WebAuthn antes de criar uma sessão."
+# ================================================
+# Demo Page - Updated Structure
+# ================================================
+msgid "Pendiente de Aprobación"
+msgstr "Aguardando Aprovação"
 
-msgid "Your backend verifies transaction status with SecureApprove before creating its own login session."
-msgstr "Seu backend verifica o status da transação com o SecureApprove antes de criar sua própria sessão."
+msgid "Esta solicitud está esperando aprobación de un administrador."
+msgstr "Esta solicitação está aguardando aprovação de um administrador."
 
-msgid "Bind the exact parent origin, decision, document version, and SHA-256 server-side."
-msgstr "Vincule no servidor a origem pai exata, a decisão, a versão do documento e o SHA-256."
+msgid "Detalles de la Solicitud"
+msgstr "Detalhes da Solicitação"
 
-msgid "Treat postMessage as a UI notification; trust only the authenticated status endpoint."
-msgstr "Trate postMessage como uma notificação de interface; confie apenas no endpoint de status autenticado."
+msgid "DESCRIPCIÓN"
+msgstr "DESCRIÇÃO"
 
-msgid "Invite User"
-msgstr "Convidar Usuário"
+#, fuzzy
+#| msgid ""
+#| "Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios "
+#| "ajustables para el nuevo equipo de trabajo remoto. Los equipos actuales "
+#| "no cumplen con los estándares ergonómicos necesarios para el trabajo "
+#| "prolongado."
+msgid ""
+"Solicitud para la compra de 3 sillas ergonómicas y 2 escritorios ajustables "
+"para el nuevo equipo de trabajo remoto."
+msgstr ""
+"Solicitação para compra de 3 cadeiras ergonômicas e 2 mesas ajustáveis para "
+"a nova equipe de trabalho remoto. Os equipamentos atuais não atendem aos "
+"padrões ergonômicos necessários para o trabalho prolongado."
 
-msgid "Invite"
-msgstr "Convidar"
+msgid "SOLICITANTE"
+msgstr "SOLICITANTE"
 
-msgid "Active Users"
-msgstr "Usuários Ativos"
+msgid "Ana García"
+msgstr "Ana García"
 
-msgid "Pending Invitations"
-msgstr "Convites Pendentes"
+msgid "INFORMACIÓN ADICIONAL"
+msgstr "INFORMAÇÕES ADICIONAIS"
 
-msgid "Expires"
-msgstr "Expira"
+msgid "Proveedor"
+msgstr "Fornecedor"
 
-msgid "Cancel Invitation"
-msgstr "Cancelar Convite"
+msgid "Centro de Costo"
+msgstr "Centro de Custo"
 
-msgid "No users found."
-msgstr "Nenhum usuário encontrado."
+msgid "Documentos Adjuntos"
+msgstr "Documentos Anexos"
 
-msgid "%(available)s seats available (%(used)s of %(total)s used)"
-msgstr "%(available)s assentos disponíveis (%(used)s de %(total)s usados)"
+msgid "Historial"
+msgstr "Histórico"
 
-msgid "Accepted"
-msgstr "Aceito"
+msgid "Solicitud creada"
+msgstr "Solicitação criada"
 
-msgid "Expired"
-msgstr "Expirado"
+msgid "Ana García creó esta solicitud"
+msgstr "Ana García criou esta solicitação"
+
+msgid "Esperando aprobación"
+msgstr "Aguardando aprovação"
+
+msgid "La solicitud está pendiente de revisión"
+msgstr "A solicitação está pendente de revisão"
+
+msgid "Aprobar Solicitud"
+msgstr "Aprovar Solicitação"
+
+msgid "Rechazar"
+msgstr "Rejeitar"
+
+msgid "Solicitar Info"
+msgstr "Solicitar Info"
+
+msgid "¿Te gusta lo que ves?"
+msgstr "Você gosta do que vê?"
+
+msgid "Comienza a gestionar tus aprobaciones de manera profesional"
+msgstr "Comece a gerenciar suas aprovações profissionalmente"
+
+msgid "Suscribirme Ahora"
+msgstr "Assinar Agora"
+
+msgid "¡Solicitud Aprobada!"
+msgstr "Solicitação Aprovada!"
+
+msgid ""
+"La solicitud ha sido aprobada exitosamente. Se ha enviado notificación al "
+"solicitante y se procederá con la compra."
+msgstr ""
+"A solicitação foi aprovada com sucesso. A notificação foi enviada ao "
+"solicitante e a compra será processada."
+
+msgid "Solicitud Rechazada"
+msgstr "Solicitação Rejeitada"
+
+msgid ""
+"La solicitud ha sido rechazada. Se ha enviado notificación al solicitante "
+"con los motivos del rechazo."
+msgstr ""
+"A solicitação foi rejeitada. A notificação foi enviada ao solicitante com os "
+"motivos da rejeição."
+
+msgid "Información Solicitada"
+msgstr "Informação Solicitada"
+
+msgid ""
+"Se ha enviado una solicitud de información adicional al solicitante. La "
+"aprobación quedará pendiente hasta recibir los datos necesarios."
+msgstr ""
+"Uma solicitação de informações adicionais foi enviada ao solicitante. A "
+"aprovação ficará pendente até receber os dados necessários."
+
+msgid "SecureApprove - Sistema de Aprobaciones Seguras"
+msgstr "SecureApprove - Sistema de Aprovações Seguras"
+
+msgid "verifiable evidence"
+msgstr "evidência verificável"
+
+msgid "Every approval, bound to the exact content. Every decision, verifiable."
+msgstr ""
+"Cada aprovação, vinculada ao conteúdo exato. Cada decisão, verificável."
+
+msgid ""
+"WebAuthn confirms the user. SecureApprove Proof seals the decision, the "
+"content fingerprint, and the audit evidence in a verifiable cryptographic "
+"receipt."
+msgstr ""
+"O WebAuthn confirma o usuário. O SecureApprove Proof sela a decisão, a "
+"impressão digital do conteúdo e a evidência de auditoria em um comprovante "
+"criptográfico verificável."
+
+msgid "The biometric never leaves the device."
+msgstr "A biometria nunca sai do dispositivo."
+
+msgid "Sistema de Aprobaciones Seguras con Autenticación Biométrica"
+msgstr "Sistema de Aprovações Seguras com Autenticação Biométrica"
+
+msgid ""
+"Automatiza tus procesos de aprobación con seguridad de nivel empresarial y "
+"autenticación biométrica avanzada."
+msgstr ""
+"Automatize seus processos de aprovação com segurança de nível empresarial e "
+"autenticação biométrica avançada."
+
+msgid "Try SecureApprove"
+msgstr "Experimentar o SecureApprove"
+
+msgid "Verify a proof"
+msgstr "Verificar um comprovante"
+
+msgid "Ver Demo"
+msgstr "Ver Demonstração"
+
+msgid "From a click to verifiable evidence"
+msgstr "De um clique a uma evidência verificável"
+
+msgid ""
+"A one-byte change to the approved content, WebAuthn assertion, or receipt "
+"makes verification fail."
+msgstr ""
+"Alterar um único byte do conteúdo aprovado, da asserção WebAuthn ou do "
+"comprovante faz a verificação falhar."
+
+msgid "Seal the content"
+msgstr "Selar o conteúdo"
+
+msgid "Canonical JSON and SHA-256 bind the exact transaction."
+msgstr "JSON canônico e SHA-256 vinculam a transação exata."
+
+msgid "Verify the user"
+msgstr "Verificar o usuário"
+
+msgid "WebAuthn requires device-level user verification."
+msgstr "O WebAuthn exige verificação do usuário no dispositivo."
+
+msgid "Issue the receipt"
+msgstr "Emitir o comprovante"
+
+msgid "AWS KMS signs an ES256 JWS and chains the ledger."
+msgstr "O AWS KMS assina um JWS ES256 e o encadeia no registro."
+
+msgid "Example of a valid SecureApprove Proof"
+msgstr "Exemplo de um SecureApprove Proof válido"
+
+msgid "Valid"
+msgstr "Válido"
+
+msgid "Content fingerprint"
+msgstr "Impressão digital do conteúdo"
+
+msgid "Signature"
+msgstr "Assinatura"
+
+msgid "Ledger"
+msgstr "Registro"
+
+msgid "Hash chain verified"
+msgstr "Cadeia de hashes verificada"
+
+msgid "Archive"
+msgstr "Arquivo"
+
+msgid "Use cases"
+msgstr "Casos de uso"
+
+msgid "Terms and conditions"
+msgstr "Termos e Condições"
+
+msgid "Contracts"
+msgstr "Contratos"
+
+msgid "Privileged operations"
+msgstr "Operações privilegiadas"
+
+msgid "Verifiable security, not promises"
+msgstr "Segurança verificável, não promessas"
+
+msgid "Características Principales"
+msgstr "Características Principais"
+
+msgid ""
+"Concrete controls protect the decision from ceremony to long-term "
+"verification."
+msgstr ""
+"Controles concretos protegem a decisão desde a cerimônia até a verificação "
+"de longo prazo."
+
+msgid "Tecnología avanzada para procesos de aprobación seguros y eficientes"
+msgstr "Tecnologia avançada para processos de aprovação seguros e eficientes"
+
+msgid "Exact content binding"
+msgstr "Vinculação ao conteúdo exato"
+
+msgid "Canonical JSON and SHA-256 bind the decision to the exact transaction."
+msgstr "JSON canônico e SHA-256 vinculam a decisão à transação exata."
+
+msgid "Required user verification"
+msgstr "Verificação obrigatória do usuário"
+
+msgid ""
+"WebAuthn requires user presence and device-level verification for every "
+"decision."
+msgstr ""
+"WebAuthn exige presença do usuário e verificação no dispositivo para cada "
+"decisão."
+
+msgid "KMS-backed ES256 signatures"
+msgstr "Assinaturas ES256 protegidas pelo KMS"
+
+msgid ""
+"The signing key stays inside AWS KMS while every receipt remains "
+"independently verifiable."
+msgstr ""
+"A chave de assinatura permanece no AWS KMS e cada comprovante continua "
+"verificável de forma independente."
+
+msgid "Tamper-evident ledger"
+msgstr "Registro resistente a adulterações"
+
+msgid "A per-tenant hash chain makes later changes detectable."
+msgstr ""
+"Uma cadeia de hashes por tenant torna detectáveis as alterações posteriores."
+
+msgid "Encrypted evidence retention"
+msgstr "Retenção de evidência criptografada"
+
+msgid ""
+"Private evidence is envelope-encrypted and retained under the tenant policy."
+msgstr ""
+"A evidência privada usa criptografia de envelope e é retida conforme a "
+"política do tenant."
+
+msgid "Public verification without PII"
+msgstr "Verificação pública sem dados pessoais"
+
+msgid ""
+"Validate a receipt and historical key status without revealing business or "
+"identity data."
+msgstr ""
+"Valide um comprovante e o status histórico da chave sem revelar dados "
+"comerciais ou de identidade."
+
+msgid "Autenticación Biométrica"
+msgstr "Autenticação Biométrica"
+
+#, fuzzy
+#| msgid "Seguridad avanzada com WebAuthn e autenticación biométrica"
+msgid "Seguridad avanzada y autenticación biométrica"
+msgstr "Segurança avançada com WebAuthn e autenticação biométrica"
+
+msgid "Tiempo Real"
+msgstr "Tempo Real"
+
+msgid "Notificaciones instantáneas y actualizaciones en tiempo real"
+msgstr "Notificações instantâneas e atualizações em tempo real"
+
+msgid "Seguridad Empresarial"
+msgstr "Segurança Empresarial"
+
+#, fuzzy
+#| msgid "Cifrado de 256-bit y cumplimiento de estándares de seguridad"
+msgid "Cumplimiento de estándares de seguridad"
+msgstr "Criptografia de 256 bits e conformidade com padrões de segurança"
+
+msgid "Flujos Inteligentes"
+msgstr ""
+
+msgid "Automatiza aprobaciones con reglas flexibles y multi-nivel"
+msgstr ""
+
+#, fuzzy
+#| msgid "Multi-platform Compatibility"
+msgid "Multiplataforma"
+msgstr "Compatibilidade Multiplataforma"
+
+#, fuzzy
+#| msgid "Compatible with PC, Android and iOS"
+msgid "Compatible con PC, Android e iOS"
+msgstr "Compatível com PC, Android e iOS"
+
+msgid "Chat Integrado"
+msgstr ""
+
+msgid "Comunicación en tiempo real entre usuarios"
+msgstr ""
+
+msgid "SecureApprove Proof technical foundation"
+msgstr "Base técnica do SecureApprove Proof"
+
+msgid "Planes de Suscripción"
+msgstr "Planos de Assinatura"
+
+msgid "El precio se calcula por usuario según el tamaño de tu equipo."
+msgstr "O preço é calculado por usuário de acordo com o tamanho da sua equipe."
+
+msgid "Precios por número de usuarios"
+msgstr "Preços por número de usuários"
+
+msgid "Usuarios"
+msgstr ""
+
+msgid "Precio por usuario (USD/mes)"
+msgstr "Preço por usuário (USD/mês)"
+
+msgid "De 2 a 6 usuarios"
+msgstr "De 2 a 6 usuários"
+
+msgid "De 7 a 12 usuarios"
+msgstr "De 7 a 12 usuários"
+
+msgid "Más de 12 usuarios"
+msgstr "Mais de 12 usuários"
+
+msgid ""
+"El administrador de cada tenant puede agregar la cantidad de usuarios que "
+"desee; el monto mensual se calcula multiplicando el precio por usuario por "
+"el número total de usuarios."
+msgstr ""
+"O administrador de cada tenant pode adicionar quantos usuários desejar; o "
+"valor mensal é calculado multiplicando o preço por usuário pelo número total "
+"de usuários."
+
+msgid "Ir a seleccionar plan"
+msgstr "Ir para selecionar plano"
+
+msgid "Make your next high-assurance approval verifiable."
+msgstr "Torne verificável sua próxima aprovação de alta segurança."
+
+msgid "¿Listo para transformar tus aprobaciones?"
+msgstr "Pronto para transformar suas aprovações?"
+
+msgid "Start with terms, payments, contracts, or privileged operations."
+msgstr "Comece com termos, pagamentos, contratos ou operações privilegiadas."
+
+msgid "Únete a empresas que ya optimizaron sus procesos con SecureApprove"
+msgstr ""
+"Junte-se a empresas que já otimizaram seus processos com o "
+"SecureApproveJunte-se a empresas que já otimizaram seus processos com o "
+"SecureApprove"
+
+msgid "Ver Planes"
+msgstr "Ver Planos"
+
+msgid "All rights reserved."
+msgstr "Todos os direitos reservados."
+
+msgid "Terms & Conditions"
+msgstr "Termos e Condições"
+
+msgid "Verify a SecureApprove Proof"
+msgstr "Verificar um SecureApprove Proof"
+
+msgid "Main navigation"
+msgstr "Navegação principal"
+
+msgid "Toggle theme"
+msgstr "Alternar tema"
+
+msgid "Back to home"
+msgstr "Voltar ao início"
+
+msgid "Verify a cryptographic approval receipt"
+msgstr "Verifique um comprovante criptográfico de aprovação"
+
+msgid ""
+"Paste the compact JWS. Verification is public and does not reveal names, "
+"email addresses, amounts, IP addresses, or business content."
+msgstr ""
+"Cole o JWS compacto. A verificação é pública e não revela nomes, e-mails, "
+"valores, endereços IP nem conteúdo comercial."
+
+msgid "SecureApprove Proof JWS"
+msgstr "JWS do SecureApprove Proof"
+
+msgid "Verify proof"
+msgstr "Verificar comprovante"
+
+msgid ""
+"The biometric never leaves the device. This verifier checks the "
+"SecureApprove signature and public integrity hashes only."
+msgstr ""
+"A biometria nunca sai do dispositivo. Este verificador confere apenas a "
+"assinatura do SecureApprove e os hashes públicos de integridade."
+
+msgid "Valid proof"
+msgstr "Comprovante válido"
+
+msgid "Signature and registered hashes match."
+msgstr "A assinatura e os hashes registrados correspondem."
+
+msgid "Valid proof · private evidence expired"
+msgstr "Comprovante válido · evidência privada expirada"
+
+msgid "The public proof remains verifiable after the retention period."
+msgstr "O comprovante público continua verificável após o período de retenção."
+
+msgid "Signing key marked as compromised"
+msgstr "Chave de assinatura marcada como comprometida"
+
+msgid ""
+"The signature is mathematically valid, but this key must not be trusted."
+msgstr ""
+"A assinatura é matematicamente válida, mas esta chave não deve ser "
+"considerada confiável."
+
+msgid "Unknown proof"
+msgstr "Comprovante desconhecido"
+
+msgid "No matching SecureApprove record was found."
+msgstr "Nenhum registro correspondente foi encontrado no SecureApprove."
+
+msgid "Altered or invalid proof"
+msgstr "Comprovante alterado ou inválido"
+
+msgid "The signature or registered content does not match."
+msgstr "A assinatura ou o conteúdo registrado não corresponde."
+
+msgid "WORM archive"
+msgstr "Arquivo WORM"
+
+msgid "Attention required"
+msgstr "Requer atenção"
+
+msgid "Ready to verify"
+msgstr "Pronto para verificar"
+
+msgid "Paste a proof to check its ES256 signature and integrity record."
+msgstr ""
+"Cole um comprovante para validar sua assinatura ES256 e seu registro de "
+"integridade."
+
+# ================================================
+# Privacy Policy Page
+# ================================================
+msgid "Privacy Policy - SecureApprove"
+msgstr "Política de Privacidade - SecureApprove"
+
+msgid "7. Data Retention"
+msgstr "7. Retenção de Dados"
+
+msgid ""
+"We retain your personal information for as long as your account is active or "
+"as needed to provide you services. You may request deletion of your account "
+"and associated data at any time by contacting us."
+msgstr ""
+"Mantemos suas informações pessoais enquanto sua conta estiver ativa ou "
+"conforme necessário para fornecer serviços. Você pode solicitar a exclusão "
+"da sua conta e dados associados a qualquer momento entrando em contato "
+"conosco."
+
+msgid "8. Your Rights"
+msgstr "8. Seus Direitos"
+
+msgid "9. Cookies and Tracking"
+msgstr "9. Cookies e Rastreamento"
+
+msgid ""
+"We use essential cookies to maintain your session and preferences. We do not "
+"use third-party tracking cookies or advertising trackers."
+msgstr ""
+"Usamos cookies essenciais para manter sua sessão e preferências. Não usamos "
+"cookies de rastreamento de terceiros ou rastreadores de publicidade."
+
+msgid "10. Changes to This Policy"
+msgstr "10. Alterações nesta Política"
+
+msgid ""
+"We may update this Privacy Policy from time to time. We will notify you of "
+"any changes by posting the new Privacy Policy on this page and updating the "
+"'Last updated' date."
+msgstr ""
+"Podemos atualizar esta Política de Privacidade de tempos em tempos. "
+"Notificaremos você sobre quaisquer alterações publicando a nova Política de "
+"Privacidade nesta página e atualizando a data de 'Última atualização'."
+
+msgid "11. Contact Us"
+msgstr "11. Entre em Contato"
+
+# ================================================
+# Terms and Conditions Page
+# ================================================
+msgid "Terms and Conditions - SecureApprove"
+msgstr "Termos e Condições - SecureApprove"
+
+msgid "Submit a new approval request for review"
+msgstr "Envie uma nova solicitação de aprovação para revisão"
+
+msgid "Back to Requests"
+msgstr "Voltar às Solicitações"
+
+msgid "Details"
+msgstr "Detalhes"
+
+msgid "Review"
+msgstr "Revisar"
+
+msgid "Select Request Category"
+msgstr "Selecione a Categoria da Solicitação"
+
+msgid "Choose the type of request you want to submit"
+msgstr "Escolha o tipo de solicitação que deseja enviar"
+
+# ================================================
+# Request Categories
+# ================================================
+msgid "Expense"
+msgstr "Despesas"
+
+msgid "Reimbursements"
+msgstr "Reembolsos"
+
+msgid "Purchase"
+msgstr "Compras"
+
+msgid "Equipment & supplies"
+msgstr "Equipamentos e suprimentos"
+
+msgid "Travel"
+msgstr "Viagens"
+
+msgid "Trips & logistics"
+msgstr "Viagens e logística"
+
+msgid "Contract"
+msgstr "Contratos"
+
+msgid "Agreements"
+msgstr "Acordos"
+
+msgid "Document"
+msgstr "Documentos"
+
+msgid "Approvals"
+msgstr "Aprovações"
+
+msgid "Request Details"
+msgstr "Detalhes da Solicitação"
+
+msgid "Enter a descriptive title for your request"
+msgstr "Digite um título descritivo para sua solicitação"
+
+msgid "Provide detailed information about your request"
+msgstr "Forneça informações detalhadas sobre sua solicitação"
+
+msgid "Receipt number"
+msgstr "Número do recibo"
+
+msgid "Drag and drop files here or click to browse"
+msgstr "Arraste e solte arquivos aqui ou clique para navegar"
+
+msgid "PDF, Word, Excel, Images (Max 25MB per file)"
+msgstr "PDF, Word, Excel, Imagens (Máx 25MB por arquivo)"
+
+msgid "Request Preview"
+msgstr "Prévia da Solicitação"
+
+msgid "Fill in the form to see a preview"
+msgstr "Preencha o formulário para ver uma prévia"
+
+msgid "Confirm Your Identity"
+msgstr "Confirme Sua Identidade"
+
+msgid "Biometric Verification Required"
+msgstr "Verificação Biométrica Necessária"
+
+msgid ""
+"Please authenticate using your fingerprint, face recognition, or security "
+"key to submit this request."
+msgstr ""
+"Por favor, autentique-se usando sua impressão digital, reconhecimento facial "
+"ou chave de segurança para enviar esta solicitação."
+
+msgid "Loading..."
+msgstr "Carregando..."
+
+msgid "Waiting for authentication..."
+msgstr "Aguardando autenticação..."
+
+msgid "Please complete the biometric prompt on your device."
+msgstr "Por favor, complete o prompt biométrico no seu dispositivo."
+
+msgid "Authentication Successful"
+msgstr "Autenticação Bem-sucedida"
+
+msgid "Submitting your request..."
+msgstr "Enviando sua solicitação..."
+
+msgid "Authentication Failed"
+msgstr "Autenticação Falhou"
+
+msgid "Please try again."
+msgstr "Por favor, tente novamente."
+
+msgid "Authenticate"
+msgstr "Autenticar"
+
+msgid "File is too large"
+msgstr "O arquivo é muito grande"
+
+msgid "file(s)"
+msgstr "arquivo(s)"
+
+msgid ""
+"No biometric credentials registered. Please register a device from your "
+"profile first."
+msgstr ""
+"Nenhuma credencial biométrica registrada. Por favor, registre um dispositivo "
+"no seu perfil primeiro."
+
+msgid "Failed to get authentication options"
+msgstr "Falha ao obter opções de autenticação"
+
+msgid "Verification failed"
+msgstr "A verificação falhou"
+
+msgid "Biometric authentication was cancelled or denied. Please try again."
+msgstr ""
+"A autenticação biométrica foi cancelada ou negada. Por favor, tente "
+"novamente."
+
+msgid "No matching credential found on this device."
+msgstr "Nenhuma credencial correspondente encontrada neste dispositivo."
+
+msgid "This device does not support the required authentication method."
+msgstr "Este dispositivo não suporta o método de autenticação necessário."
+
+msgid "Please fill in all required fields."
+msgstr "Por favor, preencha todos os campos obrigatórios."
+
+msgid "WebAuthn is not supported on this device/browser."
+msgstr "WebAuthn não é suportado neste dispositivo/navegador."
+
+msgid "Created"
+msgstr "Criado"
+
+msgid "Pending Approval"
+msgstr "Aprovações Pendentes"
+
+msgid "This request is waiting for approval from an administrator."
+msgstr "Esta solicitação está aguardando aprovação de um administrador."
+
+msgid "This request was approved on"
+msgstr "Esta solicitação foi aprovada em"
+
+msgid "by"
+msgstr "por"
+
+msgid "This request was rejected on"
+msgstr "Esta solicitação foi rejeitada em"
+
+msgid "Reason:"
+msgstr "Motivo"
+
+msgid "Requested by"
+msgstr "Rejeitado por"
+
+msgid "Timeline"
+msgstr "Cronologia"
+
+msgid "Request Created"
+msgstr "Solicitação Criada"
+
+msgid "Request Approved"
+msgstr "Solicitação Aprovada"
+
+msgid "Request Rejected"
+msgstr "Solicitação Rejeitada"
+
+msgid "Approval Actions"
+msgstr "Ações de aprovação"
+
+msgid "You have permission to approve or reject this request."
+msgstr "Você não tem permissão para realizar esta ação."
+
+msgid "Approve Request"
+msgstr "Aprovar Solicitação"
+
+msgid "Approving this request will allow the requester to proceed."
+msgstr "A aprovação desta solicitação permitirá que o solicitante prossiga."
+
+msgid "Reject Request"
+msgstr "Rejeitar Solicitação"
+
+msgid "Reason for rejection"
+msgstr "Por favor, forneça um motivo para a rejeição."
+
+msgid "Please explain why you are rejecting this request..."
+msgstr "Por favor, explique por que você está rejeitando esta solicitação..."
+
+msgid "Waiting for Approval"
+msgstr "Aprovações Pendentes"
+
+msgid "This request is pending review by an administrator."
+msgstr "Esta solicitação está pendente de análise por um administrador."
+
+msgid "ID:"
+msgstr "EU IA:"
+
+msgid "Category:"
+msgstr "Categoria"
+
+msgid "Priority:"
+msgstr "Prioridade"
+
+msgid "Status:"
+msgstr "Status"
+
+msgid "Amount:"
+msgstr "Valor"
+
+#, fuzzy
+#| msgid "Configuration"
+msgid "Confirm Action"
+msgstr "Configuração"
+
+#, fuzzy
+#| msgid "Configuration"
+msgid "Confirm"
+msgstr "Configuração"
+
+msgid ""
+"WebAuthn authentication is required. This device/browser does not support it."
+msgstr ""
+
+#, fuzzy
+#| msgid "Verification failed"
+msgid "Action failed"
+msgstr "A verificação falhou"
+
+msgid ""
+"No matching credential found on this device. Please use a device where you "
+"have registered your biometric authentication."
+msgstr ""
+
+#, fuzzy
+#| msgid "Authenticate"
+msgid "Authenticating..."
+msgstr "Autenticar"
+
+#, fuzzy
+#| msgid "Approved"
+msgid "Approved!"
+msgstr "Aprovado"
+
+#, fuzzy
+#| msgid "Device removed successfully"
+msgid "Request approved successfully!"
+msgstr "Operação concluída com sucesso."
+
+#, fuzzy
+#| msgid "Group created successfully"
+msgid "Request rejected successfully."
+msgstr "Grupo criado com sucesso"
+
+msgid "An error occurred"
+msgstr ""
+
+msgid "request in total"
+msgid_plural "requests in total"
+msgstr[0] "solicitação no total"
+msgstr[1] "solicitações no total"
+
+msgid "Filter Requests"
+msgstr "Filtrar Solicitações"
+
+msgid "All Statuses"
+msgstr "Status"
+
+msgid "All Categories"
+msgstr "Categoria"
+
+msgid "Search by title or description..."
+msgstr "Pesquise por título ou descrição..."
+
+msgid "Clear"
+msgstr "Limpar"
+
+msgid "Requests pagination"
+msgstr "Informações da Solicitação"
+
+msgid "No requests found"
+msgstr "Nenhuma solicitação encontrada"
+
+msgid "Try adjusting your filters or search terms."
+msgstr "Tente ajustar seus filtros ou termos de pesquisa."
+
+msgid "Start by creating your first approval request."
+msgstr "Comece criando sua primeira solicitação de aprovação."
+
+msgid "Create First Request"
+msgstr "Rejeitar Solicitação"
+
+msgid "Clear Filters"
+msgstr "Filtrar"
+
+msgid "No requests match your search."
+msgstr "Nenhuma solicitação corresponde à sua pesquisa."
 
 msgid "Audit log"
 msgstr "Registro de auditoria"
@@ -3637,6 +4260,9 @@ msgstr "Revise as atividades de alta segurança da sua organização."
 
 msgid "Audit type"
 msgstr "Tipo de auditoria"
+
+msgid "Terms"
+msgstr "Termos"
 
 msgid "Export CSV"
 msgstr "Exportar CSV"
@@ -3662,17 +4288,35 @@ msgstr "Pesquisa e filtros"
 msgid "active filters"
 msgstr "filtros ativos"
 
+msgid "All statuses"
+msgstr "Todos os status"
+
 msgid "All actions"
 msgstr "Todas as ações"
+
+msgid "All proof states"
+msgstr "Todos os estados do comprovante"
+
+msgid "Proof issued"
+msgstr "Comprovante emitido"
+
+msgid "WORM archived"
+msgstr "Arquivado em WORM"
+
+msgid "Archive pending"
+msgstr "Arquivamento pendente"
+
+msgid "Archive requires attention"
+msgstr "O arquivo requer atenção"
+
+msgid "Before SecureApprove Proof"
+msgstr "Anterior ao SecureApprove Proof"
 
 msgid "Email, document, version or hash"
 msgstr "Email, documento, versão ou hash"
 
 msgid "Email, request title or ID"
 msgstr "Email, título ou ID da solicitação"
-
-msgid "IP address"
-msgstr "Endereço IP"
 
 msgid "Sort order"
 msgstr "Ordem"
@@ -3689,6 +4333,9 @@ msgstr "Linhas"
 msgid "Apply filters"
 msgstr "Aplicar filtros"
 
+msgid "Reset"
+msgstr "Redefinir"
+
 msgid "Active filters"
 msgstr "Filtros ativos"
 
@@ -3697,6 +4344,12 @@ msgstr "Remover filtro"
 
 msgid "Clear all"
 msgstr "Limpar tudo"
+
+msgid "Terms acceptance audits"
+msgstr "Auditorias de aceitação de termos"
+
+msgid "Approval audits"
+msgstr "Auditorias de aprovação"
 
 msgid "Showing"
 msgstr "Exibindo"
@@ -3707,11 +4360,17 @@ msgstr "de"
 msgid "No results"
 msgstr "Sem resultados"
 
+msgid "Page"
+msgstr ""
+
 msgid "Scrollable audit results"
 msgstr "Resultados de auditoria com rolagem"
 
 msgid "High-security authentication audit events"
 msgstr "Eventos de auditoria de autenticação de alta segurança"
+
+msgid "When"
+msgstr "Data e hora"
 
 msgid "Evidence"
 msgstr "Evidência"
@@ -3719,23 +4378,14 @@ msgstr "Evidência"
 msgid "Open request"
 msgstr "Abrir solicitação"
 
-msgid "Audit ID"
-msgstr "ID da auditoria"
+msgid "Signed"
+msgstr "Assinado"
 
-msgid "Challenge"
-msgstr "Desafio"
+msgid "Verify"
+msgstr "Verificar"
 
-msgid "Credential"
-msgstr "Credencial"
-
-msgid "Initiated by"
-msgstr "Iniciado por"
-
-msgid "User agent"
-msgstr "Agente do usuário"
-
-msgid "Error"
-msgstr "Erro"
+msgid "Download evidence"
+msgstr "Baixar evidência"
 
 msgid "Signed context"
 msgstr "Contexto assinado"
@@ -3746,71 +4396,594 @@ msgstr "Nenhum registro de auditoria corresponde a estes filtros."
 msgid "Try widening the date range or clearing one of the filters."
 msgstr "Tente ampliar o intervalo de datas ou remover um dos filtros."
 
+#, fuzzy
+#| msgid "Clear Filters"
+msgid "Clear filters"
+msgstr "Filtrar"
+
 msgid "Rows per page"
 msgstr "Linhas por página"
 
 msgid "Pagination"
 msgstr "Paginação"
 
-msgid "Timestamp"
-msgstr "Data e hora"
+# ================================================
+# Pagination
+# ================================================
+msgid "Previous"
+msgstr "Anterior"
 
-msgid "Document type"
-msgstr "Tipo de documento"
+msgid "Next"
+msgstr "Próximo"
 
-msgid "Document version"
-msgstr "Versão do documento"
+msgid "Tenant Settings"
+msgstr "Configuração do Tenant"
 
-msgid "Document hash"
-msgstr "Hash do documento"
+msgid "Manage your organization profile, users, and settings"
+msgstr "Gerencie o perfil, usuários e configurações da sua organização"
 
-msgid "Context"
-msgstr "Contexto"
+msgid "Tenant Information"
+msgstr "Informação do Tenant"
 
-msgid "Request ID"
-msgstr "ID da solicitação"
+#, fuzzy
+#| msgid "Approver"
+msgid "Approvers"
+msgstr "Aprovador"
 
-msgid "The start date must be before the end date."
-msgstr "A data inicial deve ser anterior à data final."
+msgid ""
+"Choose how long future private WebAuthn evidence is retained. Public signed "
+"proofs and integrity hashes remain verifiable."
+msgstr ""
+"Escolha por quanto tempo as futuras evidências privadas do WebAuthn serão "
+"mantidas. Os comprovantes públicos assinados e os hashes de integridade "
+"continuarão verificáveis."
 
-msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "Insira um endereço IPv4 ou IPv6 válido."
+msgid "Private evidence retention"
+msgstr "Retenção de evidência privada"
 
-msgid "Enter a valid start date."
-msgstr "Insira uma data inicial válida."
+msgid "Save retention policy"
+msgstr "Salvar política de retenção"
 
-msgid "Enter a valid end date."
-msgstr "Insira uma data final válida."
+# ================================================
+# Approval Type Configuration
+# ================================================
+msgid "Approval Types"
+msgstr "Tipos de Aprovação"
 
-msgid "Terms"
-msgstr "Termos"
+msgid "Custom"
+msgstr "Personalizado"
 
-msgid "All statuses"
-msgstr "Todos os status"
+msgid "approver"
+msgstr "aprovador"
 
-msgid "Failed"
-msgstr "Falhou"
+msgid "Edit"
+msgstr ""
 
-msgid "Approve"
-msgstr "Aprovar"
+#, fuzzy
+#| msgid "disabled"
+msgid "Disable"
+msgstr "desabilitado"
 
-msgid "Reject"
-msgstr "Rejeitar"
+#, fuzzy
+#| msgid "enabled"
+msgid "Enable"
+msgstr "habilitado"
 
-msgid "Start date"
-msgstr "Data inicial"
+msgid "Are you sure you want to delete this approval type?"
+msgstr "Tem certeza de que deseja excluir este tipo de aprovação?"
 
-msgid "End date"
-msgstr "Data final"
+msgid "Delete"
+msgstr ""
 
-msgid "Reset"
-msgstr "Redefinir"
+msgid "Designated approvers:"
+msgstr "Aprovadores designados:"
 
-msgid "Approval audits"
-msgstr "Auditorias de aprovação"
+msgid "Edit Approval Type"
+msgstr "Editar Tipo de Aprovação"
 
-msgid "Terms acceptance audits"
-msgstr "Auditorias de aceitação de termos"
+msgid "Cash"
+msgstr "Dinheiro"
 
-msgid "When"
-msgstr "Data e hora"
+msgid "Cart"
+msgstr "Carrinho"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Calendar"
+msgstr "Calendário"
+
+msgid "Person"
+msgstr "Pessoa"
+
+msgid "Building"
+msgstr "Prédio"
+
+msgid "Tools"
+msgstr "Ferramentas"
+
+msgid "Laptop"
+msgstr "Notebook"
+
+msgid "Primary"
+msgstr "Primário"
+
+msgid "Danger"
+msgstr "Perigo"
+
+msgid "Info"
+msgstr "Informação"
+
+msgid "Secondary"
+msgstr "Secundário"
+
+msgid "Number of approvals needed to approve requests of this type"
+msgstr "Número de aprovações necessárias para aprovar solicitações deste tipo"
+
+msgid "Leave empty to allow any approver. Hold Ctrl/Cmd to select multiple."
+msgstr ""
+"Deixe vazio para permitir qualquer aprovador. Segure Ctrl/Cmd para "
+"selecionar vários."
+
+msgid "Show amount field"
+msgstr "Mostrar campo de valor"
+
+msgid "No approval types configured."
+msgstr "Nenhum tipo de aprovação configurado."
+
+msgid "Invite User"
+msgstr "Convidar Usuário"
+
+msgid "Invite"
+msgstr "Convidar"
+
+#, fuzzy, python-format
+#| msgid "%(available)s seats available (%(used)s of %(total)s used)"
+msgid ""
+"\n"
+"                            %(available)s seats available (%(used)s of "
+"%(total)s used)\n"
+"                            "
+msgstr "%(available)s assentos disponíveis (%(used)s de %(total)s usados)"
+
+msgid "Active Users"
+msgstr "Usuários Ativos"
+
+msgid "Save"
+msgstr ""
+
+msgid "No users found."
+msgstr "Nenhum usuário encontrado."
+
+msgid "Pending Invitations"
+msgstr "Convites Pendentes"
+
+msgid "Expires"
+msgstr "Expira"
+
+msgid "Cancel Invitation"
+msgstr "Cancelar Convite"
+
+msgid "Create Approval Type"
+msgstr "Criar Tipo de Aprovação"
+
+msgid "e.g., Vacation Request"
+msgstr "ex., Solicitação de Férias"
+
+msgid "e.g., vacation"
+msgstr "ex., ferias"
+
+msgid "Lowercase letters, numbers, and underscores only"
+msgstr "Apenas letras minúsculas, números e sublinhados"
+
+msgid "Optional description..."
+msgstr "Descrição opcional..."
+
+msgid "Check"
+msgstr "Verificar"
+
+msgid "Health"
+msgstr "Saúde"
+
+msgid "Education"
+msgstr "Educação"
+
+msgid "Time"
+msgstr "Tempo"
+
+msgid "Number of approvals needed"
+msgstr "Número de aprovações necessárias"
+
+msgid "Leave empty to allow any approver"
+msgstr "Deixe vazio para permitir qualquer aprovador"
+
+# ================================================
+# Super Admin Translations
+# ================================================
+msgid "Super Admin - Tenant Management"
+msgstr "Super Admin - Gerenciamento de Locatários"
+
+msgid "Tenant Administration"
+msgstr "Administração de Locatários"
+
+msgid "Manage tenants, plans, and administrators."
+msgstr "Gerencie locatários, planos e administradores."
+
+msgid "Create Tenant"
+msgstr "Criar Locatário"
+
+msgid "Pricing Reference"
+msgstr "Referência de Preços"
+
+msgid "USD / user / month"
+msgstr "USD / usuário / mês"
+
+#, fuzzy
+#| msgid "All actions"
+msgid "Actions"
+msgstr "Todas as ações"
+
+msgid "Edit Tenant"
+msgstr "Editar Locatário"
+
+msgid "Invite Admin"
+msgstr "Convidar Administrador"
+
+msgid "Max Users (Seats)"
+msgstr "Máximo de Usuários (Assentos)"
+
+msgid "Manually set the maximum number of users allowed."
+msgstr "Definir manualmente o número máximo de usuários permitidos."
+
+msgid "Invite Primary Admin"
+msgstr "Convidar Administrador Principal"
+
+msgid "Invite a user to be the Tenant Admin for"
+msgstr "Convidar um usuário para ser Administrador do Locatário de"
+
+msgid "Send Invitation"
+msgstr "Enviar Convite"
+
+msgid "No tenants found."
+msgstr "Nenhum locatário encontrado."
+
+msgid "Create New Tenant"
+msgstr "Criar Novo Locatário"
+
+msgid "Key (Slug)"
+msgstr "Chave (Slug)"
+
+msgid "Unique identifier for the tenant (e.g. company-name)"
+msgstr "Identificador único do locatário (ex. nome-empresa)"
+
+#~ msgid "Fallback credential created successfully"
+#~ msgstr "Operação concluída com sucesso."
+
+#~ msgid "Starter - Up to 2 approvers"
+#~ msgstr "Iniciante - Até 2 aprovadores"
+
+#~ msgid "Growth - Up to 6 approvers"
+#~ msgstr "Crescimento - Até 6 aprovadores"
+
+#~ msgid "Scale - Unlimited approvers"
+#~ msgstr "Escala - Aprovadores ilimitados"
+
+#~ msgid ""
+#~ "No biometric authentication set up for this account. Please contact "
+#~ "support."
+#~ msgstr ""
+#~ "Nenhuma autenticação biométrica configurada para esta conta.Entre em "
+#~ "contato com o suporte."
+
+#~ msgid "Select the perfect plan for your organization's approval needs"
+#~ msgstr ""
+#~ "Selecciona o plan perfecto para as necesidadees de aprobação de seu "
+#~ "organização"
+
+#~ msgid "Perfect for small teams"
+#~ msgstr "Perfecto para equipos pequeños"
+
+#~ msgid "Basic reporting"
+#~ msgstr "Reportes básicos"
+
+#~ msgid "WebAuthn security"
+#~ msgstr "Seguridade WebAuthn"
+
+#~ msgid "Ideal for growing companies"
+#~ msgstr "Ideal para empresas em crecimiento"
+
+#~ msgid "Slack & Teams integration"
+#~ msgstr "Integração com Slack e Teams"
+
+#~ msgid "Advanced analytics"
+#~ msgstr "Análisis avanzado"
+
+#~ msgid "Priority support"
+#~ msgstr "Prioridade"
+
+#~ msgid "For enterprise organizations"
+#~ msgstr "Para organizações empresariales"
+
+#~ msgid "Advanced integrations"
+#~ msgstr "Integrações avanzadas"
+
+#~ msgid "Enterprise analytics"
+#~ msgstr "Análisis empresarial"
+
+#~ msgid "Dedicated support"
+#~ msgstr "Soporte dedicado"
+
+#~ msgid "SLA guarantee"
+#~ msgstr "Garantía SLA"
+
+#~ msgid "Contact Sales"
+#~ msgstr "Contratos"
+
+#~ msgid ""
+#~ "Yes, we offer a 14-day free trial for all plans. No credit card required "
+#~ "to start."
+#~ msgstr ""
+#~ "Sim, oferecemos um teste gratuito de 3 dias para todos os planos. Não é "
+#~ "necessário cartão de crédito para começar."
+
+#~ msgid "14-Day Free Trial"
+#~ msgstr "Teste Grátis de 3 Dias"
+
+#~ msgid "No charge for the first 14 days. Cancel anytime."
+#~ msgstr "Sem cobrança nos primeiros 3 dias. Cancele quando quiser."
+
+#~ msgid "Processing..."
+#~ msgstr "Carregando..."
+
+#~ msgid "Error starting subscription"
+#~ msgstr "Cancelar Assinatura"
+
+#~ msgid "Total Requests"
+#~ msgstr "Total de Solicitações"
+
+#~ msgid "Quick Actions"
+#~ msgstr "Ações Rápidas"
+
+#~ msgid "Pendiente"
+#~ msgstr "Pendente"
+
+#~ msgid "Prioridad"
+#~ msgstr "Prioridade"
+
+#~ msgid "Media"
+#~ msgstr "Média"
+
+#~ msgid "DEPARTAMENTO"
+#~ msgstr "DEPARTAMENTO"
+
+#~ msgid "Recursos Humanos"
+#~ msgstr "Recursos Humanos"
+
+#~ msgid "DOCUMENTOS ADJUNTOS"
+#~ msgstr "DOCUMENTOS ANEXADOS"
+
+#~ msgid "Auditoría Completa"
+#~ msgstr "Auditoria Completa"
+
+#~ msgid "Trazabilidad completa y reportes detallados de actividad"
+#~ msgstr "Rastreabilidade completa e relatórios detalhados de atividade"
+
+#~ msgid "Disponibilidad"
+#~ msgstr "Disponibilidade"
+
+#~ msgid "Tiempo de Respuesta"
+#~ msgstr "Tempo de Resposta"
+
+#~ msgid "Solicitudes Procesadas"
+#~ msgstr "Solicitações Processadas"
+
+#~ msgid "Cifrado"
+#~ msgstr "Criptografia"
+
+#~ msgid "Elige el plan que se adapta a tu equipo"
+#~ msgstr "Escolha o plano que se adapta à sua equipe"
+
+#~ msgid "Hasta 2 aprobadores"
+#~ msgstr "Até 2 aprovadores"
+
+#~ msgid "2 aprobadores"
+#~ msgstr "2 aprovadores"
+
+#~ msgid "Solicitudes ilimitadas"
+#~ msgstr "Solicitações ilimitadas"
+
+#~ msgid "Autenticación biométrica"
+#~ msgstr "Autenticação biométrica"
+
+#~ msgid "Soporte básico"
+#~ msgstr "Suporte básico"
+
+#~ msgid "Suscribirme"
+#~ msgstr "Assinar"
+
+#~ msgid "Popular"
+#~ msgstr "Popular"
+
+#~ msgid "Hasta 6 aprobadores"
+#~ msgstr "Até 6 aprovadores"
+
+#~ msgid "6 aprobadores"
+#~ msgstr "6 aprovadores"
+
+#~ msgid "Auditoría avanzada"
+#~ msgstr "Auditoria avançada"
+
+#~ msgid "Integraciones API"
+#~ msgstr "Integrações API"
+
+#~ msgid "Aprobadores ilimitados"
+#~ msgstr "Aprovadores ilimitados"
+
+#~ msgid "Integraciones premium"
+#~ msgstr "Integrações premium"
+
+#~ msgid "Soporte prioritario"
+#~ msgstr "Suporte prioritário"
+
+#~ msgid "Sistema de aprobaciones seguras para empresas modernas."
+#~ msgstr "Sistema de aprovações seguras para empresas modernas."
+
+#~ msgid "Construido con ❤️ para la Seguridad Empresarial"
+#~ msgstr "Construído com ❤️ para Segurança Empresarial"
+
+# ================================================
+# Request Actions
+# ================================================
+#~ msgid "Submit a new approval request"
+#~ msgstr "Enviar Solicitação"
+
+#~ msgid "Request Categories"
+#~ msgstr "Solicitações por Categoria"
+
+#~ msgid "Business expenses like meals, transportation, office supplies"
+#~ msgstr ""
+#~ "Despesas comerciais como refeições, transporte, material de escritório"
+
+#~ msgid "Equipment, software, or service purchases"
+#~ msgstr "Compras de equipamentos, software ou serviços"
+
+#~ msgid "Travel arrangements and related expenses"
+#~ msgstr "Organização de viagens e despesas relacionadas"
+
+#~ msgid "Contract approvals and vendor agreements"
+#~ msgstr "Aprovações de contratos e acordos de fornecedores"
+
+#~ msgid "Document approvals and reviews"
+#~ msgstr "Aprovações e revisões de documentos"
+
+#~ msgid "Any other type of approval request"
+#~ msgstr "Qualquer outro tipo de solicitação de aprovação"
+
+# ================================================
+# Pagination
+# ================================================
+#~ msgid "Preview"
+#~ msgstr "Anterior"
+
+#~ msgid "Are you sure you want to approve this request?"
+#~ msgstr "Tem certeza de que deseja aprovar esta solicitação?"
+
+#~ msgid "Are you sure you want to reject this request?"
+#~ msgstr "Tem certeza de que deseja rejeitar esta solicitação?"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "                    %(total)s request\n"
+#~ "                "
+#~ msgid_plural ""
+#~ "\n"
+#~ "                    %(total)s requests\n"
+#~ "                "
+#~ msgstr[0] ""
+#~ "\n"
+#~ "                    %(total)s solicitação\n"
+#~ "                "
+#~ msgstr[1] ""
+#~ "\n"
+#~ "                    %(total)s solicitações\n"
+#~ "                "
+
+#~ msgid "Filter"
+#~ msgstr "Filtrar"
+
+#~ msgid "Approved by"
+#~ msgstr "Aprovado por"
+
+#~ msgid "Tenant Chat"
+#~ msgstr "Chat do Tenant"
+
+#~ msgid ""
+#~ "Request categories are currently global. Future versions will allow per-"
+#~ "tenant customization."
+#~ msgstr ""
+#~ "As categorias de solicitação são atualmente globais. Versões futuras "
+#~ "permitirão personalização por tenant."
+
+#~ msgid "Contacts"
+#~ msgstr "Contatos"
+
+#~ msgid "Open chat"
+#~ msgstr "Abrir chat"
+
+#~ msgid "Users & Groups"
+#~ msgstr "Usuários e grupos"
+
+#~ msgid "Pair This Device and set up biometric authentication"
+#~ msgstr "Pair This Device and set up biometric authentication"
+
+#~ msgid ""
+#~ "A credential for this account already exists on this device. Try signing "
+#~ "in instead of pairing again."
+#~ msgstr ""
+#~ "A credential for this account already exists on this device. Try signing "
+#~ "in instead of pairing again."
+
+#~ msgid "By signing up, you agree to our Terms of Service and Privacy Policy."
+#~ msgstr ""
+#~ "Ao se inscrever, você concorda com nossos Termos de Serviço e Política de "
+#~ "Privacidade."
+
+#~ msgid "approvers"
+#~ msgstr "aprovadores"
+
+#~ msgid "Terms of Service"
+#~ msgstr "Termos de Serviço"
+
+# ================================================
+# Landing Page - New Features (Updated)
+# ================================================
+#~ msgid "Advanced security and biometric authentication"
+#~ msgstr "Segurança avançada e autenticação biométrica"
+
+#~ msgid "Compliance with security standards"
+#~ msgstr "Conformidade com padrões de segurança"
+
+#~ msgid "Approve from any device"
+#~ msgstr "Aprove de qualquer dispositivo"
+
+#~ msgid "Instant communication with your team"
+#~ msgstr "Comunicação instantânea com sua equipe"
+
+#~ msgid "100%"
+#~ msgstr "100%"
+
+#~ msgid "Certified Security"
+#~ msgstr "Segurança Certificada"
+
+#~ msgid "Integrated Chat"
+#~ msgstr "Chat Integrado"
+
+#~ msgid "request"
+#~ msgstr "solicitação"
+
+#~ msgid "requests"
+#~ msgstr "solicitações"
+
+#~ msgid ""
+#~ "Production-ready module with secure handshake, ephemeral token flow, and "
+#~ "copy-ready snippets."
+#~ msgstr ""
+#~ "Módulo pronto para produção com handshake seguro, fluxo de token efêmero "
+#~ "e snippets prontos para copiar."
+
+#~ msgid "Store audit_id from result for compliance and traceability."
+#~ msgstr "Armazene audit_id do resultado para compliance e rastreabilidade."
+
+#~ msgid "Enforce HTTPS and validate parent origin in frontend."
+#~ msgstr "Exija HTTPS e valide parent origin no frontend."
+
+#~ msgid "Frontend embed integration"
+#~ msgstr "Integração frontend embed"
+
+#~ msgid ""
+#~ "Your backend verifies transaction status with SecureApprove before "
+#~ "creating its own login session."
+#~ msgstr ""
+#~ "Seu backend verifica o status da transação com o SecureApprove antes de "
+#~ "criar sua própria sessão."

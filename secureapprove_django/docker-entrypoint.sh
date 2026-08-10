@@ -25,14 +25,6 @@ while ! nc -z redis 6379; do
 done
 echo "[+] Redis is ready!"
 
-# Run migrations
-echo "[*] Creating initial migrations..."
-python manage.py makemigrations authentication
-python manage.py makemigrations tenants
-python manage.py makemigrations requests
-python manage.py makemigrations billing
-python manage.py makemigrations chat
-
 # Migrate chat schema BEFORE running all migrations
 # This handles old to new schema transition automatically
 echo "[*] Checking chat schema migration..."
@@ -43,25 +35,35 @@ python manage.py migrate_chat_schema --force || {
 echo "[*] Running database migrations..."
 python manage.py migrate --noinput
 
-# Create superuser if it doesn't exist (admin@secureapprove.com)
-echo "[*] Ensuring default superuser (admin@secureapprove.com)..."
-python manage.py shell << 'EOF'
+# Optionally create a bootstrap superuser. Production leaves these variables
+# unset after initial provisioning; no fixed account or password is embedded.
+if [ -n "${SECUREAPPROVE_BOOTSTRAP_ADMIN_EMAIL:-}" ] || [ -n "${SECUREAPPROVE_BOOTSTRAP_ADMIN_PASSWORD:-}" ]; then
+  if [ -z "${SECUREAPPROVE_BOOTSTRAP_ADMIN_EMAIL:-}" ] || [ -z "${SECUREAPPROVE_BOOTSTRAP_ADMIN_PASSWORD:-}" ]; then
+    echo "[!] Both bootstrap admin email and password are required" >&2
+    exit 1
+  fi
+  echo "[*] Ensuring configured bootstrap superuser exists..."
+  python manage.py shell << 'EOF'
+import os
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-email = 'admin@secureapprove.com'
+email = os.environ['SECUREAPPROVE_BOOTSTRAP_ADMIN_EMAIL'].strip().lower()
 
 if not User.objects.filter(email=email).exists():
     User.objects.create_superuser(
-        username='admin',
+        username=email.split('@', 1)[0],
         email=email,
-        name='Admin User',
-        password='admin123',
+        name='Bootstrap Admin',
+        password=os.environ['SECUREAPPROVE_BOOTSTRAP_ADMIN_PASSWORD'],
     )
-    print('[+] Superuser created: admin@secureapprove.com / admin123')
+    print('[+] Bootstrap superuser created')
 else:
-    print('[=] Superuser already exists')
+    print('[=] Bootstrap superuser already exists')
 EOF
+else
+  echo "[*] Bootstrap superuser disabled"
+fi
 
 # Compile messages
 echo "[*] Compiling translation messages..."
@@ -69,14 +71,17 @@ if ! python manage.py compilemessages; then
   echo "[!] No translations to compile or compilemessages failed"
 fi
 
-# Setup admin user configuration for eudyespinoza@gmail.com
-echo "[*] Setting up primary admin user configuration..."
-python manage.py shell << 'EOF'
+# Optional primary WebAuthn administrator bootstrap. This never runs unless an
+# explicit email is supplied by the operator.
+if [ -n "${SECUREAPPROVE_BOOTSTRAP_PRIMARY_EMAIL:-}" ]; then
+  echo "[*] Setting up configured primary WebAuthn administrator..."
+  python manage.py shell << 'EOF'
+import os
 from django.contrib.auth import get_user_model
 from apps.tenants.models import Tenant
 
 User = get_user_model()
-email = 'eudyespinoza@gmail.com'
+email = os.environ['SECUREAPPROVE_BOOTSTRAP_PRIMARY_EMAIL'].strip().lower()
 
 try:
     # Ensure admin user exists (passwordless, WebAuthn only)
@@ -122,12 +127,12 @@ try:
 except Exception as e:
     print(f'[!] Admin setup error: {e}')
 EOF
+else
+  echo "[*] Primary WebAuthn administrator bootstrap disabled"
+fi
 
 echo "[*] Initialization complete!"
 echo "[*] Access the application at: http://localhost:8005"
-echo "[*] Admin login: admin@secureapprove.com / admin123"
-echo "[*] Your WebAuthn admin login: eudyespinoza@gmail.com"
 
 # Start the application
 exec "$@"
-

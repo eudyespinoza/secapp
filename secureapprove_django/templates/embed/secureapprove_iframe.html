@@ -341,6 +341,7 @@
         transactionId: state.transaction.id,
         status: confirmResult.status,
         approved: confirmResult.approved,
+        proof: confirmResult.proof || null,
       });
     }
 

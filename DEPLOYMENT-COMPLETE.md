@@ -69,7 +69,7 @@ docker-compose -f docker-compose.simple.yml logs -f
 ### 4. Access Application
 
 - **Web Interface**: http://secureapprove.local (configure in your proxy)
-- **Admin Login**: admin@secureapprove.com / admin123
+- **Admin Login**: create an administrator with an operator-managed credential.
 - **API Documentation**: http://secureapprove.local/api/docs/
 
 ## 🐳 Docker Configuration
@@ -118,7 +118,7 @@ DB_HOST=db
 DB_PORT=5432
 DB_NAME=secureapprove
 DB_USER=postgres
-DB_PASSWORD=postgres123
+DB_PASSWORD=<generated-secret>
 
 # Redis
 REDIS_URL=redis://redis:6379/1

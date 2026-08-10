@@ -45,7 +45,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'apps.landing',
-    'apps.authentication',
+    'apps.authentication.apps.AuthenticationConfig',
     'apps.tenants.apps.TenantsConfig',
     'apps.requests',
     'apps.billing',
@@ -188,6 +188,10 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
+    'DEFAULT_THROTTLE_RATES': {
+        'proof_verify': '60/minute',
+        'proof_evidence': '30/minute',
+    },
 }
 
 # JWT Settings
@@ -304,6 +308,30 @@ WEBAUTHN_RP_NAME = config('WEBAUTHN_RP_NAME', default='SecureApprove')
 WEBAUTHN_RP_ID = config('WEBAUTHN_RP_ID', default='localhost')
 WEBAUTHN_ORIGIN = config('WEBAUTHN_ORIGIN', default='http://localhost:8005')
 
+# SecureApprove Proof. Production must use AWS KMS; local backends exist only for
+# development and deterministic automated tests.
+SECUREAPPROVE_PROOF_ENABLED = config('SECUREAPPROVE_PROOF_ENABLED', default=False, cast=bool)
+SECUREAPPROVE_PROOF_MARKETING_ENABLED = config(
+    'SECUREAPPROVE_PROOF_MARKETING_ENABLED', default=False, cast=bool
+)
+SECUREAPPROVE_PROOF_SIGNER = config(
+    'SECUREAPPROVE_PROOF_SIGNER', default='local' if DEBUG else 'aws_kms'
+)
+SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND = config(
+    'SECUREAPPROVE_PROOF_ENCRYPTION_BACKEND', default='local' if DEBUG else 'aws_kms'
+)
+SECUREAPPROVE_PROOF_SIGNING_KEY_ARN = config('SECUREAPPROVE_PROOF_SIGNING_KEY_ARN', default='')
+SECUREAPPROVE_PROOF_SIGNING_KID = config('SECUREAPPROVE_PROOF_SIGNING_KID', default='')
+SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN = config('SECUREAPPROVE_PROOF_ENCRYPTION_KEY_ARN', default='')
+SECUREAPPROVE_PROOF_ARCHIVE_ENABLED = config(
+    'SECUREAPPROVE_PROOF_ARCHIVE_ENABLED', default=False, cast=bool
+)
+SECUREAPPROVE_PROOF_ARCHIVE_BUCKET = config('SECUREAPPROVE_PROOF_ARCHIVE_BUCKET', default='')
+SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS = config(
+    'SECUREAPPROVE_PROOF_ARCHIVE_RETENTION_DAYS', default=3650, cast=int
+)
+AWS_REGION = config('AWS_REGION', default='')
+
 # Billing
 MERCADOPAGO_ACCESS_TOKEN = config('MERCADOPAGO_ACCESS_TOKEN', default='')
 MERCADOPAGO_WEBHOOK_URL = config('MERCADOPAGO_WEBHOOK_URL', default='')
@@ -320,7 +348,7 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@secureapprove
 # Web Push Notifications
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY": config('VAPID_PUBLIC_KEY', default='BHvvFPiU7qxIZvqlnEnjlCoBhOs6Ol2AwflSRt136q0iCIN3zpradCi0MHta8LOST0cGg1W3Iix-WC0zbbEQbi4'),
-    "VAPID_PRIVATE_KEY": config('VAPID_PRIVATE_KEY', default='cdfs9Acrz0eR953kiuo0vjPkS9rveSK7CirfL0E96lU'),
+    "VAPID_PRIVATE_KEY": config('VAPID_PRIVATE_KEY', default=''),
     "VAPID_ADMIN_EMAIL": config('VAPID_ADMIN_EMAIL', default='mailto:admin@secureapprove.com'),
 }
 
@@ -338,6 +366,16 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BEAT_SCHEDULE = {
+    'purge-expired-proof-evidence-daily': {
+        'task': 'apps.authentication.tasks.purge_expired_proof_evidence',
+        'schedule': 86400.0,
+    },
+    'monitor-delayed-proof-archives': {
+        'task': 'apps.authentication.tasks.monitor_delayed_proof_archives',
+        'schedule': 60.0,
+    },
+}
 
 # Override webpush migrations location to allow generating missing migrations locally
 MIGRATION_MODULES = {

@@ -503,3 +503,153 @@ class TermsAcceptanceAudit(models.Model):
 
     def __str__(self):
         return f"Terms audit {self.id}: {self.user.email} - {self.status}"
+
+
+class ProofSigningKey(models.Model):
+    """Public metadata for an AWS KMS key used to sign SecureApprove Proofs."""
+
+    STATUS_CHOICES = [
+        ('active', _('Active')),
+        ('retired', _('Retired')),
+        ('compromised', _('Compromised')),
+    ]
+
+    kid = models.CharField(_('Key ID'), max_length=128, unique=True)
+    key_arn = models.CharField(_('AWS KMS key ARN'), max_length=512, blank=True)
+    algorithm = models.CharField(_('Algorithm'), max_length=16, default='ES256')
+    public_jwk = models.JSONField(_('Public JWK'))
+    status = models.CharField(_('Status'), max_length=16, choices=STATUS_CHOICES, default='active')
+    activated_at = models.DateTimeField(_('Activated At'), default=timezone.now)
+    deactivated_at = models.DateTimeField(_('Deactivated At'), null=True, blank=True)
+    created_at = models.DateTimeField(_('Created At'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('Updated At'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('Proof Signing Key')
+        verbose_name_plural = _('Proof Signing Keys')
+        ordering = ['-activated_at']
+
+    def __str__(self):
+        return f"{self.kid} ({self.status})"
+
+
+class ProofLedgerHead(models.Model):
+    """Serialized head of the append-only proof hash chain for one tenant."""
+
+    tenant = models.OneToOneField(
+        'tenants.Tenant',
+        on_delete=models.PROTECT,
+        related_name='proof_ledger_head',
+    )
+    last_entry_sha256 = models.CharField(max_length=64, blank=True, default='')
+    entry_count = models.PositiveBigIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _('Proof Ledger Head')
+        verbose_name_plural = _('Proof Ledger Heads')
+
+    def __str__(self):
+        return f"{self.tenant_id}: {self.last_entry_sha256 or 'empty'}"
+
+
+class SecurityProof(models.Model):
+    """Signed, privacy-preserving evidence for one WebAuthn-authorized decision."""
+
+    SCHEMA = 'sap-proof-v1'
+    EVENT_CHOICES = [
+        ('approval_request', _('Approval Request')),
+        ('iframe_acceptance', _('Iframe Acceptance')),
+    ]
+    DECISION_CHOICES = [('approve', _('Approve')), ('reject', _('Reject'))]
+    ARCHIVE_CHOICES = [
+        ('pending', _('Pending')),
+        ('archived', _('Archived')),
+        ('delayed', _('Delayed')),
+        ('failed', _('Failed')),
+        ('disabled', _('Disabled')),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(
+        'tenants.Tenant',
+        on_delete=models.PROTECT,
+        related_name='security_proofs',
+    )
+    subject_user = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subject_security_proofs',
+    )
+    actor_user = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='actor_security_proofs',
+    )
+    approval_audit = models.OneToOneField(
+        'authentication.ApprovalAudit',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='security_proof',
+    )
+    terms_audit = models.OneToOneField(
+        'authentication.TermsAcceptanceAudit',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='security_proof',
+    )
+
+    schema = models.CharField(max_length=32, default=SCHEMA)
+    event_type = models.CharField(max_length=32, choices=EVENT_CHOICES)
+    decision = models.CharField(max_length=16, choices=DECISION_CHOICES)
+    transaction_sha256 = models.CharField(max_length=64, db_index=True)
+    webauthn_assertion_sha256 = models.CharField(max_length=64)
+    previous_ledger_sha256 = models.CharField(max_length=64, blank=True, default='')
+    ledger_entry_sha256 = models.CharField(max_length=64, unique=True)
+
+    signing_key = models.ForeignKey(
+        'authentication.ProofSigningKey',
+        on_delete=models.PROTECT,
+        related_name='proofs',
+    )
+    protected_header = models.JSONField(default=dict)
+    public_payload = models.JSONField(default=dict)
+    jws = models.TextField()
+
+    evidence_ciphertext = models.BinaryField(null=True, blank=True)
+    evidence_nonce = models.BinaryField(null=True, blank=True)
+    encrypted_data_key = models.BinaryField(null=True, blank=True)
+    evidence_expires_at = models.DateTimeField(db_index=True)
+    evidence_purged_at = models.DateTimeField(null=True, blank=True)
+
+    archive_status = models.CharField(max_length=16, choices=ARCHIVE_CHOICES, default='pending')
+    archive_object_key = models.CharField(max_length=512, blank=True)
+    archive_version_id = models.CharField(max_length=255, blank=True)
+    archived_at = models.DateTimeField(null=True, blank=True)
+    archive_error = models.TextField(blank=True)
+
+    issued_at = models.DateTimeField(default=timezone.now, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Security Proof')
+        verbose_name_plural = _('Security Proofs')
+        ordering = ['-issued_at']
+        indexes = [
+            models.Index(fields=['tenant', 'issued_at'], name='authentica_tenant__b0990a_idx'),
+            models.Index(fields=['tenant', 'archive_status'], name='authentica_tenant__7764f3_idx'),
+            models.Index(fields=['event_type', 'decision'], name='authentica_event_t_7f54b2_idx'),
+        ]
+
+    @property
+    def has_private_evidence(self):
+        return bool(self.evidence_ciphertext and not self.evidence_purged_at)
+
+    def __str__(self):
+        return f"Proof {self.id}: {self.event_type}/{self.decision}"

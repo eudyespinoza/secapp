@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: SecureApprove Proof signing, envelope encryption, and immutable public JWS archive.
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedPattern: '[a-z0-9-]+'
+  ApplicationRoleName:
+    Type: String
+    Default: ''
+    Description: Existing IAM role name used by the SecureApprove workload. Leave empty to create resources without attaching a policy.
+  ArchiveRetentionDays:
+    Type: Number
+    Default: 3650
+    MinValue: 365
+
+Conditions:
+  AttachApplicationPolicy: !Not [!Equals [!Ref ApplicationRoleName, '']]
+
+Resources:
+  ProofSigningKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: !Sub SecureApprove Proof ES256 signing key (${Environment})
+      KeySpec: ECC_NIST_P256
+      KeyUsage: SIGN_VERIFY
+      Enabled: true
+      PendingWindowInDays: 30
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AccountAdministration
+            Effect: Allow
+            Principal: {AWS: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:root'}
+            Action: 'kms:*'
+            Resource: '*'
+
+  ProofSigningAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/secureapprove-proof-signing-${Environment}
+      TargetKeyId: !Ref ProofSigningKey
+
+  ProofEvidenceKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: !Sub SecureApprove Proof envelope encryption key (${Environment})
+      EnableKeyRotation: true
+      KeySpec: SYMMETRIC_DEFAULT
+      KeyUsage: ENCRYPT_DECRYPT
+      PendingWindowInDays: 30
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AccountAdministration
+            Effect: Allow
+            Principal: {AWS: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:root'}
+            Action: 'kms:*'
+            Resource: '*'
+
+  ProofEvidenceAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/secureapprove-proof-evidence-${Environment}
+      TargetKeyId: !Ref ProofEvidenceKey
+
+  ProofArchiveBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub secureapprove-proof-${Environment}-${AWS::AccountId}-${AWS::Region}
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: COMPLIANCE
+            Days: !Ref ArchiveRetentionDays
+      VersioningConfiguration: {Status: Enabled}
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules: [{ObjectOwnership: BucketOwnerEnforced}]
+
+  ProofWorkloadPolicy:
+    Type: AWS::IAM::Policy
+    Condition: AttachApplicationPolicy
+    Properties:
+      PolicyName: !Sub SecureApproveProof-${Environment}
+      Roles: [!Ref ApplicationRoleName]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: SignProofs
+            Effect: Allow
+            Action: [kms:Sign, kms:GetPublicKey, kms:DescribeKey]
+            Resource: !GetAtt ProofSigningKey.Arn
+          - Sid: EncryptEvidence
+            Effect: Allow
+            Action: [kms:GenerateDataKey, kms:Decrypt, kms:DescribeKey]
+            Resource: !GetAtt ProofEvidenceKey.Arn
+          - Sid: ArchivePublicJws
+            Effect: Allow
+            Action: [s3:PutObject, s3:GetObjectVersion]
+            Resource: !Sub '${ProofArchiveBucket.Arn}/proofs/*'
+
+Outputs:
+  SigningKeyArn: {Value: !GetAtt ProofSigningKey.Arn}
+  SigningKid:
+    Value: !Sub secureapprove-proof-${Environment}-${ProofSigningKey}
+  EvidenceKeyArn: {Value: !GetAtt ProofEvidenceKey.Arn}
+  ArchiveBucketName: {Value: !Ref ProofArchiveBucket}

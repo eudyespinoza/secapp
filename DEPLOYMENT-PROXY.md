@@ -56,7 +56,7 @@ docker-compose -f docker-compose.simple.yml logs -f web
 Una vez desplegado:
 
 - **URL**: http://secureapprove.local (a través del proxy)
-- **Admin**: admin@secureapprove.com / admin123
+- **Admin**: provision an operator-managed administrator before first use.
 - **API Docs**: http://secureapprove.local/api/docs/
 
 ### Redes

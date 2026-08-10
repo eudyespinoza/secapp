@@ -385,7 +385,14 @@ class WebAuthnService:
         if challenge_type in ['auth', 'both']:
             cache.delete(f"webauthn_challenge_auth_{user_id}")
     
-    def generate_approval_challenge(self, user: User, approval_id: str, context_data: Dict[str, Any] = None) -> Dict[str, Any]:
+    def generate_approval_challenge(
+        self,
+        user: User,
+        approval_id: str,
+        context_data: Dict[str, Any] = None,
+        *,
+        proof_binding: bool = False,
+    ) -> Dict[str, Any]:
         """
         Generate WebAuthn challenge specifically for an approval action (step-up authentication).
         
@@ -398,7 +405,6 @@ class WebAuthnService:
             Dictionary with challenge options
         """
         import secrets
-        import hashlib
         
         if not user.webauthn_credentials:
             raise ValueError(_('No credentials registered for this user'))
@@ -425,12 +431,22 @@ class WebAuthnService:
                 'transports': cred.get('transports', [])
             })
         
-        # Generate authentication options
+        proof_transaction_hash = None
+        bound_challenge = None
+        if proof_binding:
+            from apps.authentication.proof_service import build_bound_challenge
+            bound_challenge, proof_transaction_hash = build_bound_challenge(
+                context_data or {}, secrets.token_bytes(32)
+            )
+
+        # Generate authentication options. Proof ceremonies bind the exact canonical
+        # transaction digest into the browser-signed challenge.
         options = generate_authentication_options(
             rp_id=self.rp_id,
             allow_credentials=allow_credentials,
             user_verification=UserVerificationRequirement.REQUIRED,
             timeout=60000,
+            challenge=bound_challenge,
         )
         
         # Generate unique challenge ID for this approval
@@ -439,8 +455,8 @@ class WebAuthnService:
         # Create context hash for cryptographic binding (optional but recommended)
         context_hash = None
         if context_data:
-            context_str = json.dumps(context_data, sort_keys=True)
-            context_hash = hashlib.sha256(context_str.encode()).hexdigest()
+            from apps.authentication.proof_service import canonical_json_bytes, sha256_hex
+            context_hash = sha256_hex(canonical_json_bytes(context_data))
         
         # Store challenge with approval context
         challenge_key = f"webauthn_challenge_approval_{user.id}_{approval_id}"
@@ -449,6 +465,8 @@ class WebAuthnService:
             'challenge_id': challenge_id,
             'approval_id': approval_id,
             'context_hash': context_hash,
+            'proof_binding': proof_binding,
+            'transaction_sha256': proof_transaction_hash,
             'created_at': timezone.now().isoformat(),
         }
         cache.set(challenge_key, challenge_data, timeout=self.challenge_timeout)
@@ -467,6 +485,8 @@ class WebAuthnService:
             ],
             'userVerification': options.user_verification.value,
             'challengeId': challenge_id,
+            'transactionSha256': proof_transaction_hash,
+            'proofSchema': 'sap-proof-v1' if proof_binding else None,
         }
     
     def verify_approval_response(self, user: User, approval_id: str, credential_data: Dict[str, Any], context_data: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -482,8 +502,6 @@ class WebAuthnService:
         Returns:
             Dictionary with verification result
         """
-        import hashlib
-        
         challenge_key = f"webauthn_challenge_approval_{user.id}_{approval_id}"
         challenge_data = cache.get(challenge_key)
         
@@ -494,6 +512,8 @@ class WebAuthnService:
         stored_challenge_id = challenge_data['challenge_id']
         stored_approval_id = challenge_data['approval_id']
         stored_context_hash = challenge_data.get('context_hash')
+        proof_binding = challenge_data.get('proof_binding', False)
+        stored_transaction_hash = challenge_data.get('transaction_sha256')
         
         # Verify approval_id matches
         if stored_approval_id != approval_id:
@@ -502,11 +522,22 @@ class WebAuthnService:
         
         # Verify context hash if provided
         if stored_context_hash and context_data:
-            context_str = json.dumps(context_data, sort_keys=True)
-            context_hash = hashlib.sha256(context_str.encode()).hexdigest()
+            from apps.authentication.proof_service import canonical_json_bytes, sha256_hex
+            context_hash = sha256_hex(canonical_json_bytes(context_data))
             if context_hash != stored_context_hash:
                 cache.delete(challenge_key)
                 raise ValueError(_('Approval context has changed. Please try again.'))
+
+        if proof_binding:
+            from apps.authentication.proof_service import CHALLENGE_PREFIX, transaction_sha256
+            current_transaction_hash = transaction_sha256(context_data or {})
+            if current_transaction_hash != stored_transaction_hash:
+                cache.delete(challenge_key)
+                raise ValueError(_('Approval context has changed. Please try again.'))
+            expected_suffix = bytes.fromhex(stored_transaction_hash)
+            if not expected_challenge.startswith(CHALLENGE_PREFIX) or not expected_challenge.endswith(expected_suffix):
+                cache.delete(challenge_key)
+                raise ValueError(_('Invalid proof-bound challenge. Please try again.'))
         
         try:
             # Find the credential
@@ -580,13 +611,21 @@ class WebAuthnService:
             user_credential['last_used_at'] = timezone.now().isoformat()
             user.save(update_fields=['webauthn_credentials'])
             
-            return {
+            result = {
                 'verified': True,
                 'credential_id': credential_id,
                 'challenge_id': stored_challenge_id,
                 'new_sign_count': verification.new_sign_count,
                 'user_verified': True,
+                'transaction_sha256': stored_transaction_hash,
             }
+            if proof_binding:
+                from apps.authentication.proof_service import assertion_private_evidence
+                result['proof_evidence'] = assertion_private_evidence(
+                    credential_data,
+                    user_credential['credential_public_key'],
+                )
+            return result
             
         except Exception as e:
             cache.delete(challenge_key)

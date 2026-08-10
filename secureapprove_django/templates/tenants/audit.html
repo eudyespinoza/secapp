@@ -172,7 +172,7 @@
 
     .audit-metrics {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 0.9rem;
         margin-bottom: 1rem;
     }
@@ -432,6 +432,30 @@
         background: var(--audit-neutral-bg);
     }
 
+    .audit-proof {
+        display: grid;
+        gap: 0.4rem;
+        min-width: 150px;
+    }
+
+    .audit-proof-badge {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid var(--audit-border);
+        border-radius: 999px;
+        padding: 0.28rem 0.58rem;
+        color: var(--audit-success-text);
+        background: var(--audit-success-bg);
+        font-size: 0.75rem;
+        font-weight: 750;
+    }
+
+    .audit-proof-legacy { color: var(--audit-subtle); font-size: 0.78rem; }
+    .audit-proof-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .audit-proof-actions a { font-size: 0.75rem; font-weight: 700; }
+
     .audit-user {
         color: var(--audit-text);
         font-weight: 600;
@@ -652,6 +676,10 @@
             <span class="audit-metric-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
             <span><span class="audit-metric-label">{% trans "Unique users" %}</span><strong class="audit-metric-value">{{ metrics.unique_users }}</strong></span>
         </article>
+        <article class="audit-metric">
+            <span class="audit-metric-icon"><i class="bi bi-patch-check" aria-hidden="true"></i></span>
+            <span><span class="audit-metric-label">SecureApprove Proof</span><strong class="audit-metric-value">{{ metrics.proofs }}</strong></span>
+        </article>
     </section>
 
     {% if filter_errors %}
@@ -688,7 +716,19 @@
                 </div>
                 {% endif %}
 
-                <div class="col-12 {% if audit_type == 'approvals' %}col-xl-4{% else %}col-xl-6{% endif %}">
+                <div class="col-12 col-sm-6 col-xl-2">
+                    <label for="auditProof" class="form-label">SecureApprove Proof</label>
+                    <select id="auditProof" class="form-select" name="proof">
+                        <option value="">{% trans "All proof states" %}</option>
+                        <option value="signed"{% if proof_filter == 'signed' %} selected{% endif %}>{% trans "Proof issued" %}</option>
+                        <option value="archived"{% if proof_filter == 'archived' %} selected{% endif %}>{% trans "WORM archived" %}</option>
+                        <option value="pending"{% if proof_filter == 'pending' %} selected{% endif %}>{% trans "Archive pending" %}</option>
+                        <option value="attention"{% if proof_filter == 'attention' %} selected{% endif %}>{% trans "Archive requires attention" %}</option>
+                        <option value="legacy"{% if proof_filter == 'legacy' %} selected{% endif %}>{% trans "Before SecureApprove Proof" %}</option>
+                    </select>
+                </div>
+
+                <div class="col-12 {% if audit_type == 'approvals' %}col-xl-2{% else %}col-xl-4{% endif %}">
                     <label for="auditSearch" class="form-label">{% trans "Search" %}</label>
                     <input id="auditSearch" class="form-control" name="q" value="{{ q }}" maxlength="200" autocomplete="off" placeholder="{% if audit_type == 'terms' %}{% trans 'Email, document, version or hash' %}{% else %}{% trans 'Email, request title or ID' %}{% endif %}">
                 </div>
@@ -766,6 +806,7 @@
                             <th scope="col">{% trans "Action" %}</th>
                         {% endif %}
                         <th scope="col">{% trans "IP address" %}</th>
+                        <th scope="col">SecureApprove Proof</th>
                         <th scope="col">{% trans "Evidence" %}</th>
                     </tr>
                 </thead>
@@ -798,6 +839,20 @@
 
                             <td><span class="audit-date">{% if audit.ip_address %}{{ audit.ip_address }}{% else %}—{% endif %}</span></td>
                             <td>
+                                {% if audit.proof %}
+                                    <div class="audit-proof">
+                                        <span class="audit-proof-badge"><i class="bi bi-patch-check-fill" aria-hidden="true"></i>{% trans "Signed" %} · {{ audit.proof.archive_status }}</span>
+                                        <code class="audit-cell-meta" title="{{ audit.proof.transaction_sha256 }}">{{ audit.proof.transaction_sha256|slice:":14" }}…</code>
+                                        <span class="audit-proof-actions">
+                                            <a href="{% url 'landing:proof_verify_id' audit.proof.id %}">{% trans "Verify" %}</a>
+                                            <a href="{% url 'proofs:evidence' audit.proof.id %}?download=1">{% trans "Download evidence" %}</a>
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <span class="audit-proof-legacy">{% trans "Before SecureApprove Proof" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
                                 <details class="audit-evidence">
                                     <summary><i class="bi bi-fingerprint" aria-hidden="true"></i>{% trans "Details" %}</summary>
                                     <div class="audit-evidence-content">
@@ -814,7 +869,7 @@
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="{% if audit_type == 'terms' %}6{% else %}7{% endif %}" class="audit-empty">
+                            <td colspan="{% if audit_type == 'terms' %}7{% else %}8{% endif %}" class="audit-empty">
                                 <span class="audit-empty-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
                                 <h3 class="h6 mb-2">{% trans "No audit records match these filters." %}</h3>
                                 <p class="audit-muted mb-3">{% trans "Try widening the date range or clearing one of the filters." %}</p>

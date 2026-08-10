@@ -378,7 +378,7 @@
                         <li class="mb-2">{% trans "Browser requests only ephemeral session data from your backend." %}</li>
                         <li class="mb-2">{% trans "Loader creates iframe and executes strict origin + nonce handshake." %}</li>
                         <li class="mb-2">{% trans "Iframe performs biometric challenge and confirms /api/approvals/terms/confirm/." %}</li>
-                        <li>{% trans "Your backend verifies transaction status with SecureApprove before creating its own login session." %}</li>
+                        <li>{% trans "Your backend verifies transaction status, stores proof.id and proof.jws, and only then creates its own login session." %}</li>
                     </ol>
 
                     <hr>
@@ -392,6 +392,7 @@
                             <li>{% trans "Bind the exact parent origin, decision, document version, and SHA-256 server-side." %}</li>
                             <li>{% trans "Bind the transaction ID to the host's pre-authentication session and rotate that session after success." %}</li>
                             <li>{% trans "Treat postMessage as a UI notification; trust only the authenticated status endpoint." %}</li>
+                            <li>{% trans "Store proof.id and proof.jws in your backend audit record; never rely on the browser copy." %}</li>
                             <li>{% trans "Do not persist approvalToken in localStorage/sessionStorage." %}</li>
                         </ul>
                     </div>
@@ -529,15 +530,17 @@
 `  if (!statusResp.ok) return res.status(401).json({ error: 'secureapprove_not_verified' });\n` +
 `  const result = await statusResp.json();\n` +
 `  const transaction = result.transaction || {};\n` +
+`  const proof = transaction.proof || {};\n` +
 `  const valid = result.authenticated && transaction.state === 'approved' &&\n` +
 `    transaction.decision === 'approve' && transaction.parentOrigin === pending.parentOrigin &&\n` +
 `    String(transaction.subject?.id) === pending.subjectUserId &&\n` +
-`    transaction.document?.sha256 === pending.documentHash;\n` +
+`    transaction.document?.sha256 === pending.documentHash && proof.id && proof.jws;\n` +
 `  if (!valid) return res.status(401).json({ error: 'secureapprove_not_approved' });\n` +
 `  const subject = transaction.subject;\n` +
+`  await saveSecureApproveProof({ id: proof.id, jws: proof.jws, verifyUrl: proof.verify_url });\n` +
 `  await new Promise((resolve, reject) => req.session.regenerate((error) => error ? reject(error) : resolve()));\n` +
 `  req.session.secureapproveUser = subject;\n` +
-`  return res.json({ authenticated: true, user: subject });\n` +
+`  return res.json({ authenticated: true, user: subject, proofId: proof.id });\n` +
 `});`;
     }
 
@@ -604,15 +607,18 @@
 `        status = await client.get('${q(c.apiStatusEndpoint)}' + transaction_id + '/', headers=headers)\n` +
 `    result = status.json() if status.status_code < 400 else {}\n` +
 `    transaction = result.get('transaction', {})\n` +
+`    proof = transaction.get('proof', {})\n` +
 `    document = transaction.get('document', {})\n` +
 `    subject = transaction.get('subject', {})\n` +
 `    valid = result.get('authenticated') and transaction.get('state') == 'approved' and \\\n` +
 `        transaction.get('decision') == 'approve' and transaction.get('parentOrigin') == pending['parent_origin'] and \\\n` +
-`        str(subject.get('id')) == pending['subject_user_id'] and document.get('sha256') == pending['document_hash']\n` +
+`        str(subject.get('id')) == pending['subject_user_id'] and document.get('sha256') == pending['document_hash'] and \\\n` +
+`        proof.get('id') and proof.get('jws')\n` +
 `    if not valid:\n` +
 `        raise HTTPException(status_code=401, detail='secureapprove_not_approved')\n` +
+`    await save_secureapprove_proof({'id': proof['id'], 'jws': proof['jws'], 'verify_url': proof['verify_url']})\n` +
 `    request.session.pop('pending_secureapprove', None)\n` +
-`    response = JSONResponse({'authenticated': True, 'user': subject})\n` +
+`    response = JSONResponse({'authenticated': True, 'user': subject, 'proofId': proof['id']})\n` +
 `    response.set_cookie('session', issue_first_party_session(subject), httponly=True, secure=True, samesite='lax')\n` +
 `    return response`;
     }
@@ -652,6 +658,7 @@
 `    return response.json();\n` +
 `  },\n` +
 `  onSuccess: function (result) {\n` +
+`    // result.proof is useful for UI only. Your backend must read the proof from the authenticated status endpoint.\n` +
 `    fetch('/api/secureapprove/finalize', {\n` +
 `      method: 'POST',\n` +
 `      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },\n` +

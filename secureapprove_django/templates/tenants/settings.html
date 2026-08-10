@@ -59,6 +59,29 @@
                 </div>
             </div>
 
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header py-3">
+                    <h5 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: var(--font-base);">
+                        <i class="bi bi-patch-check text-primary"></i>
+                        SecureApprove Proof
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">{% trans "Choose how long future private WebAuthn evidence is retained. Public signed proofs and integrity hashes remain verifiable." %}</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_proof_retention">
+                        <label class="form-label" for="proofRetention">{% trans "Private evidence retention" %}</label>
+                        <select class="form-select mb-3" id="proofRetention" name="proof_retention_years">
+                            {% for years, label in tenant.PROOF_RETENTION_CHOICES %}
+                                <option value="{{ years }}"{% if tenant.proof_retention_years == years %} selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-primary w-100" type="submit">{% trans "Save retention policy" %}</button>
+                    </form>
+                </div>
+            </div>
+
             <!-- Categories Card -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">

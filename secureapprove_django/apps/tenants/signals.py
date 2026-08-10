@@ -27,3 +27,13 @@ def initialize_approval_types_for_new_tenant(sender, instance, created, **kwargs
             logger.error(
                 f"Failed to initialize approval types for tenant {instance.key}: {e}"
             )
+        try:
+            # Pre-create the row that serializes this tenant's Proof ledger.
+            # This avoids a first-use get_or_create race between concurrent
+            # approvals while keeping the authentication dependency lazy.
+            from apps.authentication.models import ProofLedgerHead
+            ProofLedgerHead.objects.get_or_create(tenant=instance)
+        except Exception as e:
+            logger.error(
+                f"Failed to initialize Proof ledger for tenant {instance.key}: {e}"
+            )

@@ -13,10 +13,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 
 from apps.authentication.models import ApprovalAudit, TermsAcceptanceAudit
 from apps.requests.models import ApprovalRequest
@@ -26,7 +24,6 @@ from .utils import ensure_user_tenant
 User = get_user_model()
 
 
-@method_decorator(csrf_exempt, name="dispatch")
 class TenantSettingsView(LoginRequiredMixin, View):
     """
     Basic tenant settings page for tenant admins:
@@ -87,7 +84,20 @@ class TenantSettingsView(LoginRequiredMixin, View):
             return redirect("landing:index")
 
         action = request.POST.get("action")
-        if action == "update_user":
+        if action == "update_proof_retention":
+            try:
+                years = int(request.POST.get("proof_retention_years", "7"))
+            except (TypeError, ValueError):
+                years = 0
+            valid_years = {choice[0] for choice in Tenant.PROOF_RETENTION_CHOICES}
+            if years not in valid_years:
+                messages.error(request, _("Select a valid evidence retention period."))
+            else:
+                tenant.proof_retention_years = years
+                tenant.save(update_fields=["proof_retention_years", "updated_at"])
+                messages.success(request, _("SecureApprove Proof retention updated for future evidence."))
+
+        elif action == "update_user":
             user_id = request.POST.get("user_id")
             role = (request.POST.get("role") or "").strip()
             is_active = request.POST.get("is_active") == "on"
@@ -402,6 +412,10 @@ class TenantAuditView(LoginRequiredMixin, View):
         if audit_type != "approvals" or action_filter not in action_choices:
             action_filter = ""
 
+        proof_filter = (request.GET.get("proof") or "").strip().lower()
+        if proof_filter not in {"signed", "archived", "pending", "attention", "legacy"}:
+            proof_filter = ""
+
         query = (request.GET.get("q") or "").strip()[:200]
         ip_filter = (request.GET.get("ip") or "").strip()
         date_from_raw = (request.GET.get("date_from") or "").strip()
@@ -445,6 +459,7 @@ class TenantAuditView(LoginRequiredMixin, View):
         return {
             "status": status_filter,
             "action": action_filter,
+            "proof": proof_filter,
             "q": query,
             "ip": ip_filter,
             "normalized_ip": normalized_ip,
@@ -463,10 +478,10 @@ class TenantAuditView(LoginRequiredMixin, View):
     def _base_queryset(tenant, audit_type):
         if audit_type == "terms":
             return TermsAcceptanceAudit.objects.filter(tenant=tenant).select_related(
-                "user", "initiated_by", "session"
+                "user", "initiated_by", "session", "security_proof__signing_key"
             )
         return ApprovalAudit.objects.filter(approval_request__tenant=tenant).select_related(
-            "user", "approval_request"
+            "user", "approval_request", "security_proof__signing_key"
         )
 
     @staticmethod
@@ -475,6 +490,16 @@ class TenantAuditView(LoginRequiredMixin, View):
             audits = audits.filter(status=filters["status"])
         if filters["action"]:
             audits = audits.filter(action=filters["action"])
+        if filters["proof"] == "signed":
+            audits = audits.filter(security_proof__isnull=False)
+        elif filters["proof"] == "archived":
+            audits = audits.filter(security_proof__archive_status="archived")
+        elif filters["proof"] == "pending":
+            audits = audits.filter(security_proof__archive_status="pending")
+        elif filters["proof"] == "attention":
+            audits = audits.filter(security_proof__archive_status__in=["delayed", "failed"])
+        elif filters["proof"] == "legacy":
+            audits = audits.filter(security_proof__isnull=True)
         if filters["normalized_ip"]:
             audits = audits.filter(ip_address=filters["normalized_ip"])
         if filters["date_from"]:
@@ -525,6 +550,7 @@ class TenantAuditView(LoginRequiredMixin, View):
             ("date_to", _("End date"), filters["date_to_raw"]),
             ("ip", _("IP address"), filters["ip"]),
             ("action", _("Action"), filters["action_choices"].get(filters["action"], "")),
+            ("proof", _("SecureApprove Proof"), filters["proof"].title()),
         ]
         return [
             {
@@ -546,11 +572,13 @@ class TenantAuditView(LoginRequiredMixin, View):
                 _("Timestamp"), _("Status"), _("User"), _("Initiated by"),
                 _("Document type"), _("Document version"), _("Document hash"),
                 _("Credential"), _("Challenge"), _("IP address"), _("User agent"),
-                _("Error"), _("Context"), _("Audit ID"),
+                _("Error"), _("Context"), _("Audit ID"), _("Proof ID"),
+                _("Proof archive status"), _("Transaction SHA-256"),
             ]
 
             def data_rows():
                 for audit in audits.iterator(chunk_size=1000):
+                    proof = getattr(audit, "security_proof", None)
                     yield [
                         timezone.localtime(audit.performed_at).isoformat(), audit.get_status_display(),
                         audit.user.email, audit.initiated_by.email if audit.initiated_by else "",
@@ -558,22 +586,28 @@ class TenantAuditView(LoginRequiredMixin, View):
                         audit.credential_id, audit.challenge_id, audit.ip_address, audit.user_agent,
                         audit.error_message,
                         json.dumps(audit.context_data, ensure_ascii=False, sort_keys=True), audit.id,
+                        proof.id if proof else "", proof.archive_status if proof else "",
+                        proof.transaction_sha256 if proof else "",
                     ]
         else:
             headers = [
                 _("Timestamp"), _("Status"), _("User"), _("Request ID"),
                 _("Request"), _("Action"), _("Credential"), _("Challenge"),
                 _("IP address"), _("User agent"), _("Error"), _("Context"), _("Audit ID"),
+                _("Proof ID"), _("Proof archive status"), _("Transaction SHA-256"),
             ]
 
             def data_rows():
                 for audit in audits.iterator(chunk_size=1000):
+                    proof = getattr(audit, "security_proof", None)
                     yield [
                         timezone.localtime(audit.performed_at).isoformat(), audit.get_status_display(),
                         audit.user.email, audit.approval_request_id, audit.approval_request.title,
                         audit.get_action_display(), audit.credential_id, audit.challenge_id,
                         audit.ip_address, audit.user_agent, audit.error_message,
                         json.dumps(audit.context_data, ensure_ascii=False, sort_keys=True), audit.id,
+                        proof.id if proof else "", proof.archive_status if proof else "",
+                        proof.transaction_sha256 if proof else "",
                     ]
 
         def stream():
@@ -615,12 +649,14 @@ class TenantAuditView(LoginRequiredMixin, View):
             successful=models.Count("id", filter=models.Q(status="success")),
             attention=models.Count("id", filter=~models.Q(status="success")),
             unique_users=models.Count("user_id", distinct=True),
+            proofs=models.Count("security_proof", distinct=True),
         )
 
         paginator = Paginator(audits, filters["page_size"])
         page_obj = paginator.get_page(page_number)
         for audit in page_obj.object_list:
             audit.context_json = json.dumps(audit.context_data, ensure_ascii=False, indent=2, sort_keys=True)
+            audit.proof = getattr(audit, "security_proof", None)
 
         return render(
             request,
@@ -630,6 +666,7 @@ class TenantAuditView(LoginRequiredMixin, View):
                 "audit_type": audit_type,
                 "status": filters["status"],
                 "action": filters["action"],
+                "proof_filter": filters["proof"],
                 "q": filters["q"],
                 "ip": filters["ip"],
                 "date_from": filters["date_from_raw"],
